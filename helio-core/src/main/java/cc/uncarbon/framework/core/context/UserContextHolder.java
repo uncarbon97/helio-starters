@@ -1,5 +1,6 @@
 package cc.uncarbon.framework.core.context;
 
+import cn.hutool.core.util.ObjectUtil;
 import com.alibaba.ttl.TransmittableThreadLocal;
 import lombok.experimental.UtilityClass;
 
@@ -9,8 +10,9 @@ import lombok.experimental.UtilityClass;
  */
 @UtilityClass
 public class UserContextHolder {
+
     private final TransmittableThreadLocal<UserContext> THREAD_LOCAL_USER = new TransmittableThreadLocal<>();
-    private final UserContext EMPTY_USER_CONTEXT = new UserContext();
+
 
     /**
      * 设置当前用户上下文
@@ -29,11 +31,8 @@ public class UserContextHolder {
      * @return 当前用户上下文
      */
     public UserContext getUserContext() {
-        UserContext userContext = THREAD_LOCAL_USER.get();
-        if (userContext == null) {
-            return EMPTY_USER_CONTEXT;
-        }
-        return userContext;
+        // 必须新创建，否则可能出现租户ID无法切换的BUG
+        return ObjectUtil.defaultIfNull(THREAD_LOCAL_USER.get(), new UserContext());
     }
 
     /**
@@ -70,4 +69,5 @@ public class UserContextHolder {
     public void setRelationalTenant(TenantContext newTenantContext) {
         getUserContext().setRelationalTenant(newTenantContext);
     }
+
 }
