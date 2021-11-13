@@ -37,9 +37,13 @@ import java.util.concurrent.ThreadPoolExecutor;
  * @since JDK 1.8
  */
 public class RocketProducerContainer implements ApplicationContextAware {
+
 	private ApplicationContext applicationContext;
-	private AliyunRocketProperties rocketProperties;
-	private Map<String, Object> consumerContainer;
+
+	private final AliyunRocketProperties rocketProperties;
+
+	private final Map<String, Object> consumerContainer;
+
 
 	public RocketProducerContainer(Map<String, Object> consumerContainer, AliyunRocketProperties rocketProperties) {
 		this.consumerContainer = consumerContainer;
@@ -52,7 +56,6 @@ public class RocketProducerContainer implements ApplicationContextAware {
 		applicationContext.getBeansWithAnnotation(RocketMessage.class).forEach((beanName, bean) -> RocketConsumerStrategy.putProducer(threadPoolExecutor, consumerContainer, bean, rocketProperties, applicationContext));
 		threadPoolExecutor.shutdown();
 	}
-
 
 	@Override
 	public void setApplicationContext(@NonNull ApplicationContext applicationContext) {

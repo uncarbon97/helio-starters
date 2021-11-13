@@ -48,6 +48,7 @@ public class RocketConsumerContainer implements ApplicationContextAware {
 
     private final RocketSerializer mqSerializer;
 
+
     public RocketConsumerContainer(AliyunRocketProperties rocketProperties, RocketSerializer rocketSerializer) {
         this.rocketProperties = rocketProperties;
         this.mqSerializer = rocketSerializer;
