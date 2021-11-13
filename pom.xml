@@ -12,6 +12,7 @@
         <module>helio-starter-dubbo</module>
         <module>helio-starter-knife4j</module>
         <module>helio-starter-redis</module>
+        <module>helio-starter-rocketmq-aliyun</module>
         <module>helio-starter-satoken</module>
         <module>helio-starter-seata</module>
         <module>helio-starter-test</module>
@@ -58,6 +59,7 @@
         <knife4j.version>3.0.3</knife4j.version>
         <redisson.version>3.16.3</redisson.version>
         <aspectj.version>1.9.6</aspectj.version>
+        <ons-client.version>2.0.0.Final</ons-client.version>
 
 
         <!-- DB Driver versions -->
@@ -68,7 +70,7 @@
         <oracle.version>11.2.0.3</oracle.version>
 
 
-        <!-- CI/CD -->
+        <!-- Maven properties -->
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
         <maven.version>3.6.3</maven.version>
@@ -77,7 +79,6 @@
         <maven.build.timestamp.format>yyyyMMddHHmmss</maven.build.timestamp.format>
         <buildTime>v.${project.version} build ${maven.build.timestamp.format}</buildTime>
         <main.user.dir>${basedir}/..</main.user.dir>
-        <jib-maven-plugin.version>3.0.0</jib-maven-plugin.version>
         <maven-surefire-plugin.version>3.0.0-M5</maven-surefire-plugin.version>
     </properties>
 
@@ -137,6 +138,12 @@
             <dependency>
                 <groupId>cc.uncarbon.framework</groupId>
                 <artifactId>helio-starter-redis</artifactId>
+                <version>${helio-starters.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>cc.uncarbon.framework</groupId>
+                <artifactId>helio-starter-rocketmq-aliyun</artifactId>
                 <version>${helio-starters.version}</version>
             </dependency>
 
@@ -315,6 +322,13 @@
                         <artifactId>spring-boot-starter-actuator</artifactId>
                     </exclusion>
                 </exclusions>
+            </dependency>
+
+            <!-- ROCKETMQ-ALIYUN dependencies -->
+            <dependency>
+                <groupId>com.aliyun.openservices</groupId>
+                <artifactId>ons-client</artifactId>
+                <version>${ons-client.version}</version>
             </dependency>
 
 
