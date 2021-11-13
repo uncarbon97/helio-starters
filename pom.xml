@@ -59,7 +59,7 @@
         <knife4j.version>3.0.3</knife4j.version>
         <redisson.version>3.16.3</redisson.version>
         <aspectj.version>1.9.6</aspectj.version>
-        <ons-client.version>2.0.0.Final</ons-client.version>
+        <ons-client.version>1.8.8.1.Final</ons-client.version>
 
 
         <!-- DB Driver versions -->

@@ -19,7 +19,7 @@ package cc.uncabon.framework.rocketmq.aliyun.autoconfigure;
 import cc.uncabon.framework.rocketmq.aliyun.aspect.RocketAspect;
 import cc.uncabon.framework.rocketmq.aliyun.container.RocketConsumerContainer;
 import cc.uncabon.framework.rocketmq.aliyun.container.RocketProducerContainer;
-import cc.uncabon.framework.rocketmq.aliyun.core.serializer.Base64Serializer;
+import cc.uncabon.framework.rocketmq.aliyun.core.serializer.JacksonJsonSerializer;
 import cc.uncabon.framework.rocketmq.aliyun.core.serializer.RocketSerializer;
 import cc.uncarbon.framework.core.props.AliyunRocketProperties;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
@@ -61,7 +61,7 @@ public class AliyunRocketAutoConfiguration {
     @Bean
     @ConditionalOnMissingBean(RocketSerializer.class)
     public RocketSerializer rocketSerializer() {
-        return new Base64Serializer();
+        return new JacksonJsonSerializer();
     }
 
     @Bean

@@ -25,10 +25,10 @@ import cc.uncabon.framework.rocketmq.aliyun.core.utils.AnnotatedMethodsUtils;
 import cc.uncabon.framework.rocketmq.annotation.MessageListener;
 import cc.uncabon.framework.rocketmq.annotation.RocketListener;
 import cc.uncarbon.framework.core.props.AliyunRocketProperties;
+import lombok.NonNull;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 
-import javax.annotation.Nonnull;
 import javax.annotation.PostConstruct;
 import java.util.concurrent.ThreadPoolExecutor;
 
@@ -71,7 +71,7 @@ public class RocketConsumerContainer implements ApplicationContextAware {
     }
 
     @Override
-    public void setApplicationContext(@Nonnull ApplicationContext applicationContext) {
+    public void setApplicationContext(@NonNull ApplicationContext applicationContext) {
         this.applicationContext = applicationContext;
     }
 }

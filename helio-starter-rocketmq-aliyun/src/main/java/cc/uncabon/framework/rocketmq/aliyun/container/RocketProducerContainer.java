@@ -20,10 +20,10 @@ import cc.uncabon.framework.rocketmq.aliyun.core.factory.ThreadPoolFactory;
 import cc.uncabon.framework.rocketmq.aliyun.core.strategy.RocketConsumerStrategy;
 import cc.uncabon.framework.rocketmq.annotation.RocketMessage;
 import cc.uncarbon.framework.core.props.AliyunRocketProperties;
+import lombok.NonNull;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 
-import javax.annotation.Nonnull;
 import javax.annotation.PostConstruct;
 import java.util.Map;
 import java.util.concurrent.ThreadPoolExecutor;
@@ -55,7 +55,7 @@ public class RocketProducerContainer implements ApplicationContextAware {
 
 
 	@Override
-	public void setApplicationContext(@Nonnull ApplicationContext applicationContext) {
+	public void setApplicationContext(@NonNull ApplicationContext applicationContext) {
 		this.applicationContext = applicationContext;
 	}
 }

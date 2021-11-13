@@ -17,7 +17,7 @@
 package cc.uncabon.framework.rocketmq.aliyun.core.factory;
 
 import cc.uncarbon.framework.core.props.AliyunRocketProperties;
-import com.aliyun.openservices.ons.shaded.com.google.common.util.concurrent.ThreadFactoryBuilder;
+import com.aliyun.openservices.shade.com.google.common.util.concurrent.ThreadFactoryBuilder;
 
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadFactory;

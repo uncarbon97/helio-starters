@@ -27,6 +27,7 @@ import cc.uncabon.framework.rocketmq.annotation.RocketMessage;
 import cc.uncabon.framework.rocketmq.annotation.TransactionMessage;
 import cc.uncarbon.framework.core.props.AliyunRocketProperties;
 import lombok.Data;
+import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
@@ -35,7 +36,6 @@ import org.aspectj.lang.annotation.Pointcut;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 
-import javax.annotation.Nonnull;
 import java.util.Map;
 import java.util.concurrent.ThreadPoolExecutor;
 
@@ -117,7 +117,7 @@ public class RocketAspect implements ApplicationContextAware {
     }
 
     @Override
-    public void setApplicationContext(@Nonnull ApplicationContext applicationContext) {
+    public void setApplicationContext(@NonNull ApplicationContext applicationContext) {
         this.applicationContext = applicationContext;
     }
 }
