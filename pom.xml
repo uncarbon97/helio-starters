@@ -28,11 +28,11 @@
 
     <groupId>cc.uncarbon.framework</groupId>
     <artifactId>helio-starters</artifactId>
-    <version>1.2.1</version>
+    <version>1.3.0-SNAPSHOT</version>
 
     <properties>
         <!-- core versions -->
-        <helio-starters.version>1.2.1</helio-starters.version>
+        <helio-starters.version>1.3.0-SNAPSHOT</helio-starters.version>
         <!-- JDK8则改为'1.8'  JDK11则改为'11' -->
         <java.version>15</java.version>
         <!-- 若变更Spring Boot版本, 上面parent依赖版本也要变 -->
