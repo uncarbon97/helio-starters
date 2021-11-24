@@ -22,7 +22,7 @@
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
-        <version>2.4.12</version>
+        <version>2.4.13</version>
         <relativePath/>
     </parent>
 
@@ -36,7 +36,7 @@
         <!-- JDK8则改为'1.8'  JDK11则改为'11' -->
         <java.version>15</java.version>
         <!-- 若变更Spring Boot版本, 上面parent依赖版本也要变 -->
-        <spring-boot.version>2.4.12</spring-boot.version>
+        <spring-boot.version>2.4.13</spring-boot.version>
 
 
         <!-- Spring Cloud versions -->
@@ -52,8 +52,8 @@
 
 
         <!-- 3rd-party versions -->
-        <hutool.version>5.7.15</hutool.version>
-        <sa-token.version>1.27.0</sa-token.version>
+        <hutool.version>5.7.16</hutool.version>
+        <sa-token.version>1.28.0</sa-token.version>
         <transmittable-thread-local.version>2.12.1</transmittable-thread-local.version>
         <mybatis-plus.version>3.4.3.4</mybatis-plus.version>
         <knife4j.version>3.0.3</knife4j.version>
