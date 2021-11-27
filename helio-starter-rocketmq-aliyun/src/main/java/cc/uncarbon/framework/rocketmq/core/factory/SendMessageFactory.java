@@ -41,21 +41,20 @@ public class SendMessageFactory {
     }
 
     public static void sendMessage(Long startDeliverTime, Producer producer, CommonMessage commonMessage, byte[] bytes, ApplicationContext applicationContext) {
-        Message message = MessageFactory.createMessage (commonMessage, bytes);
+        Message message = MessageFactory.createMessage(commonMessage, bytes);
         if (null != startDeliverTime) {
-            message.setStartDeliverTime (startDeliverTime);
+            message.setStartDeliverTime(startDeliverTime);
         }
-        SendMessageStrategy.send (commonMessage, producer, message, applicationContext);
-
+        SendMessageStrategy.send(commonMessage, producer, message, applicationContext);
     }
 
     public static void sendMessage(OrderProducer orderProducer, OrderMessage orderMessage, byte[] bytes, String shardingKeyFactory) {
-        Message message = MessageFactory.createMessage (orderMessage, bytes);
-        orderProducer.send (message, shardingKeyFactory);
+        Message message = MessageFactory.createMessage(orderMessage, bytes);
+        orderProducer.send(message, shardingKeyFactory);
     }
 
     public static void sendMessage(TransactionProducer transactionProducer, TransactionMessage transactionMessage, byte[] bytes, ApplicationContext applicationContext) {
-        Message message = MessageFactory.createMessage (transactionMessage, bytes);
-        transactionProducer.send (message, ApplicationContextUtils.getLocalTransactionExecuter (applicationContext, transactionMessage.executor()), null);
+        Message message = MessageFactory.createMessage(transactionMessage, bytes);
+        transactionProducer.send(message, ApplicationContextUtils.getLocalTransactionExecuter(applicationContext, transactionMessage.executor()), null);
     }
 }

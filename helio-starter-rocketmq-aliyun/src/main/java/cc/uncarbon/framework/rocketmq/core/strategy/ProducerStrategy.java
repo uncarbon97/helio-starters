@@ -22,6 +22,7 @@ import cc.uncarbon.framework.rocketmq.annotation.RocketMessage;
 import cc.uncarbon.framework.rocketmq.annotation.TransactionMessage;
 import cc.uncarbon.framework.rocketmq.core.factory.ProducerConsumerFactory;
 import cc.uncarbon.framework.rocketmq.core.factory.SendMessageFactory;
+import cc.uncarbon.framework.rocketmq.exception.RocketException;
 import com.aliyun.openservices.ons.api.Producer;
 import com.aliyun.openservices.ons.api.order.OrderProducer;
 import com.aliyun.openservices.ons.api.transaction.TransactionProducer;
@@ -41,11 +42,11 @@ public class ProducerStrategy {
     private ProducerStrategy() {
     }
 
-    public static void statsSendMessage(Long startDeliverTime, String shardingKeyFactory, Map<String, Object> consumerContainer, RocketMessage rocketMessage, Object message, byte[] bytes, ApplicationContext applicationContex) {
+    public static void statsSendMessage(Long startDeliverTime, String shardingKeyFactory, Map<String, Object> consumerContainer, RocketMessage rocketMessage, Object message, byte[] bytes, ApplicationContext applicationContext) throws RocketException {
         if (message instanceof CommonMessage) {
             CommonMessage commonMessage = (CommonMessage) message;
             Producer producer = ProducerConsumerFactory.getProducer(consumerContainer, rocketMessage, commonMessage);
-            SendMessageFactory.sendMessage(startDeliverTime, producer, commonMessage, bytes, applicationContex);
+            SendMessageFactory.sendMessage(startDeliverTime, producer, commonMessage, bytes, applicationContext);
             return;
         }
         if (message instanceof OrderMessage) {
@@ -57,7 +58,7 @@ public class ProducerStrategy {
         if (message instanceof TransactionMessage) {
             TransactionMessage transactionMessage = (TransactionMessage) message;
             TransactionProducer transactionProducer = ProducerConsumerFactory.getProducer(consumerContainer, rocketMessage, transactionMessage);
-            SendMessageFactory.sendMessage(transactionProducer, transactionMessage, bytes, applicationContex);
+            SendMessageFactory.sendMessage(transactionProducer, transactionMessage, bytes, applicationContext);
         }
     }
 }
