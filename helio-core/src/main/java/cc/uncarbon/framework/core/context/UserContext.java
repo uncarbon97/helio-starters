@@ -2,6 +2,7 @@ package cc.uncarbon.framework.core.context;
 
 import cc.uncarbon.framework.core.constant.HelioConstant;
 import cc.uncarbon.framework.core.enums.HelioBaseEnum;
+import com.alibaba.ttl.threadpool.agent.internal.javassist.SerialVersionUID;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -18,11 +19,13 @@ import java.util.Map;
  * @author Uncarbon
  */
 @Accessors(chain = true)
-@SuperBuilder(toBuilder = true)
+@SuperBuilder
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
 public class UserContext implements Serializable {
+
+    private static final long SerialVersionUID = 1L;
 
     @ApiModelProperty(value = "用户ID")
     private Long userId;
@@ -35,12 +38,6 @@ public class UserContext implements Serializable {
 
     @ApiModelProperty(value = "用户类型")
     private HelioBaseEnum<?> userType;
-
-    @ApiModelProperty(value = "用户拥有角色(后台管理使用)")
-    private List<String> roles;
-
-    @ApiModelProperty(value = "用户拥有权限(后台管理使用, 决定可见菜单及按钮)")
-    private List<String> permissions;
 
     @ApiModelProperty(value = "附加数据")
     private Map<String, String> extraData;

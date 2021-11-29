@@ -4,6 +4,8 @@ import cn.hutool.core.util.ObjectUtil;
 import com.alibaba.ttl.TransmittableThreadLocal;
 import lombok.experimental.UtilityClass;
 
+import java.util.Optional;
+
 /**
  * 存储当前用户上下文
  * @author Uncarbon
@@ -31,8 +33,11 @@ public class UserContextHolder {
      * @return 当前用户上下文
      */
     public UserContext getUserContext() {
-        // 必须新创建，否则可能出现租户ID无法切换的BUG
-        return ObjectUtil.defaultIfNull(THREAD_LOCAL_USER.get(), new UserContext());
+        /*
+        必须新创建，否则可能出现租户ID无法切换的BUG
+        不能用 .orElse ，即使条件不满足也会new
+         */
+        return Optional.ofNullable(THREAD_LOCAL_USER.get()).orElseGet(UserContext::new);
     }
 
     /**
