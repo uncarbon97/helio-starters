@@ -17,8 +17,26 @@ public interface HelioConstant {
     }
 
     interface Version {
+        /**
+         * replaced with HTTP_API_VERSION_V1
+         */
+        @Deprecated
         String APP_API_VERSION_V1 = "/api/v1";
+
+        /**
+         * replaced with HTTP_API_VERSION_V1
+         */
+        @Deprecated
         String SAAS_API_VERSION_V1 = "/api/v1";
+
+        /**
+         * HTTP API 版本 v1
+         */
+        String HTTP_API_VERSION_V1 = "/api/v1";
+
+        /**
+         * DUBBO API 版本 v1
+         */
         String DUBBO_VERSION_V1 = "1.0.0";
     }
 

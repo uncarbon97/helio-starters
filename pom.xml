@@ -52,6 +52,7 @@
 
         <!-- 3rd-party versions -->
         <hutool.version>5.7.15</hutool.version>
+        <!-- 暂不升级，用 1.28.0 时存在 ThreadLocal 溢出问题，待观察 -->
         <sa-token.version>1.27.0</sa-token.version>
         <transmittable-thread-local.version>2.12.1</transmittable-thread-local.version>
         <mybatis-plus.version>3.4.3.4</mybatis-plus.version>
