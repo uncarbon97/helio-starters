@@ -14,7 +14,7 @@ import java.io.Serializable;
  * @author Uncarbon
  */
 @Accessors(chain = true)
-@SuperBuilder(toBuilder = true)
+@SuperBuilder
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
