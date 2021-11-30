@@ -11,13 +11,14 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 /**
- * 从请求头解析并赋值到上下文
+ * 从请求头解析用户信息，并赋值到上下文
+ *
  * @author Uncarbon
  */
 @Slf4j
 public class DefaultSaTokenParseInterceptor implements AsyncHandlerInterceptor {
     @Override
-    public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
+    public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) {
         if (handler instanceof ResourceHttpRequestHandler) {
             // 直接放行静态资源
             return true;

@@ -17,7 +17,17 @@ public class UserContextHolder {
 
 
     /**
-     * 获取当前用户上下文, 确保不返回空
+     * 是否真正存有当前用户上下文，即是否实际登录
+     *
+     * @return true or false
+     */
+    public boolean isActuallyHold() {
+        return THREAD_LOCAL_USER.get() != null;
+    }
+
+    /**
+     * 获取当前用户上下文
+     * 注意：即使未登录情况下，该方法也不会返回 null ，而是返回一个空对象
      *
      * @return 当前用户上下文
      */
@@ -30,6 +40,16 @@ public class UserContextHolder {
     }
 
     /**
+     * 获取 Optional 化的当前用户上下文
+     * 用于函数式编码
+     *
+     * @return 当前用户上下文 Optional
+     */
+    public Optional<UserContext> getUserContextOptional() {
+        return Optional.ofNullable(THREAD_LOCAL_USER.get());
+    }
+
+    /**
      * 设置当前用户上下文
      *
      * @param userContext 当前用户上下文
@@ -39,6 +59,7 @@ public class UserContextHolder {
             THREAD_LOCAL_USER.remove();
             return;
         }
+
         THREAD_LOCAL_USER.set(userContext);
     }
 
