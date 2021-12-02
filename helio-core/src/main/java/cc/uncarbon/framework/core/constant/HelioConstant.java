@@ -92,6 +92,11 @@ public interface HelioConstant {
          */
         String SQL_LIMIT_1 = " LIMIT 1";
 
+        /**
+         * SQL 列名 id
+         */
+        String SQL_COLUMN_ID = " id ";
+
     }
 
     interface Regex {
