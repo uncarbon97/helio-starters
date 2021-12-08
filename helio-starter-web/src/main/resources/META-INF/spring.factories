@@ -4,5 +4,4 @@ org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
   cc.uncarbon.framework.web.config.AdviceExceptionAutoConfiguration,\
   cc.uncarbon.framework.web.config.JacksonExtendAutoConfiguration,\
   cc.uncarbon.framework.web.config.MessageConverterAutoConfiguration,\
-  cc.uncarbon.framework.web.config.XssAutoConfiguration,\
-  cc.uncarbon.framework.web.config.CorsAutoConfiguration
+  cc.uncarbon.framework.web.config.XssAutoConfiguration

@@ -18,11 +18,13 @@ import java.util.Map;
  * @author Uncarbon
  */
 @Accessors(chain = true)
-@SuperBuilder(toBuilder = true)
+@SuperBuilder
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
 public class UserContext implements Serializable {
+
+    private static final long SerialVersionUID = 1L;
 
     @ApiModelProperty(value = "用户ID")
     private Long userId;
@@ -36,14 +38,17 @@ public class UserContext implements Serializable {
     @ApiModelProperty(value = "用户类型")
     private HelioBaseEnum<?> userType;
 
-    @ApiModelProperty(value = "用户拥有角色(后台管理使用)")
+    @ApiModelProperty(value = "用户对应角色ID数组(后台管理使用, 建议从小到大排序)")
+    private List<Long> rolesIds;
+
+    @ApiModelProperty(value = "用户对应角色串(后台管理使用)")
     private List<String> roles;
 
-    @ApiModelProperty(value = "用户拥有权限(后台管理使用, 决定可见菜单及按钮)")
+    @ApiModelProperty(value = "用户拥有权限串(后台管理使用, 决定可见菜单及按钮)")
     private List<String> permissions;
 
     @ApiModelProperty(value = "附加数据")
-    private Map<String, String> extraData;
+    private Map<String, Object> extraData;
 
     @ApiModelProperty(value = "所属租户")
     private TenantContext relationalTenant = TenantContext.builder()

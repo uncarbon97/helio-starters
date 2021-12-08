@@ -5,9 +5,11 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.context.annotation.Configuration;
 
 /**
+ * 自动配置文件读取
+ *
  * @author Uncarbon
  */
-@EnableConfigurationProperties(HelioProperties.class)
+@EnableConfigurationProperties(value = {HelioProperties.class})
 @Configuration
-public class EnableConfigurationPropertiesAutoConfiguration {
+public class HelioPropertiesAutoConfiguration {
 }
