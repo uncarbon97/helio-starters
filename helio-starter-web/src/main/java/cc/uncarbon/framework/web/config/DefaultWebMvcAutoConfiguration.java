@@ -12,13 +12,14 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 /**
  * 默认WebMVC配置
+ *
  * @author Uncarbon
  **/
 @Slf4j
 @Configuration
 public class DefaultWebMvcAutoConfiguration implements WebMvcConfigurer, WebBindingInitializer {
     /**
-     * 资源处理器
+     * 自定义静态资源
      */
     @Override
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
@@ -26,10 +27,10 @@ public class DefaultWebMvcAutoConfiguration implements WebMvcConfigurer, WebBind
                 .addResourceHandler("/static/**")
                 .addResourceLocations("classpath:/static/");
         registry
-                .addResourceHandler("doc.html")
+                .addResourceHandler("/doc.html")
                 .addResourceLocations("classpath:/META-INF/resources/");
         registry
-                .addResourceHandler("swagger-ui.html")
+                .addResourceHandler("/swagger-resources")
                 .addResourceLocations("classpath:/META-INF/resources/");
         registry
                 .addResourceHandler("/webjars/**")
