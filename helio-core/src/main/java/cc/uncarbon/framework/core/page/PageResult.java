@@ -21,7 +21,7 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
-public class PageResult<T> implements Serializable {
+public class PageResult<T extends Serializable> implements Serializable {
 
     @ApiModelProperty(value = "当前页")
     private int current;

@@ -4,6 +4,8 @@ import io.swagger.annotations.ApiModelProperty;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.experimental.Accessors;
+import lombok.experimental.SuperBuilder;
 
 import javax.validation.constraints.NotEmpty;
 import java.io.Serializable;
@@ -17,10 +19,12 @@ import java.util.List;
  *
  * @author Uncarbon
  */
+@Accessors(chain = true)
+@SuperBuilder
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
-public class IdsDTO<T> implements Serializable {
+public class IdsDTO<T extends Serializable> implements Serializable {
 
     @ApiModelProperty(value = "主键ID数组", required = true)
     @NotEmpty(message = "ids不能为空")
