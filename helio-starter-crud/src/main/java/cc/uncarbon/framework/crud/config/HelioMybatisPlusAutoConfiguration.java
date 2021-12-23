@@ -26,7 +26,7 @@ import javax.annotation.Resource;
         proxyTargetClass = true
 )
 @Configuration
-public class MybatisPlusAutoConfiguration {
+public class HelioMybatisPlusAutoConfiguration {
 
     @Resource
     private HelioProperties helioProperties;
