@@ -15,10 +15,12 @@ import java.io.Serializable;
 import java.time.LocalDateTime;
 
 /**
+ * 基础实体类
+ *
  * @author Uncarbon
  */
 @Accessors(chain = true)
-@SuperBuilder(toBuilder = true)
+@SuperBuilder
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
@@ -42,7 +44,7 @@ public abstract class HelioBaseEntity<PK> implements Serializable {
      * 乐观锁
      * 需自行加@Version注解才有效
      */
-    @ApiModelProperty(value = "乐观锁(需自行加@Version注解才有效)")
+    @ApiModelProperty(value = "乐观锁", notes = "需再次复制本字段，并自行加 @Version 注解才有效")
     @TableField(value = "revision")
     private Long revision;
 

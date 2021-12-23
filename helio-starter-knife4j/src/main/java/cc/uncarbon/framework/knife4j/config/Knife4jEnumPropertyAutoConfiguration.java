@@ -10,7 +10,6 @@ import springfox.documentation.spi.schema.ModelPropertyBuilderPlugin;
 import springfox.documentation.spi.schema.contexts.ModelPropertyContext;
 import springfox.documentation.swagger.schema.ApiModelProperties;
 
-import java.util.Arrays;
 import java.util.Optional;
 
 /**
@@ -27,7 +26,7 @@ import java.util.Optional;
  */
 @ConditionalOnProperty(prefix = "knife4j", value = "production", havingValue = "false")
 @Component
-public class Knife4jEnumPropertyConfig implements ModelPropertyBuilderPlugin {
+public class Knife4jEnumPropertyAutoConfiguration implements ModelPropertyBuilderPlugin {
 
     @Override
     public void apply(ModelPropertyContext context) {
@@ -59,12 +58,19 @@ public class Knife4jEnumPropertyConfig implements ModelPropertyBuilderPlugin {
                     .append(annotation.get().value())
                     .append("(")
                     ;
-            Arrays.stream(enumItems).forEach(
-                    each -> newDescription
-                            .append(each.getValue())
-                            .append("=")
-                            .append(each.getLabel())
-            );
+
+            for (int i = 0; i < enumItems.length; i++) {
+                newDescription
+                        .append(enumItems[i].getValue())
+                        .append("=")
+                        .append(enumItems[i].getLabel())
+                        ;
+
+                if (i < enumItems.length - 1) {
+                    // 不是最后一项，增加分割符
+                    newDescription.append(" ");
+                }
+            }
             newDescription.append(")");
 
             // 更新文档中的描述
