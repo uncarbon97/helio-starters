@@ -1,6 +1,7 @@
 package cc.uncarbon.framework.web.model.response;
 
 import cc.uncarbon.framework.core.constant.HelioConstant;
+import cc.uncarbon.framework.core.enums.HelioBaseEnum;
 import cn.hutool.core.util.ObjectUtil;
 import cn.hutool.http.HttpStatus;
 import io.swagger.annotations.ApiModel;
@@ -19,7 +20,7 @@ import java.io.Serializable;
  */
 @ApiModel(value = "HTTP接口通用返回对象")
 @Accessors(chain = true)
-@SuperBuilder(toBuilder = true)
+@SuperBuilder
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
@@ -58,6 +59,14 @@ public class ApiResult<T> implements Serializable {
         return build(HttpStatus.HTTP_OK, msg, data);
     }
 
+    public static <T> ApiResult<T> build(HelioBaseEnum<Integer> enumItem) {
+        return build(enumItem.getValue(), enumItem.getLabel(), null);
+    }
+
+    public static <T> ApiResult<T> build(HelioBaseEnum<Integer> enumItem, T data) {
+        return build(enumItem.getValue(), enumItem.getLabel(), data);
+    }
+
     private static <T> ApiResult<T> build(Integer code, String msg, T data) {
         ApiResult<T> ret = new ApiResult<>();
         ret
@@ -67,5 +76,4 @@ public class ApiResult<T> implements Serializable {
 
         return ret;
     }
-
 }
