@@ -4,8 +4,11 @@ import cc.uncarbon.framework.core.enums.HelioBaseEnum;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import static java.net.HttpURLConnection.HTTP_INTERNAL_ERROR;
+
 /**
  * 业务异常类
+ *
  * @author Uncarbon
  */
 @NoArgsConstructor
@@ -16,6 +19,7 @@ public class BusinessException extends RuntimeException {
 
     public BusinessException(String msg) {
         super(msg);
+        this.code = HTTP_INTERNAL_ERROR;
     }
 
     public BusinessException(int code, String msg) {
