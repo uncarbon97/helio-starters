@@ -368,8 +368,8 @@
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-starter-web</artifactId>
                 <version>${spring-boot.version}</version>
-                <!-- 排除内置Tomcat，starter-web中会另外引入Undertow作为Web容器 -->
                 <exclusions>
+                    <!-- 排除内置 Tomcat ，starter-web 中会另外引入 Undertow 作为 Web 容器 -->
                     <exclusion>
                         <groupId>org.springframework.boot</groupId>
                         <artifactId>spring-boot-starter-tomcat</artifactId>

@@ -5,7 +5,6 @@ import cn.hutool.core.collection.IterUtil;
 import cn.hutool.core.util.NumberUtil;
 import cn.hutool.core.util.ObjectUtil;
 import cn.hutool.core.util.StrUtil;
-import org.springframework.lang.Nullable;
 
 import java.io.Serializable;
 import java.util.Arrays;
@@ -98,7 +97,7 @@ public interface HelioBaseEnum<T> extends Serializable {
      *
      * @param object 需要判断的对象
      */
-    default void assertNotNull(@Nullable Object object) {
+    default void assertNotNull(Object object) {
         if (ObjectUtil.isNotNull(object)) {
             return;
         }
@@ -112,7 +111,7 @@ public interface HelioBaseEnum<T> extends Serializable {
      *
      * @param str 需要判断的对象
      */
-    default void assertNotBlank(@Nullable CharSequence str) {
+    default void assertNotBlank(CharSequence str) {
         if (StrUtil.isNotBlank(str)) {
             return;
         }
@@ -126,7 +125,7 @@ public interface HelioBaseEnum<T> extends Serializable {
      *
      * @param list 需要判断的对象
      */
-    default void assertNotEmpty(@Nullable Iterable<?> list) {
+    default void assertNotEmpty(Iterable<?> list) {
         if (IterUtil.isNotEmpty(list)) {
             return;
         }
