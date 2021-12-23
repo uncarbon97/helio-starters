@@ -92,48 +92,6 @@ public interface HelioBaseEnum<T> extends Serializable {
     String getLabel();
 
     /**
-     * 断言不为null
-     * 注意：枚举选项的 value 建议为整数类型
-     *
-     * @param object 需要判断的对象
-     */
-    default void assertNotNull(Object object) {
-        if (ObjectUtil.isNotNull(object)) {
-            return;
-        }
-
-        throw new BusinessException(this.convertValue2Int(), this.getLabel());
-    }
-
-    /**
-     * 断言不为空文本
-     * 注意：枚举选项的 value 建议为整数类型
-     *
-     * @param str 需要判断的对象
-     */
-    default void assertNotBlank(CharSequence str) {
-        if (StrUtil.isNotBlank(str)) {
-            return;
-        }
-
-        throw new BusinessException(this.convertValue2Int(), this.getLabel());
-    }
-
-    /**
-     * 断言不为空列表
-     * 注意：枚举选项的 value 建议为整数类型
-     *
-     * @param list 需要判断的对象
-     */
-    default void assertNotEmpty(Iterable<?> list) {
-        if (IterUtil.isNotEmpty(list)) {
-            return;
-        }
-
-        throw new BusinessException(this.convertValue2Int(), this.getLabel());
-    }
-
-    /**
      * 对比是否和value相等,对比地址,值,value转为string忽略大小写对比,text忽略大小写对比
      *
      * @param v value
@@ -184,4 +142,47 @@ public interface HelioBaseEnum<T> extends Serializable {
 
         throw new IllegalArgumentException("枚举类的 value 不能自动转换为 int !");
     }
+
+    /**
+     * 断言不为null
+     * 注意：枚举选项的 value 建议为整数类型
+     *
+     * @param object 需要判断的对象
+     */
+    default void assertNotNull(Object object) {
+        if (ObjectUtil.isNotNull(object)) {
+            return;
+        }
+
+        throw new BusinessException(this.convertValue2Int(), this.getLabel());
+    }
+
+    /**
+     * 断言不为空文本
+     * 注意：枚举选项的 value 建议为整数类型
+     *
+     * @param str 需要判断的对象
+     */
+    default void assertNotBlank(CharSequence str) {
+        if (StrUtil.isNotBlank(str)) {
+            return;
+        }
+
+        throw new BusinessException(this.convertValue2Int(), this.getLabel());
+    }
+
+    /**
+     * 断言不为空列表
+     * 注意：枚举选项的 value 建议为整数类型
+     *
+     * @param list 需要判断的对象
+     */
+    default void assertNotEmpty(Iterable<?> list) {
+        if (IterUtil.isNotEmpty(list)) {
+            return;
+        }
+
+        throw new BusinessException(this.convertValue2Int(), this.getLabel());
+    }
+
 }
