@@ -24,7 +24,7 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
-public abstract class HelioBaseEntity<PK> implements Serializable {
+public abstract class HelioBaseEntity<PK extends Serializable> implements Serializable {
 
     /**
      * 主键ID
@@ -87,12 +87,5 @@ public abstract class HelioBaseEntity<PK> implements Serializable {
     @ApiModelProperty(value = "更新者")
     @TableField(value = HelioConstant.CRUD.COLUMN_UPDATED_BY, fill = FieldFill.INSERT_UPDATE)
     private String updatedBy;
-
-    /**
-     * 备注
-     */
-    @ApiModelProperty(value = "备注")
-    @TableField(value = "remark")
-    private String remark;
 
 }
