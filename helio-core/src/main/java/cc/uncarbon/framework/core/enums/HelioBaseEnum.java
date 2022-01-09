@@ -1,13 +1,14 @@
 package cc.uncarbon.framework.core.enums;
 
 import cc.uncarbon.framework.core.exception.BusinessException;
-import cn.hutool.core.collection.IterUtil;
+import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.util.NumberUtil;
 import cn.hutool.core.util.ObjectUtil;
 import cn.hutool.core.util.StrUtil;
 
 import java.io.Serializable;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Optional;
 import java.util.function.Predicate;
 
@@ -177,8 +178,8 @@ public interface HelioBaseEnum<T> extends Serializable {
      *
      * @param list 需要判断的对象
      */
-    default void assertNotEmpty(Iterable<?> list) {
-        if (IterUtil.isNotEmpty(list)) {
+    default void assertNotEmpty(Collection<?> list) {
+        if (CollUtil.isNotEmpty(list)) {
             return;
         }
 
