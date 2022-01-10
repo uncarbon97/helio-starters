@@ -46,8 +46,7 @@
 
         <!-- Spring Cloud Alibaba versions -->
         <spring-cloud-alibaba.version>2021.1</spring-cloud-alibaba.version>
-        <!-- DON'T upgrade Dubbo -->
-        <dubbo.version>2.7.12</dubbo.version>
+        <dubbo.version>3.0.5</dubbo.version>
         <seata.vesion>1.4.2</seata.vesion>
         <nacos-client.vesion>2.0.3</nacos-client.vesion>
 
