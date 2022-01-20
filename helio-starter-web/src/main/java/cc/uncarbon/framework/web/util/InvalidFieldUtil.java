@@ -2,16 +2,15 @@ package cc.uncarbon.framework.web.util;
 
 import cn.hutool.core.collection.CollUtil;
 import io.swagger.annotations.ApiModelProperty;
+import java.util.ArrayList;
+import java.util.List;
 import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.experimental.SuperBuilder;
 import lombok.experimental.UtilityClass;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
-
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * 参数绑定验证
@@ -64,7 +63,7 @@ public class InvalidFieldUtil {
         return invalidFieldList;
     }
 
-    @Builder
+    @SuperBuilder
     @AllArgsConstructor
     @NoArgsConstructor
     @Data

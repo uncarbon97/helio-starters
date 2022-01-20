@@ -8,6 +8,9 @@ import cn.dev33.satoken.exception.NotLoginException;
 import cn.dev33.satoken.exception.NotPermissionException;
 import cn.dev33.satoken.exception.NotRoleException;
 import com.fasterxml.jackson.core.JsonParseException;
+import java.nio.charset.StandardCharsets;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpStatus;
@@ -17,12 +20,11 @@ import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.validation.BindException;
 import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.ControllerAdvice;
+import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.ResponseStatus;
+import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.NoHandlerFoundException;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import java.nio.charset.StandardCharsets;
 
 /**
  * Web全局异常处理
@@ -94,28 +96,28 @@ public class AdviceExceptionAutoConfiguration {
     }
 
     /**
-     * JsonParseException, HttpMessageNotReadableException，BindException
+     * JsonParseException, HttpMessageNotReadableException
      * Jackson反序列化异常
-     * 通常是因为JSON格式错误, 或枚举输入值超出范围
+     * 通常是因为JSON格式错误，或枚举输入值超出范围
      *
      * IllegalArgumentException
      * 不合法的参数异常
      */
     @ResponseStatus(HttpStatus.BAD_REQUEST)
-    @ExceptionHandler({JsonParseException.class, HttpMessageNotReadableException.class, BindException.class, IllegalArgumentException.class})
+    @ExceptionHandler({JsonParseException.class, HttpMessageNotReadableException.class, IllegalArgumentException.class})
     public ResponseEntity<ApiResult<?>> handleJsonParseException(Exception e, HttpServletRequest request) {
         this.logError(e, request);
-        ApiResult<?> ret = ApiResult.fail(HttpStatus.NOT_ACCEPTABLE.value(), "错误参数格式或值(如应该输入整数的部分填写了其他内容, 或超过枚举值限制)");
+        ApiResult<?> ret = ApiResult.fail(HttpStatus.NOT_ACCEPTABLE.value(), "错误参数格式或值(如应该输入整数的部分填写了其他内容，或超过枚举值限制)");
         return createResponseEntity(HttpStatus.BAD_REQUEST, ret);
     }
 
     /**
      * JSR303 表单参数校验失败
-     * 在Controller层使用@Valid注解
+     * 需在Controller层使用@Valid注解
      */
     @ResponseStatus(HttpStatus.BAD_REQUEST)
-    @ExceptionHandler({MethodArgumentNotValidException.class})
-    public ResponseEntity<ApiResult<?>> handleMethodArgumentNotValidException(MethodArgumentNotValidException e, HttpServletRequest request) {
+    @ExceptionHandler({MethodArgumentNotValidException.class, BindException.class})
+    public ResponseEntity<ApiResult<?>> handleBindException(BindException e, HttpServletRequest request) {
         this.logError(e, request);
         ApiResult<?> ret = ApiResult.fail(HttpStatus.NOT_ACCEPTABLE.value(), "错误参数格式或值", InvalidFieldUtil.getInvalidField(e.getBindingResult()));
         return createResponseEntity(HttpStatus.BAD_REQUEST, ret);
@@ -140,7 +142,7 @@ public class AdviceExceptionAutoConfiguration {
     @ExceptionHandler({Exception.class})
     public ResponseEntity<ApiResult<?>> handleException(Exception e, HttpServletRequest request) {
         this.logError(e, request);
-        // 打印堆栈, 方便溯源
+        // 打印堆栈，方便溯源
         e.printStackTrace();
 
         int responseCode = HttpStatus.INTERNAL_SERVER_ERROR.value();
