@@ -6,10 +6,12 @@ import cn.hutool.json.JSONUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.dubbo.common.constants.CommonConstants;
 import org.apache.dubbo.common.extension.Activate;
-import org.apache.dubbo.rpc.*;
-
-import java.util.HashMap;
-import java.util.Map;
+import org.apache.dubbo.rpc.Filter;
+import org.apache.dubbo.rpc.Invocation;
+import org.apache.dubbo.rpc.Invoker;
+import org.apache.dubbo.rpc.Result;
+import org.apache.dubbo.rpc.RpcContext;
+import org.apache.dubbo.rpc.RpcException;
 
 /**
  * 自定义Dubbo消费者上下文
@@ -23,15 +25,12 @@ public class ConsumerContextFilter implements Filter {
 
     @Override
     public Result invoke(Invoker<?> invoker, Invocation invocation) throws RpcException {
-        Map<String, String> context = new HashMap<>(16);
-
         UserContext userContext = UserContextHolder.getUserContext();
         String userContextJson = JSONUtil.toJsonStr(userContext);
-        context.put("userContext", userContextJson);
-        log.debug("[Dubbo RPC] 设置当前用户上下文 >> {}", userContextJson);
 
         // 放进Dubbo消费者附件中
-        RpcContext.getContext().setAttachments(context);
+        log.debug("[Dubbo RPC] 设置当前用户上下文 >> {}", userContextJson);
+        RpcContext.getContext().setAttachment(UserContext.CAMEL_NAME, userContextJson);
 
         return invoker.invoke(invocation);
     }

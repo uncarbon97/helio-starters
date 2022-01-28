@@ -46,13 +46,14 @@
 
         <!-- Spring Cloud Alibaba versions -->
         <spring-cloud-alibaba.version>2021.1</spring-cloud-alibaba.version>
+        <!-- DON'T UPGRADE TO 3.X -->
         <dubbo.version>2.7.12</dubbo.version>
         <seata.vesion>1.4.2</seata.vesion>
         <nacos-client.vesion>2.0.3</nacos-client.vesion>
 
 
         <!-- 3rd-party versions -->
-        <hutool.version>5.7.17</hutool.version>
+        <hutool.version>5.7.20</hutool.version>
         <sa-token.version>1.28.0</sa-token.version>
         <transmittable-thread-local.version>2.12.1</transmittable-thread-local.version>
         <mybatis-plus.version>3.4.3.4</mybatis-plus.version>
