@@ -26,6 +26,8 @@ public class UserContext implements Serializable {
 
     private static final long SerialVersionUID = 1L;
 
+    public static final String CAMEL_NAME = "userContext";
+
     @ApiModelProperty(value = "用户ID")
     private Long userId;
 

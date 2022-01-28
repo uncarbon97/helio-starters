@@ -17,22 +17,22 @@ import java.util.List;
  */
 @ApiModel(value = "分页查询结果")
 @Accessors(chain = true)
-@SuperBuilder(toBuilder = true)
+@SuperBuilder
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
-public class PageResult<T> implements Serializable {
+public class PageResult<T extends Serializable> implements Serializable {
 
-    @ApiModelProperty("当前页")
+    @ApiModelProperty(value = "当前页")
     private int current;
 
-    @ApiModelProperty("当前页数量")
+    @ApiModelProperty(value = "当前页数量")
     private int size;
 
-    @ApiModelProperty("总量")
+    @ApiModelProperty(value = "总量")
     private int total;
 
-    @ApiModelProperty("记录")
+    @ApiModelProperty(value = "记录")
     private List<T> records;
 
 }

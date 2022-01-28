@@ -1,4 +1,4 @@
-package cc.uncarbon.module.knife4j.config;
+package cc.uncarbon.framework.knife4j.config;
 
 
 import cc.uncarbon.framework.core.props.HelioProperties;
@@ -28,8 +28,9 @@ import java.util.List;
 
 
 /**
- * knife4j自动配置类
+ * Helio knife4j 自动配置类
  * 参考http://events.jianshu.io/p/2f19c1863da0
+ *
  * @author Uncarbon
  * @author xiaoymin
  */
@@ -37,7 +38,7 @@ import java.util.List;
 @EnableKnife4j
 @Import(BeanValidatorPluginsConfiguration.class)
 @Configuration
-public class Knife4jAutoConfiguration {
+public class HelioKnife4jAutoConfiguration {
 
     @Value(value = "${sa-token.token-name:Authorization}")
     private String HEADER_TOKEN_NAME;

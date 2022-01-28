@@ -1,11 +1,14 @@
 package cc.uncarbon.framework.core.enums;
 
 import cc.uncarbon.framework.core.exception.BusinessException;
+import cn.hutool.core.collection.CollUtil;
+import cn.hutool.core.util.NumberUtil;
 import cn.hutool.core.util.ObjectUtil;
-import org.springframework.lang.Nullable;
+import cn.hutool.core.util.StrUtil;
 
 import java.io.Serializable;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Optional;
 import java.util.function.Predicate;
 
@@ -16,57 +19,6 @@ import java.util.function.Predicate;
  * @author Uncarbon
  **/
 public interface HelioBaseEnum<T> extends Serializable {
-
-    /**
-     * 枚举选项的值,通常由字母或者数字组成,并且在同一个枚举中值唯一;对应数据库中的值通常也为此值
-     *
-     * @return 枚举的值
-     */
-    T getValue();
-
-    /**
-     * 枚举选项的文本，通常为中文
-     *
-     * @return 枚举的文本
-     */
-    String getLabel();
-
-    /**
-     * 断言不为空
-     * 注意：枚举选项的值value需要为Integer类型
-     * @param object 需要判断的对象
-     */
-    default void assertNotNull(@Nullable Object object) {
-        if (ObjectUtil.isNull(object)) {
-            if (this.getValue() instanceof Integer) {
-                throw new BusinessException((Integer) this.getValue(), this.getLabel());
-            }
-
-            throw new UnsupportedOperationException("枚举选项的值value需要为Integer类型");
-        }
-    }
-
-    /**
-     * 对比是否和value相等,对比地址,值,value转为string忽略大小写对比,text忽略大小写对比
-     *
-     * @param v value
-     * @return 是否相等
-     */
-    @SuppressWarnings("all")
-    default boolean eq(Object v) {
-        if (v == null) {
-            return false;
-        }
-        if (v instanceof Object[]) {
-            v = Arrays.asList(v);
-        }
-        return this == v
-                || getValue() == v
-                || getValue().equals(v)
-                || String.valueOf(getValue()).equalsIgnoreCase(String.valueOf(v))
-                || getLabel().equalsIgnoreCase(String.valueOf(v)
-        );
-    }
 
     /**
      * 从指定的枚举类中查找想要的枚举,并返回一个{@link Optional},如果未找到,则返回一个{@link Optional#empty()}
@@ -114,7 +66,6 @@ public interface HelioBaseEnum<T> extends Serializable {
         return find(type, v -> v.eq(target));
     }
 
-
     static <E extends HelioBaseEnum<?>> Optional<E> of(Class<E> type, Object value) {
         if (type.isEnum()) {
             for (E enumConstant : type.getEnumConstants()) {
@@ -126,4 +77,113 @@ public interface HelioBaseEnum<T> extends Serializable {
         }
         return Optional.empty();
     }
+
+    /**
+     * 枚举选项的值,通常由字母或者数字组成,并且在同一个枚举中值唯一;对应数据库中的值通常也为此值
+     *
+     * @return 枚举的值
+     */
+    T getValue();
+
+    /**
+     * 枚举选项的文本，通常为中文
+     *
+     * @return 枚举的文本
+     */
+    String getLabel();
+
+    /**
+     * 对比是否和value相等,对比地址,值,value转为string忽略大小写对比,text忽略大小写对比
+     *
+     * @param v value
+     * @return 是否相等
+     */
+    @SuppressWarnings("all")
+    default boolean eq(Object v) {
+        if (v == null) {
+            return false;
+        }
+        if (v instanceof Object[]) {
+            v = Arrays.asList(v);
+        }
+        return this == v
+                || getValue() == v
+                || getValue().equals(v)
+                || String.valueOf(getValue()).equalsIgnoreCase(String.valueOf(v))
+                || getLabel().equalsIgnoreCase(String.valueOf(v)
+        );
+    }
+
+    /**
+     * 将不定类型的 value 统一转换为 int
+     * 按常见的数据类型依次判断，提高命中率
+     *
+     * @return int value
+     */
+    default int convertValue2Int() {
+        if (this.getValue() == null) {
+            throw new IllegalArgumentException("枚举类的 value 不能为 null !");
+        }
+
+        if (this.getValue() instanceof Integer) {
+            return (Integer) this.getValue();
+        }
+
+        if (this.getValue() instanceof Long) {
+            return ((Long) this.getValue()).intValue();
+        }
+
+        if (this.getValue() instanceof Number) {
+            return ((Number) this.getValue()).intValue();
+        }
+
+        if (this.getValue() instanceof String) {
+            return NumberUtil.toBigDecimal((String) this.getValue()).intValue();
+        }
+
+        throw new IllegalArgumentException("枚举类的 value 不能自动转换为 int !");
+    }
+
+    /**
+     * 断言不为null
+     * 注意：枚举选项的 value 建议为整数类型
+     *
+     * @param object 需要判断的对象
+     */
+    default void assertNotNull(Object object) {
+        if (ObjectUtil.isNotNull(object)) {
+            return;
+        }
+
+        throw new BusinessException(this.convertValue2Int(), this.getLabel());
+    }
+
+    /**
+     * 断言不为空文本
+     * 注意：枚举选项的 value 建议为整数类型
+     *
+     * @param str 需要判断的对象
+     */
+    default void assertNotBlank(CharSequence str) {
+        if (StrUtil.isNotBlank(str)) {
+            return;
+        }
+
+        throw new BusinessException(this.convertValue2Int(), this.getLabel());
+    }
+
+    /**
+     * 断言不为空列表
+     * 注意：枚举选项的 value 建议为整数类型
+     *
+     * @param list 需要判断的对象
+     */
+    default void assertNotEmpty(Collection<?> list) {
+        if (CollUtil.isNotEmpty(list)) {
+            return;
+        }
+
+        throw new BusinessException(this.convertValue2Int(), this.getLabel());
+    }
+
 }

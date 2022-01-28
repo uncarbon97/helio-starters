@@ -16,16 +16,16 @@ import java.io.Serializable;
  */
 @ApiModel(value = "分页查询参数")
 @Accessors(chain = true)
-@SuperBuilder(toBuilder = true)
+@SuperBuilder
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
 public class PageParam implements Serializable {
 
-    @ApiModelProperty("页码")
+    @ApiModelProperty(value = "当前页码")
     private Integer pageNum = 1;
 
-    @ApiModelProperty("页大小")
+    @ApiModelProperty(value = "当前页大小")
     private Integer pageSize = 10;
 
 }
