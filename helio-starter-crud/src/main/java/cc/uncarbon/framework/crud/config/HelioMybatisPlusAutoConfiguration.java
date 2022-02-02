@@ -12,27 +12,23 @@ import com.baomidou.mybatisplus.extension.plugins.inner.BlockAttackInnerIntercep
 import com.baomidou.mybatisplus.extension.plugins.inner.OptimisticLockerInnerInterceptor;
 import com.baomidou.mybatisplus.extension.plugins.inner.PaginationInnerInterceptor;
 import com.baomidou.mybatisplus.extension.plugins.inner.TenantLineInnerInterceptor;
+import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
-
-import javax.annotation.Resource;
 
 /**
  * Mybatis-Plus配置类
  * @author Uncarbon
  */
+@RequiredArgsConstructor
 @EnableTransactionManagement(
         proxyTargetClass = true
 )
 @Configuration
 public class HelioMybatisPlusAutoConfiguration {
 
-    @Resource
-    private HelioProperties helioProperties;
-
-    @Resource
-    private HelioTenantLineHandler helioTenantLineHandler;
+    private final HelioProperties helioProperties;
 
 
     @Bean
@@ -51,7 +47,9 @@ public class HelioMybatisPlusAutoConfiguration {
         if (Boolean.TRUE.equals(helioProperties.getCrud().getTenant().getEnabled())
                 && TenantIsolateLevelEnum.LINE.equals(helioProperties.getCrud().getTenant().getIsolateLevel())
         ) {
-            interceptor.addInnerInterceptor(new TenantLineInnerInterceptor(helioTenantLineHandler));
+            interceptor.addInnerInterceptor(new TenantLineInnerInterceptor(new HelioTenantLineHandler(
+                    helioProperties.getCrud().getTenant().getIgnoredTables()
+            )));
         }
 
         // 分页插件
@@ -86,14 +84,6 @@ public class HelioMybatisPlusAutoConfiguration {
     @Bean
     public MybatisPlusAutoFillColumnHandler mybatisPlusAutoFillColumnHandler() {
         return new MybatisPlusAutoFillColumnHandler();
-    }
-
-    /**
-     * 行级租户
-     */
-    @Bean
-    public HelioTenantLineHandler helioTenantLineHandler() {
-        return new HelioTenantLineHandler();
     }
 
 }

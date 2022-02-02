@@ -2,6 +2,8 @@ package cc.uncarbon.framework.redis.config;
 
 import cc.uncarbon.framework.redis.lock.RedisDistributedLock;
 import cc.uncarbon.framework.redis.lock.impl.RedisDistributedLockImpl;
+import lombok.RequiredArgsConstructor;
+import org.redisson.api.RedissonClient;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.cache.annotation.EnableCaching;
@@ -13,8 +15,6 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.serializer.GenericJackson2JsonRedisSerializer;
 import org.springframework.data.redis.serializer.StringRedisSerializer;
 
-import javax.annotation.Resource;
-
 
 /**
  * Redis 配置类
@@ -22,18 +22,19 @@ import javax.annotation.Resource;
  * @author zuihou
  * @author Mark sunlightcs@gmail.com
  */
+@RequiredArgsConstructor
 @EnableCaching
 @ConditionalOnClass(RedisConnectionFactory.class)
 @Configuration
 public class RedisAutoConfiguration {
 
-    @Resource
-    private RedisConnectionFactory factory;
+    private final RedisConnectionFactory factory;
+
+    private final RedissonClient redissonClient;
 
 
     @Bean
     public RedisTemplate<String, Object> redisTemplate() {
-
         RedisTemplate<String, Object> redisTemplate = new RedisTemplate<>();
 
         redisTemplate.setKeySerializer(new StringRedisSerializer());
@@ -54,7 +55,7 @@ public class RedisAutoConfiguration {
     @Bean
     @ConditionalOnMissingBean
     public RedisDistributedLock redisDistributedLock() {
-        return new RedisDistributedLockImpl();
+        return new RedisDistributedLockImpl(redissonClient);
     }
 
     /**

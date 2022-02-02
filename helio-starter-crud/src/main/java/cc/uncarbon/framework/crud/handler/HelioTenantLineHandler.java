@@ -2,22 +2,24 @@ package cc.uncarbon.framework.crud.handler;
 
 import cc.uncarbon.framework.core.constant.HelioConstant;
 import cc.uncarbon.framework.core.context.UserContextHolder;
-import cc.uncarbon.framework.core.props.HelioProperties;
 import com.baomidou.mybatisplus.extension.plugins.handler.TenantLineHandler;
+import lombok.AllArgsConstructor;
 import net.sf.jsqlparser.expression.Expression;
 import net.sf.jsqlparser.expression.LongValue;
 
-import javax.annotation.Resource;
+import java.util.List;
 
 /**
  * 行级租户拦截器
  * @author Uncarbon
  */
+@AllArgsConstructor
 public class HelioTenantLineHandler implements TenantLineHandler {
 
-    @Resource
-    private HelioProperties helioProperties;
-
+    /**
+     * 忽略行级租户拦截器的表
+     */
+    private List<String> ignoredTables;
 
     @Override
     public Expression getTenantId() {
@@ -35,7 +37,7 @@ public class HelioTenantLineHandler implements TenantLineHandler {
             return true;
         }
 
-        return helioProperties.getCrud().getTenant().getIgnoredTables().contains(tableName);
+        return ignoredTables.contains(tableName);
     }
 
 }
