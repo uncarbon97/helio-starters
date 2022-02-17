@@ -2,11 +2,10 @@ package cc.uncarbon.framework.core.props;
 
 import cc.uncarbon.framework.core.enums.IdGeneratorStrategyEnum;
 import cc.uncarbon.framework.core.enums.TenantIsolateLevelEnum;
-import lombok.Data;
-import org.springframework.boot.context.properties.ConfigurationProperties;
-
 import java.util.ArrayList;
 import java.util.List;
+import lombok.Data;
+import org.springframework.boot.context.properties.ConfigurationProperties;
 
 /**
  * 配置文件读取类
@@ -20,6 +19,7 @@ public class HelioProperties {
     private final Security security = new Security();
     private final Crud crud = new Crud();
     private final Knife4j knife4j = new Knife4j();
+    private final Tenant tenant = new Tenant();
 
 
     @Data
@@ -36,8 +36,11 @@ public class HelioProperties {
     public static class Crud {
 
         /**
-         * 多租户插件
+         * 多租户
+         * @see  HelioProperties#tenant
+         * @since 1.5.0
          */
+        @Deprecated
         private final Tenant tenant = new Tenant();
 
         /**
@@ -57,28 +60,6 @@ public class HelioProperties {
          */
         private String dbType = "mysql";
 
-
-        @Data
-        public static class Tenant {
-
-            /**
-             * 是否启用多租户
-             * 默认为false
-             */
-            private Boolean enabled = false;
-
-            /**
-             * 多租户隔离级别
-             * 默认为行级
-             */
-            private TenantIsolateLevelEnum isolateLevel = TenantIsolateLevelEnum.LINE;
-
-            /**
-             * 哪些表不启用租户隔离
-             */
-            private List<String> ignoredTables = new ArrayList<>(64);
-
-        }
 
         @Data
         public static class OptimisticLock {
@@ -130,6 +111,28 @@ public class HelioProperties {
          * 版本号
          */
         private String version = "";
+
+    }
+
+    @Data
+    public static class Tenant {
+
+        /**
+         * 是否启用多租户
+         * 默认为false
+         */
+        private Boolean enabled = false;
+
+        /**
+         * 多租户隔离级别
+         * 默认为行级
+         */
+        private TenantIsolateLevelEnum isolateLevel = TenantIsolateLevelEnum.LINE;
+
+        /**
+         * 哪些表忽略租户隔离
+         */
+        private List<String> ignoredTables = new ArrayList<>(64);
 
     }
 }

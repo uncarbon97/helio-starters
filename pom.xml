@@ -15,6 +15,7 @@
         <module>helio-starter-rocketmq-aliyun</module>
         <module>helio-starter-satoken</module>
         <module>helio-starter-seata</module>
+        <module>helio-starter-tenant</module>
         <module>helio-starter-test</module>
         <module>helio-starter-web</module>
     </modules>

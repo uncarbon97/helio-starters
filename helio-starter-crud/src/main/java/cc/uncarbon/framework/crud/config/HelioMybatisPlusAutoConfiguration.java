@@ -36,7 +36,7 @@ public class HelioMybatisPlusAutoConfiguration {
         MybatisPlusInterceptor interceptor = new MybatisPlusInterceptor();
 
         /*
-        https://mybatis.plus/guide/interceptor.html#mybatisplusinterceptor
+        https://baomidou.com/pages/2976a3/#%E5%B1%9E%E6%80%A7
         使用多个功能需要注意顺序关系,建议使用如下顺序
 
         多租户,动态表名
