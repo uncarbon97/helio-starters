@@ -1,11 +1,10 @@
 package cc.uncarbon.framework.core.context;
 
 import com.alibaba.ttl.TransmittableThreadLocal;
-import java.util.Optional;
 import lombok.experimental.UtilityClass;
 
 /**
- * 存储当前租户上下文
+ * 租户上下文持有者类
  *
  * @author Uncarbon
  */
@@ -16,23 +15,18 @@ public class TenantContextHolder {
 
 
     /**
-     * 获取当前用户上下文
-     * 注意：即使未登录情况下，该方法也不会返回 null ，而是返回一个空对象
+     * 获取当前租户上下文
      *
-     * @return 当前用户上下文
+     * @return null or 当前租户上下文
      */
     public TenantContext getTenantContext() {
-        /*
-        必须新创建，否则可能出现租户ID无法切换的BUG
-        不能用 .orElse ，即使条件不满足也会new
-         */
-        return Optional.ofNullable(THREAD_LOCAL_TENANT.get()).orElseGet(TenantContext::new);
+        return THREAD_LOCAL_TENANT.get();
     }
 
     /**
-     * 设置当前用户上下文
+     * 设置当前租户上下文
      *
-     * @param tenantContext 当前用户上下文
+     * @param tenantContext 新上下文，传 null 则为清除
      */
     public void setTenantContext(TenantContext tenantContext) {
         if (tenantContext == null) {

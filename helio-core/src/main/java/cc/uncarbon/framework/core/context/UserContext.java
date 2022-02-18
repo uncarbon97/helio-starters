@@ -1,17 +1,15 @@
 package cc.uncarbon.framework.core.context;
 
-import cc.uncarbon.framework.core.constant.HelioConstant;
 import cc.uncarbon.framework.core.enums.HelioBaseEnum;
 import io.swagger.annotations.ApiModelProperty;
+import java.io.Serializable;
+import java.util.List;
+import java.util.Map;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.Accessors;
 import lombok.experimental.SuperBuilder;
-
-import java.io.Serializable;
-import java.util.List;
-import java.util.Map;
 
 /**
  * 当前用户上下文对象
@@ -51,12 +49,6 @@ public class UserContext implements Serializable {
 
     @ApiModelProperty(value = "附加数据")
     private Map<String, Object> extraData;
-
-    @ApiModelProperty(value = "所属租户")
-    private TenantContext relationalTenant = TenantContext.builder()
-            .tenantId(HelioConstant.CRUD.DEFAULT_TENANT_ID)
-            .tenantName(HelioConstant.CRUD.DEFAULT_TENANT_NAME)
-            .build();
 
     @ApiModelProperty(value = "客户端IP地址")
     private String clientIP;
