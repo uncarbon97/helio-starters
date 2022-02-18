@@ -1,4 +1,4 @@
-package cc.uncarbon.tenant.resolver;
+package cc.uncarbon.framework.tenant.resolver;
 
 
 import cc.uncarbon.framework.core.context.TenantContext;

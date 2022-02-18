@@ -26,7 +26,7 @@ import org.springframework.data.redis.serializer.StringRedisSerializer;
 @EnableCaching
 @ConditionalOnClass(RedisConnectionFactory.class)
 @Configuration
-public class RedisAutoConfiguration {
+public class HelioRedisAutoConfiguration {
 
     private final RedisConnectionFactory factory;
 

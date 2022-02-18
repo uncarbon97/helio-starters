@@ -1,7 +1,7 @@
-package cc.uncarbon.tenant.interceptor;
+package cc.uncarbon.framework.tenant.interceptor;
 
 
-import cc.uncarbon.tenant.resolver.TenantHeaderResolver;
+import cc.uncarbon.framework.tenant.resolver.TenantHeaderResolver;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;

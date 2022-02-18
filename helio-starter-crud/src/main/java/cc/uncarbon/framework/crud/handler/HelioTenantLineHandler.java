@@ -1,13 +1,12 @@
 package cc.uncarbon.framework.crud.handler;
 
 import cc.uncarbon.framework.core.constant.HelioConstant;
-import cc.uncarbon.framework.core.context.UserContextHolder;
+import cc.uncarbon.framework.core.context.TenantContextHolder;
 import com.baomidou.mybatisplus.extension.plugins.handler.TenantLineHandler;
+import java.util.List;
 import lombok.AllArgsConstructor;
 import net.sf.jsqlparser.expression.Expression;
 import net.sf.jsqlparser.expression.LongValue;
-
-import java.util.List;
 
 /**
  * 行级租户拦截器
@@ -23,7 +22,7 @@ public class HelioTenantLineHandler implements TenantLineHandler {
 
     @Override
     public Expression getTenantId() {
-        return new LongValue(UserContextHolder.getRelationalTenant().getTenantId());
+        return new LongValue(TenantContextHolder.getTenantContext().getTenantId());
     }
 
     @Override
@@ -33,7 +32,7 @@ public class HelioTenantLineHandler implements TenantLineHandler {
 
     @Override
     public boolean ignoreTable(String tableName) {
-        if (HelioConstant.CRUD.PRIVILEGED_TENANT_ID.equals(UserContextHolder.getRelationalTenant().getTenantId())) {
+        if (HelioConstant.CRUD.PRIVILEGED_TENANT_ID.equals(TenantContextHolder.getTenantContext().getTenantId())) {
             return true;
         }
 

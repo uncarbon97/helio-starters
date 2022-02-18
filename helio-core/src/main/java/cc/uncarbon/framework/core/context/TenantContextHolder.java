@@ -12,7 +12,10 @@ import lombok.experimental.UtilityClass;
 public class TenantContextHolder {
 
     private final TransmittableThreadLocal<TenantContext> THREAD_LOCAL_TENANT = new TransmittableThreadLocal<>();
-
+    /**
+     * 是否启用多租户功能
+     */
+    private boolean enableTenant = false;
 
     /**
      * 获取当前租户上下文
@@ -37,4 +40,11 @@ public class TenantContextHolder {
         THREAD_LOCAL_TENANT.set(tenantContext);
     }
 
+    public boolean isEnableTenant() {
+        return enableTenant;
+    }
+
+    public void setEnableTenant(boolean enableTenant) {
+        TenantContextHolder.enableTenant = enableTenant;
+    }
 }

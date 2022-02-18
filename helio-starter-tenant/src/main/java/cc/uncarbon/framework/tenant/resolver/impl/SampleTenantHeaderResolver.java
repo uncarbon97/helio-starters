@@ -1,8 +1,8 @@
-package cc.uncarbon.tenant.resolver.impl;
+package cc.uncarbon.framework.tenant.resolver.impl;
 
 import cc.uncarbon.framework.core.context.TenantContext;
 import cc.uncarbon.framework.core.context.UserContextHolder;
-import cc.uncarbon.tenant.resolver.TenantHeaderResolver;
+import cc.uncarbon.framework.tenant.resolver.TenantHeaderResolver;
 import cn.hutool.core.util.StrUtil;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;

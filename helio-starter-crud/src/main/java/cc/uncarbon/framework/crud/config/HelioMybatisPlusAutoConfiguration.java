@@ -13,12 +13,14 @@ import com.baomidou.mybatisplus.extension.plugins.inner.OptimisticLockerInnerInt
 import com.baomidou.mybatisplus.extension.plugins.inner.PaginationInnerInterceptor;
 import com.baomidou.mybatisplus.extension.plugins.inner.TenantLineInnerInterceptor;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 /**
  * Mybatis-Plus配置类
+ *
  * @author Uncarbon
  */
 @RequiredArgsConstructor
@@ -26,6 +28,7 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
         proxyTargetClass = true
 )
 @Configuration
+@Slf4j
 public class HelioMybatisPlusAutoConfiguration {
 
     private final HelioProperties helioProperties;
@@ -44,16 +47,18 @@ public class HelioMybatisPlusAutoConfiguration {
         sql性能规范,防止全表更新与删除
          */
         // 多租户 && 行级租户隔离级别
-        if (Boolean.TRUE.equals(helioProperties.getCrud().getTenant().getEnabled())
-                && TenantIsolateLevelEnum.LINE.equals(helioProperties.getCrud().getTenant().getIsolateLevel())
+        if (Boolean.TRUE.equals(helioProperties.getTenant().getEnabled())
+                && TenantIsolateLevelEnum.LINE.equals(helioProperties.getTenant().getIsolateLevel())
         ) {
             interceptor.addInnerInterceptor(new TenantLineInnerInterceptor(new HelioTenantLineHandler(
-                    helioProperties.getCrud().getTenant().getIgnoredTables()
+                    helioProperties.getTenant().getIgnoredTables()
             )));
+            log.info("[多租户] >> 已启用[行级租户]，以下数据表不参与租户隔离: {}", helioProperties.getTenant().getIgnoredTables());
         }
 
         // 分页插件
-        PaginationInnerInterceptor paginationInnerInterceptor = new PaginationInnerInterceptor(DbType.getDbType(helioProperties.getCrud().getDbType()));
+        PaginationInnerInterceptor paginationInnerInterceptor = new PaginationInnerInterceptor(
+                DbType.getDbType(helioProperties.getCrud().getDbType()));
         // 设置sql的limit为无限制，默认是500
         paginationInnerInterceptor.setMaxLimit(-1L);
         interceptor.addInnerInterceptor(paginationInnerInterceptor);
@@ -65,7 +70,6 @@ public class HelioMybatisPlusAutoConfiguration {
 
         // 防止全表更新与删除
         interceptor.addInnerInterceptor(new BlockAttackInnerInterceptor());
-
 
         return interceptor;
     }
