@@ -17,7 +17,10 @@ public enum TenantIsolateLevelEnum implements HelioBaseEnum<Integer> {
     DATASOURCE(4, "数据源级(即每个租户单独一个数据库)");
      */
 
-    LINE(1, "行级(即每张表增加一个'租户ID'字段)");
+    /**
+     * 行级，即每张表增加一个'租户ID'字段
+     */
+    LINE(1, "行级");
 
     private final Integer value;
     private final String label;

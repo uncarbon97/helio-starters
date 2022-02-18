@@ -1,4 +1,4 @@
-package cc.uncarbon.framework.crud.handler;
+package cc.uncarbon.framework.tenant.handler;
 
 import cc.uncarbon.framework.core.constant.HelioConstant;
 import cc.uncarbon.framework.core.context.TenantContextHolder;
@@ -19,6 +19,7 @@ public class HelioTenantLineHandler implements TenantLineHandler {
      * 忽略行级租户拦截器的表
      */
     private List<String> ignoredTables;
+
 
     @Override
     public Expression getTenantId() {

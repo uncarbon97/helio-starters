@@ -3,11 +3,11 @@ package cc.uncarbon.framework.crud.config;
 import cc.uncarbon.framework.core.enums.TenantIsolateLevelEnum;
 import cc.uncarbon.framework.core.props.HelioProperties;
 import cc.uncarbon.framework.crud.handler.HelioIdentifierGeneratorHandler;
-import cc.uncarbon.framework.crud.handler.HelioTenantLineHandler;
 import cc.uncarbon.framework.crud.handler.MybatisPlusAutoFillColumnHandler;
 import com.baomidou.mybatisplus.annotation.DbType;
 import com.baomidou.mybatisplus.core.incrementer.IdentifierGenerator;
 import com.baomidou.mybatisplus.extension.plugins.MybatisPlusInterceptor;
+import com.baomidou.mybatisplus.extension.plugins.handler.TenantLineHandler;
 import com.baomidou.mybatisplus.extension.plugins.inner.BlockAttackInnerInterceptor;
 import com.baomidou.mybatisplus.extension.plugins.inner.OptimisticLockerInnerInterceptor;
 import com.baomidou.mybatisplus.extension.plugins.inner.PaginationInnerInterceptor;
@@ -33,6 +33,11 @@ public class HelioMybatisPlusAutoConfiguration {
 
     private final HelioProperties helioProperties;
 
+    /**
+     * 自定义的行级租户处理器
+     */
+    private final TenantLineHandler tenantLineHandler;
+
 
     @Bean
     public MybatisPlusInterceptor mybatisPlusInterceptor() {
@@ -50,10 +55,9 @@ public class HelioMybatisPlusAutoConfiguration {
         if (Boolean.TRUE.equals(helioProperties.getTenant().getEnabled())
                 && TenantIsolateLevelEnum.LINE.equals(helioProperties.getTenant().getIsolateLevel())
         ) {
-            interceptor.addInnerInterceptor(new TenantLineInnerInterceptor(new HelioTenantLineHandler(
-                    helioProperties.getTenant().getIgnoredTables()
-            )));
-            log.info("[多租户] >> 已启用[行级租户]，以下数据表不参与租户隔离: {}", helioProperties.getTenant().getIgnoredTables());
+            interceptor.addInnerInterceptor(new TenantLineInnerInterceptor(tenantLineHandler));
+            log.info("[多租户] >> 隔离级别: 行级，行级租户处理器: {}，以下数据表不参与租户隔离: {}", tenantLineHandler,
+                    helioProperties.getTenant().getIgnoredTables());
         }
 
         // 分页插件
