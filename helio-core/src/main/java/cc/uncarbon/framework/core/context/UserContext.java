@@ -2,17 +2,19 @@ package cc.uncarbon.framework.core.context;
 
 import cc.uncarbon.framework.core.enums.HelioBaseEnum;
 import io.swagger.annotations.ApiModelProperty;
-import java.io.Serializable;
-import java.util.List;
-import java.util.Map;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.Accessors;
 import lombok.experimental.SuperBuilder;
 
+import java.io.Serializable;
+import java.util.List;
+import java.util.Map;
+
 /**
  * 当前用户上下文对象
+ *
  * @author Uncarbon
  */
 @Accessors(chain = true)
@@ -22,7 +24,7 @@ import lombok.experimental.SuperBuilder;
 @Data
 public class UserContext implements Serializable {
 
-    private static final long SerialVersionUID = 1L;
+    private static final long serialVersionUID = 1L;
 
     public static final String CAMEL_NAME = "userContext";
 

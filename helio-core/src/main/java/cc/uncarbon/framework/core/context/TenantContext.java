@@ -10,7 +10,8 @@ import lombok.experimental.SuperBuilder;
 import java.io.Serializable;
 
 /**
- * 当前用户所属租户
+ * 当前租户上下文对象
+ *
  * @author Uncarbon
  */
 @Accessors(chain = true)
@@ -19,6 +20,10 @@ import java.io.Serializable;
 @NoArgsConstructor
 @Data
 public class TenantContext implements Serializable {
+
+    private static final long serialVersionUID = 1L;
+
+    public static final String CAMEL_NAME = "tenantContext";
 
     @ApiModelProperty(value = "租户ID")
     private Long tenantId;

@@ -1,19 +1,19 @@
 package cc.uncarbon.framework.crud.config;
 
-import cc.uncarbon.framework.core.enums.TenantIsolateLevelEnum;
 import cc.uncarbon.framework.core.props.HelioProperties;
 import cc.uncarbon.framework.crud.handler.HelioIdentifierGeneratorHandler;
 import cc.uncarbon.framework.crud.handler.MybatisPlusAutoFillColumnHandler;
+import cc.uncarbon.framework.crud.support.TenantSupport;
+import cc.uncarbon.framework.crud.support.impl.DefaultTenantSupport;
 import com.baomidou.mybatisplus.annotation.DbType;
 import com.baomidou.mybatisplus.core.incrementer.IdentifierGenerator;
 import com.baomidou.mybatisplus.extension.plugins.MybatisPlusInterceptor;
-import com.baomidou.mybatisplus.extension.plugins.handler.TenantLineHandler;
 import com.baomidou.mybatisplus.extension.plugins.inner.BlockAttackInnerInterceptor;
 import com.baomidou.mybatisplus.extension.plugins.inner.OptimisticLockerInnerInterceptor;
 import com.baomidou.mybatisplus.extension.plugins.inner.PaginationInnerInterceptor;
-import com.baomidou.mybatisplus.extension.plugins.inner.TenantLineInnerInterceptor;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
@@ -34,9 +34,9 @@ public class HelioMybatisPlusAutoConfiguration {
     private final HelioProperties helioProperties;
 
     /**
-     * 自定义的行级租户处理器
+     * 多租户支持
      */
-    private final TenantLineHandler tenantLineHandler;
+    private final TenantSupport tenantSupport;
 
 
     @Bean
@@ -51,28 +51,29 @@ public class HelioMybatisPlusAutoConfiguration {
         分页,乐观锁
         sql性能规范,防止全表更新与删除
          */
-        // 多租户 && 行级租户隔离级别
-        if (Boolean.TRUE.equals(helioProperties.getTenant().getEnabled())
-                && TenantIsolateLevelEnum.LINE.equals(helioProperties.getTenant().getIsolateLevel())
-        ) {
-            interceptor.addInnerInterceptor(new TenantLineInnerInterceptor(tenantLineHandler));
-            log.info("[多租户] >> 隔离级别: 行级，行级租户处理器: {}，以下数据表不参与租户隔离: {}", tenantLineHandler,
-                    helioProperties.getTenant().getIgnoredTables());
+        if (Boolean.TRUE.equals(helioProperties.getTenant().getEnabled())) {
+            tenantSupport.support(helioProperties, interceptor);
         }
 
-        // 分页插件
+        /*
+        分页插件
+         */
         PaginationInnerInterceptor paginationInnerInterceptor = new PaginationInnerInterceptor(
                 DbType.getDbType(helioProperties.getCrud().getDbType()));
         // 设置sql的limit为无限制，默认是500
         paginationInnerInterceptor.setMaxLimit(-1L);
         interceptor.addInnerInterceptor(paginationInnerInterceptor);
 
-        // 乐观锁
+        /*
+        乐观锁
+         */
         if (Boolean.TRUE.equals(helioProperties.getCrud().getOptimisticLock().getEnabled())) {
             interceptor.addInnerInterceptor(new OptimisticLockerInnerInterceptor());
         }
 
-        // 防止全表更新与删除
+        /*
+        防止全表更新与删除
+         */
         interceptor.addInnerInterceptor(new BlockAttackInnerInterceptor());
 
         return interceptor;
@@ -92,6 +93,12 @@ public class HelioMybatisPlusAutoConfiguration {
     @Bean
     public MybatisPlusAutoFillColumnHandler mybatisPlusAutoFillColumnHandler() {
         return new MybatisPlusAutoFillColumnHandler();
+    }
+
+    @Bean
+    @ConditionalOnMissingBean(TenantSupport.class)
+    public TenantSupport defaultTenantSupport() {
+        return new DefaultTenantSupport();
     }
 
 }
