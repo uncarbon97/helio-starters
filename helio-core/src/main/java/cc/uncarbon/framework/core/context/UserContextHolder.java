@@ -28,7 +28,7 @@ public class UserContextHolder {
      *
      * @param userContext 新上下文，传 null 则为清除
      */
-    public void setUserContext(UserContext userContext) {
+    public synchronized void setUserContext(UserContext userContext) {
         if (userContext == null) {
             THREAD_LOCAL_USER.remove();
             return;

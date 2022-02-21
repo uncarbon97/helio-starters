@@ -1,6 +1,7 @@
 package cc.uncarbon.framework.core.context;
 
 import com.alibaba.ttl.TransmittableThreadLocal;
+import java.util.Objects;
 import lombok.experimental.UtilityClass;
 
 /**
@@ -29,12 +30,20 @@ public class TenantContextHolder {
      *
      * @param tenantContext 新上下文，传 null 则为清除
      */
-    public void setTenantContext(TenantContext tenantContext) {
+    public synchronized void setTenantContext(TenantContext tenantContext) {
         if (tenantContext == null) {
             THREAD_LOCAL_TENANT.remove();
             return;
         }
 
         THREAD_LOCAL_TENANT.set(tenantContext);
+    }
+
+    /**
+     * 判断当前是否持有租户上下文
+     * @return true or false
+     */
+    public boolean isHolding() {
+        return Objects.nonNull(getTenantContext());
     }
 }

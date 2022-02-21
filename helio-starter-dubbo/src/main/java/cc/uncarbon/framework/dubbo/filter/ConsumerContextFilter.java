@@ -1,5 +1,6 @@
 package cc.uncarbon.framework.dubbo.filter;
 
+import cc.uncarbon.framework.core.context.TenantContextHolder;
 import cc.uncarbon.framework.core.context.UserContext;
 import cc.uncarbon.framework.core.context.UserContextHolder;
 import cn.hutool.json.JSONUtil;
@@ -25,10 +26,10 @@ public class ConsumerContextFilter implements Filter {
 
     @Override
     public Result invoke(Invoker<?> invoker, Invocation invocation) throws RpcException {
-        UserContext userContext = UserContextHolder.getUserContext();
-        String userContextJson = JSONUtil.toJsonStr(userContext);
+        String userContextJson = JSONUtil.toJsonStr(UserContextHolder.getUserContext());
+        String tenantContextJson = JSONUtil.toJsonStr(TenantContextHolder.getTenantContext());
 
-        // 放进Dubbo消费者附件中
+        // 放进 Dubbo 消费者附件中
         log.debug("[Dubbo RPC] 设置当前用户上下文 >> {}", userContextJson);
         RpcContext.getContext().setAttachment(UserContext.CAMEL_NAME, userContextJson);
 
