@@ -52,6 +52,7 @@ public class HelioMybatisPlusAutoConfiguration {
         sql性能规范,防止全表更新与删除
          */
         if (Boolean.TRUE.equals(helioProperties.getTenant().getEnabled())) {
+            // 配置文件中启用了多租户功能，注入对应支持 bean
             tenantSupport.support(helioProperties, interceptor);
         }
 

@@ -13,6 +13,6 @@ public class DefaultTenantSupport implements TenantSupport {
 
     @Override
     public void support(HelioProperties helioProperties, MybatisPlusInterceptor interceptor) {
-        log.info("[多租户支持] >> 未启用");
+        log.warn("[多租户支持] >> 您启用了多租户，但未引入 helio-starter-tenant，无法对 SQL 进行拦截处理");
     }
 }
