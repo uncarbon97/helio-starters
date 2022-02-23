@@ -17,9 +17,10 @@ public class UserContextHolder {
     /**
      * 获取当前用户上下文
      *
+     * @throws NullPointerException 链式调用时需要注意可能存在 NPE 问题
      * @return null or 当前用户上下文
      */
-    public UserContext getUserContext() {
+    public UserContext getUserContext() throws NullPointerException {
         return THREAD_LOCAL_USER.get();
     }
 
@@ -38,30 +39,33 @@ public class UserContextHolder {
     }
 
     /**
-     * 捷径-获取用户ID
+     * 捷径API-取当前用户ID
      *
-     * @throws NullPointerException 未登录或用户上下文时，调用本 API，易出现
+     * @return null or 当前用户ID
      */
-    public Long getUserId() throws NullPointerException {
-        return getUserContext().getUserId();
+    public Long getUserId() {
+        UserContext userContext = getUserContext();
+        return userContext == null ? null : userContext.getUserId();
     }
 
     /**
-     * 捷径-获取用户名
+     * 捷径API-取当前用户名
      *
-     * @throws NullPointerException 未登录或用户上下文时，调用本 API，易出现
+     * @return null or 当前用户名
      */
-    public String getUserName() throws NullPointerException {
-        return getUserContext().getUserName();
+    public String getUserName() {
+        UserContext userContext = getUserContext();
+        return userContext == null ? null : userContext.getUserName();
     }
 
     /**
-     * 捷径-获取用户手机号
+     * 捷径API-取当前用户手机号
      *
-     * @throws NullPointerException 未登录或用户上下文时，调用本 API，易出现
+     * @return null or 当前用户手机号
      */
     public String getUserPhoneNo() throws NullPointerException {
-        return getUserContext().getUserPhoneNo();
+        UserContext userContext = getUserContext();
+        return userContext == null ? null : userContext.getUserPhoneNo();
     }
 
 }

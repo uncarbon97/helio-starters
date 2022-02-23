@@ -6,6 +6,7 @@ import cc.uncarbon.framework.tenant.support.DataSourceTenantSupport;
 import cc.uncarbon.framework.tenant.support.LineTenantSupport;
 import cc.uncarbon.framework.tenant.support.TableTenantSupport;
 import lombok.RequiredArgsConstructor;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -23,6 +24,7 @@ public class HelioTenantAutoConfiguration {
 
 
     @Bean
+    @ConditionalOnMissingBean(TenantSupport.class)
     public TenantSupport tenantSupport() {
         switch (helioProperties.getTenant().getIsolateLevel()) {
             case LINE:

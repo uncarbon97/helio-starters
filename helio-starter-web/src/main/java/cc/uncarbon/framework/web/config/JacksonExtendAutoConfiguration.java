@@ -11,6 +11,9 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.jdk8.Jdk8Module;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import java.text.SimpleDateFormat;
+import java.time.ZoneId;
+import java.util.TimeZone;
 import org.springframework.boot.autoconfigure.AutoConfigureBefore;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
@@ -18,10 +21,6 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
 import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
-
-import java.text.SimpleDateFormat;
-import java.time.ZoneId;
-import java.util.TimeZone;
 
 /**
  * Jackson配置类
@@ -33,11 +32,11 @@ import java.util.TimeZone;
 @AutoConfigureBefore({JacksonAutoConfiguration.class})
 @Configuration
 public class JacksonExtendAutoConfiguration {
+
     @Bean
     public Jackson2ObjectMapperBuilder jackson2ObjectMapperBuilder() {
         return new Jackson2ObjectMapperBuilder();
     }
-
 
     /**
      * 全局配置 序列化和反序列化规则

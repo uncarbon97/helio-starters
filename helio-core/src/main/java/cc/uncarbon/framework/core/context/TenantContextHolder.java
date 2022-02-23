@@ -1,7 +1,6 @@
 package cc.uncarbon.framework.core.context;
 
 import com.alibaba.ttl.TransmittableThreadLocal;
-import java.util.Objects;
 import lombok.experimental.UtilityClass;
 
 /**
@@ -37,13 +36,5 @@ public class TenantContextHolder {
         }
 
         THREAD_LOCAL_TENANT.set(tenantContext);
-    }
-
-    /**
-     * 判断当前是否持有租户上下文
-     * @return true or false
-     */
-    public boolean isHolding() {
-        return Objects.nonNull(getTenantContext());
     }
 }

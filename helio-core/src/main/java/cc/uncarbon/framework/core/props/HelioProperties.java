@@ -2,11 +2,10 @@ package cc.uncarbon.framework.core.props;
 
 import cc.uncarbon.framework.core.enums.IdGeneratorStrategyEnum;
 import cc.uncarbon.framework.core.enums.TenantIsolateLevelEnum;
-import lombok.Data;
-import org.springframework.boot.context.properties.ConfigurationProperties;
-
 import java.util.ArrayList;
 import java.util.List;
+import lombok.Data;
+import org.springframework.boot.context.properties.ConfigurationProperties;
 
 /**
  * 配置文件读取类
@@ -22,7 +21,6 @@ public class HelioProperties {
     private final Knife4j knife4j = new Knife4j();
     private final Tenant tenant = new Tenant();
 
-
     @Data
     public static class Security {
 
@@ -35,14 +33,6 @@ public class HelioProperties {
 
     @Data
     public static class Crud {
-
-        /**
-         * 多租户
-         * @see  HelioProperties#tenant
-         * @since 1.5.0
-         */
-        @Deprecated
-        private final Tenant tenant = new Tenant();
 
         /**
          * 乐观锁插件

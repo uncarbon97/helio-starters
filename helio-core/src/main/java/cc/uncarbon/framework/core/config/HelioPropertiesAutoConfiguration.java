@@ -12,4 +12,5 @@ import org.springframework.context.annotation.Configuration;
 @EnableConfigurationProperties(value = {HelioProperties.class})
 @Configuration
 public class HelioPropertiesAutoConfiguration {
+
 }

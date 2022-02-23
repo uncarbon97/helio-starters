@@ -11,7 +11,6 @@ import com.baomidou.mybatisplus.extension.plugins.MybatisPlusInterceptor;
 import com.baomidou.mybatisplus.extension.plugins.inner.BlockAttackInnerInterceptor;
 import com.baomidou.mybatisplus.extension.plugins.inner.OptimisticLockerInnerInterceptor;
 import com.baomidou.mybatisplus.extension.plugins.inner.PaginationInnerInterceptor;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
@@ -23,7 +22,6 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
  *
  * @author Uncarbon
  */
-@RequiredArgsConstructor
 @EnableTransactionManagement(
         proxyTargetClass = true
 )
@@ -31,16 +29,8 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 @Slf4j
 public class HelioMybatisPlusAutoConfiguration {
 
-    private final HelioProperties helioProperties;
-
-    /**
-     * 多租户支持
-     */
-    private final TenantSupport tenantSupport;
-
-
     @Bean
-    public MybatisPlusInterceptor mybatisPlusInterceptor() {
+    public MybatisPlusInterceptor mybatisPlusInterceptor(@SuppressWarnings(value = "all") HelioProperties helioProperties, TenantSupport tenantSupport) {
         MybatisPlusInterceptor interceptor = new MybatisPlusInterceptor();
 
         /*
@@ -84,7 +74,7 @@ public class HelioMybatisPlusAutoConfiguration {
      * 自定义ID生成器
      */
     @Bean
-    public IdentifierGenerator helioSnowflakeIdentifierGeneratorHandler() {
+    public IdentifierGenerator helioSnowflakeIdentifierGeneratorHandler(@SuppressWarnings(value = "all") HelioProperties helioProperties) {
         return new HelioIdentifierGeneratorHandler(helioProperties);
     }
 
@@ -96,6 +86,9 @@ public class HelioMybatisPlusAutoConfiguration {
         return new MybatisPlusAutoFillColumnHandler();
     }
 
+    /**
+     * 默认租户支持类
+     */
     @Bean
     @ConditionalOnMissingBean(TenantSupport.class)
     public TenantSupport defaultTenantSupport() {
