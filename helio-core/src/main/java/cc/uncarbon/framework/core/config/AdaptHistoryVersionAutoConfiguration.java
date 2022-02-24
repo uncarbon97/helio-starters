@@ -6,7 +6,6 @@ import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Set;
 import lombok.NonNull;
-import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.env.OriginTrackedMapPropertySource;
 import org.springframework.context.EnvironmentAware;
 import org.springframework.context.annotation.Configuration;
@@ -21,7 +20,6 @@ import org.springframework.core.env.PropertySource;
  * @author kong
  * @author Uncarbon
  */
-@AutoConfigureAfter(HelioPropertiesAutoConfiguration.class)
 @Configuration
 public class AdaptHistoryVersionAutoConfiguration implements EnvironmentAware {
 
@@ -38,7 +36,7 @@ public class AdaptHistoryVersionAutoConfiguration implements EnvironmentAware {
     /**
      * 过时属性警告提示文案
      */
-    private final Set<String> deprecatePropertyWarnings = new LinkedHashSet<>();
+    private final Set<String> deprecatedPropertyWarnings = new LinkedHashSet<>();
 
 
     @Override
@@ -49,9 +47,10 @@ public class AdaptHistoryVersionAutoConfiguration implements EnvironmentAware {
 
             Map<String, Object> newMap = new LinkedHashMap<>();
             for (PropertySource<?> source : sources) {
-                // 根据 Name 开头单词判断是否为 SpringBoot .yml 或者 .properties 的配置
-                if (source.getName().startsWith("applicationConfig")) {
-                    Map<String, Object> bootProp = (Map<String, Object>) source.getSource();
+                if (source instanceof OriginTrackedMapPropertySource) {
+                    // 根据类判断是否为 SpringBoot .yml 或者 .properties 的配置
+                    Map<String, Object> bootProp = ((OriginTrackedMapPropertySource) source).getSource();
+
                     for (String key : bootProp.keySet()) {
                         if (key != null) {
                             for (int i = 0; i < oldPropertyPrefixes.length; i++) {
@@ -59,8 +58,8 @@ public class AdaptHistoryVersionAutoConfiguration implements EnvironmentAware {
                                     // e.g. 将配置文件中所有 [helio.crud.tenant.] 开头的配置转移到 [helio.tenant.] 下
                                     String newKey = StrUtil.replace(key, oldPropertyPrefixes[i], newPropertyPrefixes[i]);
                                     newMap.put(newKey, bootProp.get(key));
-                                    deprecatePropertyWarnings.add(
-                                            StrUtil.format("原配置文件属性前缀 {} 已兼容转移到 {} 下")
+                                    deprecatedPropertyWarnings.add(
+                                            StrUtil.format("原配置文件属性前缀 {} 已兼容转移到 {} 下", key, newKey)
                                     );
                                 }
                             }
@@ -72,10 +71,10 @@ public class AdaptHistoryVersionAutoConfiguration implements EnvironmentAware {
             // 追加到总配置里面
             if (newMap.size() > 0) {
                 System.err.println("\n"
-                        + StrUtil.join("\n", deprecatePropertyWarnings)
+                        + StrUtil.join("\n", deprecatedPropertyWarnings)
                         + "当前版本暂时向下兼容，未来版本可能会完全移除旧形式");
                 OriginTrackedMapPropertySource source = new OriginTrackedMapPropertySource(
-                        "SaHistoryVersionInjectProperty", newMap);
+                        "AdaptHistoryVersionAutoConfiguration", newMap);
                 // 追加到末尾，优先级最低
                 c.getPropertySources().addLast(source);
             }
