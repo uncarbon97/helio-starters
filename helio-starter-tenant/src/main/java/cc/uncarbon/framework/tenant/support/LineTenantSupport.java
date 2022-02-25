@@ -7,13 +7,11 @@ import cc.uncarbon.framework.crud.support.TenantSupport;
 import com.baomidou.mybatisplus.extension.plugins.MybatisPlusInterceptor;
 import com.baomidou.mybatisplus.extension.plugins.handler.TenantLineHandler;
 import com.baomidou.mybatisplus.extension.plugins.inner.TenantLineInnerInterceptor;
+import java.util.Collection;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import net.sf.jsqlparser.expression.Expression;
 import net.sf.jsqlparser.expression.LongValue;
-
-import java.util.Collection;
-import java.util.List;
 
 /**
  * 多租户支持-行级
@@ -25,7 +23,7 @@ public class LineTenantSupport implements TenantSupport {
 
     @Override
     public void support(HelioProperties helioProperties, MybatisPlusInterceptor interceptor) {
-        List<String> ignoredTables = helioProperties.getTenant().getIgnoredTables();
+        Collection<String> ignoredTables = helioProperties.getTenant().getIgnoredTables();
 
         // 添加行级租户内联拦截器
         interceptor.addInnerInterceptor(
@@ -34,7 +32,7 @@ public class LineTenantSupport implements TenantSupport {
                 )
         );
 
-        log.info("[多租户支持] >> 隔离级别: 行级，以下数据表不参与租户隔离: {}",
+        log.info("\n\n[多租户支持] >> 隔离级别: 行级，以下数据表不参与租户隔离: {}\n",
                 ignoredTables);
     }
 

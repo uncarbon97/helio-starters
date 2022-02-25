@@ -2,21 +2,20 @@ package cc.uncarbon.framework.tenant.config;
 
 import cc.uncarbon.framework.core.props.HelioProperties;
 import cc.uncarbon.framework.crud.support.TenantSupport;
+import cc.uncarbon.framework.crud.support.impl.DefaultTenantSupport;
 import cc.uncarbon.framework.tenant.support.DataSourceTenantSupport;
 import cc.uncarbon.framework.tenant.support.LineTenantSupport;
 import cc.uncarbon.framework.tenant.support.TableTenantSupport;
 import lombok.RequiredArgsConstructor;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Primary;
 
 /**
  * Helio 多租户自动配置类
  * 当启用多租户功能，且多租户隔离级别配置正确，则向 IoC 容器注入对应处理 Bean
  */
 @Configuration
-@ConditionalOnProperty(prefix = "helio.tenant", value = "enabled", havingValue = "true")
 @RequiredArgsConstructor
 public class HelioTenantAutoConfiguration {
 
@@ -24,8 +23,13 @@ public class HelioTenantAutoConfiguration {
 
 
     @Bean
-    @ConditionalOnMissingBean(TenantSupport.class)
+    @Primary
     public TenantSupport tenantSupport() {
+        if (!helioProperties.getTenant().getEnabled()) {
+            // 引入了 starter，但未启用多租户
+            return new DefaultTenantSupport();
+        }
+
         switch (helioProperties.getTenant().getIsolateLevel()) {
             case LINE:
                 // 多租户支持-行级

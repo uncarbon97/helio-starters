@@ -3,6 +3,8 @@ package cc.uncarbon.framework.core.props;
 import cc.uncarbon.framework.core.enums.IdGeneratorStrategyEnum;
 import cc.uncarbon.framework.core.enums.TenantIsolateLevelEnum;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.LinkedHashSet;
 import java.util.List;
 import lombok.Data;
 import org.springframework.boot.context.properties.ConfigurationProperties;
@@ -12,7 +14,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
  *
  * @author Uncarbon
  */
-@ConfigurationProperties(prefix = "helio", ignoreInvalidFields = true)
+@ConfigurationProperties(prefix = "helio")
 @Data
 public class HelioProperties {
 
@@ -20,6 +22,7 @@ public class HelioProperties {
     private final Crud crud = new Crud();
     private final Knife4j knife4j = new Knife4j();
     private final Tenant tenant = new Tenant();
+
 
     @Data
     public static class Security {
@@ -123,7 +126,6 @@ public class HelioProperties {
         /**
          * 哪些表忽略租户隔离
          */
-        private List<String> ignoredTables = new ArrayList<>(64);
-
+        private Collection<String> ignoredTables = new LinkedHashSet<>(64);
     }
 }

@@ -6,6 +6,7 @@ import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Set;
 import lombok.NonNull;
+import lombok.RequiredArgsConstructor;
 import org.springframework.boot.env.OriginTrackedMapPropertySource;
 import org.springframework.context.EnvironmentAware;
 import org.springframework.context.annotation.Configuration;
@@ -21,6 +22,7 @@ import org.springframework.core.env.PropertySource;
  * @author Uncarbon
  */
 @Configuration
+@RequiredArgsConstructor
 public class AdaptHistoryVersionAutoConfiguration implements EnvironmentAware {
 
     /**
@@ -58,8 +60,11 @@ public class AdaptHistoryVersionAutoConfiguration implements EnvironmentAware {
                                     // e.g. 将配置文件中所有 [helio.crud.tenant.] 开头的配置转移到 [helio.tenant.] 下
                                     String newKey = StrUtil.replace(key, oldPropertyPrefixes[i], newPropertyPrefixes[i]);
                                     newMap.put(newKey, bootProp.get(key));
+
+                                    // 前缀相同的话，提示信息就保持一条（利用 Set 特性）
                                     deprecatedPropertyWarnings.add(
-                                            StrUtil.format("原配置文件属性前缀 {} 已兼容转移到 {} 下", key, newKey)
+                                            StrUtil.format("配置文件属性前缀 {}* 已过时、不向下兼容，请转移到 {}* 下"
+                                                    , oldPropertyPrefixes[i], newPropertyPrefixes[i])
                                     );
                                 }
                             }
@@ -70,13 +75,14 @@ public class AdaptHistoryVersionAutoConfiguration implements EnvironmentAware {
 
             // 追加到总配置里面
             if (newMap.size() > 0) {
-                System.err.println("\n"
-                        + StrUtil.join("\n", deprecatedPropertyWarnings)
-                        + "当前版本暂时向下兼容，未来版本可能会完全移除旧形式");
                 OriginTrackedMapPropertySource source = new OriginTrackedMapPropertySource(
                         "AdaptHistoryVersionAutoConfiguration", newMap);
                 // 追加到末尾，优先级最低
                 c.getPropertySources().addLast(source);
+
+                System.err.println("\n"
+                        + StrUtil.join("\n", deprecatedPropertyWarnings)
+                        + "\n");
             }
         } catch (Exception e) {
             // ignored

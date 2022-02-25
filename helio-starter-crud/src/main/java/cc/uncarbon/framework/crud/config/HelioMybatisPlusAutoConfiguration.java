@@ -12,7 +12,6 @@ import com.baomidou.mybatisplus.extension.plugins.inner.BlockAttackInnerIntercep
 import com.baomidou.mybatisplus.extension.plugins.inner.OptimisticLockerInnerInterceptor;
 import com.baomidou.mybatisplus.extension.plugins.inner.PaginationInnerInterceptor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
@@ -30,7 +29,8 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 public class HelioMybatisPlusAutoConfiguration {
 
     @Bean
-    public MybatisPlusInterceptor mybatisPlusInterceptor(@SuppressWarnings(value = "all") HelioProperties helioProperties, TenantSupport tenantSupport) {
+    public MybatisPlusInterceptor mybatisPlusInterceptor(
+            @SuppressWarnings(value = "all") HelioProperties helioProperties, TenantSupport tenantSupport) {
         MybatisPlusInterceptor interceptor = new MybatisPlusInterceptor();
 
         /*
@@ -74,7 +74,8 @@ public class HelioMybatisPlusAutoConfiguration {
      * 自定义ID生成器
      */
     @Bean
-    public IdentifierGenerator helioSnowflakeIdentifierGeneratorHandler(@SuppressWarnings(value = "all") HelioProperties helioProperties) {
+    public IdentifierGenerator helioSnowflakeIdentifierGeneratorHandler(
+            @SuppressWarnings(value = "all") HelioProperties helioProperties) {
         return new HelioIdentifierGeneratorHandler(helioProperties);
     }
 
@@ -90,7 +91,6 @@ public class HelioMybatisPlusAutoConfiguration {
      * 默认租户支持类
      */
     @Bean
-    @ConditionalOnMissingBean(TenantSupport.class)
     public TenantSupport defaultTenantSupport() {
         return new DefaultTenantSupport();
     }
