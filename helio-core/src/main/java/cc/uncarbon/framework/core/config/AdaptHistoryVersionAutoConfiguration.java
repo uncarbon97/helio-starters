@@ -57,7 +57,10 @@ public class AdaptHistoryVersionAutoConfiguration implements EnvironmentAware {
                         if (key != null) {
                             for (int i = 0; i < oldPropertyPrefixes.length; i++) {
                                 if (key.startsWith(oldPropertyPrefixes[i])) {
-                                    // e.g. 将配置文件中所有 [helio.crud.tenant.] 开头的配置转移到 [helio.tenant.] 下
+                                    /*
+                                    将配置文件中所有 [helio.crud.tenant.] 开头的配置转移到 [helio.tenant.] 下
+                                    实践测试 只对 @Value 注解有效
+                                     */
                                     String newKey = StrUtil.replace(key, oldPropertyPrefixes[i], newPropertyPrefixes[i]);
                                     newMap.put(newKey, bootProp.get(key));
 
