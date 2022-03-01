@@ -47,7 +47,7 @@ public class TableTenantSupport implements TenantSupport {
             }
 
             // 拼接新表名
-            return String.format("%s_%s", tableName, TenantContextHolder.getTenantContext().getTenantId());
+            return String.format("%s_%s", tableName, TenantContextHolder.getTenantId());
         }
 
     }

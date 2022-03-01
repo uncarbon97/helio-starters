@@ -49,13 +49,11 @@ public interface HelioConstant {
     }
 
     interface CRUD {
-        Long DEFAULT_TENANT_ID = 0L;
-        String DEFAULT_TENANT_NAME = "请设置租户ID";
-
         /**
          * 该租户ID为超级租户, 可以无视租户SQL拦截器
          */
-        Long PRIVILEGED_TENANT_ID = 0L;
+        @Deprecated
+        Long DEFAULT_PRIVILEGED_TENANT_ID = Tenant.DEFAULT_PRIVILEGED_TENANT_ID;
 
         /**
          * 租户ID
@@ -109,5 +107,12 @@ public interface HelioConstant {
         String RETRIEVE = "retrieve";
         String UPDATE = "update";
         String DELETE = "delete";
+    }
+
+    interface Tenant {
+        /**
+         * 该租户ID为超级租户, 可以无视租户SQL拦截器
+         */
+        Long DEFAULT_PRIVILEGED_TENANT_ID = 0L;
     }
 }

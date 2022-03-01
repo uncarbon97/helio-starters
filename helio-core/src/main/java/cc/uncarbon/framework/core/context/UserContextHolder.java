@@ -44,8 +44,8 @@ public class UserContextHolder {
      * @return null or 当前用户ID
      */
     public Long getUserId() {
-        UserContext userContext = getUserContext();
-        return userContext == null ? null : userContext.getUserId();
+        UserContext context = getUserContext();
+        return context == null ? null : context.getUserId();
     }
 
     /**
@@ -54,8 +54,8 @@ public class UserContextHolder {
      * @return null or 当前用户名
      */
     public String getUserName() {
-        UserContext userContext = getUserContext();
-        return userContext == null ? null : userContext.getUserName();
+        UserContext context = getUserContext();
+        return context == null ? null : context.getUserName();
     }
 
     /**
@@ -64,8 +64,8 @@ public class UserContextHolder {
      * @return null or 当前用户手机号
      */
     public String getUserPhoneNo() throws NullPointerException {
-        UserContext userContext = getUserContext();
-        return userContext == null ? null : userContext.getUserPhoneNo();
+        UserContext context = getUserContext();
+        return context == null ? null : context.getUserPhoneNo();
     }
 
 }

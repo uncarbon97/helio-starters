@@ -1,5 +1,7 @@
 package cc.uncarbon.framework.dubbo.filter;
 
+import cc.uncarbon.framework.core.context.TenantContext;
+import cc.uncarbon.framework.core.context.TenantContextHolder;
 import cc.uncarbon.framework.core.context.UserContext;
 import cc.uncarbon.framework.core.context.UserContextHolder;
 import cn.hutool.core.util.StrUtil;
@@ -31,6 +33,16 @@ public class ProviderContextFilter implements Filter {
             UserContext userContext = JSONUtil.parseObj(userContextJson).toBean(UserContext.class);
             UserContextHolder.setUserContext(userContext);
             log.debug("[Dubbo RPC] 获取当前用户上下文 >> {}", userContextJson);
+        }
+
+        if (TenantContextHolder.isTenantEnabled()) {
+            // 启用了多租户的前提下，才获取
+            String tenantContextJson = RpcContext.getContext().getAttachment(TenantContext.CAMEL_NAME);
+            if (StrUtil.isNotEmpty(tenantContextJson)) {
+                TenantContext tenantContext = JSONUtil.parseObj(tenantContextJson).toBean(TenantContext.class);
+                TenantContextHolder.setTenantContext(tenantContext);
+                log.debug("[Dubbo RPC] 获取当前租户上下文 >> {}", tenantContextJson);
+            }
         }
 
         return invoker.invoke(invocation);

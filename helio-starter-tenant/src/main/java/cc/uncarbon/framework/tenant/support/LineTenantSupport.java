@@ -8,6 +8,7 @@ import com.baomidou.mybatisplus.extension.plugins.MybatisPlusInterceptor;
 import com.baomidou.mybatisplus.extension.plugins.handler.TenantLineHandler;
 import com.baomidou.mybatisplus.extension.plugins.inner.TenantLineInnerInterceptor;
 import java.util.Collection;
+import java.util.Objects;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import net.sf.jsqlparser.expression.Expression;
@@ -28,7 +29,9 @@ public class LineTenantSupport implements TenantSupport {
         // 添加行级租户内联拦截器
         interceptor.addInnerInterceptor(
                 new TenantLineInnerInterceptor(
-                        new HelioLineTenantHandler(ignoredTables)
+                        new HelioLineTenantHandler(
+                                helioProperties.getTenant().getPrivilegedTenantId(),
+                                ignoredTables)
                 )
         );
 
@@ -41,6 +44,11 @@ public class LineTenantSupport implements TenantSupport {
     public static class HelioLineTenantHandler implements TenantLineHandler {
 
         /**
+         * 特权租户ID
+         */
+        private final Long privilegedTenantId;
+
+        /**
          * 忽略租户隔离的表
          */
         private final Collection<String> ignoredTables;
@@ -48,7 +56,7 @@ public class LineTenantSupport implements TenantSupport {
 
         @Override
         public Expression getTenantId() {
-            return new LongValue(TenantContextHolder.getTenantContext().getTenantId());
+            return new LongValue(TenantContextHolder.getTenantId());
         }
 
         @Override
@@ -58,7 +66,9 @@ public class LineTenantSupport implements TenantSupport {
 
         @Override
         public boolean ignoreTable(String tableName) {
-            if (HelioConstant.CRUD.PRIVILEGED_TENANT_ID.equals(TenantContextHolder.getTenantContext().getTenantId())) {
+            if (Objects.nonNull(privilegedTenantId)
+                    && Objects.nonNull(TenantContextHolder.getTenantId())
+                    && privilegedTenantId.equals(TenantContextHolder.getTenantId())) {
                 return true;
             }
 

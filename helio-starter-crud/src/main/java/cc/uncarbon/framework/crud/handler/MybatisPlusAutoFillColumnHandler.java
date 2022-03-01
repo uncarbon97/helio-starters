@@ -16,7 +16,7 @@ public class MybatisPlusAutoFillColumnHandler implements MetaObjectHandler {
 
     @Override
     public void insertFill(MetaObject metaObject) {
-        this.strictInsertFill(metaObject, HelioConstant.CRUD.ENTITY_FIELD_TENANT_ID, Long.class, TenantContextHolder.getTenantContext().getTenantId());
+        this.strictInsertFill(metaObject, HelioConstant.CRUD.ENTITY_FIELD_TENANT_ID, Long.class, TenantContextHolder.getTenantId());
         this.strictInsertFill(metaObject, HelioConstant.CRUD.ENTITY_FIELD_CREATED_AT, LocalDateTime.class, LocalDateTime.now());
         this.strictInsertFill(metaObject, HelioConstant.CRUD.ENTITY_FIELD_CREATED_BY, String.class, UserContextHolder.getUserName());
 

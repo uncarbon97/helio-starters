@@ -1,5 +1,6 @@
 package cc.uncarbon.framework.core.props;
 
+import cc.uncarbon.framework.core.constant.HelioConstant;
 import cc.uncarbon.framework.core.enums.IdGeneratorStrategyEnum;
 import cc.uncarbon.framework.core.enums.TenantIsolateLevelEnum;
 import java.util.ArrayList;
@@ -113,7 +114,7 @@ public class HelioProperties {
 
         /**
          * 是否启用多租户
-         * 默认为false
+         * 默认为 false
          */
         private Boolean enabled = false;
 
@@ -127,5 +128,13 @@ public class HelioProperties {
          * 哪些表忽略租户隔离
          */
         private Collection<String> ignoredTables = new LinkedHashSet<>(64);
+
+        /**
+         * 特权租户ID，该租户可以无视租户SQL拦截器
+         * 目前仅对【行级】隔离级别有效
+         * 默认为 0
+         */
+        private Long privilegedTenantId = HelioConstant.Tenant.DEFAULT_PRIVILEGED_TENANT_ID;
+
     }
 }

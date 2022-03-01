@@ -1,5 +1,6 @@
 package cc.uncarbon.framework.tenant.config;
 
+import cc.uncarbon.framework.core.context.TenantContextHolder;
 import cc.uncarbon.framework.core.props.HelioProperties;
 import cc.uncarbon.framework.crud.support.TenantSupport;
 import cc.uncarbon.framework.crud.support.impl.DefaultTenantSupport;
@@ -25,10 +26,13 @@ public class HelioTenantAutoConfiguration {
     @Bean
     @Primary
     public TenantSupport tenantSupport() {
-        if (!helioProperties.getTenant().getEnabled()) {
+        if (!Boolean.TRUE.equals(helioProperties.getTenant().getEnabled())) {
             // 引入了 starter，但未启用多租户
             return new DefaultTenantSupport();
         }
+
+        // 除了 HelioProperties 外，在这里也设置多租户启用标识，一定程度上减少对 HelioProperties 的依赖注入
+        TenantContextHolder.setTenantEnabled(true);
 
         switch (helioProperties.getTenant().getIsolateLevel()) {
             case LINE:
