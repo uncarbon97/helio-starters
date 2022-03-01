@@ -23,13 +23,14 @@ public class HelioProperties {
     private final Crud crud = new Crud();
     private final Knife4j knife4j = new Knife4j();
     private final Tenant tenant = new Tenant();
+    private final WebLogging webLogging = new WebLogging();
 
 
     @Data
     public static class Security {
 
         /**
-         * 放行路由地址(不进行登录校验)
+         * 放行路由地址，不进行登录校验
          */
         private final List<String> excludeRoutes = new ArrayList<>(64);
 
@@ -135,6 +136,17 @@ public class HelioProperties {
          * 默认为 0
          */
         private Long privilegedTenantId = HelioConstant.Tenant.DEFAULT_PRIVILEGED_TENANT_ID;
+
+    }
+
+    @Data
+    public static class WebLogging {
+
+        /**
+         * 是否启用 Web 请求记录
+         * 默认为 false
+         */
+        private Boolean enabledRequestLog = false;
 
     }
 }

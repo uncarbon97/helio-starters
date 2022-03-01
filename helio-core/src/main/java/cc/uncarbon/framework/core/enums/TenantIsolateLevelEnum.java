@@ -26,7 +26,7 @@ public enum TenantIsolateLevelEnum implements HelioBaseEnum<Integer> {
      * ！！！未实现！！！
      * 数据源级，即每个租户使用独立的数据源
      */
-    DATASOURCE(3, "数据源级(即每个租户单独一个数据库)"),
+    DATASOURCE(3, "数据源级"),
 
     ;
 

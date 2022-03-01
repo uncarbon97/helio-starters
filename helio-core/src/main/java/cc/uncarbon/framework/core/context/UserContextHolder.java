@@ -29,7 +29,7 @@ public class UserContextHolder {
      *
      * @param userContext 新上下文，传 null 则为清除
      */
-    public synchronized void setUserContext(UserContext userContext) {
+    public void setUserContext(UserContext userContext) {
         if (userContext == null) {
             THREAD_LOCAL_USER.remove();
             return;
@@ -63,9 +63,19 @@ public class UserContextHolder {
      *
      * @return null or 当前用户手机号
      */
-    public String getUserPhoneNo() throws NullPointerException {
+    public String getUserPhoneNo() {
         UserContext context = getUserContext();
         return context == null ? null : context.getUserPhoneNo();
+    }
+
+    /**
+     * 捷径API-取当前用户 IP 地址
+     *
+     * @return null or 当前用户 IP 地址
+     */
+    public String getClientIP() {
+        UserContext context = getUserContext();
+        return context == null ? null : context.getClientIP();
     }
 
 }
