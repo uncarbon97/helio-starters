@@ -11,7 +11,8 @@ import lombok.Data;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
 /**
- * 配置文件读取类
+ * 配置项会被反序列化到本 Spring Bean 中
+ * 可自行依赖注入后使用
  *
  * @author Uncarbon
  */
@@ -62,9 +63,9 @@ public class HelioProperties {
 
             /**
              * 是否启用乐观锁
-             * 默认为false
+             * 默认为 true
              */
-            private Boolean enabled = false;
+            private Boolean enabled = true;
 
         }
 
@@ -72,15 +73,17 @@ public class HelioProperties {
         public static class IdGenerator {
 
             /**
-             * 雪花ID-起始时刻
-             * 默认为2021-01-01
-             */
-            String epochDate = "2021-01-01";
-            /**
              * ID生成器策略
              * 默认为SNOWFLAKE
              */
             private IdGeneratorStrategyEnum strategy = IdGeneratorStrategyEnum.SNOWFLAKE;
+
+            /**
+             * 雪花ID-起始时刻
+             * 默认为2021-01-01
+             */
+            String epochDate = "2021-01-01";
+
             /**
              * 雪花ID-数据中心ID
              * 默认为0
@@ -94,17 +97,17 @@ public class HelioProperties {
     public static class Knife4j {
 
         /**
-         * 标题
+         * Knife4j UI 上显示的标题
          */
         private String title = "";
 
         /**
-         * 简介
+         * Knife4j UI 上显示的简介
          */
         private String description = "";
 
         /**
-         * 版本号
+         * Knife4j UI 上显示的版本号
          */
         private String version = "";
 
@@ -127,6 +130,7 @@ public class HelioProperties {
 
         /**
          * 哪些表忽略租户隔离
+         * 仅对【行级、表级】隔离级别有效
          */
         private Collection<String> ignoredTables = new LinkedHashSet<>(64);
 
