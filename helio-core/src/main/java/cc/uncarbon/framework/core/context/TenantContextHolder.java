@@ -22,9 +22,10 @@ public class TenantContextHolder {
     /**
      * 获取当前租户上下文
      *
+     * @throws NullPointerException 链式调用时需要注意可能存在 NPE 问题
      * @return null or 当前租户上下文
      */
-    public TenantContext getTenantContext() {
+    public TenantContext getTenantContext() throws NullPointerException {
         return THREAD_LOCAL_TENANT.get();
     }
 
@@ -33,7 +34,7 @@ public class TenantContextHolder {
      *
      * @param tenantContext 新上下文，传 null 则为清除
      */
-    public synchronized void setTenantContext(TenantContext tenantContext) {
+    public void setTenantContext(TenantContext tenantContext) {
         if (tenantContext == null) {
             THREAD_LOCAL_TENANT.remove();
             return;
