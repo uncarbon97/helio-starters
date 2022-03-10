@@ -13,11 +13,6 @@ public class TenantContextHolder {
 
     private final TransmittableThreadLocal<TenantContext> THREAD_LOCAL_TENANT = new TransmittableThreadLocal<>();
 
-    /**
-     * 是否实际启用了多租户
-     */
-    private boolean tenantEnabled = false;
-
 
     /**
      * 获取当前租户上下文
@@ -61,13 +56,5 @@ public class TenantContextHolder {
     public String getTenantName() {
         TenantContext context = getTenantContext();
         return context == null ? null : context.getTenantName();
-    }
-
-    public boolean isTenantEnabled() {
-        return tenantEnabled;
-    }
-
-    public void setTenantEnabled(boolean tenantEnabled) {
-        TenantContextHolder.tenantEnabled = tenantEnabled;
     }
 }

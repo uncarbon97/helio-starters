@@ -4,6 +4,7 @@ import cc.uncarbon.framework.core.context.TenantContext;
 import cc.uncarbon.framework.core.context.TenantContextHolder;
 import cc.uncarbon.framework.core.context.UserContext;
 import cc.uncarbon.framework.core.context.UserContextHolder;
+import cc.uncarbon.framework.core.props.HelioProperties;
 import cn.hutool.json.JSONUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.dubbo.common.constants.CommonConstants;
@@ -25,6 +26,12 @@ import org.apache.dubbo.rpc.RpcException;
 @Activate(group = CommonConstants.CONSUMER)
 public class ConsumerContextFilter implements Filter {
 
+    private final boolean isTenantEnabled;
+
+    public ConsumerContextFilter(HelioProperties helioProperties) {
+        this.isTenantEnabled = helioProperties.getTenant().getEnabled();
+    }
+
     @Override
     public Result invoke(Invoker<?> invoker, Invocation invocation) throws RpcException {
         String userContextJson = JSONUtil.toJsonStr(UserContextHolder.getUserContext());
@@ -32,7 +39,7 @@ public class ConsumerContextFilter implements Filter {
         log.debug("[Dubbo RPC] 设置当前用户上下文 >> {}", userContextJson);
         RpcContext.getContext().setAttachment(UserContext.CAMEL_NAME, userContextJson);
 
-        if (TenantContextHolder.isTenantEnabled()) {
+        if (this.isTenantEnabled) {
             // 启用了多租户的前提下，才设置
             String tenantContextJson = JSONUtil.toJsonStr(TenantContextHolder.getTenantContext());
             log.debug("[Dubbo RPC] 设置当前租户上下文 >> {}", tenantContextJson);

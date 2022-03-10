@@ -1,4 +1,4 @@
-package cc.uncarbon.framework.web.util;
+package cc.uncarbon.framework.satoken.util;
 
 import javax.servlet.http.HttpServletRequest;
 import lombok.experimental.UtilityClass;
