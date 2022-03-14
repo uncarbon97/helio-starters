@@ -4,7 +4,6 @@ import cc.uncarbon.framework.core.context.TenantContext;
 import cc.uncarbon.framework.core.context.TenantContextHolder;
 import cc.uncarbon.framework.core.context.UserContext;
 import cc.uncarbon.framework.core.context.UserContextHolder;
-import cc.uncarbon.framework.core.props.HelioProperties;
 import cn.hutool.core.util.StrUtil;
 import cn.hutool.json.JSONUtil;
 import lombok.extern.slf4j.Slf4j;
@@ -27,29 +26,22 @@ import org.apache.dubbo.rpc.RpcException;
 @Activate(group = CommonConstants.PROVIDER)
 public class ProviderContextFilter implements Filter {
 
-    private final boolean isTenantEnabled;
-
-    public ProviderContextFilter(HelioProperties helioProperties) {
-        this.isTenantEnabled = helioProperties.getTenant().getEnabled();
-    }
-
     @Override
     public Result invoke(Invoker<?> invoker, Invocation invocation) throws RpcException {
-        String userContextJson = RpcContext.getContext().getAttachment(UserContext.CAMEL_NAME);
+        // 从 Dubbo 附件中，取出用户上下文、租户上下文等业务字段
+
+        String userContextJson = RpcContext.getServerAttachment().getAttachment(UserContext.CAMEL_NAME);
         if (StrUtil.isNotEmpty(userContextJson)) {
             UserContext userContext = JSONUtil.parseObj(userContextJson).toBean(UserContext.class);
             UserContextHolder.setUserContext(userContext);
-            log.debug("[Dubbo RPC] 获取当前用户上下文 >> {}", userContextJson);
+            log.debug("[Dubbo RPC] 取出当前用户上下文 >> {}", userContextJson);
         }
 
-        if (this.isTenantEnabled) {
-            // 启用了多租户的前提下，才获取
-            String tenantContextJson = RpcContext.getContext().getAttachment(TenantContext.CAMEL_NAME);
-            if (StrUtil.isNotEmpty(tenantContextJson)) {
-                TenantContext tenantContext = JSONUtil.parseObj(tenantContextJson).toBean(TenantContext.class);
-                TenantContextHolder.setTenantContext(tenantContext);
-                log.debug("[Dubbo RPC] 获取当前租户上下文 >> {}", tenantContextJson);
-            }
+        String tenantContextJson = RpcContext.getServerAttachment().getAttachment(TenantContext.CAMEL_NAME);
+        if (StrUtil.isNotEmpty(tenantContextJson)) {
+            TenantContext tenantContext = JSONUtil.parseObj(tenantContextJson).toBean(TenantContext.class);
+            TenantContextHolder.setTenantContext(tenantContext);
+            log.debug("[Dubbo RPC] 取出当前租户上下文 >> {}", tenantContextJson);
         }
 
         return invoker.invoke(invocation);
