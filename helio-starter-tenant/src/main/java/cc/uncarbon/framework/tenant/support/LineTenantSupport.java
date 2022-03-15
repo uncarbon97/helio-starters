@@ -66,9 +66,11 @@ public class LineTenantSupport implements TenantSupport {
 
         @Override
         public boolean ignoreTable(String tableName) {
+            Long currentTenantId = TenantContextHolder.getTenantId();
+
             if (Objects.nonNull(privilegedTenantId)
-                    && Objects.nonNull(TenantContextHolder.getTenantId())
-                    && privilegedTenantId.equals(TenantContextHolder.getTenantId())) {
+                    && Objects.nonNull(currentTenantId)
+                    && privilegedTenantId.equals(currentTenantId)) {
                 return true;
             }
 
