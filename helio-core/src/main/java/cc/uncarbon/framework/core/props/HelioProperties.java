@@ -23,6 +23,7 @@ public class HelioProperties {
     private final Crud crud = new Crud();
     private final Knife4j knife4j = new Knife4j();
     private final Tenant tenant = new Tenant();
+    private final Web web = new Web();
 
 
     @Data
@@ -125,6 +126,23 @@ public class HelioProperties {
          * 特权租户ID，该租户可以无视租户SQL拦截器 目前仅对【行级】隔离级别有效 默认为 0
          */
         private Long privilegedTenantId = HelioConstant.Tenant.DEFAULT_PRIVILEGED_TENANT_ID;
+
+    }
+
+    @Data
+    public static class Web {
+
+        private final Logging logging = new Logging();
+
+        @Data
+        public static class Logging {
+
+            /**
+             * 是否启用 Web 访问日志切面，默认为 false
+             */
+            private Boolean enabled = Boolean.FALSE;
+
+        }
 
     }
 }
