@@ -30,15 +30,13 @@ public class TableTenantSupport implements TenantSupport {
                 ignoredTables);
     }
 
-
     @AllArgsConstructor
     public static class HelioTableTenantHandler implements TableNameHandler {
 
         /**
          * 忽略租户隔离的表
          */
-        private final Collection<String> ignoredTables;
-
+        private Collection<String> ignoredTables;
 
         @Override
         public String dynamicTableName(String sql, String tableName) {

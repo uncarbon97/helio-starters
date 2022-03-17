@@ -56,7 +56,12 @@ public class LineTenantSupport implements TenantSupport {
 
         @Override
         public Expression getTenantId() {
-            return new LongValue(TenantContextHolder.getTenantId());
+            Long currentTenantId = TenantContextHolder.getTenantId();
+            if (currentTenantId == null) {
+                return null;
+            }
+
+            return new LongValue(currentTenantId);
         }
 
         @Override

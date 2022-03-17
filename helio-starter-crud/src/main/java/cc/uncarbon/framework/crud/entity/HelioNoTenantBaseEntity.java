@@ -1,5 +1,6 @@
 package cc.uncarbon.framework.crud.entity;
 
+import cc.uncarbon.framework.core.constant.HelioConstant;
 import com.baomidou.mybatisplus.annotation.TableField;
 import java.io.Serializable;
 import lombok.AllArgsConstructor;
@@ -25,7 +26,7 @@ public abstract class HelioNoTenantBaseEntity<PK extends Serializable> extends H
     /**
      * 覆盖掉行级租户ID
      */
-    @TableField(exist = false)
+    @TableField(value = HelioConstant.CRUD.COLUMN_TENANT_ID, exist = false)
     private Long tenantId;
 
 }
