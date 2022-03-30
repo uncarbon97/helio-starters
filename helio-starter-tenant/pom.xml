@@ -24,6 +24,12 @@
             <groupId>cc.uncarbon.framework</groupId>
             <artifactId>helio-starter-crud</artifactId>
         </dependency>
+
+        <dependency>
+            <groupId>com.baomidou</groupId>
+            <artifactId>dynamic-datasource-spring-boot-starter</artifactId>
+            <optional>true</optional>
+        </dependency>
     </dependencies>
 
 </project>

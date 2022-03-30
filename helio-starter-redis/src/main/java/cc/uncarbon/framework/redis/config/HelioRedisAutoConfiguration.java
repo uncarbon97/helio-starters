@@ -34,6 +34,7 @@ public class HelioRedisAutoConfiguration {
 
 
     @Bean
+    @ConditionalOnMissingBean
     public RedisTemplate<?, ?> redisTemplate() {
         RedisTemplate<?, ?> redisTemplate = new RedisTemplate<>();
 
@@ -65,6 +66,7 @@ public class HelioRedisAutoConfiguration {
      * Key名生成规则
      */
     @Bean
+    @ConditionalOnMissingBean
     public KeyGenerator keyGenerator() {
         return (target, method, objects) -> {
             StringBuilder sb = new StringBuilder();

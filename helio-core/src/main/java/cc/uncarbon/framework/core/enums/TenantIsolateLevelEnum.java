@@ -6,6 +6,7 @@ import lombok.Getter;
 
 /**
  * 多租户隔离级别枚举类
+ *
  * @author Uncarbon
  */
 @AllArgsConstructor
@@ -18,15 +19,9 @@ public enum TenantIsolateLevelEnum implements HelioBaseEnum<Integer> {
     LINE(1, "行级"),
 
     /**
-     * 表级，即表名增加[_租户ID]后缀用于区分，如 tb_member_10001 tb_member_10002
-     */
-    TABLE(2, "表级"),
-
-    /**
-     * ！！！未实现！！！
      * 数据源级，即每个租户使用独立的数据源
      */
-    DATASOURCE(3, "数据源级"),
+    DATASOURCE(2, "数据源级"),
 
     ;
 

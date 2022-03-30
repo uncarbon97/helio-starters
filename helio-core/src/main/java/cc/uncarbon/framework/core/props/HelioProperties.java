@@ -69,13 +69,15 @@ public class HelioProperties {
         public static class IdGenerator {
 
             /**
-             * 雪花ID-起始时刻 默认为2021-01-01
-             */
-            String epochDate = "2021-01-01";
-            /**
              * ID生成器策略 默认为SNOWFLAKE
              */
             private IdGeneratorStrategyEnum strategy = IdGeneratorStrategyEnum.SNOWFLAKE;
+
+            /**
+             * 雪花ID-起始时刻 默认为2021-01-01
+             */
+            String epochDate = "2021-01-01";
+
             /**
              * 雪花ID-数据中心ID 默认为0
              */
@@ -118,7 +120,7 @@ public class HelioProperties {
         private TenantIsolateLevelEnum isolateLevel = TenantIsolateLevelEnum.LINE;
 
         /**
-         * 哪些表忽略租户隔离 仅对【行级、表级】隔离级别有效
+         * 哪些表忽略租户隔离 仅对【行级】隔离级别有效
          */
         private Collection<String> ignoredTables = new LinkedHashSet<>(64);
 

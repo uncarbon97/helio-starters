@@ -12,9 +12,13 @@ import lombok.extern.slf4j.Slf4j;
 
 /**
  * 多租户支持-表级
+ * @deprecated 后来发现并不是太适合实践使用，仅保留本类
+ *
+ * @author Uncarbon
  */
 @Slf4j
-public class TableTenantSupport implements TenantSupport {
+@Deprecated
+public class TenantTableSupport implements TenantSupport {
 
     @Override
     public void support(HelioProperties helioProperties, MybatisPlusInterceptor interceptor) {

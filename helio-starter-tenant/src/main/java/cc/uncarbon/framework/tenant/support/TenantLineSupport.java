@@ -20,7 +20,7 @@ import net.sf.jsqlparser.expression.LongValue;
  * @author Uncarbon
  */
 @Slf4j
-public class LineTenantSupport implements TenantSupport {
+public class TenantLineSupport implements TenantSupport {
 
     @Override
     public void support(HelioProperties helioProperties, MybatisPlusInterceptor interceptor) {

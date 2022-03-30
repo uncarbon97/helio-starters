@@ -5,13 +5,14 @@ import cc.uncarbon.framework.crud.handler.HelioIdentifierGeneratorHandler;
 import cc.uncarbon.framework.crud.handler.MybatisPlusAutoFillColumnHandler;
 import cc.uncarbon.framework.crud.support.TenantSupport;
 import cc.uncarbon.framework.crud.support.impl.DefaultTenantSupport;
-import com.baomidou.mybatisplus.annotation.DbType;
 import com.baomidou.mybatisplus.core.incrementer.IdentifierGenerator;
 import com.baomidou.mybatisplus.extension.plugins.MybatisPlusInterceptor;
 import com.baomidou.mybatisplus.extension.plugins.inner.BlockAttackInnerInterceptor;
 import com.baomidou.mybatisplus.extension.plugins.inner.OptimisticLockerInnerInterceptor;
 import com.baomidou.mybatisplus.extension.plugins.inner.PaginationInnerInterceptor;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
@@ -26,11 +27,17 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 )
 @Configuration
 @Slf4j
+@RequiredArgsConstructor
 public class HelioMybatisPlusAutoConfiguration {
 
+    private final HelioProperties helioProperties;
+
+
     @Bean
+    @ConditionalOnMissingBean
     public MybatisPlusInterceptor mybatisPlusInterceptor(
-            @SuppressWarnings(value = "all") HelioProperties helioProperties, TenantSupport tenantSupport) {
+            TenantSupport tenantSupport
+    ) {
         MybatisPlusInterceptor interceptor = new MybatisPlusInterceptor();
 
         /*
@@ -49,9 +56,8 @@ public class HelioMybatisPlusAutoConfiguration {
         /*
         分页插件
          */
-        PaginationInnerInterceptor paginationInnerInterceptor = new PaginationInnerInterceptor(
-                DbType.getDbType(helioProperties.getCrud().getDbType()));
-        // 设置sql的limit为无限制，默认是500
+        PaginationInnerInterceptor paginationInnerInterceptor = new PaginationInnerInterceptor();
+        // 设置sql的limit为无限制
         paginationInnerInterceptor.setMaxLimit(-1L);
         interceptor.addInnerInterceptor(paginationInnerInterceptor);
 
@@ -74,8 +80,8 @@ public class HelioMybatisPlusAutoConfiguration {
      * 自定义ID生成器
      */
     @Bean
-    public IdentifierGenerator helioSnowflakeIdentifierGeneratorHandler(
-            @SuppressWarnings(value = "all") HelioProperties helioProperties) {
+    @ConditionalOnMissingBean
+    public IdentifierGenerator helioSnowflakeIdentifierGeneratorHandler() {
         return new HelioIdentifierGeneratorHandler(helioProperties);
     }
 
@@ -83,6 +89,7 @@ public class HelioMybatisPlusAutoConfiguration {
      * 字段自动填充
      */
     @Bean
+    @ConditionalOnMissingBean
     public MybatisPlusAutoFillColumnHandler mybatisPlusAutoFillColumnHandler() {
         return new MybatisPlusAutoFillColumnHandler();
     }
@@ -91,6 +98,7 @@ public class HelioMybatisPlusAutoConfiguration {
      * 默认租户支持类
      */
     @Bean
+    @ConditionalOnMissingBean
     public TenantSupport defaultTenantSupport() {
         return new DefaultTenantSupport();
     }
