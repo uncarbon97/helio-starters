@@ -1,2 +1,3 @@
 org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
-  cc.uncarbon.framework.crud.config.HelioMybatisPlusAutoConfiguration
+  cc.uncarbon.framework.crud.config.HelioMybatisPlusAutoConfiguration,\
+  cc.uncarbon.framework.crud.config.DynamicDataSourceAutoConfiguration

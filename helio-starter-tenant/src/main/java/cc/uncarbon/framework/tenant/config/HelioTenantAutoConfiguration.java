@@ -34,7 +34,7 @@ public class HelioTenantAutoConfiguration {
                 return new TenantLineSupport();
             case DATASOURCE:
                 // 数据源级
-                return new TenantDataSourceSupport(applicationContext);
+                return new TenantDataSourceSupport();
             default:
                 throw new IllegalArgumentException("启用多租户功能后，请正确配置对应的多租户隔离级别 (helio.tenant.isolate-level) ");
         }

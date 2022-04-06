@@ -54,7 +54,7 @@ public class HelioRedisAutoConfiguration {
     }
 
     /**
-     * 基于Redisson的分布式锁
+     * 基于 Redisson 的分布式锁
      */
     @Bean
     @ConditionalOnMissingBean
@@ -63,7 +63,7 @@ public class HelioRedisAutoConfiguration {
     }
 
     /**
-     * Key名生成规则
+     * 缓存键名生成规则
      */
     @Bean
     @ConditionalOnMissingBean

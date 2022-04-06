@@ -18,9 +18,9 @@ public class DataSourceDefinition implements Serializable {
     private static final long serialVersionUID = 1L;
 
     /**
-     * 数据源名称，切换数据源时需要这个，可以和租户ID一致
+     * 数据源名称，切换数据源时需要这个，最好不用数字开头
      */
-    @ApiModelProperty(value = "数据源名称", notes = "切换数据源时需要这个，可以和租户ID一致")
+    @ApiModelProperty(value = "数据源名称", notes = "切换数据源时需要这个，最好不用数字开头")
     private String name;
 
     /**

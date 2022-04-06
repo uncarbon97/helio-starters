@@ -2,7 +2,7 @@ package cc.uncarbon.framework.tenant.tenantdatasource;
 
 import cc.uncarbon.framework.core.constant.HelioConstant.CRUD;
 import cc.uncarbon.framework.core.context.TenantContextHolder;
-import cc.uncarbon.framework.crud.dynamicdatasource.AbstractDataSourceRegistry;
+import cc.uncarbon.framework.crud.dynamicdatasource.HelioDynamicDataSourceRegistry;
 import com.baomidou.dynamic.datasource.toolkit.DynamicDataSourceContextHolder;
 import java.util.Objects;
 import lombok.NonNull;
@@ -21,7 +21,7 @@ import org.aopalliance.intercept.MethodInvocation;
 @Slf4j
 public class GlobalTenantDataSourceInterceptor implements MethodInterceptor {
 
-    private final AbstractDataSourceRegistry dataSourceRegistry;
+    private final HelioDynamicDataSourceRegistry dataSourceRegistry;
 
 
     @Override
@@ -33,11 +33,13 @@ public class GlobalTenantDataSourceInterceptor implements MethodInterceptor {
         }
 
         try {
+            // 不适合纯数字作为数据源名称，给他拼个前缀
             String tenantDataSourceName = CRUD.COLUMN_TENANT_ID + currentTenantId;
-            dataSourceRegistry.registerDataSource(tenantDataSourceName);
+            if (dataSourceRegistry.containsDataSource(tenantDataSourceName, true)) {
+                log.debug("[多租户][数据源级] 使用租户数据源 >> {}", tenantDataSourceName);
+                DynamicDataSourceContextHolder.push(tenantDataSourceName);
+            }
 
-            log.debug("[多租户][数据源级]切换到租户 >> {}", tenantDataSourceName);
-            DynamicDataSourceContextHolder.push(tenantDataSourceName);
             return invocation.proceed();
         } finally {
             DynamicDataSourceContextHolder.poll();
