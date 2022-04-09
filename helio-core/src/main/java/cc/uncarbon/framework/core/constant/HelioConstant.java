@@ -18,18 +18,6 @@ public interface HelioConstant {
 
     interface Version {
         /**
-         * replaced with HTTP_API_VERSION_V1
-         */
-        @Deprecated
-        String APP_API_VERSION_V1 = "/api/v1";
-
-        /**
-         * replaced with HTTP_API_VERSION_V1
-         */
-        @Deprecated
-        String SAAS_API_VERSION_V1 = "/api/v1";
-
-        /**
          * HTTP API 版本 v1
          */
         String HTTP_API_VERSION_V1 = "/api/v1";
@@ -41,7 +29,9 @@ public interface HelioConstant {
     }
 
     interface Jackson {
+        @Deprecated
         Locale LOCALE = Locale.CHINA;
+        @Deprecated
         String TIME_ZONE = "GMT+8";
         String DATE_FORMAT = "yyyy-MM-dd";
         String TIME_FORMAT = "HH:mm:ss";
@@ -49,13 +39,11 @@ public interface HelioConstant {
     }
 
     interface CRUD {
-        Long DEFAULT_TENANT_ID = 0L;
-        String DEFAULT_TENANT_NAME = "请设置租户ID";
-
         /**
          * 该租户ID为超级租户, 可以无视租户SQL拦截器
          */
-        Long PRIVILEGED_TENANT_ID = 0L;
+        @Deprecated
+        Long DEFAULT_PRIVILEGED_TENANT_ID = Tenant.DEFAULT_PRIVILEGED_TENANT_ID;
 
         /**
          * 租户ID
@@ -109,5 +97,12 @@ public interface HelioConstant {
         String RETRIEVE = "retrieve";
         String UPDATE = "update";
         String DELETE = "delete";
+    }
+
+    interface Tenant {
+        /**
+         * 该租户ID为超级租户, 可以无视租户SQL拦截器
+         */
+        Long DEFAULT_PRIVILEGED_TENANT_ID = 0L;
     }
 }

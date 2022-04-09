@@ -1,6 +1,5 @@
 package cc.uncarbon.framework.crud.enums;
 
-
 import cc.uncarbon.framework.core.enums.HelioBaseEnum;
 import com.baomidou.mybatisplus.annotation.EnumValue;
 import lombok.AllArgsConstructor;

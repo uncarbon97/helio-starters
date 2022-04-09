@@ -19,7 +19,7 @@ package cc.uncarbon.framework.rocketmq.core.factory;
 import cc.uncarbon.framework.rocketmq.annotation.RocketListener;
 import cc.uncarbon.framework.rocketmq.props.AliyunRocketProperties;
 import com.aliyun.openservices.ons.api.PropertyKeyConst;
-
+import java.util.Objects;
 import java.util.Properties;
 
 /**
@@ -39,14 +39,21 @@ public class ConsumerPropertiesFactory {
 
 		Properties properties = PropertiesFactory.createProperties(rocketProperties);
 
-		properties.put(PropertyKeyConst.GROUP_ID, rocketListener.groupID());
-		properties.put(PropertyKeyConst.MessageModel, rocketListener.messageModel());
-		properties.put(PropertyKeyConst.ConsumeThreadNums, rocketProperties.getConsumeThreadNums());
-		properties.put(PropertyKeyConst.MaxReconsumeTimes, rocketProperties.getMaxReconsumeTimes());
-		properties.put(PropertyKeyConst.ConsumeTimeout, rocketProperties.getConsumeTimeout());
+        properties.put(PropertyKeyConst.GROUP_ID, rocketListener.groupID());
+        properties.put(PropertyKeyConst.MessageModel, rocketListener.messageModel());
+        properties.put(PropertyKeyConst.ConsumeThreadNums,
+				// 消费线程数量，特定需求可以单独指定
+                Objects.nonNull(rocketListener.consumeThreadNums()) ? rocketListener.consumeThreadNums()
+                        : rocketProperties.getConsumeThreadNums());
+        properties.put(PropertyKeyConst.MaxReconsumeTimes, rocketProperties.getMaxReconsumeTimes());
+        properties.put(PropertyKeyConst.ConsumeTimeout, rocketProperties.getConsumeTimeout());
 
+		if (Objects.nonNull(rocketListener.consumeBatchSize())) {
+			// 一次最大拉取消费数量，特定需求可以单独指定
+			properties.put(PropertyKeyConst.MAX_BATCH_MESSAGE_COUNT, rocketListener.consumeBatchSize());
+		}
 
-		return properties;
+        return properties;
 
-	}
+    }
 }

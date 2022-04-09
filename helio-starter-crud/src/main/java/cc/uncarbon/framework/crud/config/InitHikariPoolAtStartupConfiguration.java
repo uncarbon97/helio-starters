@@ -1,10 +1,8 @@
 package cc.uncarbon.framework.crud.config;
 
+import javax.sql.DataSource;
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.context.annotation.Bean;
-
-import javax.annotation.Resource;
-import javax.sql.DataSource;
 
 
 /**
@@ -13,12 +11,8 @@ import javax.sql.DataSource;
  */
 public class InitHikariPoolAtStartupConfiguration {
 
-    @Resource
-    private DataSource dataSource;
-
-
     @Bean
-    public ApplicationRunner runner() {
+    public ApplicationRunner runner(DataSource dataSource) {
         return args -> dataSource.getConnection();
     }
 }

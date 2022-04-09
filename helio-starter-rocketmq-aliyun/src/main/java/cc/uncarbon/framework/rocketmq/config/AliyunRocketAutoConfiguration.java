@@ -22,12 +22,12 @@ import cc.uncarbon.framework.rocketmq.container.RocketProducerContainer;
 import cc.uncarbon.framework.rocketmq.core.serializer.JacksonJsonSerializer;
 import cc.uncarbon.framework.rocketmq.core.serializer.RocketSerializer;
 import cc.uncarbon.framework.rocketmq.props.AliyunRocketProperties;
+import lombok.RequiredArgsConstructor;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
-import javax.annotation.Resource;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -38,18 +38,16 @@ import java.util.concurrent.ConcurrentHashMap;
  * @author ThierrySquirrel
  * @author Uncarbon
  */
+@RequiredArgsConstructor
 @EnableConfigurationProperties(value = {AliyunRocketProperties.class})
 @Configuration
 public class AliyunRocketAutoConfiguration {
 
-    @Resource
-    private AliyunRocketProperties rocketProperties;
+    private final AliyunRocketProperties rocketProperties;
 
-    @Resource
-    private Map<String, Object> consumerContainer;
+    private final Map<String, Object> consumerContainer;
 
-    @Resource
-    private RocketSerializer rocketSerializer;
+    private final RocketSerializer rocketSerializer;
 
 
     @Bean

@@ -5,7 +5,6 @@ import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.util.NumberUtil;
 import cn.hutool.core.util.ObjectUtil;
 import cn.hutool.core.util.StrUtil;
-
 import java.io.Serializable;
 import java.util.Arrays;
 import java.util.Collection;
@@ -42,7 +41,7 @@ public interface HelioBaseEnum<T> extends Serializable {
     /**
      * 根据枚举的{@link HelioBaseEnum#getValue()}来查找.
      *
-     * @see this#find(Class, Predicate)
+     * @see #find(Class, Predicate)
      */
     static <T extends Enum<?> & HelioBaseEnum<?>> Optional<T> findByValue(Class<T> type, Object value) {
         return find(type, e -> e.getValue() == value || e.getValue().equals(value) || String.valueOf(e.getValue()).equalsIgnoreCase(String.valueOf(value)));
@@ -51,7 +50,7 @@ public interface HelioBaseEnum<T> extends Serializable {
     /**
      * 根据枚举的{@link HelioBaseEnum#getLabel()} 来查找.
      *
-     * @see this#find(Class, Predicate)
+     * @see #find(Class, Predicate)
      */
     static <T extends Enum<?> & HelioBaseEnum<?>> Optional<T> findByLabel(Class<T> type, String text) {
         return find(type, e -> e.getLabel().equalsIgnoreCase(text));
@@ -60,7 +59,7 @@ public interface HelioBaseEnum<T> extends Serializable {
     /**
      * 根据枚举的{@link HelioBaseEnum#getValue()},{@link HelioBaseEnum#getLabel()} ()}来查找.
      *
-     * @see this#find(Class, Predicate)
+     * @see #find(Class, Predicate)
      */
     static <T extends Enum<?> & HelioBaseEnum<?>> Optional<T> find(Class<T> type, Object target) {
         return find(type, v -> v.eq(target));
@@ -144,18 +143,27 @@ public interface HelioBaseEnum<T> extends Serializable {
         throw new IllegalArgumentException("枚举类的 value 不能自动转换为 int !");
     }
 
+    default String formatLabel(Object... templateParams) {
+        if (templateParams == null || templateParams.length <= 0) {
+            return this.getLabel();
+        }
+
+        return StrUtil.format(this.getLabel(), templateParams);
+    }
+
     /**
      * 断言不为null
      * 注意：枚举选项的 value 建议为整数类型
      *
      * @param object 需要判断的对象
+     * @param templateParams label 中如果有占位符的话，向里面填充的模板参数
      */
-    default void assertNotNull(Object object) {
+    default void assertNotNull(Object object, Object... templateParams) {
         if (ObjectUtil.isNotNull(object)) {
             return;
         }
 
-        throw new BusinessException(this.convertValue2Int(), this.getLabel());
+        throw new BusinessException(this.convertValue2Int(), this.formatLabel(templateParams));
     }
 
     /**
@@ -163,13 +171,14 @@ public interface HelioBaseEnum<T> extends Serializable {
      * 注意：枚举选项的 value 建议为整数类型
      *
      * @param str 需要判断的对象
+     * @param templateParams label 中如果有占位符的话，向里面填充的模板参数
      */
-    default void assertNotBlank(CharSequence str) {
+    default void assertNotBlank(CharSequence str, Object... templateParams) {
         if (StrUtil.isNotBlank(str)) {
             return;
         }
 
-        throw new BusinessException(this.convertValue2Int(), this.getLabel());
+        throw new BusinessException(this.convertValue2Int(), this.formatLabel(templateParams));
     }
 
     /**
@@ -177,13 +186,14 @@ public interface HelioBaseEnum<T> extends Serializable {
      * 注意：枚举选项的 value 建议为整数类型
      *
      * @param list 需要判断的对象
+     * @param templateParams label 中如果有占位符的话，向里面填充的模板参数
      */
-    default void assertNotEmpty(Collection<?> list) {
+    default void assertNotEmpty(Collection<?> list, Object... templateParams) {
         if (CollUtil.isNotEmpty(list)) {
             return;
         }
 
-        throw new BusinessException(this.convertValue2Int(), this.getLabel());
+        throw new BusinessException(this.convertValue2Int(), this.formatLabel(templateParams));
     }
 
 }

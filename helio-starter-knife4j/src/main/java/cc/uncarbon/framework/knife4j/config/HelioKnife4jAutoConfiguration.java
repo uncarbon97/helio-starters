@@ -4,6 +4,7 @@ package cc.uncarbon.framework.knife4j.config;
 import cc.uncarbon.framework.core.props.HelioProperties;
 import cn.hutool.core.collection.CollUtil;
 import com.github.xiaoymin.knife4j.spring.annotations.EnableKnife4j;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -22,7 +23,6 @@ import springfox.documentation.spi.DocumentationType;
 import springfox.documentation.spi.service.contexts.SecurityContext;
 import springfox.documentation.spring.web.plugins.Docket;
 
-import javax.annotation.Resource;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -34,6 +34,7 @@ import java.util.List;
  * @author Uncarbon
  * @author xiaoymin
  */
+@RequiredArgsConstructor
 @EnableOpenApi
 @EnableKnife4j
 @Import(BeanValidatorPluginsConfiguration.class)
@@ -41,10 +42,9 @@ import java.util.List;
 public class HelioKnife4jAutoConfiguration {
 
     @Value(value = "${sa-token.token-name:Authorization}")
-    private String HEADER_TOKEN_NAME;
+    private String headerTokenName;
 
-    @Resource
-    private HelioProperties helioProperties;
+    private final HelioProperties helioProperties;
 
 
     @Bean
@@ -80,7 +80,7 @@ public class HelioKnife4jAutoConfiguration {
         AuthorizationScope[] authorizationScopes = new AuthorizationScope[1];
         authorizationScopes[0] = authorizationScope;
 
-        references.add(new SecurityReference(HEADER_TOKEN_NAME, authorizationScopes));
+        references.add(new SecurityReference(headerTokenName, authorizationScopes));
 
         return SecurityContext.builder()
                 .securityReferences(references)
@@ -88,7 +88,7 @@ public class HelioKnife4jAutoConfiguration {
     }
 
     private ApiKey apiKeyOfToken() {
-        return new ApiKey(HEADER_TOKEN_NAME, HEADER_TOKEN_NAME, "header");
+        return new ApiKey(headerTokenName, headerTokenName, "header");
     }
 
 }

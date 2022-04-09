@@ -17,9 +17,13 @@
 package cc.uncarbon.framework.rocketmq.annotation;
 
 import com.aliyun.openservices.ons.api.PropertyValueConst;
+import java.lang.annotation.Documented;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Inherited;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 import org.springframework.stereotype.Component;
-
-import java.lang.annotation.*;
 
 /**
  * ClassName: RocketListener
@@ -49,5 +53,18 @@ public @interface RocketListener {
 	 */
 	String messageModel() default PropertyValueConst.CLUSTERING;
 
+	/**
+	 * 消费线程数量，特定需求可以单独指定，默认同配置文件
+	 *
+	 * @return String
+	 */
+	String consumeThreadNums();
+
+	/**
+	 * 一次最大拉取消费数量，特定需求可以单独指定，默认同配置文件
+	 *
+	 * @return String
+	 */
+	String consumeBatchSize();
 
 }

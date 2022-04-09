@@ -3,10 +3,8 @@ package cc.uncarbon.framework.core.context;
 import com.alibaba.ttl.TransmittableThreadLocal;
 import lombok.experimental.UtilityClass;
 
-import java.util.Optional;
-
 /**
- * 存储当前用户上下文
+ * 用户上下文持有者类
  *
  * @author Uncarbon
  */
@@ -17,42 +15,19 @@ public class UserContextHolder {
 
 
     /**
-     * 是否真正存有当前用户上下文，即是否实际登录
-     *
-     * @return true or false
-     */
-    public boolean isActuallyHold() {
-        return THREAD_LOCAL_USER.get() != null;
-    }
-
-    /**
      * 获取当前用户上下文
-     * 注意：即使未登录情况下，该方法也不会返回 null ，而是返回一个空对象
      *
-     * @return 当前用户上下文
+     * @throws NullPointerException 链式调用时需要注意可能存在 NPE 问题
+     * @return null or 当前用户上下文
      */
-    public UserContext getUserContext() {
-        /*
-        必须新创建，否则可能出现租户ID无法切换的BUG
-        不能用 .orElse ，即使条件不满足也会new
-         */
-        return Optional.ofNullable(THREAD_LOCAL_USER.get()).orElseGet(UserContext::new);
-    }
-
-    /**
-     * 获取 Optional 化的当前用户上下文
-     * 用于函数式编码
-     *
-     * @return 当前用户上下文 Optional
-     */
-    public Optional<UserContext> getUserContextOptional() {
-        return Optional.ofNullable(THREAD_LOCAL_USER.get());
+    public UserContext getUserContext() throws NullPointerException {
+        return THREAD_LOCAL_USER.get();
     }
 
     /**
      * 设置当前用户上下文
      *
-     * @param userContext 当前用户上下文
+     * @param userContext 新上下文，传 null 则为清除
      */
     public void setUserContext(UserContext userContext) {
         if (userContext == null) {
@@ -64,38 +39,43 @@ public class UserContextHolder {
     }
 
     /**
-     * 捷径-获取用户ID
+     * 捷径API-取当前用户ID
+     *
+     * @return null or 当前用户ID
      */
     public Long getUserId() {
-        return getUserContext().getUserId();
+        UserContext context = getUserContext();
+        return context == null ? null : context.getUserId();
     }
 
     /**
-     * 捷径-获取用户名
+     * 捷径API-取当前用户名
+     *
+     * @return null or 当前用户名
      */
     public String getUserName() {
-        return getUserContext().getUserName();
+        UserContext context = getUserContext();
+        return context == null ? null : context.getUserName();
     }
 
     /**
-     * 捷径-获取用户手机号
+     * 捷径API-取当前用户手机号
+     *
+     * @return null or 当前用户手机号
      */
     public String getUserPhoneNo() {
-        return getUserContext().getUserPhoneNo();
+        UserContext context = getUserContext();
+        return context == null ? null : context.getUserPhoneNo();
     }
 
     /**
-     * 捷径-获取所属租户
+     * 捷径API-取当前用户 IP 地址
+     *
+     * @return null or 当前用户 IP 地址
      */
-    public TenantContext getRelationalTenant() {
-        return getUserContext().getRelationalTenant();
-    }
-
-    /**
-     * 捷径-设置所属租户
-     */
-    public void setRelationalTenant(TenantContext newTenantContext) {
-        getUserContext().setRelationalTenant(newTenantContext);
+    public String getClientIP() {
+        UserContext context = getUserContext();
+        return context == null ? null : context.getClientIP();
     }
 
 }

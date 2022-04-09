@@ -1,5 +1,7 @@
 package cc.uncarbon.framework.dubbo.filter;
 
+import cc.uncarbon.framework.core.context.TenantContext;
+import cc.uncarbon.framework.core.context.TenantContextHolder;
 import cc.uncarbon.framework.core.context.UserContext;
 import cc.uncarbon.framework.core.context.UserContextHolder;
 import cn.hutool.json.JSONUtil;
@@ -25,12 +27,22 @@ public class ConsumerContextFilter implements Filter {
 
     @Override
     public Result invoke(Invoker<?> invoker, Invocation invocation) throws RpcException {
-        UserContext userContext = UserContextHolder.getUserContext();
-        String userContextJson = JSONUtil.toJsonStr(userContext);
+        // 将用户上下文、租户上下文等业务字段，放进 Dubbo 附件中
 
-        // 放进Dubbo消费者附件中
-        log.debug("[Dubbo RPC] 设置当前用户上下文 >> {}", userContextJson);
-        RpcContext.getContext().setAttachment(UserContext.CAMEL_NAME, userContextJson);
+        UserContext userContext = UserContextHolder.getUserContext();
+        if (userContext != null) {
+            String userContextJson = JSONUtil.toJsonStr(userContext);
+            log.debug("[Dubbo RPC] 设置当前用户上下文 >> {}", userContextJson);
+            RpcContext.getClientAttachment().setAttachment(UserContext.CAMEL_NAME, userContextJson);
+        }
+
+        TenantContext tenantContext = TenantContextHolder.getTenantContext();
+        if (tenantContext != null && tenantContext.getTenantId() != null) {
+            // 实际启用了租户
+            String tenantContextJson = JSONUtil.toJsonStr(tenantContext);
+            log.debug("[Dubbo RPC] 设置当前租户上下文 >> {}", tenantContextJson);
+            RpcContext.getClientAttachment().setAttachment(TenantContext.CAMEL_NAME, tenantContextJson);
+        }
 
         return invoker.invoke(invocation);
     }

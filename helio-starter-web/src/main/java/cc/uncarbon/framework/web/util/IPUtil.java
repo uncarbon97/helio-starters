@@ -1,12 +1,14 @@
 package cc.uncarbon.framework.web.util;
 
 import javax.servlet.http.HttpServletRequest;
+import lombok.experimental.UtilityClass;
 
 /**
  * IP地址工具类
  * 方法来自于互联网
  * @author Uncarbon
  */
+@UtilityClass
 public class IPUtil {
     private static final String[] HEADERS_TO_TRY = {
             "X-Forwarded-For",
@@ -27,7 +29,7 @@ public class IPUtil {
      * @param request 请求对象
      * @return IP地址
      */
-    public static String getClientIPAddress(HttpServletRequest request) {
+    public String getClientIPAddress(HttpServletRequest request) {
         for (String header : HEADERS_TO_TRY) {
             String ip = request.getHeader(header);
             if (ip != null && ip.length() != 0 && !"unknown".equalsIgnoreCase(ip)) {

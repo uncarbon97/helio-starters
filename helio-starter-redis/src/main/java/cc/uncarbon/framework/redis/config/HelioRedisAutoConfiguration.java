@@ -2,6 +2,8 @@ package cc.uncarbon.framework.redis.config;
 
 import cc.uncarbon.framework.redis.lock.RedisDistributedLock;
 import cc.uncarbon.framework.redis.lock.impl.RedisDistributedLockImpl;
+import lombok.RequiredArgsConstructor;
+import org.redisson.api.RedissonClient;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.cache.annotation.EnableCaching;
@@ -13,8 +15,6 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.serializer.GenericJackson2JsonRedisSerializer;
 import org.springframework.data.redis.serializer.StringRedisSerializer;
 
-import javax.annotation.Resource;
-
 
 /**
  * Redis 配置类
@@ -22,45 +22,51 @@ import javax.annotation.Resource;
  * @author zuihou
  * @author Mark sunlightcs@gmail.com
  */
+@RequiredArgsConstructor
 @EnableCaching
 @ConditionalOnClass(RedisConnectionFactory.class)
 @Configuration
-public class RedisAutoConfiguration {
+public class HelioRedisAutoConfiguration {
 
-    @Resource
-    private RedisConnectionFactory factory;
+    private final RedisConnectionFactory factory;
+
+    private final RedissonClient redissonClient;
 
 
     @Bean
-    public RedisTemplate<String, Object> redisTemplate() {
+    @ConditionalOnMissingBean
+    public RedisTemplate<?, ?> redisTemplate() {
+        RedisTemplate<?, ?> redisTemplate = new RedisTemplate<>();
 
-        RedisTemplate<String, Object> redisTemplate = new RedisTemplate<>();
-
-        redisTemplate.setKeySerializer(new StringRedisSerializer());
-        redisTemplate.setHashKeySerializer(new StringRedisSerializer());
-        redisTemplate.setHashValueSerializer(new StringRedisSerializer());
-        /*
-        还有一种StringRedisSerializer序列化器
-         */
-        redisTemplate.setValueSerializer(new GenericJackson2JsonRedisSerializer());
         redisTemplate.setConnectionFactory(factory);
+
+        // 指定相应的序列化方案
+        StringRedisSerializer keySerializer = new StringRedisSerializer();
+        GenericJackson2JsonRedisSerializer valueSerializer = new GenericJackson2JsonRedisSerializer();
+
+        redisTemplate.setKeySerializer(keySerializer);
+        redisTemplate.setHashKeySerializer(keySerializer);
+
+        redisTemplate.setValueSerializer(valueSerializer);
+        redisTemplate.setHashValueSerializer(valueSerializer);
 
         return redisTemplate;
     }
 
     /**
-     * 基于Redisson的分布式锁
+     * 基于 Redisson 的分布式锁
      */
     @Bean
     @ConditionalOnMissingBean
     public RedisDistributedLock redisDistributedLock() {
-        return new RedisDistributedLockImpl();
+        return new RedisDistributedLockImpl(redissonClient);
     }
 
     /**
-     * Key名生成规则
+     * 缓存键名生成规则
      */
     @Bean
+    @ConditionalOnMissingBean
     public KeyGenerator keyGenerator() {
         return (target, method, objects) -> {
             StringBuilder sb = new StringBuilder();

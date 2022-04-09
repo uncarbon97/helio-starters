@@ -1,11 +1,11 @@
 package cc.uncarbon.framework.redis.lock.impl;
 
 import cc.uncarbon.framework.redis.lock.RedisDistributedLock;
+import lombok.AllArgsConstructor;
 import org.redisson.api.RLock;
 import org.redisson.api.RedissonClient;
 import org.springframework.stereotype.Service;
 
-import javax.annotation.Resource;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -14,6 +14,7 @@ import java.util.concurrent.TimeUnit;
  * @author dcy
  * @author Uncarbon
  */
+@AllArgsConstructor
 @Service
 public class RedisDistributedLockImpl implements RedisDistributedLock {
 
@@ -22,8 +23,7 @@ public class RedisDistributedLockImpl implements RedisDistributedLock {
      */
     private static final String LOCK_KEY_PREFIX = "distributedLock:";
 
-    @Resource
-    private RedissonClient redissonClient;
+    private final RedissonClient redissonClient;
 
 
     @Override
