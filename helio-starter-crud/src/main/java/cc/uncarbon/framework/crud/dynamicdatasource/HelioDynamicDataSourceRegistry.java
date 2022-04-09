@@ -40,10 +40,10 @@ public class HelioDynamicDataSourceRegistry {
      * 查询是否已存在数据源
      *
      * @param dataSourceName 数据源名称
-     * @param acquireIfAbsent 缺失时尝试从 IoC 容器中获取，并加入数据源缓存
+     * @param obtainIfAbsent 缺失时尝试从 IoC 容器中获取，并加入数据源缓存
      * @return boolean
      */
-    public boolean containsDataSource(String dataSourceName, boolean acquireIfAbsent) {
+    public boolean containsDataSource(String dataSourceName, boolean obtainIfAbsent) {
         /*
         配置不存在则动态添加数据源，以懒加载的模式解决分布式场景的配置同步
         为了保证数据完整性，配置后生成数据源缓存，后台便无法修改更换数据源，若一定要修改请迁移数据后重启服务或自行修改底层逻辑
@@ -52,7 +52,7 @@ public class HelioDynamicDataSourceRegistry {
             return true;
         }
 
-        if (!acquireIfAbsent) {
+        if (!obtainIfAbsent) {
             return false;
         }
 

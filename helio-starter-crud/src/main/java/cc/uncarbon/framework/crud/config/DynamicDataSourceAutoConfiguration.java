@@ -5,10 +5,11 @@ import cc.uncarbon.framework.crud.dynamicdatasource.HelioDynamicDataSourceRegist
 import com.baomidou.dynamic.datasource.DynamicRoutingDataSource;
 import com.baomidou.dynamic.datasource.creator.HikariDataSourceCreator;
 import org.springframework.beans.factory.ObjectProvider;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.context.annotation.Bean;
 
+@ConditionalOnClass(value = DynamicRoutingDataSource.class)
 public class DynamicDataSourceAutoConfiguration {
-
 
     @Bean
     public HelioDynamicDataSourceRegistry helioDynamicDataSourceRegistry(

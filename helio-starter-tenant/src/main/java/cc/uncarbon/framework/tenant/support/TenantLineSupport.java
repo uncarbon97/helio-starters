@@ -35,8 +35,9 @@ public class TenantLineSupport implements TenantSupport {
                 )
         );
 
-        log.info("\n\n[多租户支持] >> 隔离级别: 行级，以下数据表不参与租户隔离: {}\n",
-                ignoredTables);
+        log.info("\n\n[多租户支持] >> 隔离级别: 行级");
+
+        System.err.println("以下数据表不参与租户隔离: " + ignoredTables);
     }
 
 

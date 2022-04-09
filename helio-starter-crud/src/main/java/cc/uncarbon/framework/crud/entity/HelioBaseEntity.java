@@ -1,9 +1,15 @@
 package cc.uncarbon.framework.crud.entity;
 
 import cc.uncarbon.framework.core.constant.HelioConstant;
-import com.baomidou.mybatisplus.annotation.*;
+import com.baomidou.mybatisplus.annotation.FieldFill;
+import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.TableField;
+import com.baomidou.mybatisplus.annotation.TableId;
+import com.baomidou.mybatisplus.annotation.TableLogic;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import io.swagger.annotations.ApiModelProperty;
+import java.io.Serializable;
+import java.time.LocalDateTime;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -11,11 +17,9 @@ import lombok.experimental.Accessors;
 import lombok.experimental.SuperBuilder;
 import org.springframework.format.annotation.DateTimeFormat;
 
-import java.io.Serializable;
-import java.time.LocalDateTime;
-
 /**
  * 基础实体类，默认含[行级租户ID]
+ * T = 主键类型，一般用 Long
  *
  * @author Uncarbon
  */
@@ -24,7 +28,7 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
-public abstract class HelioBaseEntity<PK extends Serializable> implements Serializable {
+public abstract class HelioBaseEntity<T extends Serializable> implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
@@ -34,7 +38,7 @@ public abstract class HelioBaseEntity<PK extends Serializable> implements Serial
      */
     @ApiModelProperty(value = "主键ID")
     @TableId(value = "id", type = IdType.ASSIGN_ID)
-    private PK id;
+    private T id;
 
     /**
      * 行级租户ID
