@@ -29,11 +29,12 @@
 
     <groupId>cc.uncarbon.framework</groupId>
     <artifactId>helio-starters</artifactId>
-    <version>1.5.1-SNAPSHOT</version>
+    <version>${revision}</version>
 
     <properties>
         <!-- core versions -->
-        <helio-starters.version>1.5.1-SNAPSHOT</helio-starters.version>
+        <revision>1.5.1</revision>
+        <helio-starters.version>${revision}</helio-starters.version>
         <!-- JDK8则改为'1.8'  JDK11则改为'11' -->
         <java.version>1.8</java.version>
         <!-- 若变更Spring Boot版本, 上面parent依赖版本也要变 -->
@@ -455,4 +456,37 @@
             </dependency>
         </dependencies>
     </dependencyManagement>
+
+
+    <!-- 项目构建 -->
+    <build>
+        <plugins>
+            <!-- 统一版本号管理 -->
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>flatten-maven-plugin</artifactId>
+                <version>1.1.0</version>
+                <configuration>
+                    <updatePomFile>true</updatePomFile>
+                    <flattenMode>resolveCiFriendliesOnly</flattenMode>
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>flatten</id>
+                        <phase>process-resources</phase>
+                        <goals>
+                            <goal>flatten</goal>
+                        </goals>
+                    </execution>
+                    <execution>
+                        <id>flatten.clean</id>
+                        <phase>clean</phase>
+                        <goals>
+                            <goal>clean</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
 </project>
