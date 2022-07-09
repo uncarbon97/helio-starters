@@ -1,8 +1,10 @@
 package cc.uncarbon.framework.core.constant;
 
-
-import java.util.Locale;
-
+/**
+ * Helio 基础常量定义
+ *
+ * @author Uncarbon
+ */
 public interface HelioConstant {
     interface Dubbo {
         String ENABLE_VALIDATION = "true";
@@ -29,22 +31,12 @@ public interface HelioConstant {
     }
 
     interface Jackson {
-        @Deprecated
-        Locale LOCALE = Locale.CHINA;
-        @Deprecated
-        String TIME_ZONE = "GMT+8";
         String DATE_FORMAT = "yyyy-MM-dd";
         String TIME_FORMAT = "HH:mm:ss";
         String DATE_TIME_FORMAT = Jackson.DATE_FORMAT + " " + Jackson.TIME_FORMAT;
     }
 
     interface CRUD {
-        /**
-         * 该租户ID为超级租户, 可以无视租户SQL拦截器
-         */
-        @Deprecated
-        Long DEFAULT_PRIVILEGED_TENANT_ID = Tenant.DEFAULT_PRIVILEGED_TENANT_ID;
-
         /**
          * 租户ID
          */
@@ -79,11 +71,6 @@ public interface HelioConstant {
          * SQL LIMIT 1
          */
         String SQL_LIMIT_1 = " LIMIT 1";
-
-        /**
-         * SQL 列名 id
-         */
-        String SQL_COLUMN_ID = " id ";
 
     }
 
