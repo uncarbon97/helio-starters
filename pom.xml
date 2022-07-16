@@ -23,7 +23,7 @@
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
-        <version>2.6.8</version>
+        <version>2.7.1</version>
         <relativePath/>
     </parent>
 
@@ -33,12 +33,12 @@
 
     <properties>
         <!-- core versions -->
-        <revision>1.5.1</revision>
+        <revision>1.6.0</revision>
         <helio-starters.version>${revision}</helio-starters.version>
         <!-- JDK8则改为'1.8'  JDK11则改为'11' -->
         <java.version>1.8</java.version>
         <!-- 若变更Spring Boot版本, 上面parent依赖版本也要变 -->
-        <spring-boot.version>2.6.8</spring-boot.version>
+        <spring-boot.version>2.7.1</spring-boot.version>
 
 
         <!-- Spring Cloud versions -->
@@ -48,17 +48,17 @@
 
         <!-- Spring Cloud Alibaba versions -->
         <spring-cloud-alibaba.version>2021.0.1.0</spring-cloud-alibaba.version>
-        <dubbo.version>3.0.6</dubbo.version>
+        <dubbo.version>3.0.9</dubbo.version>
         <seata.vesion>1.4.2</seata.vesion>
-        <nacos-client.vesion>2.0.4</nacos-client.vesion>
+        <nacos-client.vesion>2.1.0</nacos-client.vesion>
 
 
         <!-- 3rd-party versions -->
-        <hutool.version>5.7.22</hutool.version>
+        <hutool.version>5.8.4</hutool.version>
         <sa-token.version>1.30.0</sa-token.version>
         <transmittable-thread-local.version>2.12.1</transmittable-thread-local.version>
-        <!-- 3.5.1 版本根据 issue 显示，有多租户、枚举类等兼容性问题，暂缓升级 -->
-        <mybatis-plus.version>3.4.3.4</mybatis-plus.version>
+        <!-- 如果 mp 较新版存在问题，可以回退至 3.4.3.4 试试  -->
+        <mybatis-plus.version>3.5.2</mybatis-plus.version>
         <knife4j.version>3.0.3</knife4j.version>
         <redisson.version>3.16.7</redisson.version>
         <aspectj.version>1.9.6</aspectj.version>

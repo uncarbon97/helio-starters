@@ -32,17 +32,22 @@ public class GlobalTenantDataSourceInterceptor implements MethodInterceptor {
             return invocation.proceed();
         }
 
+        // 是否有切换过数据源(入栈)
+        boolean pushedFlag = false;
         try {
             // 不适合纯数字作为数据源名称，给他拼个前缀
             String tenantDataSourceName = CRUD.COLUMN_TENANT_ID + currentTenantId;
             if (dataSourceRegistry.containsDataSource(tenantDataSourceName, true)) {
                 log.debug("[多租户][数据源级] 使用租户数据源 >> {}", tenantDataSourceName);
                 DynamicDataSourceContextHolder.push(tenantDataSourceName);
+                pushedFlag = true;
             }
-
             return invocation.proceed();
         } finally {
-            DynamicDataSourceContextHolder.poll();
+            if (pushedFlag) {
+                // 数据源出栈
+                DynamicDataSourceContextHolder.poll();
+            }
         }
     }
 }
