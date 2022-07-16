@@ -1,13 +1,12 @@
 package cc.uncarbon.framework.core.enums;
 
 import cc.uncarbon.framework.core.exception.BusinessException;
-import cn.hutool.core.collection.CollUtil;
+import cn.hutool.core.collection.IterUtil;
 import cn.hutool.core.util.NumberUtil;
 import cn.hutool.core.util.ObjectUtil;
 import cn.hutool.core.util.StrUtil;
 import java.io.Serializable;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.Optional;
 import java.util.function.Predicate;
 
@@ -170,11 +169,11 @@ public interface HelioBaseEnum<T> extends Serializable {
      * 断言不为空文本
      * 注意：枚举选项的 value 建议为整数类型
      *
-     * @param str 需要判断的对象
+     * @param cs 需要判断的对象
      * @param templateParams label 中如果有占位符的话，向里面填充的模板参数
      */
-    default void assertNotBlank(CharSequence str, Object... templateParams) {
-        if (StrUtil.isNotBlank(str)) {
+    default void assertNotBlank(CharSequence cs, Object... templateParams) {
+        if (StrUtil.isNotBlank(cs)) {
             return;
         }
 
@@ -182,14 +181,14 @@ public interface HelioBaseEnum<T> extends Serializable {
     }
 
     /**
-     * 断言不为空列表
+     * 断言不为空集合
      * 注意：枚举选项的 value 建议为整数类型
      *
-     * @param list 需要判断的对象
+     * @param iterable 需要判断的对象
      * @param templateParams label 中如果有占位符的话，向里面填充的模板参数
      */
-    default void assertNotEmpty(Collection<?> list, Object... templateParams) {
-        if (CollUtil.isNotEmpty(list)) {
+    default void assertNotEmpty(Iterable<?> iterable, Object... templateParams) {
+        if (IterUtil.isNotEmpty(iterable)) {
             return;
         }
 
