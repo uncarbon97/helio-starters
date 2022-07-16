@@ -54,11 +54,11 @@
 
 
         <!-- 3rd-party versions -->
-        <hutool.version>5.7.22</hutool.version>
+        <hutool.version>5.8.4</hutool.version>
         <sa-token.version>1.30.0</sa-token.version>
         <transmittable-thread-local.version>2.12.1</transmittable-thread-local.version>
-        <!-- 3.5.1 版本根据 issue 显示，有多租户、枚举类等兼容性问题，暂缓升级 -->
-        <mybatis-plus.version>3.4.3.4</mybatis-plus.version>
+        <!-- 如果 mp 较新版存在问题，可以回退至 3.4.3.4 试试  -->
+        <mybatis-plus.version>3.5.2</mybatis-plus.version>
         <knife4j.version>3.0.3</knife4j.version>
         <redisson.version>3.16.7</redisson.version>
         <aspectj.version>1.9.6</aspectj.version>
