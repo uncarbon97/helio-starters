@@ -3,11 +3,6 @@ package cc.uncarbon.framework.web.util;
 import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.util.StrUtil;
 import io.swagger.annotations.ApiModelProperty;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -15,6 +10,12 @@ import lombok.experimental.SuperBuilder;
 import lombok.experimental.UtilityClass;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * 参数绑定验证
@@ -27,15 +28,16 @@ public class InvalidFieldUtil {
 
     /**
      * 特定关键词时-指定文案映射关系
+     * 使用 public 修饰符以支持外部变更
      */
-    private final Map<String, String> MESSAGE_MASKING_MAP = new HashMap<>(16);
+    public final Map<String, String> MESSAGE_MASKING_MAPPER = new ConcurrentHashMap<>(16);
 
     static {
         /*
         完整的默认消息
         Failed to convert property value of type 'java.lang.String' to required type 'java.time.LocalDateTime' for property 'beginAt'; nested exception is org.springframework.core.convert.ConversionFailedException: Failed to convert from type [java.lang.String] to type [@com.fasterxml.jackson.annotation.JsonFormat @io.swagger.annotations.ApiModelProperty @org.springframework.format.annotation.DateTimeFormat java.time.LocalDateTime] for value '2022-08-18'; nested exception is java.lang.IllegalArgumentException: Parse attempt failed for value [2022-08-18]
          */
-        MESSAGE_MASKING_MAP.put("Failed to convert property value of type", "错误参数格式或值");
+        MESSAGE_MASKING_MAPPER.put("Failed to convert property value of type", "错误参数格式或值");
     }
 
     /**
@@ -108,7 +110,7 @@ public class InvalidFieldUtil {
             return StrUtil.EMPTY;
         }
 
-        for (Entry<String, String> entry : MESSAGE_MASKING_MAP.entrySet()) {
+        for (Entry<String, String> entry : MESSAGE_MASKING_MAPPER.entrySet()) {
             if (defaultMessage.contains(entry.getKey())) {
                 return entry.getValue();
             }
