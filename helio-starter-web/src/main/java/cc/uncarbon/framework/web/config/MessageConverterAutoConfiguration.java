@@ -1,26 +1,30 @@
 package cc.uncarbon.framework.web.config;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import lombok.AllArgsConstructor;
-import org.springframework.context.annotation.Configuration;
+import java.nio.charset.StandardCharsets;
+import java.util.List;
+import lombok.RequiredArgsConstructor;
+import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
-import org.springframework.http.converter.*;
+import org.springframework.http.converter.ByteArrayHttpMessageConverter;
+import org.springframework.http.converter.HttpMessageConverter;
+import org.springframework.http.converter.ResourceHttpMessageConverter;
+import org.springframework.http.converter.ResourceRegionHttpMessageConverter;
+import org.springframework.http.converter.StringHttpMessageConverter;
 import org.springframework.http.converter.json.AbstractJackson2HttpMessageConverter;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
-import java.nio.charset.StandardCharsets;
-import java.util.List;
-
 /**
- * Jackson类型转换器配置
+ * Jackson 类型转换器自动配置类
  *
  * @author Zhu JW
+ * @author Uncarbon
  **/
-@AllArgsConstructor
+@RequiredArgsConstructor
 @Order(Ordered.HIGHEST_PRECEDENCE)
-@Configuration
+@AutoConfiguration
 public class MessageConverterAutoConfiguration implements WebMvcConfigurer {
 
     private final ObjectMapper objectMapper;

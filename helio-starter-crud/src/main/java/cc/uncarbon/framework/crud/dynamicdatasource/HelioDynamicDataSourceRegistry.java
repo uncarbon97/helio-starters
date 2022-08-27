@@ -18,7 +18,6 @@ import org.springframework.beans.factory.ObjectProvider;
  */
 @RequiredArgsConstructor
 @Slf4j
-// @ConditionalOnClass(value = DynamicRoutingDataSource.class)
 public class HelioDynamicDataSourceRegistry {
 
     private final DynamicRoutingDataSource dynamicRoutingDataSource;

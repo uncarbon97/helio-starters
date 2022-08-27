@@ -1,12 +1,14 @@
 package cc.uncarbon.framework.cloud.config;
 
+import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
-import org.springframework.context.annotation.Configuration;
 
 /**
+ * 启用服务发现 自动配置类
+ *
  * @author Uncarbon
  */
 @EnableDiscoveryClient
-@Configuration
+@AutoConfiguration
 public class NacosDiscoveryAutoConfiguration {
 }

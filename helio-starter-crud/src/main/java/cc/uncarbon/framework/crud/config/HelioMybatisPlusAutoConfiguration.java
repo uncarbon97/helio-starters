@@ -12,20 +12,20 @@ import com.baomidou.mybatisplus.extension.plugins.inner.OptimisticLockerInnerInt
 import com.baomidou.mybatisplus.extension.plugins.inner.PaginationInnerInterceptor;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 /**
- * Mybatis-Plus配置类
+ * Helio Mybatis-Plus 自动配置类
  *
  * @author Uncarbon
  */
 @EnableTransactionManagement(
         proxyTargetClass = true
 )
-@Configuration
+@AutoConfiguration
 @Slf4j
 @RequiredArgsConstructor
 public class HelioMybatisPlusAutoConfiguration {

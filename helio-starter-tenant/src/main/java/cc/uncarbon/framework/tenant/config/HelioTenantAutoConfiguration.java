@@ -6,15 +6,16 @@ import cc.uncarbon.framework.crud.support.impl.DefaultTenantSupport;
 import cc.uncarbon.framework.tenant.support.TenantDataSourceSupport;
 import cc.uncarbon.framework.tenant.support.TenantLineSupport;
 import lombok.RequiredArgsConstructor;
+import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.context.support.GenericApplicationContext;
 
 /**
  * Helio 多租户自动配置类
  * 当启用多租户功能，且多租户隔离级别配置正确，则向 IoC 容器注入对应处理 Bean
+ *
+ * @author Uncarbon
  */
-@Configuration
+@AutoConfiguration
 @RequiredArgsConstructor
 public class HelioTenantAutoConfiguration {
 
@@ -22,7 +23,7 @@ public class HelioTenantAutoConfiguration {
 
 
     @Bean
-    public TenantSupport tenantSupport(GenericApplicationContext applicationContext) {
+    public TenantSupport tenantSupport() {
         if (!Boolean.TRUE.equals(helioProperties.getTenant().getEnabled())) {
             // 引入了 starter，但未启用多租户
             return new DefaultTenantSupport();

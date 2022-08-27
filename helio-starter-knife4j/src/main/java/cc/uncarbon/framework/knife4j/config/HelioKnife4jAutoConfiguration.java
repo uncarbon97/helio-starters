@@ -4,10 +4,12 @@ package cc.uncarbon.framework.knife4j.config;
 import cc.uncarbon.framework.core.props.HelioProperties;
 import cn.hutool.core.collection.CollUtil;
 import com.github.xiaoymin.knife4j.spring.annotations.EnableKnife4j;
+import java.util.ArrayList;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.core.annotation.Order;
 import springfox.bean.validators.configuration.BeanValidatorPluginsConfiguration;
@@ -23,9 +25,6 @@ import springfox.documentation.spi.DocumentationType;
 import springfox.documentation.spi.service.contexts.SecurityContext;
 import springfox.documentation.spring.web.plugins.Docket;
 
-import java.util.ArrayList;
-import java.util.List;
-
 
 /**
  * Helio knife4j 自动配置类
@@ -38,7 +37,7 @@ import java.util.List;
 @EnableOpenApi
 @EnableKnife4j
 @Import(BeanValidatorPluginsConfiguration.class)
-@Configuration
+@AutoConfiguration
 public class HelioKnife4jAutoConfiguration {
 
     @Value(value = "${sa-token.token-name:Authorization}")

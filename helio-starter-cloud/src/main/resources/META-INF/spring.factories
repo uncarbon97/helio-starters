@@ -1,3 +1,0 @@
-org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
-  cc.uncarbon.framework.cloud.config.NacosDiscoveryAutoConfiguration,\
-  cc.uncarbon.framework.cloud.config.NacosConfigAutoConfiguration

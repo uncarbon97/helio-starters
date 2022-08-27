@@ -12,7 +12,7 @@ import java.nio.charset.StandardCharsets;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.context.annotation.Configuration;
+import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -27,13 +27,14 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.NoHandlerFoundException;
 
 /**
- * Web全局异常处理
+ * Web 全局异常处理自动配置类
+ *
  * @author Uncarbon
  */
 @Slf4j
 @RestController
 @ControllerAdvice
-@Configuration
+@AutoConfiguration
 public class AdviceExceptionAutoConfiguration {
 
     protected static final MediaType MEDIA_TYPE = new MediaType("application", "json", StandardCharsets.UTF_8);
@@ -107,13 +108,13 @@ public class AdviceExceptionAutoConfiguration {
     @ExceptionHandler({JsonParseException.class, HttpMessageNotReadableException.class, IllegalArgumentException.class})
     public ResponseEntity<ApiResult<?>> handleJsonParseException(Exception e, HttpServletRequest request) {
         this.logError(e, request);
-        ApiResult<?> ret = ApiResult.fail(HttpStatus.NOT_ACCEPTABLE.value(), "错误参数格式或值(如应该输入整数的部分填写了其他内容，或超过枚举值限制)");
+        ApiResult<?> ret = ApiResult.fail(HttpStatus.NOT_ACCEPTABLE.value(), "错误参数格式或值");
         return createResponseEntity(HttpStatus.BAD_REQUEST, ret);
     }
 
     /**
-     * JSR303 表单参数校验失败
-     * 需在Controller层使用@Valid注解
+     * JSR303 表单参数校验失败，或入参格式转换失败
+     * 需在 Controller 层使用@Valid注解
      */
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ExceptionHandler({MethodArgumentNotValidException.class, BindException.class})

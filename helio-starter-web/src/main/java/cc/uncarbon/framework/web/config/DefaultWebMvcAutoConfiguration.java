@@ -3,7 +3,7 @@ package cc.uncarbon.framework.web.config;
 import cc.uncarbon.framework.web.jackson.EnumConverterFactory;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.propertyeditors.StringTrimmerEditor;
-import org.springframework.context.annotation.Configuration;
+import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.format.FormatterRegistry;
 import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.support.WebBindingInitializer;
@@ -11,12 +11,12 @@ import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 /**
- * 默认WebMVC配置
+ * 默认 WebMVC 行为自动配置类
  *
  * @author Uncarbon
  **/
 @Slf4j
-@Configuration
+@AutoConfiguration
 public class DefaultWebMvcAutoConfiguration implements WebMvcConfigurer, WebBindingInitializer {
     /**
      * 自定义静态资源
