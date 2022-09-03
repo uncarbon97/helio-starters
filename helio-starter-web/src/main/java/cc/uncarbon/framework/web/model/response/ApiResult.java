@@ -9,7 +9,6 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.Accessors;
-import lombok.experimental.SuperBuilder;
 
 import java.io.Serializable;
 
@@ -19,14 +18,13 @@ import java.io.Serializable;
  * @author Uncarbon
  */
 @Accessors(chain = true)
-@SuperBuilder
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
 public class ApiResult<T> implements Serializable {
 
     @ApiModelProperty(value = "状态码")
-    private Integer code;
+    private int code;
 
     @ApiModelProperty(value = "返回消息")
     private String msg;
