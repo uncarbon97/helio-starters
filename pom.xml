@@ -43,14 +43,14 @@
 
         <!-- Spring Cloud versions -->
         <!-- https://mvnrepository.com/artifact/org.springframework.cloud/spring-cloud-dependencies -->
-        <spring-cloud.version>2021.0.1</spring-cloud.version>
+        <spring-cloud.version>2021.0.3</spring-cloud.version>
         <spring-cloud-starter-bootstrap.version>3.0.3</spring-cloud-starter-bootstrap.version>
 
         <!-- Spring Cloud Alibaba versions -->
         <spring-cloud-alibaba.version>2021.0.1.0</spring-cloud-alibaba.version>
-        <dubbo.version>3.0.9</dubbo.version>
+        <dubbo.version>3.1.0</dubbo.version>
         <seata.vesion>1.4.2</seata.vesion>
-        <nacos-client.vesion>2.1.0</nacos-client.vesion>
+        <nacos-client.vesion>2.1.1</nacos-client.vesion>
 
 
         <!-- 3rd-party versions -->
@@ -60,11 +60,11 @@
         <!-- 如果 mp 较新版存在问题，可以回退至 3.4.3.4 试试  -->
         <mybatis-plus.version>3.5.2</mybatis-plus.version>
         <knife4j.version>3.0.3</knife4j.version>
-        <redisson.version>3.16.7</redisson.version>
+        <redisson.version>3.17.6</redisson.version>
         <aspectj.version>1.9.6</aspectj.version>
         <ons-client.version>1.8.8.1.Final</ons-client.version>
         <guava.version>31.1-jre</guava.version>
-        <mybatis-plus-dynamic-datasource.version>3.5.1</mybatis-plus-dynamic-datasource.version>
+        <mybatis-plus-dynamic-datasource.version>3.5.2</mybatis-plus-dynamic-datasource.version>
 
 
         <!-- DB Driver versions -->
