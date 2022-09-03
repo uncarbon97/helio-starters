@@ -143,7 +143,7 @@ public interface HelioBaseEnum<T> extends Serializable {
     }
 
     default String formatLabel(Object... templateParams) {
-        if (templateParams == null || templateParams.length <= 0) {
+        if (templateParams == null || templateParams.length == 0) {
             return this.getLabel();
         }
 
