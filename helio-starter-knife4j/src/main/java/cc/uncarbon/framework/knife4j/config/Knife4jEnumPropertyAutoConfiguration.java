@@ -71,7 +71,7 @@ public class Knife4jEnumPropertyAutoConfiguration implements ModelPropertyBuilde
                     newDescription.append(" ");
                 }
             }
-            newDescription.append(")");
+            newDescription.append(")<br />");
 
             // 更新文档中的描述
             context.getSpecificationBuilder().description(newDescription.toString());

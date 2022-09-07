@@ -24,6 +24,7 @@ import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 import org.springframework.web.servlet.NoHandlerFoundException;
 
 /**
@@ -103,9 +104,12 @@ public class AdviceExceptionAutoConfiguration {
      *
      * IllegalArgumentException
      * 不合法的参数异常
+     *
+     * MethodArgumentTypeMismatchException
+     * "@PathVariable" 注解收参类型为 Long，但传的是 String
      */
     @ResponseStatus(HttpStatus.BAD_REQUEST)
-    @ExceptionHandler({JsonParseException.class, HttpMessageNotReadableException.class, IllegalArgumentException.class})
+    @ExceptionHandler({JsonParseException.class, HttpMessageNotReadableException.class, IllegalArgumentException.class, MethodArgumentTypeMismatchException.class})
     public ResponseEntity<ApiResult<?>> handleJsonParseException(Exception e, HttpServletRequest request) {
         this.logError(e, request);
         ApiResult<?> ret = ApiResult.fail(HttpStatus.NOT_ACCEPTABLE.value(), "错误参数格式或值");
