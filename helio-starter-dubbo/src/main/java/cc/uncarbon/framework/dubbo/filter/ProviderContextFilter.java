@@ -26,6 +26,10 @@ public class ProviderContextFilter implements Filter {
         since 1.6.0 附件内容不再是 JSON 字符串，直接使用可序列化的对象
          */
 
+        // 清理数据，避免线程池化复用残留
+        UserContextHolder.clear();
+        TenantContextHolder.clear();
+
         Object attachment = RpcContext.getServerAttachment().getObjectAttachment(UserContext.CAMEL_NAME);
         if (attachment instanceof UserContext) {
             UserContext userContext = (UserContext) attachment;
