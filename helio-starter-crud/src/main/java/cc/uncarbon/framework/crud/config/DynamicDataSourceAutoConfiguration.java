@@ -8,6 +8,11 @@ import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.context.annotation.Bean;
 
+/**
+ * 动态数据源自动配置类
+ *
+ * @author Uncarbon
+ */
 @ConditionalOnClass(value = DynamicRoutingDataSource.class)
 public class DynamicDataSourceAutoConfiguration {
 

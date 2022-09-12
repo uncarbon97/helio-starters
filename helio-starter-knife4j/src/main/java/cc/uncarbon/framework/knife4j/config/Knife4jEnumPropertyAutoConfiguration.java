@@ -2,18 +2,18 @@ package cc.uncarbon.framework.knife4j.config;
 
 import cc.uncarbon.framework.core.enums.HelioBaseEnum;
 import io.swagger.annotations.ApiModelProperty;
+import java.util.Optional;
+import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
-import org.springframework.stereotype.Component;
 import springfox.documentation.schema.Annotations;
 import springfox.documentation.spi.DocumentationType;
 import springfox.documentation.spi.schema.ModelPropertyBuilderPlugin;
 import springfox.documentation.spi.schema.contexts.ModelPropertyContext;
 import springfox.documentation.swagger.schema.ApiModelProperties;
 
-import java.util.Optional;
-
 /**
- * 非生产环境下，为 Knife4j 文档生成枚举类描述
+ * knife4j 枚举增强自动配置类
+ * 非生产环境下，为 knife4j 文档生成枚举类描述
  * 示例代码：
  *     @ApiModelProperty(value = "性别")
  *     private GenderEnum gender;
@@ -25,7 +25,7 @@ import java.util.Optional;
  * @author Uncarbon
  */
 @ConditionalOnProperty(prefix = "knife4j", value = "production", havingValue = "false")
-@Component
+@AutoConfiguration
 public class Knife4jEnumPropertyAutoConfiguration implements ModelPropertyBuilderPlugin {
 
     @Override
@@ -71,7 +71,7 @@ public class Knife4jEnumPropertyAutoConfiguration implements ModelPropertyBuilde
                     newDescription.append(" ");
                 }
             }
-            newDescription.append(")");
+            newDescription.append(")<br />");
 
             // 更新文档中的描述
             context.getSpecificationBuilder().description(newDescription.toString());

@@ -1,7 +1,0 @@
-org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
-  cc.uncarbon.framework.web.listener.LaunchEventListener,\
-  cc.uncarbon.framework.web.config.DefaultWebMvcAutoConfiguration,\
-  cc.uncarbon.framework.web.config.AdviceExceptionAutoConfiguration,\
-  cc.uncarbon.framework.web.config.JacksonExtendAutoConfiguration,\
-  cc.uncarbon.framework.web.config.MessageConverterAutoConfiguration,\
-  cc.uncarbon.framework.web.config.XssAutoConfiguration

@@ -1,16 +1,16 @@
 package cc.uncarbon.framework.core.config;
 
 import cc.uncarbon.framework.core.props.HelioProperties;
+import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
-import org.springframework.context.annotation.Configuration;
 
 /**
- * 自动配置文件读取
+ * properties 解析自动配置类
  *
  * @author Uncarbon
  */
 @EnableConfigurationProperties(value = {HelioProperties.class})
-@Configuration
+@AutoConfiguration
 public class HelioPropertiesAutoConfiguration {
 
 }

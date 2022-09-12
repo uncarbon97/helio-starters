@@ -22,31 +22,28 @@ import cc.uncarbon.framework.rocketmq.container.RocketProducerContainer;
 import cc.uncarbon.framework.rocketmq.core.serializer.JacksonJsonSerializer;
 import cc.uncarbon.framework.rocketmq.core.serializer.RocketSerializer;
 import cc.uncarbon.framework.rocketmq.props.AliyunRocketProperties;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import lombok.RequiredArgsConstructor;
+import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
-
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 
 
 /**
- * 阿里云 Rocket MQ 配置类
+ * 阿里云 Rocket MQ 自动配置类
  *
  * @author ThierrySquirrel
  * @author Uncarbon
  */
 @RequiredArgsConstructor
 @EnableConfigurationProperties(value = {AliyunRocketProperties.class})
-@Configuration
+@AutoConfiguration
 public class AliyunRocketAutoConfiguration {
 
     private final AliyunRocketProperties rocketProperties;
-
     private final Map<String, Object> consumerContainer;
-
     private final RocketSerializer rocketSerializer;
 
 

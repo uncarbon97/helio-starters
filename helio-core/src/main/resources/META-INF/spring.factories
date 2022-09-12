@@ -1,3 +1,0 @@
-org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
-  cc.uncarbon.framework.core.config.HelioPropertiesAutoConfiguration,\
-  cc.uncarbon.framework.core.config.AdaptHistoryVersionAutoConfiguration

@@ -1,2 +1,0 @@
-org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
-  cc.uncarbon.framework.redis.config.HelioRedisAutoConfiguration

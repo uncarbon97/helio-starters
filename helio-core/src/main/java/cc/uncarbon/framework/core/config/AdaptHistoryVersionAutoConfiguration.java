@@ -7,9 +7,9 @@ import java.util.Map;
 import java.util.Set;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
+import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.env.OriginTrackedMapPropertySource;
 import org.springframework.context.EnvironmentAware;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.env.Environment;
 import org.springframework.core.env.MutablePropertySources;
@@ -18,10 +18,9 @@ import org.springframework.core.env.PropertySource;
 /**
  * 兼容历史版本 自动配置类
  *
- * @author kong
  * @author Uncarbon
  */
-@Configuration
+@AutoConfiguration
 @RequiredArgsConstructor
 public class AdaptHistoryVersionAutoConfiguration implements EnvironmentAware {
 

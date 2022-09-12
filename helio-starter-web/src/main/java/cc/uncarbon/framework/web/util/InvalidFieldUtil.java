@@ -1,9 +1,8 @@
 package cc.uncarbon.framework.web.util;
 
 import cn.hutool.core.collection.CollUtil;
+import cn.hutool.core.util.StrUtil;
 import io.swagger.annotations.ApiModelProperty;
-import java.util.ArrayList;
-import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -11,6 +10,12 @@ import lombok.experimental.SuperBuilder;
 import lombok.experimental.UtilityClass;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * 参数绑定验证
@@ -22,10 +27,25 @@ import org.springframework.validation.FieldError;
 public class InvalidFieldUtil {
 
     /**
+     * 特定关键词时-指定文案映射关系
+     * 使用 public 修饰符以支持外部变更
+     */
+    public final Map<String, String> MESSAGE_MASKING_MAPPER = new ConcurrentHashMap<>(16);
+
+    static {
+        /*
+        完整的默认消息
+        Failed to convert property value of type 'java.lang.String' to required type 'java.time.LocalDateTime' for property 'beginAt'; nested exception is org.springframework.core.convert.ConversionFailedException: Failed to convert from type [java.lang.String] to type [@com.fasterxml.jackson.annotation.JsonFormat @io.swagger.annotations.ApiModelProperty @org.springframework.format.annotation.DateTimeFormat java.time.LocalDateTime] for value '2022-08-18'; nested exception is java.lang.IllegalArgumentException: Parse attempt failed for value [2022-08-18]
+         */
+        MESSAGE_MASKING_MAPPER.put("Failed to convert property value of type", "错误参数格式或值");
+    }
+
+    /**
      * 参数绑定验证
+     *
      * @return 快速返回首个无效表单项
      */
-    public static InvalidField getInvalidField(BindingResult bindingResult) {
+    public InvalidField getInvalidField(BindingResult bindingResult) {
         if (bindingResult == null) {
             return null;
         }
@@ -37,15 +57,16 @@ public class InvalidFieldUtil {
 
         return InvalidField.builder()
                 .fieldName(fieldError.getField())
-                .message(fieldError.getDefaultMessage())
+                .message(maskMessage(fieldError.getDefaultMessage()))
                 .build();
     }
 
     /**
      * 参数绑定验证
+     *
      * @return 全量返回无效表单项
      */
-    public static List<InvalidField> listInvalidField(BindingResult bindingResult) {
+    public List<InvalidField> listInvalidField(BindingResult bindingResult) {
         List<InvalidField> invalidFieldList = new ArrayList<>();
         if (bindingResult == null || CollUtil.isEmpty(bindingResult.getFieldErrors())) {
             // 返回空List
@@ -56,7 +77,7 @@ public class InvalidFieldUtil {
         for (FieldError fieldError : fieldErrorList) {
             InvalidField invalidField = new InvalidField();
             invalidField.setFieldName(fieldError.getField());
-            invalidField.setMessage(fieldError.getDefaultMessage());
+            invalidField.setMessage(maskMessage(fieldError.getDefaultMessage()));
             invalidFieldList.add(invalidField);
         }
 
@@ -75,6 +96,28 @@ public class InvalidFieldUtil {
         @ApiModelProperty(value = "错误原因")
         private String message;
 
+    }
+
+    /**
+     * 为了避免详细的报错消息文本暴露给前端，当存在特定关键词时，使用指定文案返回
+     *
+     * @param defaultMessage 消息文本
+     * @return 指定文案
+     */
+    private String maskMessage(String defaultMessage) {
+        // corner case
+        if (defaultMessage == null) {
+            return StrUtil.EMPTY;
+        }
+
+        for (Entry<String, String> entry : MESSAGE_MASKING_MAPPER.entrySet()) {
+            if (defaultMessage.contains(entry.getKey())) {
+                return entry.getValue();
+            }
+        }
+
+        // 原样返回
+        return defaultMessage;
     }
 
 }
