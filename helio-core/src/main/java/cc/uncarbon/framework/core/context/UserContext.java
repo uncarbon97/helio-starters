@@ -2,15 +2,16 @@ package cc.uncarbon.framework.core.context;
 
 import cc.uncarbon.framework.core.enums.HelioBaseEnum;
 import io.swagger.annotations.ApiModelProperty;
-import java.io.Serializable;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.Accessors;
 import lombok.experimental.SuperBuilder;
+
+import java.io.Serializable;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * 当前用户上下文对象
@@ -37,8 +38,15 @@ public class UserContext implements Serializable {
     @ApiModelProperty(value = "用户手机号")
     private String userPhoneNo;
 
+    /**
+     * @deprecated since 1.7.1, replaced by "userTypeStr"
+     */
     @ApiModelProperty(value = "用户类型")
+    @Deprecated
     private HelioBaseEnum<?> userType;
+
+    @ApiModelProperty(value = "用户类型")
+    private String userTypeStr;
 
     @ApiModelProperty(value = "用户拥有角色ID", notes = "后台管理使用", example = "[1, 2, 3]")
     private Set<Long> rolesIds;

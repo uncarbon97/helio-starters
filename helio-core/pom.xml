@@ -60,7 +60,7 @@
             <artifactId>transmittable-thread-local</artifactId>
         </dependency>
 
-        <!-- hutool yyds! -->
+        <!-- hutool -->
         <dependency>
             <groupId>cn.hutool</groupId>
             <artifactId>hutool-all</artifactId>
