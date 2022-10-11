@@ -2,9 +2,9 @@ package cc.uncarbon.framework.knife4j.config;
 
 
 import cc.uncarbon.framework.core.props.HelioProperties;
-import cn.hutool.core.collection.CollUtil;
 import com.github.xiaoymin.knife4j.spring.annotations.EnableKnife4j;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
@@ -57,8 +57,8 @@ public class HelioKnife4jAutoConfiguration {
                 .paths(PathSelectors.any())
                 .build()
                 // 在调试页上附加请求头
-                .securityContexts(CollUtil.newArrayList(this.securityContext()))
-                .securitySchemes(CollUtil.newArrayList(this.apiKeyOfToken()))
+                .securityContexts(Collections.singletonList(this.securityContext()))
+                .securitySchemes(Collections.singletonList(this.apiKeyOfToken()))
                 ;
     }
 
