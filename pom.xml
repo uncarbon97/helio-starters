@@ -33,7 +33,7 @@
 
     <properties>
         <!-- core versions -->
-        <revision>1.7.1-SNAPSHOT</revision>
+        <revision>1.7.1</revision>
         <helio-starters.version>${revision}</helio-starters.version>
         <!-- JDK8则改为'1.8'  JDK11则改为'11' -->
         <java.version>1.8</java.version>
@@ -43,13 +43,13 @@
 
         <!-- Spring Cloud versions -->
         <!-- https://mvnrepository.com/artifact/org.springframework.cloud/spring-cloud-dependencies -->
-        <spring-cloud.version>2021.0.3</spring-cloud.version>
-        <spring-cloud-starter-bootstrap.version>3.0.3</spring-cloud-starter-bootstrap.version>
+        <spring-cloud.version>2021.0.4</spring-cloud.version>
+        <spring-cloud-starter-bootstrap.version>3.1.4</spring-cloud-starter-bootstrap.version>
 
         <!-- Spring Cloud Alibaba versions -->
-        <spring-cloud-alibaba.version>2021.0.1.0</spring-cloud-alibaba.version>
-        <dubbo.version>3.1.0</dubbo.version>
-        <seata.vesion>1.4.2</seata.vesion>
+        <spring-cloud-alibaba.version>2021.0.4.0</spring-cloud-alibaba.version>
+        <dubbo.version>3.1.1</dubbo.version>
+        <seata.vesion>1.5.2</seata.vesion>
         <nacos-client.vesion>2.1.1</nacos-client.vesion>
 
 
