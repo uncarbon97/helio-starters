@@ -13,7 +13,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
-import org.springframework.core.annotation.Order;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -37,8 +37,7 @@ import org.springframework.web.servlet.NoHandlerFoundException;
 @RestController
 @ControllerAdvice
 @AutoConfiguration
-// 主动标注为最低优先级，便于覆盖
-@Order
+@ConditionalOnMissingBean(value = AdviceExceptionAutoConfiguration.class)
 public class AdviceExceptionAutoConfiguration {
 
     protected static final MediaType MEDIA_TYPE = new MediaType("application", "json", StandardCharsets.UTF_8);
