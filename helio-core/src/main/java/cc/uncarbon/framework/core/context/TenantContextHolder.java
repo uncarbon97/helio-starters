@@ -1,6 +1,7 @@
 package cc.uncarbon.framework.core.context;
 
 import com.alibaba.ttl.TransmittableThreadLocal;
+import java.util.Optional;
 import lombok.experimental.UtilityClass;
 
 /**
@@ -17,11 +18,17 @@ public class TenantContextHolder {
     /**
      * 获取当前租户上下文
      *
-     * @throws NullPointerException 链式调用时需要注意可能存在 NPE 问题
      * @return null or 当前租户上下文
      */
-    public TenantContext getTenantContext() throws NullPointerException {
+    public TenantContext getTenantContext() {
         return THREAD_LOCAL_CONTEXT.get();
+    }
+
+    /**
+     * 获取当前租户上下文
+     */
+    public Optional<TenantContext> getTenantContextOptional() {
+        return Optional.ofNullable(THREAD_LOCAL_CONTEXT.get());
     }
 
     /**
