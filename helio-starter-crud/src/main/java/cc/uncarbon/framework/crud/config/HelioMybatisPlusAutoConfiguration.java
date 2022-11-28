@@ -1,7 +1,7 @@
 package cc.uncarbon.framework.crud.config;
 
 import cc.uncarbon.framework.core.props.HelioProperties;
-import cc.uncarbon.framework.crud.handler.HelioIdentifierGeneratorHandler;
+import cc.uncarbon.framework.crud.handler.HelioSnowflakeIdGenerateHandler;
 import cc.uncarbon.framework.crud.handler.MybatisPlusAutoFillColumnHandler;
 import cc.uncarbon.framework.crud.support.TenantSupport;
 import cc.uncarbon.framework.crud.support.impl.DefaultTenantSupport;
@@ -14,6 +14,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
@@ -77,12 +78,13 @@ public class HelioMybatisPlusAutoConfiguration {
     }
 
     /**
-     * 自定义ID生成器
+     * 自定义ID生成器 - 雪花ID
      */
     @Bean
     @ConditionalOnMissingBean
-    public IdentifierGenerator helioSnowflakeIdentifierGeneratorHandler() {
-        return new HelioIdentifierGeneratorHandler(helioProperties);
+    @ConditionalOnProperty(name = "helio.crud.idGenerator.strategy", havingValue = "SNOWFLAKE")
+    public IdentifierGenerator helioSnowflakeIdGenerateHandler() {
+        return new HelioSnowflakeIdGenerateHandler(helioProperties);
     }
 
     /**

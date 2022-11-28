@@ -15,7 +15,14 @@ public enum IdGeneratorStrategyEnum implements HelioBaseEnum<Integer> {
     /**
      * Twitter雪花算法
      */
-    SNOWFLAKE(1, "SNOWFLAKE");
+    SNOWFLAKE(1, "SNOWFLAKE"),
+
+    /**
+     * 数据库 ID 自增
+     */
+    AUTO(2, "MUST BE set @TableId(type = IdType.AUTO) annotation on your primary key field")
+
+    ;
 
     private final Integer value;
     private final String label;

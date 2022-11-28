@@ -3,12 +3,13 @@ package cc.uncarbon.framework.core.props;
 import cc.uncarbon.framework.core.constant.HelioConstant;
 import cc.uncarbon.framework.core.enums.IdGeneratorStrategyEnum;
 import cc.uncarbon.framework.core.enums.TenantIsolateLevelEnum;
+import lombok.Data;
+import org.springframework.boot.context.properties.ConfigurationProperties;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedHashSet;
 import java.util.List;
-import lombok.Data;
-import org.springframework.boot.context.properties.ConfigurationProperties;
 
 /**
  * 配置项会被反序列化到本 Spring Bean 中，可自行依赖注入后使用
