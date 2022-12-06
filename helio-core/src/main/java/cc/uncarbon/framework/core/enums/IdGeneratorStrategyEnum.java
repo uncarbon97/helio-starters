@@ -15,12 +15,12 @@ public enum IdGeneratorStrategyEnum implements HelioBaseEnum<Integer> {
     /**
      * Twitter雪花算法
      */
-    SNOWFLAKE(1, "SNOWFLAKE"),
+    SNOWFLAKE(1, "Twitter Snowflake"),
 
     /**
-     * 数据库 ID 自增
+     * Mybatis-Plus 提供的 Sequence 算法（类雪花）
      */
-    AUTO(2, "MUST BE set @TableId(type = IdType.AUTO) annotation on your primary key field")
+    SEQUENCE(2, "Mybatis-Plus Sequence"),
 
     ;
 

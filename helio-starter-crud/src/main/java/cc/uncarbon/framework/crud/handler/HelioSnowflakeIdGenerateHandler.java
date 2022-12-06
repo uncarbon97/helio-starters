@@ -1,5 +1,6 @@
 package cc.uncarbon.framework.crud.handler;
 
+import cc.uncarbon.framework.core.enums.IdGeneratorStrategyEnum;
 import cc.uncarbon.framework.core.props.HelioProperties;
 import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.lang.Singleton;
@@ -12,7 +13,7 @@ import lombok.extern.slf4j.Slf4j;
 import java.util.Date;
 
 /**
- * 自定义雪花ID生成器
+ * 自定义ID生成器 - 雪花ID
  *
  * @author Uncarbon
  */
@@ -39,7 +40,7 @@ public class HelioSnowflakeIdGenerateHandler implements IdentifierGenerator {
         Date epochDate = DateUtil.parseDate(epochDateStr);
 
         log.info("[主键ID生成器] >> strategy=[{}], workerId=[{}], datacenterId=[{}], epochDate=[{}]",
-                helioProperties.getCrud().getIdGenerator().getStrategy().getLabel(),
+                IdGeneratorStrategyEnum.SNOWFLAKE,
                 workerId,
                 datacenterId,
                 epochDate

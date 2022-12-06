@@ -70,9 +70,6 @@
         <!-- DB Driver versions -->
         <mysql.version>8.0.28</mysql.version>
         <postgresql.version>42.3.4</postgresql.version>
-        <!-- 以下2项版本较旧, 请根据 JDK 版本自行更新 -->
-        <mssql.version>11.2.1.jre8</mssql.version>
-        <oracle.version>21.7.0.0</oracle.version>
 
 
         <!-- Maven properties -->
@@ -290,18 +287,6 @@
                 <groupId>org.postgresql</groupId>
                 <artifactId>postgresql</artifactId>
                 <version>${postgresql.version}</version>
-            </dependency>
-
-            <dependency>
-                <groupId>com.oracle.database.jdbc</groupId>
-                <artifactId>ojdbc8</artifactId>
-                <version>${oracle.version}</version>
-            </dependency>
-
-            <dependency>
-                <groupId>com.microsoft.sqlserver</groupId>
-                <artifactId>mssql-jdbc</artifactId>
-                <version>${mssql.version}</version>
             </dependency>
 
             <dependency>

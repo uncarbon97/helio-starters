@@ -1,6 +1,8 @@
 package cc.uncarbon.framework.crud.config;
 
+import cc.uncarbon.framework.core.enums.IdGeneratorStrategyEnum;
 import cc.uncarbon.framework.core.props.HelioProperties;
+import cc.uncarbon.framework.crud.handler.HelioSequenceIdGenerateHandler;
 import cc.uncarbon.framework.crud.handler.HelioSnowflakeIdGenerateHandler;
 import cc.uncarbon.framework.crud.handler.MybatisPlusAutoFillColumnHandler;
 import cc.uncarbon.framework.crud.support.TenantSupport;
@@ -14,7 +16,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
@@ -82,9 +83,18 @@ public class HelioMybatisPlusAutoConfiguration {
      */
     @Bean
     @ConditionalOnMissingBean
-    @ConditionalOnProperty(name = "helio.crud.idGenerator.strategy", havingValue = "SNOWFLAKE")
-    public IdentifierGenerator helioSnowflakeIdGenerateHandler() {
-        return new HelioSnowflakeIdGenerateHandler(helioProperties);
+    public IdentifierGenerator helioIdentifierGenerator() {
+        IdGeneratorStrategyEnum strategy = helioProperties.getCrud().getIdGenerator().getStrategy();
+
+        if (strategy == IdGeneratorStrategyEnum.SNOWFLAKE) {
+            return new HelioSnowflakeIdGenerateHandler(helioProperties);
+        }
+
+        if (strategy == IdGeneratorStrategyEnum.SEQUENCE) {
+            return new HelioSequenceIdGenerateHandler();
+        }
+
+        throw new IllegalArgumentException("Value of 'helio.crud.idGenerator.strategy' is illegal");
     }
 
     /**
