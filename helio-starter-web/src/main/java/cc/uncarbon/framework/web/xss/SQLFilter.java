@@ -1,7 +1,9 @@
 package cc.uncarbon.framework.web.xss;
 
 import cc.uncarbon.framework.core.exception.BusinessException;
+import cc.uncarbon.framework.i18n.util.I18nUtil;
 import cc.uncarbon.framework.web.enums.ErrorResponseEnum;
+import cn.hutool.core.util.ObjUtil;
 import cn.hutool.core.util.StrUtil;
 import org.springframework.util.StringUtils;
 
@@ -33,9 +35,13 @@ public class SQLFilter {
         String[] keywords = {"master", "truncate", "insert", "select", "delete", "update", "declare", "alter", "drop"};
 
         // 判断是否包含非法字符
-        for(String keyword : keywords){
-            if(str.contains(keyword)){
-                throw new BusinessException(ErrorResponseEnum.CONTAINS_ILLEGAL_CHARACTER);
+        ErrorResponseEnum containsIllegalCharacter = ErrorResponseEnum.CONTAINS_ILLEGAL_CHARACTER;
+        for (String keyword : keywords) {
+            if (str.contains(keyword)) {
+                throw new BusinessException(
+                        containsIllegalCharacter.getValue(),
+                        ObjUtil.defaultIfEmpty(I18nUtil.messageOf(containsIllegalCharacter.name()), containsIllegalCharacter.getLabel())
+                );
             }
         }
 

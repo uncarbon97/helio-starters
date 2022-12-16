@@ -18,6 +18,7 @@
         <module>helio-starter-tenant</module>
         <module>helio-starter-test</module>
         <module>helio-starter-web</module>
+        <module>helio-starter-i18n</module>
     </modules>
 
     <parent>
@@ -128,6 +129,12 @@
             <dependency>
                 <groupId>cc.uncarbon.framework</groupId>
                 <artifactId>helio-starter-dubbo</artifactId>
+                <version>${helio-starters.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>cc.uncarbon.framework</groupId>
+                <artifactId>helio-starter-i18n</artifactId>
                 <version>${helio-starters.version}</version>
             </dependency>
 
