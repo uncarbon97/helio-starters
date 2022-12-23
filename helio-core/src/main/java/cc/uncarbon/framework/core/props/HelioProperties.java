@@ -25,6 +25,7 @@ public class HelioProperties {
     private final Knife4j knife4j = new Knife4j();
     private final Tenant tenant = new Tenant();
     private final Web web = new Web();
+    private final I18n i18n = new I18n();
 
 
     @Data
@@ -146,6 +147,16 @@ public class HelioProperties {
             private Boolean enabled = Boolean.FALSE;
 
         }
+
+    }
+
+    @Data
+    public static class I18n {
+
+        /**
+         * 是否启用国际化 默认为 false
+         */
+        private Boolean enabled = false;
 
     }
 }

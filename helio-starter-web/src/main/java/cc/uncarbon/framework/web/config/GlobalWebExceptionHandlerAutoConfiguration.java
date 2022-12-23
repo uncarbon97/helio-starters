@@ -2,15 +2,14 @@ package cc.uncarbon.framework.web.config;
 
 import cc.uncarbon.framework.core.constant.HelioConstant;
 import cc.uncarbon.framework.core.exception.BusinessException;
+import cc.uncarbon.framework.i18n.util.I18nUtil;
+import cc.uncarbon.framework.web.enums.GlobalWebExceptionI18nMessageEnum;
 import cc.uncarbon.framework.web.model.response.ApiResult;
 import cc.uncarbon.framework.web.util.InvalidFieldUtil;
 import cn.dev33.satoken.exception.NotLoginException;
 import cn.dev33.satoken.exception.NotPermissionException;
 import cn.dev33.satoken.exception.NotRoleException;
 import com.fasterxml.jackson.core.JsonParseException;
-import java.nio.charset.StandardCharsets;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
@@ -28,6 +27,9 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 import org.springframework.web.servlet.NoHandlerFoundException;
 
+import javax.servlet.http.HttpServletRequest;
+import java.nio.charset.StandardCharsets;
+
 /**
  * Web 全局异常处理自动配置类
  *
@@ -37,8 +39,8 @@ import org.springframework.web.servlet.NoHandlerFoundException;
 @RestController
 @ControllerAdvice
 @AutoConfiguration
-@ConditionalOnMissingBean(value = AdviceExceptionAutoConfiguration.class)
-public class AdviceExceptionAutoConfiguration {
+@ConditionalOnMissingBean(value = GlobalWebExceptionHandlerAutoConfiguration.class)
+public class GlobalWebExceptionHandlerAutoConfiguration {
 
     protected static final MediaType MEDIA_TYPE = new MediaType("application", "json", StandardCharsets.UTF_8);
     protected static final String DUBBO_PACKAGE_PREFIX = "org.apache.dubbo";
@@ -49,9 +51,20 @@ public class AdviceExceptionAutoConfiguration {
      */
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ExceptionHandler({BusinessException.class})
-    public ResponseEntity<ApiResult<?>> handleBusinessException(BusinessException e, HttpServletRequest request, HttpServletResponse response) {
+    public ResponseEntity<ApiResult<?>> handleBusinessException(BusinessException e, HttpServletRequest request) {
         this.logError(e, request);
-        ApiResult<?> ret = ApiResult.fail(e.getCode(), e.getMessage());
+
+        /*
+        @since 1.7.2，国际化支持；详见文档：进阶使用-国际化
+         */
+        String msg;
+        if (e.getCustomEnumField() != null) {
+            msg = I18nUtil.messageOf(e.getCustomEnumField(), e.getTemplateParams());
+        } else {
+            msg = e.getMessage();
+        }
+
+        ApiResult<?> ret = ApiResult.fail(e.getCode(), msg);
         return createResponseEntity(HttpStatus.BAD_REQUEST, ret);
     }
 
@@ -62,7 +75,9 @@ public class AdviceExceptionAutoConfiguration {
     @ExceptionHandler({NotLoginException.class})
     public ResponseEntity<ApiResult<?>> handleNotLoginException(NotLoginException e, HttpServletRequest request) {
         this.logError(e, request);
-        ApiResult<?> ret = ApiResult.fail(HttpStatus.UNAUTHORIZED.value(), "请您先登录");
+
+        GlobalWebExceptionI18nMessageEnum msgEnum = GlobalWebExceptionI18nMessageEnum.GLOBAL__NO_LOGIN;
+        ApiResult<?> ret = ApiResult.fail(HttpStatus.UNAUTHORIZED.value(), I18nUtil.messageOf(msgEnum.i18nCode(), msgEnum.getDefaultValue()));
         return createResponseEntity(HttpStatus.UNAUTHORIZED, ret);
     }
 
@@ -73,18 +88,22 @@ public class AdviceExceptionAutoConfiguration {
     @ExceptionHandler({NotPermissionException.class})
     public ResponseEntity<ApiResult<?>> handleNotPermissionException(NotPermissionException e, HttpServletRequest request) {
         this.logError(e, request);
-        ApiResult<?> ret = ApiResult.fail(HttpStatus.FORBIDDEN.value(), "您权限不足");
+
+        GlobalWebExceptionI18nMessageEnum msgEnum = GlobalWebExceptionI18nMessageEnum.GLOBAL__PERMISSION_NOT_MATCH;
+        ApiResult<?> ret = ApiResult.fail(HttpStatus.FORBIDDEN.value(), I18nUtil.messageOf(msgEnum.i18nCode(), msgEnum.getDefaultValue()));
         return createResponseEntity(HttpStatus.FORBIDDEN, ret);
     }
 
     /**
-     * 用户身份异常
+     * 用户角色异常
      */
     @ResponseStatus(HttpStatus.FORBIDDEN)
     @ExceptionHandler({NotRoleException.class})
     public ResponseEntity<ApiResult<?>> handleNotRoleException(NotRoleException e, HttpServletRequest request) {
         this.logError(e, request);
-        ApiResult<?> ret = ApiResult.fail(HttpStatus.FORBIDDEN.value(), "您与要求角色不符");
+
+        GlobalWebExceptionI18nMessageEnum msgEnum = GlobalWebExceptionI18nMessageEnum.GLOBAL__ROLE_NOT_MATCH;
+        ApiResult<?> ret = ApiResult.fail(HttpStatus.FORBIDDEN.value(), I18nUtil.messageOf(msgEnum.i18nCode(), msgEnum.getDefaultValue()));
         return createResponseEntity(HttpStatus.FORBIDDEN, ret);
     }
 
@@ -95,7 +114,9 @@ public class AdviceExceptionAutoConfiguration {
     @ExceptionHandler({NoHandlerFoundException.class})
     public ResponseEntity<ApiResult<?>> handleNoHandlerFoundException(NoHandlerFoundException e, HttpServletRequest request) {
         this.logError(e, request);
-        ApiResult<?> ret = ApiResult.fail(HttpStatus.NOT_FOUND.value(), "你迷路啦");
+
+        GlobalWebExceptionI18nMessageEnum msgEnum = GlobalWebExceptionI18nMessageEnum.GLOBAL__NOT_FOUND;
+        ApiResult<?> ret = ApiResult.fail(HttpStatus.NOT_FOUND.value(), I18nUtil.messageOf(msgEnum.i18nCode(), msgEnum.getDefaultValue()));
         return createResponseEntity(HttpStatus.NOT_FOUND, ret);
     }
 
@@ -103,10 +124,10 @@ public class AdviceExceptionAutoConfiguration {
      * JsonParseException, HttpMessageNotReadableException
      * Jackson反序列化异常
      * 通常是因为JSON格式错误，或枚举输入值超出范围
-     *
+     * <p>
      * IllegalArgumentException
      * 不合法的参数异常
-     *
+     * <p>
      * MethodArgumentTypeMismatchException
      * "@PathVariable" 注解收参类型为 Long，但传的是 String
      */
@@ -114,8 +135,10 @@ public class AdviceExceptionAutoConfiguration {
     @ExceptionHandler({JsonParseException.class, HttpMessageNotReadableException.class, IllegalArgumentException.class, MethodArgumentTypeMismatchException.class})
     public ResponseEntity<ApiResult<?>> handleJsonParseException(Exception e, HttpServletRequest request) {
         this.logError(e, request);
-        ApiResult<?> ret = ApiResult.fail(HttpStatus.NOT_ACCEPTABLE.value(), "错误参数格式或值");
-        return createResponseEntity(HttpStatus.BAD_REQUEST, ret);
+
+        GlobalWebExceptionI18nMessageEnum msgEnum = GlobalWebExceptionI18nMessageEnum.GLOBAL__UNACCEPTABLE_PARAMETERS;
+        ApiResult<?> ret = ApiResult.fail(HttpStatus.NOT_ACCEPTABLE.value(), I18nUtil.messageOf(msgEnum.i18nCode(), msgEnum.getDefaultValue()));
+        return createResponseEntity(HttpStatus.NOT_ACCEPTABLE, ret);
     }
 
     /**
@@ -126,8 +149,10 @@ public class AdviceExceptionAutoConfiguration {
     @ExceptionHandler({MethodArgumentNotValidException.class, BindException.class})
     public ResponseEntity<ApiResult<?>> handleBindException(BindException e, HttpServletRequest request) {
         this.logError(e, request);
-        ApiResult<?> ret = ApiResult.fail(HttpStatus.NOT_ACCEPTABLE.value(), "错误参数格式或值", InvalidFieldUtil.getInvalidField(e.getBindingResult()));
-        return createResponseEntity(HttpStatus.BAD_REQUEST, ret);
+
+        GlobalWebExceptionI18nMessageEnum msgEnum = GlobalWebExceptionI18nMessageEnum.GLOBAL__UNACCEPTABLE_PARAMETERS;
+        ApiResult<?> ret = ApiResult.fail(HttpStatus.NOT_ACCEPTABLE.value(), I18nUtil.messageOf(msgEnum.i18nCode(), msgEnum.getDefaultValue()), InvalidFieldUtil.getInvalidField(e.getBindingResult()));
+        return createResponseEntity(HttpStatus.NOT_ACCEPTABLE, ret);
     }
 
     /**

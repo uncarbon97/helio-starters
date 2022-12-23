@@ -54,13 +54,14 @@ public class EnumModule extends SimpleModule {
 
             @Override
             public E deserialize(JsonParser parser, DeserializationContext context) throws IOException {
-                // 前台如果传递只传value
                 if (parser.getCurrentToken().isNumeric()) {
-                    return HelioBaseEnum.of(this.enumType, parser.getIntValue()).orElseThrow(() -> new IllegalArgumentException("非法输入值"));
+                    // 前端传递value
+                    return HelioBaseEnum.of(this.enumType, parser.getIntValue()).orElseThrow(() -> new IllegalArgumentException("Unable to parse input value"));
                 } else if (StrUtil.isNotBlank(parser.getText())) {
-                    return HelioBaseEnum.of(this.enumType, parser.getText()).orElseThrow(() -> new IllegalArgumentException("非法输入值"));
+                    // 前端传递label
+                    return HelioBaseEnum.of(this.enumType, parser.getText()).orElseThrow(() -> new IllegalArgumentException("Unable to parse input value"));
                 } else {
-                    throw new IllegalArgumentException("枚举值类型错误");
+                    throw new IllegalArgumentException("Unable to parse input value 'cause wrong type");
                 }
             }
         }

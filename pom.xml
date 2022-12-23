@@ -10,6 +10,7 @@
         <module>helio-starter-cloud</module>
         <module>helio-starter-crud</module>
         <module>helio-starter-dubbo</module>
+        <module>helio-starter-i18n</module>
         <module>helio-starter-knife4j</module>
         <module>helio-starter-redis</module>
         <module>helio-starter-rocketmq-aliyun</module>
@@ -18,7 +19,6 @@
         <module>helio-starter-tenant</module>
         <module>helio-starter-test</module>
         <module>helio-starter-web</module>
-        <module>helio-starter-i18n</module>
     </modules>
 
     <parent>

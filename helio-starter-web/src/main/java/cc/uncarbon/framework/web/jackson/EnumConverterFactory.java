@@ -2,7 +2,6 @@ package cc.uncarbon.framework.web.jackson;
 
 import cc.uncarbon.framework.core.enums.HelioBaseEnum;
 import cc.uncarbon.framework.core.exception.BusinessException;
-import cc.uncarbon.framework.web.enums.ErrorResponseEnum;
 import lombok.NonNull;
 import org.springframework.core.convert.converter.Converter;
 import org.springframework.core.convert.converter.ConverterFactory;
@@ -36,7 +35,7 @@ public class EnumConverterFactory implements ConverterFactory<String, HelioBaseE
 
         @Override
         public T convert(@NonNull Object value) {
-            return HelioBaseEnum.of(this.enumType, value).orElseThrow(() -> new BusinessException(ErrorResponseEnum.ILLEGAL_ENUM_VALUE));
+            return HelioBaseEnum.of(this.enumType, value).orElseThrow(() -> new BusinessException("Contains illegal enumeration value"));
         }
     }
 }
