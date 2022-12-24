@@ -156,7 +156,7 @@ public class HelioProperties {
         /**
          * 是否启用国际化 默认为 false
          */
-        private Boolean enabled = false;
+        private Boolean enabled = Boolean.FALSE;
 
     }
 }

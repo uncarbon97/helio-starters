@@ -20,6 +20,11 @@ public enum GlobalWebExceptionI18nMessageEnum {
     GLOBAL__UNACCEPTABLE_PARAMETERS("错误参数格式或值"),
     GLOBAL__METHOD_NOT_ALLOWED("错误的请求方式"),
 
+    /**
+     * 一般为最后兜底使用
+     */
+    GLOBAL__INTERNAL_ERROR("请稍后再试"),
+
     ;
 
     private final String defaultValue;
