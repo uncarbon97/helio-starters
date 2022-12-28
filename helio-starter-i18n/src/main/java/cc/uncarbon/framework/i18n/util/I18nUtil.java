@@ -30,7 +30,7 @@ public class I18nUtil {
 
     /**
      * 根据消息键和参数，获取国际化翻译值
-     * 支持模板填充，如: Nickname '{}' has been existing, do you like '{}'?
+     * 支持模板填充，如: Nickname '{}' is already exist, do you like '{}'?
      *
      * @param code 消息代码
      * @param templateParams 模板填充参数
@@ -52,6 +52,7 @@ public class I18nUtil {
                 return StrUtil.format(msg, templateParams);
             }
 
+            return msg;
         } catch (NoSuchMessageException nsme) {
             // 未找到对应国际化翻译值
         }
@@ -60,7 +61,7 @@ public class I18nUtil {
 
     /**
      * 根据消息键和参数，获取国际化翻译值
-     * 支持模板填充，如: Nickname '{}' has been existing, do you like '{}'?
+     * 支持模板填充，如: Nickname '{}' is already exist, do you like '{}'?
      *
      * @param code 消息代码
      * @param defaultValue 未找到对应国际化翻译值的情况下，默认返回值
