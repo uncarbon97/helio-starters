@@ -4,3 +4,4 @@ cc.uncarbon.framework.web.config.GlobalWebExceptionHandlerAutoConfiguration
 cc.uncarbon.framework.web.config.JacksonExtendAutoConfiguration
 cc.uncarbon.framework.web.config.MessageConverterAutoConfiguration
 cc.uncarbon.framework.web.config.XssAutoConfiguration
+cc.uncarbon.framework.web.aspect.WebLoggingAspect
