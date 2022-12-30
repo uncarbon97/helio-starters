@@ -8,7 +8,8 @@ import lombok.experimental.UtilityClass;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.MessageSource;
 import org.springframework.context.NoSuchMessageException;
-import org.springframework.context.i18n.LocaleContextHolder;
+
+import java.util.Locale;
 
 /**
  * 获取 i18n 资源
@@ -42,7 +43,7 @@ public class I18nUtil {
         }
 
         try {
-            String msg = getMessageSource().getMessage(code, null, LocaleContextHolder.getLocale());
+            String msg = getMessageSource().getMessage(code, null, Locale.getDefault());
             if (StrUtil.isEmpty(msg)) {
                 return msg;
             }
