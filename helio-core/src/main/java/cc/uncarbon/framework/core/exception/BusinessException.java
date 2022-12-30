@@ -22,8 +22,8 @@ public class BusinessException extends RuntimeException {
     /*
     若使用枚举类参数的构造方法创建的本异常，则记录对应枚举类及模板参数
      */
-    private transient Enum<?> customEnumField;
-    private transient Object[] templateParams;
+    private Enum<?> customEnumField;
+    private Object[] templateParams;
 
     /**
      * 仅错误信息
