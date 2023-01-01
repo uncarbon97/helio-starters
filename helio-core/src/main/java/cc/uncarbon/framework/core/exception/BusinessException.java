@@ -1,11 +1,12 @@
 package cc.uncarbon.framework.core.exception;
 
-import static java.net.HttpURLConnection.HTTP_INTERNAL_ERROR;
-
 import cc.uncarbon.framework.core.enums.HelioBaseEnum;
 import cn.hutool.core.util.StrUtil;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.NonNull;
+
+import static java.net.HttpURLConnection.HTTP_INTERNAL_ERROR;
 
 /**
  * 业务异常类
@@ -17,6 +18,12 @@ import lombok.NoArgsConstructor;
 public class BusinessException extends RuntimeException {
 
     private Integer code = null;
+
+    /*
+    若使用枚举类参数的构造方法创建的本异常，则记录对应枚举类及模板参数
+     */
+    private Enum<?> customEnumField;
+    private Object[] templateParams;
 
     /**
      * 仅错误信息
@@ -52,9 +59,17 @@ public class BusinessException extends RuntimeException {
      * 从枚举类生成异常
      * @param customEnum 枚举类对象
      */
-    public BusinessException(HelioBaseEnum<Integer> customEnum) {
+    public BusinessException(@NonNull HelioBaseEnum<Integer> customEnum) {
         super(customEnum.getLabel());
         this.code = customEnum.getValue();
+
+        /*
+        @since 1.7.2 国际化支持
+        实际应用在GlobalWebExceptionHandlerAutoConfiguration.handleBusinessException
+         */
+        if (customEnum.getClass().isEnum()) {
+            this.customEnumField = (Enum<?>) customEnum;
+        }
     }
 
     /**
@@ -62,9 +77,18 @@ public class BusinessException extends RuntimeException {
      * @param customEnum 枚举类对象
      * @param templateParams label 中如果有占位符的话，向里面填充的模板参数
      */
-    public BusinessException(HelioBaseEnum<Integer> customEnum, Object... templateParams) {
+    public BusinessException(@NonNull HelioBaseEnum<Integer> customEnum, Object... templateParams) {
         super(customEnum.formatLabel(templateParams));
         this.code = customEnum.getValue();
+
+        /*
+        @since 1.7.2 国际化支持
+        实际应用在GlobalWebExceptionHandlerAutoConfiguration.handleBusinessException
+         */
+        if (customEnum.getClass().isEnum()) {
+            this.customEnumField = (Enum<?>) customEnum;
+        }
+        this.templateParams = templateParams;
     }
 
     /**
@@ -74,4 +98,5 @@ public class BusinessException extends RuntimeException {
     public synchronized Throwable fillInStackTrace() {
         return this;
     }
+
 }

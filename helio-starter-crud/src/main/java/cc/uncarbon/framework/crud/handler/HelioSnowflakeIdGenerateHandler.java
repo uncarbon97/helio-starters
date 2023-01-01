@@ -13,16 +13,17 @@ import lombok.extern.slf4j.Slf4j;
 import java.util.Date;
 
 /**
- * 自定义雪花ID生成器
+ * 自定义ID生成器 - 雪花ID
+ *
  * @author Uncarbon
  */
 @Slf4j
-public class HelioIdentifierGeneratorHandler implements IdentifierGenerator {
+public class HelioSnowflakeIdGenerateHandler implements IdentifierGenerator {
 
-    private Snowflake snowflakeInstance;
+    private final Snowflake snowflakeInstance;
 
 
-    public HelioIdentifierGeneratorHandler(HelioProperties helioProperties) {
+    public HelioSnowflakeIdGenerateHandler(HelioProperties helioProperties) {
         long workerId;
 
         try {
@@ -32,21 +33,20 @@ public class HelioIdentifierGeneratorHandler implements IdentifierGenerator {
             workerId = NetUtil.getLocalhost().hashCode();
         }
 
-        if (IdGeneratorStrategyEnum.SNOWFLAKE.equals(helioProperties.getCrud().getIdGenerator().getStrategy())) {
-            // Hutool的雪花生成器仅支持0-31
-            workerId = workerId % 32;
-            Long datacenterId = helioProperties.getCrud().getIdGenerator().getDatacenterId();
-            Date epochDate = DateUtil.parseDate(helioProperties.getCrud().getIdGenerator().getEpochDate());
+        // Hutool的雪花生成器仅支持0-31
+        workerId = workerId % 32;
+        Long datacenterId = helioProperties.getCrud().getIdGenerator().getDatacenterId();
+        String epochDateStr = helioProperties.getCrud().getIdGenerator().getEpochDate();
+        Date epochDate = DateUtil.parseDate(epochDateStr);
 
-            log.info("[主键ID生成器] >> strategy=[{}], workerId=[{}], datacenterId=[{}], epochDate=[{}]",
-                    helioProperties.getCrud().getIdGenerator().getStrategy().getLabel(),
-                    workerId,
-                    datacenterId,
-                    epochDate
-            );
+        log.info("[主键ID生成器] >> strategy=[{}], workerId=[{}], datacenterId=[{}], epochDate=[{}]",
+                IdGeneratorStrategyEnum.SNOWFLAKE,
+                workerId,
+                datacenterId,
+                epochDate
+        );
 
-            snowflakeInstance = getSnowflake(workerId, datacenterId, epochDate);
-        }
+        snowflakeInstance = getSnowflake(workerId, datacenterId, epochDate);
     }
 
     @Override

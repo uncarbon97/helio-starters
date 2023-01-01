@@ -28,6 +28,11 @@
         </dependency>
 
         <dependency>
+            <groupId>cc.uncarbon.framework</groupId>
+            <artifactId>helio-starter-i18n</artifactId>
+        </dependency>
+
+        <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-web</artifactId>
         </dependency>

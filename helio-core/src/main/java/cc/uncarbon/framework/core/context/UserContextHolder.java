@@ -1,6 +1,7 @@
 package cc.uncarbon.framework.core.context;
 
 import com.alibaba.ttl.TransmittableThreadLocal;
+import java.util.Optional;
 import lombok.experimental.UtilityClass;
 
 /**
@@ -17,11 +18,17 @@ public class UserContextHolder {
     /**
      * 获取当前用户上下文
      *
-     * @throws NullPointerException 链式调用时需要注意可能存在 NPE 问题
      * @return null or 当前用户上下文
      */
-    public UserContext getUserContext() throws NullPointerException {
+    public UserContext getUserContext() {
         return THREAD_LOCAL_CONTEXT.get();
+    }
+
+    /**
+     * 获取当前用户上下文
+     */
+    public Optional<UserContext> getUserContextOptional() {
+        return Optional.ofNullable(THREAD_LOCAL_CONTEXT.get());
     }
 
     /**

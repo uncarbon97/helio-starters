@@ -2,6 +2,7 @@ package cc.uncarbon.framework.core.enums;
 
 import cc.uncarbon.framework.core.exception.BusinessException;
 import cn.hutool.core.collection.IterUtil;
+import cn.hutool.core.util.ArrayUtil;
 import cn.hutool.core.util.NumberUtil;
 import cn.hutool.core.util.ObjectUtil;
 import cn.hutool.core.util.StrUtil;
@@ -143,7 +144,7 @@ public interface HelioBaseEnum<T> extends Serializable {
     }
 
     default String formatLabel(Object... templateParams) {
-        if (templateParams == null || templateParams.length == 0) {
+        if (ArrayUtil.isEmpty(templateParams)) {
             return this.getLabel();
         }
 

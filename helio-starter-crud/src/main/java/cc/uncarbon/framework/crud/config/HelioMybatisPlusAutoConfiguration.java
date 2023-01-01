@@ -1,7 +1,9 @@
 package cc.uncarbon.framework.crud.config;
 
+import cc.uncarbon.framework.core.enums.IdGeneratorStrategyEnum;
 import cc.uncarbon.framework.core.props.HelioProperties;
-import cc.uncarbon.framework.crud.handler.HelioIdentifierGeneratorHandler;
+import cc.uncarbon.framework.crud.handler.HelioSequenceIdGenerateHandler;
+import cc.uncarbon.framework.crud.handler.HelioSnowflakeIdGenerateHandler;
 import cc.uncarbon.framework.crud.handler.MybatisPlusAutoFillColumnHandler;
 import cc.uncarbon.framework.crud.support.TenantSupport;
 import cc.uncarbon.framework.crud.support.impl.DefaultTenantSupport;
@@ -77,12 +79,22 @@ public class HelioMybatisPlusAutoConfiguration {
     }
 
     /**
-     * 自定义ID生成器
+     * 自定义ID生成器 - 雪花ID
      */
     @Bean
     @ConditionalOnMissingBean
-    public IdentifierGenerator helioSnowflakeIdentifierGeneratorHandler() {
-        return new HelioIdentifierGeneratorHandler(helioProperties);
+    public IdentifierGenerator helioIdentifierGenerator() {
+        IdGeneratorStrategyEnum strategy = helioProperties.getCrud().getIdGenerator().getStrategy();
+
+        if (strategy == IdGeneratorStrategyEnum.SNOWFLAKE) {
+            return new HelioSnowflakeIdGenerateHandler(helioProperties);
+        }
+
+        if (strategy == IdGeneratorStrategyEnum.SEQUENCE) {
+            return new HelioSequenceIdGenerateHandler();
+        }
+
+        throw new IllegalArgumentException("Value of 'helio.crud.idGenerator.strategy' is illegal");
     }
 
     /**

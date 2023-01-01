@@ -10,6 +10,7 @@
         <module>helio-starter-cloud</module>
         <module>helio-starter-crud</module>
         <module>helio-starter-dubbo</module>
+        <module>helio-starter-i18n</module>
         <module>helio-starter-knife4j</module>
         <module>helio-starter-redis</module>
         <module>helio-starter-rocketmq-aliyun</module>
@@ -23,7 +24,7 @@
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
-        <version>2.7.4</version>
+        <version>2.7.6</version>
         <relativePath/>
     </parent>
 
@@ -33,12 +34,12 @@
 
     <properties>
         <!-- core versions -->
-        <revision>1.7.1</revision>
+        <revision>1.7.2</revision>
         <helio-starters.version>${revision}</helio-starters.version>
         <!-- JDK8则改为'1.8'  JDK11则改为'11' -->
         <java.version>1.8</java.version>
         <!-- 若变更Spring Boot版本, 上面parent依赖版本也要变 -->
-        <spring-boot.version>2.7.4</spring-boot.version>
+        <spring-boot.version>2.7.6</spring-boot.version>
 
 
         <!-- Spring Cloud versions -->
@@ -48,19 +49,19 @@
 
         <!-- Spring Cloud Alibaba versions -->
         <spring-cloud-alibaba.version>2021.0.4.0</spring-cloud-alibaba.version>
-        <dubbo.version>3.1.1</dubbo.version>
+        <dubbo.version>3.1.2</dubbo.version>
         <seata.vesion>1.5.2</seata.vesion>
-        <nacos-client.vesion>2.1.1</nacos-client.vesion>
+        <nacos-client.vesion>2.1.2</nacos-client.vesion>
 
 
         <!-- 3rd-party versions -->
-        <hutool.version>5.8.7</hutool.version>
-        <sa-token.version>1.31.0</sa-token.version>
-        <transmittable-thread-local.version>2.12.1</transmittable-thread-local.version>
+        <hutool.version>5.8.10</hutool.version>
+        <sa-token.version>1.33.0</sa-token.version>
+        <transmittable-thread-local.version>2.14.2</transmittable-thread-local.version>
         <!-- 如果 mp 较新版存在问题，可以回退至 3.4.3.4 试试  -->
         <mybatis-plus.version>3.5.2</mybatis-plus.version>
         <knife4j.version>3.0.3</knife4j.version>
-        <redisson.version>3.17.6</redisson.version>
+        <redisson.version>3.18.0</redisson.version>
         <aspectj.version>1.9.6</aspectj.version>
         <ons-client.version>1.8.8.1.Final</ons-client.version>
         <guava.version>31.1-jre</guava.version>
@@ -70,9 +71,6 @@
         <!-- DB Driver versions -->
         <mysql.version>8.0.28</mysql.version>
         <postgresql.version>42.3.4</postgresql.version>
-        <!-- 以下2项版本较旧, 请根据 JDK 版本自行更新 -->
-        <mssql.version>4.0</mssql.version>
-        <oracle.version>11.2.0.3</oracle.version>
 
 
         <!-- Maven properties -->
@@ -131,6 +129,12 @@
             <dependency>
                 <groupId>cc.uncarbon.framework</groupId>
                 <artifactId>helio-starter-dubbo</artifactId>
+                <version>${helio-starters.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>cc.uncarbon.framework</groupId>
+                <artifactId>helio-starter-i18n</artifactId>
                 <version>${helio-starters.version}</version>
             </dependency>
 
@@ -290,18 +294,6 @@
                 <groupId>org.postgresql</groupId>
                 <artifactId>postgresql</artifactId>
                 <version>${postgresql.version}</version>
-            </dependency>
-
-            <dependency>
-                <groupId>com.oracle</groupId>
-                <artifactId>ojdbc6</artifactId>
-                <version>${oracle.version}</version>
-            </dependency>
-
-            <dependency>
-                <groupId>com.microsoft.sqlserver</groupId>
-                <artifactId>sqljdbc4</artifactId>
-                <version>${mssql.version}</version>
             </dependency>
 
             <dependency>

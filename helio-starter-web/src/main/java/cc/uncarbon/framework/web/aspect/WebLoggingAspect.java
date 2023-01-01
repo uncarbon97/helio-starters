@@ -1,21 +1,22 @@
 package cc.uncarbon.framework.web.aspect;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.concurrent.TimeUnit;
-import java.util.stream.Collectors;
-import javax.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Pointcut;
+import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
-import org.springframework.stereotype.Component;
 import org.springframework.web.context.request.RequestAttributes;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
+
+import javax.servlet.http.HttpServletRequest;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 
 
 /**
@@ -25,8 +26,8 @@ import org.springframework.web.context.request.ServletRequestAttributes;
  */
 @Aspect
 @Slf4j
-@Component
-@ConditionalOnProperty(value = "helio.web.logging.enabled", havingValue = "true")
+@AutoConfiguration
+@ConditionalOnProperty(prefix = "helio.web.logging", value = "enabled", havingValue = "true")
 public class WebLoggingAspect {
 
     /**

@@ -3,12 +3,13 @@ package cc.uncarbon.framework.core.props;
 import cc.uncarbon.framework.core.constant.HelioConstant;
 import cc.uncarbon.framework.core.enums.IdGeneratorStrategyEnum;
 import cc.uncarbon.framework.core.enums.TenantIsolateLevelEnum;
+import lombok.Data;
+import org.springframework.boot.context.properties.ConfigurationProperties;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedHashSet;
 import java.util.List;
-import lombok.Data;
-import org.springframework.boot.context.properties.ConfigurationProperties;
 
 /**
  * 配置项会被反序列化到本 Spring Bean 中，可自行依赖注入后使用
@@ -24,6 +25,7 @@ public class HelioProperties {
     private final Knife4j knife4j = new Knife4j();
     private final Tenant tenant = new Tenant();
     private final Web web = new Web();
+    private final I18n i18n = new I18n();
 
 
     @Data
@@ -145,6 +147,16 @@ public class HelioProperties {
             private Boolean enabled = Boolean.FALSE;
 
         }
+
+    }
+
+    @Data
+    public static class I18n {
+
+        /**
+         * 是否启用国际化 默认为 false
+         */
+        private Boolean enabled = Boolean.FALSE;
 
     }
 }
