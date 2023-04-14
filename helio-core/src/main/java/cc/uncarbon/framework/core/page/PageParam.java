@@ -26,7 +26,7 @@ public class PageParam implements Serializable {
     public static Function<Integer, Integer> globalPageNumLimiter = null;
 
     /**
-     * 全局分页大小限制函数（如：限制最大页大小为1000）
+     * 全局分页大小限制函数（如：限制页大小上限为1000）
      */
     public static Function<Integer, Integer> globalPageSizeLimiter = null;
 
