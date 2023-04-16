@@ -5,15 +5,16 @@ import com.baomidou.mybatisplus.annotation.EnumValue;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
+
 /**
- * 是或否枚举
+ * 启用状态枚举
  */
 @AllArgsConstructor
 @Getter
-public enum YesOrNoEnum implements HelioBaseEnum<Integer> {
+public enum EnabledStatusEnum implements HelioBaseEnum<Integer> {
 
-    YES(1, "是"),
-    NO(0, "否"),
+    DISABLED(0, "禁用"),
+    ENABLED(1, "启用"),
 
     ;
     @EnumValue
@@ -25,17 +26,17 @@ public enum YesOrNoEnum implements HelioBaseEnum<Integer> {
      * @param value 外部值
      * @return null or 枚举对象
      */
-    public static YesOrNoEnum of(Integer value) {
+    public static EnabledStatusEnum of(Integer value) {
         if (value == null) {
             return null;
         }
 
         // 区分度小，直接用if判断了
-        if (YES.value.equals(value)) {
-            return YES;
+        if (DISABLED.value.equals(value)) {
+            return DISABLED;
         }
-        if (NO.value.equals(value)) {
-            return NO;
+        if (ENABLED.value.equals(value)) {
+            return ENABLED;
         }
         return null;
     }
@@ -45,16 +46,16 @@ public enum YesOrNoEnum implements HelioBaseEnum<Integer> {
      * @param old 原值
      * @return 新值
      */
-    public static YesOrNoEnum reverse(YesOrNoEnum old) {
+    public static EnabledStatusEnum reverse(EnabledStatusEnum old) {
         if (old == null) {
             return null;
         }
 
         switch (old) {
-            case YES:
-                return NO;
-            case NO:
-                return YES;
+            case DISABLED:
+                return ENABLED;
+            case ENABLED:
+                return DISABLED;
         }
 
         throw new IllegalArgumentException();

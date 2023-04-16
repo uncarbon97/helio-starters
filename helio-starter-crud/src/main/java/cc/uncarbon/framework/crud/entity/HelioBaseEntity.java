@@ -1,21 +1,19 @@
 package cc.uncarbon.framework.crud.entity;
 
 import cc.uncarbon.framework.core.constant.HelioConstant;
-import com.baomidou.mybatisplus.annotation.FieldFill;
-import com.baomidou.mybatisplus.annotation.IdType;
-import com.baomidou.mybatisplus.annotation.TableField;
-import com.baomidou.mybatisplus.annotation.TableId;
-import com.baomidou.mybatisplus.annotation.TableLogic;
+import cc.uncarbon.framework.crud.enums.YesOrNoEnum;
+import com.baomidou.mybatisplus.annotation.*;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import io.swagger.annotations.ApiModelProperty;
-import java.io.Serializable;
-import java.time.LocalDateTime;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.Accessors;
 import lombok.experimental.SuperBuilder;
 import org.springframework.format.annotation.DateTimeFormat;
+
+import java.io.Serializable;
+import java.time.LocalDateTime;
 
 /**
  * 基础实体类，默认含[行级租户ID]
@@ -57,6 +55,7 @@ public abstract class HelioBaseEntity<T extends Serializable> implements Seriali
 
     /**
      * 逻辑删除标识
+     * @see YesOrNoEnum
      */
     @ApiModelProperty(value = "逻辑删除标识")
     @TableLogic
