@@ -5,10 +5,11 @@ import com.baomidou.dynamic.datasource.DynamicRoutingDataSource;
 import com.baomidou.dynamic.datasource.creator.HikariDataSourceCreator;
 import com.baomidou.dynamic.datasource.spring.boot.autoconfigure.DataSourceProperty;
 import com.zaxxer.hikari.HikariDataSource;
-import javax.sql.DataSource;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.ObjectProvider;
+
+import javax.sql.DataSource;
 
 /**
  * Helio 动态多数据源登记处
