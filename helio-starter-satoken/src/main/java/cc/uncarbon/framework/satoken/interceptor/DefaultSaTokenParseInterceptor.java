@@ -7,18 +7,21 @@ import cc.uncarbon.framework.core.context.UserContextHolder;
 import cc.uncarbon.framework.satoken.util.IPUtil;
 import cn.dev33.satoken.session.SaSession;
 import cn.dev33.satoken.stp.StpUtil;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.servlet.AsyncHandlerInterceptor;
 import org.springframework.web.servlet.resource.ResourceHttpRequestHandler;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
 /**
  * 从请求头解析用户信息，并赋值到上下文；默认用于C端用户的鉴权
  *
  * @author Uncarbon
+ * @deprecated since 1.7.4，已内置至脚手架同名类中
  */
+@Deprecated
 @Slf4j
 public class DefaultSaTokenParseInterceptor implements AsyncHandlerInterceptor {
 

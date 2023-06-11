@@ -1,13 +1,16 @@
 package cc.uncarbon.framework.satoken.util;
 
-import javax.servlet.http.HttpServletRequest;
 import lombok.experimental.UtilityClass;
+
+import javax.servlet.http.HttpServletRequest;
 
 /**
  * IP地址工具类
  * 方法来自于互联网
  * @author Uncarbon
+ * @deprecated since 1.7.4，改为使用helio-starter-web包中的同名工具类
  */
+@Deprecated
 @UtilityClass
 public class IPUtil {
     private static final String[] HEADERS_TO_TRY = {
