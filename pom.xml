@@ -44,12 +44,12 @@
 
         <!-- Spring Cloud versions -->
         <!-- https://mvnrepository.com/artifact/org.springframework.cloud/spring-cloud-dependencies -->
-        <spring-cloud.version>2021.0.4</spring-cloud.version>
-        <spring-cloud-starter-bootstrap.version>3.1.4</spring-cloud-starter-bootstrap.version>
+        <spring-cloud.version>2021.0.7</spring-cloud.version>
+        <spring-cloud-starter-bootstrap.version>3.1.6</spring-cloud-starter-bootstrap.version>
 
         <!-- Spring Cloud Alibaba versions -->
-        <spring-cloud-alibaba.version>2021.0.4.0</spring-cloud-alibaba.version>
-        <dubbo.version>3.1.2</dubbo.version>
+        <spring-cloud-alibaba.version>2021.0.5.0</spring-cloud-alibaba.version>
+        <dubbo.version>3.1.10</dubbo.version>
         <seata.vesion>1.5.2</seata.vesion>
         <nacos-client.vesion>2.1.2</nacos-client.vesion>
 
