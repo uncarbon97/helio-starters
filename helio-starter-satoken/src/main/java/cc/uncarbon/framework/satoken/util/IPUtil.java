@@ -8,7 +8,7 @@ import javax.servlet.http.HttpServletRequest;
  * IP地址工具类
  * 方法来自于互联网
  * @author Uncarbon
- * @deprecated since 1.7.4，改为使用helio-starter-web包中的同名工具类
+ * @deprecated since 1.8.0，改为使用helio-starter-web包中的同名工具类
  */
 @Deprecated
 @UtilityClass

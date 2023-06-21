@@ -22,7 +22,7 @@ public class ProviderContextFilter implements Filter {
     /**
      * 从 Dubbo 附件中，取出用户上下文、租户上下文等业务字段
      * @since 1.6.0 附件内容不再是 JSON 字符串，直接使用可序列化的对象
-     * @since 1.7.4 判断isProviderSide，非提供者不从附件取值
+     * @since 1.8.0 判断isProviderSide，非提供者不从附件取值
      */
     @Override
     public Result invoke(Invoker<?> invoker, Invocation invocation) throws RpcException {

@@ -22,7 +22,7 @@ public class ConsumerContextFilter implements Filter {
     /**
      * 将用户上下文、租户上下文等业务字段，放进 Dubbo 附件中
      * @since 1.6.0 不再转换成 JSON 字符串后放入附件中，直接使用可序列化的对象
-     * @since 1.7.4 判断isConsumerSide，非消费者不设置附件
+     * @since 1.8.0 判断isConsumerSide，非消费者不设置附件
      */
     @Override
     public Result invoke(Invoker<?> invoker, Invocation invocation) throws RpcException {
