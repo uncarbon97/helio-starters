@@ -47,7 +47,7 @@ public class IPUtil {
     /***
      * 获取客户端IP地址(可以穿透代理)
      * @param request 请求对象
-     * @param indexOfCommaSplit 先按逗号分隔后，再取第index个IP地址（从0开始）；适用于启用了云防护盾CDN的服务器（可能获取到的IP会带上中间代理节点的IP地址）
+     * @param indexOfCommaSplit 先按逗号分隔后，再取第index个IP地址（从0开始）；兼容启用了云防护盾CDN的服务器（可能获取到的IP会带上中间代理节点的IP地址）
      * @return 客户端IP地址
      */
     public String getClientIPAddress(HttpServletRequest request, int indexOfCommaSplit) {
