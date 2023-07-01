@@ -19,26 +19,28 @@ import org.apache.dubbo.rpc.*;
 @Activate(group = CommonConstants.CONSUMER)
 public class ConsumerContextFilter implements Filter {
 
+    /**
+     * 将用户上下文、租户上下文等业务字段，放进 Dubbo 附件中
+     * @since 1.6.0 不再转换成 JSON 字符串后放入附件中，直接使用可序列化的对象
+     * @since 1.8.0 判断isConsumerSide，非消费者不设置附件
+     */
     @Override
     public Result invoke(Invoker<?> invoker, Invocation invocation) throws RpcException {
-        /*
-        将用户上下文、租户上下文等业务字段，放进 Dubbo 附件中
-        @since 1.6.0 不再转换成 JSON 字符串后放入附件中，直接使用可序列化的对象
-         */
+        RpcContextAttachment clientAttachment = RpcContext.getClientAttachment();
+        if (clientAttachment.isConsumerSide()) {
+            UserContext userContext = UserContextHolder.getUserContext();
+            if (userContext != null) {
+                log.debug("[Dubbo RPC] 设置当前用户上下文 >> {}", userContext);
+                clientAttachment.setAttachment(UserContext.CAMEL_NAME, userContext);
+            }
 
-        UserContext userContext = UserContextHolder.getUserContext();
-        if (userContext != null) {
-            log.debug("[Dubbo RPC] 设置当前用户上下文 >> {}", userContext);
-            RpcContext.getClientAttachment().setAttachment(UserContext.CAMEL_NAME, userContext);
+            TenantContext tenantContext = TenantContextHolder.getTenantContext();
+            if (tenantContext != null && tenantContext.getTenantId() != null) {
+                // 实际启用了租户
+                log.debug("[Dubbo RPC] 设置当前租户上下文 >> {}", tenantContext);
+                clientAttachment.setAttachment(TenantContext.CAMEL_NAME, tenantContext);
+            }
         }
-
-        TenantContext tenantContext = TenantContextHolder.getTenantContext();
-        if (tenantContext != null && tenantContext.getTenantId() != null) {
-            // 实际启用了租户
-            log.debug("[Dubbo RPC] 设置当前租户上下文 >> {}", tenantContext);
-            RpcContext.getClientAttachment().setAttachment(TenantContext.CAMEL_NAME, tenantContext);
-        }
-
         return invoker.invoke(invocation);
     }
 

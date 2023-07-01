@@ -1,7 +1,12 @@
 package cc.uncarbon.framework.web.util;
 
-import javax.servlet.http.HttpServletRequest;
+import cn.hutool.core.collection.CollUtil;
+import cn.hutool.core.text.StrPool;
+import cn.hutool.core.util.StrUtil;
 import lombok.experimental.UtilityClass;
+
+import javax.servlet.http.HttpServletRequest;
+import java.util.List;
 
 /**
  * IP地址工具类
@@ -27,7 +32,7 @@ public class IPUtil {
     /***
      * 获取客户端IP地址(可以穿透代理)
      * @param request 请求对象
-     * @return IP地址
+     * @return 客户端IP地址
      */
     public String getClientIPAddress(HttpServletRequest request) {
         for (String header : HEADERS_TO_TRY) {
@@ -37,6 +42,22 @@ public class IPUtil {
             }
         }
         return request.getRemoteAddr();
+    }
+
+    /***
+     * 获取客户端IP地址(可以穿透代理)
+     * @param request 请求对象
+     * @param indexOfCommaSplit 先按逗号分隔后，再取第index个IP地址（从0开始）；兼容启用了云防护盾CDN的服务器（可能获取到的IP会带上中间代理节点的IP地址）
+     * @return 客户端IP地址
+     */
+    public String getClientIPAddress(HttpServletRequest request, int indexOfCommaSplit) {
+        String source = getClientIPAddress(request);
+        if (!StrUtil.contains(source, StrPool.COMMA)) {
+            // 不含逗号
+            return source;
+        }
+        List<String> split = StrUtil.split(source, StrPool.COMMA);
+        return StrUtil.cleanBlank(CollUtil.get(split, indexOfCommaSplit));
     }
 
 }

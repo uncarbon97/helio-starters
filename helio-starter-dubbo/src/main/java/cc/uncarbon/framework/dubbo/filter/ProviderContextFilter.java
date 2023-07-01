@@ -19,29 +19,32 @@ import org.apache.dubbo.rpc.*;
 @Activate(group = CommonConstants.PROVIDER)
 public class ProviderContextFilter implements Filter {
 
+    /**
+     * 从 Dubbo 附件中，取出用户上下文、租户上下文等业务字段
+     * @since 1.6.0 附件内容不再是 JSON 字符串，直接使用可序列化的对象
+     * @since 1.8.0 判断isProviderSide，非提供者不从附件取值
+     */
     @Override
     public Result invoke(Invoker<?> invoker, Invocation invocation) throws RpcException {
-        /*
-        从 Dubbo 附件中，取出用户上下文、租户上下文等业务字段
-        since 1.6.0 附件内容不再是 JSON 字符串，直接使用可序列化的对象
-         */
+        RpcContextAttachment serverAttachment = RpcContext.getServerAttachment();
+        if (serverAttachment.isProviderSide()) {
+            // 清理数据，避免线程池化复用残留
+            UserContextHolder.clear();
+            TenantContextHolder.clear();
 
-        // 清理数据，避免线程池化复用残留
-        UserContextHolder.clear();
-        TenantContextHolder.clear();
+            Object attachment = serverAttachment.getObjectAttachment(UserContext.CAMEL_NAME);
+            if (attachment instanceof UserContext) {
+                UserContext userContext = (UserContext) attachment;
+                UserContextHolder.setUserContext(userContext);
+                log.debug("[Dubbo RPC] 取出当前用户上下文 >> {}", userContext);
+            }
 
-        Object attachment = RpcContext.getServerAttachment().getObjectAttachment(UserContext.CAMEL_NAME);
-        if (attachment instanceof UserContext) {
-            UserContext userContext = (UserContext) attachment;
-            UserContextHolder.setUserContext(userContext);
-            log.debug("[Dubbo RPC] 取出当前用户上下文 >> {}", userContext);
-        }
-
-        attachment = RpcContext.getServerAttachment().getObjectAttachment(TenantContext.CAMEL_NAME);
-        if (attachment instanceof TenantContext) {
-            TenantContext tenantContext = (TenantContext) attachment;
-            TenantContextHolder.setTenantContext(tenantContext);
-            log.debug("[Dubbo RPC] 取出当前租户上下文 >> {}", tenantContext);
+            attachment = serverAttachment.getObjectAttachment(TenantContext.CAMEL_NAME);
+            if (attachment instanceof TenantContext) {
+                TenantContext tenantContext = (TenantContext) attachment;
+                TenantContextHolder.setTenantContext(tenantContext);
+                log.debug("[Dubbo RPC] 取出当前租户上下文 >> {}", tenantContext);
+            }
         }
 
         return invoker.invoke(invocation);
