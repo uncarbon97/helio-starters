@@ -56,7 +56,7 @@
 
         <!-- 3rd-party versions -->
         <hutool.version>5.8.21</hutool.version>
-        <sa-token.version>1.34.0</sa-token.version>
+        <sa-token.version>1.35.0.RC</sa-token.version>
         <transmittable-thread-local.version>2.14.2</transmittable-thread-local.version>
         <!-- 如果 mp 较新版存在问题，可以回退至 3.5.2 试试  -->
         <mybatis-plus.version>3.5.3.1</mybatis-plus.version>
@@ -395,7 +395,7 @@
 
             <dependency>
                 <groupId>cn.dev33</groupId>
-                <artifactId>sa-token-dao-redis-jackson</artifactId>
+                <artifactId>sa-token-redis-jackson</artifactId>
                 <version>${sa-token.version}</version>
             </dependency>
 
