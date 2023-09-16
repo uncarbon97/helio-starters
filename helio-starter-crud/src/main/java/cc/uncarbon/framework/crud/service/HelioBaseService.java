@@ -1,5 +1,6 @@
 package cc.uncarbon.framework.crud.service;
 
+import cc.uncarbon.framework.crud.entity.HelioBaseEntity;
 import com.baomidou.mybatisplus.extension.service.IService;
 
 /**
@@ -8,6 +9,7 @@ import com.baomidou.mybatisplus.extension.service.IService;
  *
  * @author Uncarbon
  */
-public interface HelioBaseService<E> extends IService<E> {
+public interface HelioBaseService<E extends HelioBaseEntity<?>>
+        extends IService<E> {
 
 }
