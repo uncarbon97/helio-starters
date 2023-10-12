@@ -41,6 +41,15 @@ public enum EnabledStatusEnum implements HelioBaseEnum<Integer> {
     }
 
     /**
+     * 根据值得到枚举对象
+     * @param value 外部值
+     * @return null or 枚举对象
+     */
+    public static EnabledStatusEnum of(boolean value) {
+        return value ? ENABLED : DISABLED;
+    }
+
+    /**
      * 取反值
      * @param old 原值
      * @return 新值
