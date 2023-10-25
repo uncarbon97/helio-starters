@@ -24,7 +24,7 @@
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
-        <version>2.7.14</version>
+        <version>2.7.17</version>
         <relativePath/>
     </parent>
 
@@ -39,7 +39,7 @@
         <!-- JDK8则改为'1.8'  JDK11则改为'11' -->
         <java.version>1.8</java.version>
         <!-- 若变更Spring Boot版本, 上面parent依赖版本也要变 -->
-        <spring-boot.version>2.7.14</spring-boot.version>
+        <spring-boot.version>2.7.17</spring-boot.version>
 
 
         <!-- Spring Cloud versions -->
@@ -56,7 +56,7 @@
 
         <!-- 3rd-party versions -->
         <hutool.version>5.8.21</hutool.version>
-        <sa-token.version>1.36.0</sa-token.version>
+        <sa-token.version>1.37.0</sa-token.version>
         <transmittable-thread-local.version>2.14.2</transmittable-thread-local.version>
         <!-- 如果 mp 较新版存在问题，可以回退至 3.5.2 试试  -->
         <mybatis-plus.version>3.5.3.1</mybatis-plus.version>
