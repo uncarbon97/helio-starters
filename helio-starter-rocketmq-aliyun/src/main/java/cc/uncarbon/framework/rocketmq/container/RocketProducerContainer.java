@@ -52,8 +52,12 @@ public class RocketProducerContainer implements ApplicationContextAware {
 
 	@PostConstruct
 	public void initialize() {
+		// 创建临时线程池
 		ThreadPoolExecutor threadPoolExecutor = ThreadPoolFactory.createProducerThreadPoolExecutor(rocketProperties);
+		// 扫描标记 @RocketMessage 注解的类，再将其中标记了 @CommonMessage/@OrderMessage/@TransactionMessage 的方法包装一下
+		// 依次注册到阿里云SDK
 		applicationContext.getBeansWithAnnotation(RocketMessage.class).forEach((beanName, bean) -> RocketConsumerStrategy.putProducer(threadPoolExecutor, consumerContainer, bean, rocketProperties, applicationContext));
+		// 销毁临时线程池
 		threadPoolExecutor.shutdown();
 	}
 

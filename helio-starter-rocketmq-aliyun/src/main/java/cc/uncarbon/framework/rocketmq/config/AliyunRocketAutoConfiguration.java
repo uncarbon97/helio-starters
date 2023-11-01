@@ -22,13 +22,15 @@ import cc.uncarbon.framework.rocketmq.container.RocketProducerContainer;
 import cc.uncarbon.framework.rocketmq.core.serializer.JacksonJsonSerializer;
 import cc.uncarbon.framework.rocketmq.core.serializer.RocketSerializer;
 import cc.uncarbon.framework.rocketmq.props.AliyunRocketProperties;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
+
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 
 /**
@@ -55,8 +57,9 @@ public class AliyunRocketAutoConfiguration {
 
     @Bean
     @ConditionalOnMissingBean(RocketSerializer.class)
-    public RocketSerializer rocketSerializer() {
-        return new JacksonJsonSerializer();
+    public RocketSerializer rocketSerializer(ObjectMapper objectMapper) {
+        // 使用注册于Spring的ObjectMapper
+        return new JacksonJsonSerializer(objectMapper);
     }
 
     @Bean

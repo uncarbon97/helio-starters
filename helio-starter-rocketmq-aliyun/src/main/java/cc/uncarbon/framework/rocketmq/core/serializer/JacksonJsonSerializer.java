@@ -2,6 +2,7 @@ package cc.uncarbon.framework.rocketmq.core.serializer;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.IOException;
@@ -11,10 +12,11 @@ import java.io.IOException;
  *
  * @author Uncarbon
  */
+@RequiredArgsConstructor
 @Slf4j
 public class JacksonJsonSerializer implements RocketSerializer {
 
-    private final ObjectMapper objectMapper = new ObjectMapper();
+    private final ObjectMapper objectMapper;
 
     @Override
     public <T> byte[] serialize(T object) {
