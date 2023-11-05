@@ -1,6 +1,5 @@
-package cc.uncarbon.framework.crud.enums;
+package cc.uncarbon.framework.core.enums;
 
-import cc.uncarbon.framework.core.enums.HelioBaseEnum;
 import com.baomidou.mybatisplus.annotation.EnumValue;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -39,6 +38,15 @@ public enum EnabledStatusEnum implements HelioBaseEnum<Integer> {
             return ENABLED;
         }
         return null;
+    }
+
+    /**
+     * 根据值得到枚举对象
+     * @param value 外部值
+     * @return null or 枚举对象
+     */
+    public static EnabledStatusEnum of(boolean value) {
+        return value ? ENABLED : DISABLED;
     }
 
     /**

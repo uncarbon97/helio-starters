@@ -56,8 +56,11 @@ public class RocketConsumerContainer implements ApplicationContextAware {
 
     @PostConstruct
     public void initialize() {
+        // 创建临时线程池
         ThreadPoolExecutor threadPoolExecutor = ThreadPoolFactory.createConsumeThreadPoolExecutor(rocketProperties);
 
+        // 扫描标记 @RocketListener 注解的类，再将其中标记了 @MessageListener 的方法包装一下
+        // 依次注册到阿里云SDK
         applicationContext.getBeansWithAnnotation(RocketListener.class).forEach((beanName, bean) -> {
             RocketListener rocketListener = bean.getClass().getAnnotation(RocketListener.class);
             AnnotatedMethodsUtils.getMethodAndAnnotation(bean, MessageListener.class).
@@ -68,6 +71,7 @@ public class RocketConsumerContainer implements ApplicationContextAware {
                     });
         });
 
+        // 销毁临时线程池
         threadPoolExecutor.shutdown();
     }
 

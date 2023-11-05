@@ -71,6 +71,12 @@
             <groupId>com.github.xiaoymin</groupId>
             <artifactId>knife4j-annotations</artifactId>
         </dependency>
+
+        <!-- mybatis-plus 注解包 -->
+        <dependency>
+            <groupId>com.baomidou</groupId>
+            <artifactId>mybatis-plus-annotation</artifactId>
+        </dependency>
     </dependencies>
 
 </project>

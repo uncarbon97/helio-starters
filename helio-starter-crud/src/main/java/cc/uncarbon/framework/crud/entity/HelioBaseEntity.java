@@ -1,7 +1,6 @@
 package cc.uncarbon.framework.crud.entity;
 
 import cc.uncarbon.framework.core.constant.HelioConstant;
-import cc.uncarbon.framework.crud.enums.YesOrNoEnum;
 import com.baomidou.mybatisplus.annotation.*;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import io.swagger.annotations.ApiModelProperty;
@@ -55,9 +54,9 @@ public abstract class HelioBaseEntity<T extends Serializable> implements Seriali
 
     /**
      * 逻辑删除标识
-     * @see YesOrNoEnum
+     * 0=否 1=是
      */
-    @ApiModelProperty(value = "逻辑删除标识")
+    @ApiModelProperty(value = "逻辑删除标识", notes = "0=否 1=是")
     @TableLogic
     @TableField(value = "del_flag")
     private Integer delFlag;

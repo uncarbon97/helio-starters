@@ -1,6 +1,5 @@
-package cc.uncarbon.framework.crud.enums;
+package cc.uncarbon.framework.core.enums;
 
-import cc.uncarbon.framework.core.enums.HelioBaseEnum;
 import com.baomidou.mybatisplus.annotation.EnumValue;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -12,8 +11,8 @@ import lombok.Getter;
 @Getter
 public enum YesOrNoEnum implements HelioBaseEnum<Integer> {
 
-    YES(1, "是"),
     NO(0, "否"),
+    YES(1, "是"),
 
     ;
     @EnumValue
@@ -38,6 +37,15 @@ public enum YesOrNoEnum implements HelioBaseEnum<Integer> {
             return NO;
         }
         return null;
+    }
+
+    /**
+     * 根据值得到枚举对象
+     * @param value 外部值
+     * @return null or 枚举对象
+     */
+    public static YesOrNoEnum of(boolean value) {
+        return value ? YES : NO;
     }
 
     /**

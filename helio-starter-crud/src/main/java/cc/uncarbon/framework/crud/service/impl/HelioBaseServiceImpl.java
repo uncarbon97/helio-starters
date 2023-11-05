@@ -15,7 +15,9 @@ import lombok.NoArgsConstructor;
  * @author Uncarbon
  */
 @NoArgsConstructor
-public class HelioBaseServiceImpl<M extends BaseMapper<E>, E extends HelioBaseEntity<?>> extends ServiceImpl<M, E> implements HelioBaseService<E> {
+public class HelioBaseServiceImpl<M extends BaseMapper<E>, E extends HelioBaseEntity<?>>
+        extends ServiceImpl<M, E>
+        implements HelioBaseService<E> {
 
     /**
      * 解决MP自带的本方法，自动填充字段不生效问题
