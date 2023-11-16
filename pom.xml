@@ -12,6 +12,7 @@
         <module>helio-starter-dubbo</module>
         <module>helio-starter-i18n</module>
         <module>helio-starter-knife4j</module>
+        <module>helio-starter-rate-limit-redis</module>
         <module>helio-starter-redis</module>
         <module>helio-starter-rocketmq-aliyun</module>
         <module>helio-starter-satoken</module>
@@ -165,6 +166,12 @@
 
             <dependency>
                 <groupId>cc.uncarbon.framework</groupId>
+                <artifactId>helio-starter-rate-limit-redis</artifactId>
+                <version>${helio-starters.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>cc.uncarbon.framework</groupId>
                 <artifactId>helio-starter-redis</artifactId>
                 <version>${helio-starters.version}</version>
             </dependency>
@@ -204,7 +211,6 @@
                 <artifactId>helio-starter-web</artifactId>
                 <version>${helio-starters.version}</version>
             </dependency>
-
 
             <!-- CORE dependencies -->
             <dependency>

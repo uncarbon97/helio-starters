@@ -182,9 +182,8 @@ public class GlobalWebExceptionHandlerAutoConfiguration {
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     @ExceptionHandler({Exception.class})
     public ResponseEntity<ApiResult<?>> handleException(Exception e, HttpServletRequest request) {
-        this.logError(e, request);
         // 打印堆栈，方便溯源
-        e.printStackTrace();
+        this.logError(e, request, true);
 
         int responseCode = HttpStatus.INTERNAL_SERVER_ERROR.value();
 
@@ -198,8 +197,18 @@ public class GlobalWebExceptionHandlerAutoConfiguration {
         return createResponseEntity(HttpStatus.INTERNAL_SERVER_ERROR, ret);
     }
 
+    /*
+    ----------------------------------------------------------------
+                        私有方法 private methods
+    ----------------------------------------------------------------
+     */
+
     protected void logError(Exception e, HttpServletRequest request) {
-        log.error("[Web][有异常被抛出] >> 异常类=[{}], URI=[{}], 消息=[{}]", e.getClass().getName(), request.getRequestURI(), e.getMessage());
+        logError(e, request, false);
+    }
+
+    protected void logError(Exception e, HttpServletRequest request, boolean printExceptionStack) {
+        log.error("[Web][有异常被抛出] >> 异常类=[{}], URI=[{}], 消息=[{}]  {}", e.getClass().getName(), request.getRequestURI(), e.getMessage(), printExceptionStack ? e : null);
     }
 
     protected static ResponseEntity<ApiResult<?>> createResponseEntity(HttpStatus httpStatus, ApiResult<?> body) {
