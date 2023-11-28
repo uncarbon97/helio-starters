@@ -17,11 +17,13 @@
     </properties>
 
     <dependencies>
+        <!-- 脚手架starter -->
         <dependency>
             <groupId>cc.uncarbon.framework</groupId>
             <artifactId>helio-core</artifactId>
         </dependency>
 
+        <!-- 这里写其他第三方依赖 -->
         <dependency>
             <groupId>javax.servlet</groupId>
             <artifactId>javax.servlet-api</artifactId>
@@ -36,7 +38,6 @@
             <groupId>cn.dev33</groupId>
             <artifactId>sa-token-redis-jackson</artifactId>
         </dependency>
-
     </dependencies>
 
 </project>

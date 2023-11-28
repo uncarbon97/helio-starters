@@ -3,6 +3,7 @@ package cc.uncarbon.framework.ratelimit.stratrgy.impl;
 import cc.uncarbon.framework.ratelimit.annotation.UseRateLimit;
 import cc.uncarbon.framework.ratelimit.exception.RateLimitStrategyException;
 import cc.uncarbon.framework.ratelimit.exception.RateLimitedException;
+import cn.hutool.core.text.StrPool;
 import cn.hutool.core.util.StrUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -71,7 +72,7 @@ public abstract class SimpleRedisBasedRateLimitStrategy {
     /**
      * 确定被限流方法的标识
      */
-    public static String markOf(UseRateLimit annotation, JoinPoint point) {
+    protected String markOf(UseRateLimit annotation, JoinPoint point) {
         if (StrUtil.isNotEmpty(annotation.mark())) {
             return annotation.mark();
         }
@@ -79,6 +80,6 @@ public abstract class SimpleRedisBasedRateLimitStrategy {
         MethodSignature signature = (MethodSignature) point.getSignature();
         Method method = signature.getMethod();
         Class<?> targetClass = method.getDeclaringClass();
-        return targetClass.getName() + "#" + method.getName();
+        return targetClass.getName() + StrPool.DASHED + method.getName();
     }
 }

@@ -17,6 +17,7 @@
     </properties>
 
     <dependencies>
+        <!-- 这里写其他第三方依赖 -->
         <dependency>
             <groupId>org.redisson</groupId>
             <artifactId>redisson-spring-boot-starter</artifactId>

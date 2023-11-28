@@ -17,6 +17,7 @@
     </properties>
 
     <dependencies>
+        <!-- 脚手架starter -->
         <dependency>
             <groupId>cc.uncarbon.framework</groupId>
             <artifactId>helio-core</artifactId>
