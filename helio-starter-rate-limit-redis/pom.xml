@@ -34,6 +34,7 @@
             <artifactId>helio-starter-redis</artifactId>
         </dependency>
 
+        <!-- 仅 RateLimitByClientIPStrategy 需要该依赖，若不使用可排除 -->
         <dependency>
             <groupId>cc.uncarbon.framework</groupId>
             <artifactId>helio-starter-web</artifactId>

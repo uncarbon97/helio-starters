@@ -3,8 +3,8 @@ package cc.uncarbon.framework.ratelimit.stratrgy.impl;
 import cc.uncarbon.framework.ratelimit.annotation.UseRateLimit;
 import cc.uncarbon.framework.ratelimit.exception.RateLimitStrategyException;
 import cc.uncarbon.framework.ratelimit.exception.RateLimitedException;
+import cn.hutool.core.text.CharSequenceUtil;
 import cn.hutool.core.text.StrPool;
-import cn.hutool.core.util.StrUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.JoinPoint;
@@ -52,9 +52,10 @@ public abstract class SimpleRedisBasedRateLimitStrategy {
         long duration = annotation.duration();
         long max = annotation.max();
 
-        String redisKey = redisKeyOf(annotation, point);
+        String redisKey = determineRedisKey(annotation, point);
         Long current = objectRedisTemplate.execute(REDIS_SCRIPT, Collections.singletonList(redisKey), max, duration);
         if (current == null) {
+            log.error("SimpleRedisBasedRateLimitStrategy.REDIS_SCRIPT executed but no result.");
             throw new RateLimitStrategyException();
         }
         if (current > max) {
@@ -67,13 +68,13 @@ public abstract class SimpleRedisBasedRateLimitStrategy {
     /**
      * 确定RedisKey
      */
-    abstract protected String redisKeyOf(UseRateLimit annotation, JoinPoint point);
+    protected abstract String determineRedisKey(UseRateLimit annotation, JoinPoint point);
 
     /**
      * 确定被限流方法的标识
      */
-    protected String markOf(UseRateLimit annotation, JoinPoint point) {
-        if (StrUtil.isNotEmpty(annotation.mark())) {
+    protected String determineMark(UseRateLimit annotation, JoinPoint point) {
+        if (CharSequenceUtil.isNotEmpty(annotation.mark())) {
             return annotation.mark();
         }
         // 使用Java方法的全限定名

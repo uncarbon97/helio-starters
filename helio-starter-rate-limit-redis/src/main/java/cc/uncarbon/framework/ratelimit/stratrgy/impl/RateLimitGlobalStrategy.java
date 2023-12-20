@@ -27,9 +27,9 @@ public class RateLimitGlobalStrategy extends SimpleRedisBasedRateLimitStrategy i
      * 确定RedisKey
      */
     @Override
-    protected String redisKeyOf(UseRateLimit annotation, JoinPoint point) {
+    protected String determineRedisKey(UseRateLimit annotation, JoinPoint point) {
         final String splitter = StrPool.COLON;
         // 由编译器自动使用StringBuilder拼接，下同
-        return RateLimitConstant.REDIS_KEY_PREFIX + "global" + splitter + markOf(annotation, point);
+        return RateLimitConstant.REDIS_KEY_PREFIX + "global" + splitter + determineMark(annotation, point);
     }
 }
