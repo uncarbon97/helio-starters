@@ -1,10 +1,9 @@
 package cc.uncarbon.framework.redis.lock.impl;
 
 import cc.uncarbon.framework.redis.lock.RedisDistributedLock;
-import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import org.redisson.api.RLock;
 import org.redisson.api.RedissonClient;
-import org.springframework.stereotype.Service;
 
 import java.util.concurrent.TimeUnit;
 
@@ -14,8 +13,7 @@ import java.util.concurrent.TimeUnit;
  * @author dcy
  * @author Uncarbon
  */
-@AllArgsConstructor
-@Service
+@RequiredArgsConstructor
 public class RedisDistributedLockImpl implements RedisDistributedLock {
 
     /**

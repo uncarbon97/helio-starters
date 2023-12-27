@@ -2,6 +2,8 @@ package cc.uncarbon.framework.redis.config;
 
 import cc.uncarbon.framework.redis.lock.RedisDistributedLock;
 import cc.uncarbon.framework.redis.lock.impl.RedisDistributedLockImpl;
+import cc.uncarbon.framework.redis.support.RedisDistributedLockSupport;
+import cc.uncarbon.framework.redis.support.impl.RedisDistributedLockSupportImpl;
 import lombok.RequiredArgsConstructor;
 import org.redisson.api.RedissonClient;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
@@ -29,13 +31,9 @@ import org.springframework.data.redis.serializer.StringRedisSerializer;
 @AutoConfiguration
 public class HelioRedisAutoConfiguration {
 
-    private final RedisConnectionFactory factory;
-    private final RedissonClient redissonClient;
-
-
     @Bean
     @ConditionalOnMissingBean
-    public RedisTemplate<?, ?> redisTemplate() {
+    public RedisTemplate<?, ?> redisTemplate(RedisConnectionFactory factory) {
         RedisTemplate<?, ?> redisTemplate = new RedisTemplate<>();
 
         redisTemplate.setConnectionFactory(factory);
@@ -51,15 +49,6 @@ public class HelioRedisAutoConfiguration {
         redisTemplate.setHashValueSerializer(valueSerializer);
 
         return redisTemplate;
-    }
-
-    /**
-     * 基于 Redisson 的分布式锁
-     */
-    @Bean
-    @ConditionalOnMissingBean
-    public RedisDistributedLock redisDistributedLock() {
-        return new RedisDistributedLockImpl(redissonClient);
     }
 
     /**
@@ -80,5 +69,23 @@ public class HelioRedisAutoConfiguration {
             }
             return sb.toString();
         };
+    }
+
+    /**
+     * 基于 Redisson 的分布式锁
+     */
+    @Bean
+    @ConditionalOnMissingBean
+    public RedisDistributedLock redisDistributedLock(RedissonClient redissonClient) {
+        return new RedisDistributedLockImpl(redissonClient);
+    }
+
+    /**
+     * Redis分布式可重入锁辅助类
+     */
+    @Bean
+    @ConditionalOnMissingBean
+    public RedisDistributedLockSupport redisDistributedLockSupport(RedisDistributedLock redisDistributedLock) {
+        return new RedisDistributedLockSupportImpl(redisDistributedLock);
     }
 }
