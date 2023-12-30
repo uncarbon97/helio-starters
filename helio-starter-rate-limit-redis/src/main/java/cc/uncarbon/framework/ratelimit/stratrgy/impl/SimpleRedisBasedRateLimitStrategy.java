@@ -56,7 +56,7 @@ public abstract class SimpleRedisBasedRateLimitStrategy {
         Long current = objectRedisTemplate.execute(REDIS_SCRIPT, Collections.singletonList(redisKey), max, duration);
         if (current == null) {
             log.error("SimpleRedisBasedRateLimitStrategy.REDIS_SCRIPT executed but no result.");
-            throw new RateLimitStrategyException();
+            throw new RateLimitStrategyException("SCRIPT executed but no result");
         }
         if (current > max) {
             log.info("[UseRateLimit][{}] 键名 {} 已触达限流阈值 {}", realClassName, redisKey, max);
