@@ -22,7 +22,6 @@ import cc.uncarbon.framework.rocketmq.annotation.RocketMessage;
 import cc.uncarbon.framework.rocketmq.annotation.TransactionMessage;
 import cc.uncarbon.framework.rocketmq.core.factory.ProducerConsumerFactory;
 import cc.uncarbon.framework.rocketmq.core.factory.SendMessageFactory;
-import cc.uncarbon.framework.rocketmq.exception.RocketException;
 import com.aliyun.openservices.ons.api.Producer;
 import com.aliyun.openservices.ons.api.order.OrderProducer;
 import com.aliyun.openservices.ons.api.transaction.TransactionProducer;
@@ -42,7 +41,7 @@ public class ProducerStrategy {
     private ProducerStrategy() {
     }
 
-    public static void statsSendMessage(Long startDeliverTime, String shardingKeyFactory, Map<String, Object> consumerContainer, RocketMessage rocketMessage, Object message, byte[] bytes, ApplicationContext applicationContext) throws RocketException {
+    public static void statsSendMessage(Long startDeliverTime, String shardingKeyFactory, Map<String, Object> consumerContainer, RocketMessage rocketMessage, Object message, byte[] bytes, ApplicationContext applicationContext) {
         if (message instanceof CommonMessage) {
             CommonMessage commonMessage = (CommonMessage) message;
             Producer producer = ProducerConsumerFactory.getProducer(consumerContainer, rocketMessage, commonMessage);
