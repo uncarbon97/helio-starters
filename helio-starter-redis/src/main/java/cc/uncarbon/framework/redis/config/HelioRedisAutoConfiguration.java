@@ -31,6 +31,7 @@ import org.springframework.data.redis.serializer.StringRedisSerializer;
 @AutoConfiguration
 public class HelioRedisAutoConfiguration {
 
+    @SuppressWarnings("squid:S1452")
     @Bean
     @ConditionalOnMissingBean
     public RedisTemplate<?, ?> redisTemplate(RedisConnectionFactory factory) {
