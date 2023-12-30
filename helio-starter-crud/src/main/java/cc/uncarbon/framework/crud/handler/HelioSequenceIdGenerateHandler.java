@@ -1,6 +1,7 @@
 package cc.uncarbon.framework.crud.handler;
 
 import cc.uncarbon.framework.core.enums.IdGeneratorStrategyEnum;
+import cn.hutool.core.net.NetUtil;
 import com.baomidou.mybatisplus.core.incrementer.DefaultIdentifierGenerator;
 import lombok.extern.slf4j.Slf4j;
 
@@ -13,7 +14,7 @@ import lombok.extern.slf4j.Slf4j;
 public class HelioSequenceIdGenerateHandler extends DefaultIdentifierGenerator {
 
     public HelioSequenceIdGenerateHandler() {
-        super();
+        super(NetUtil.getLocalhost());
         log.info("[主键ID生成器] >> strategy=[{}]",
                 IdGeneratorStrategyEnum.SEQUENCE
         );
