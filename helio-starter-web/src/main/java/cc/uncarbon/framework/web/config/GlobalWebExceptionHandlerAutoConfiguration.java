@@ -38,12 +38,12 @@ import java.nio.charset.StandardCharsets;
  *
  * @author Uncarbon
  */
-@Slf4j
-@RestController
-@ControllerAdvice
-@AutoConfiguration
 @ConditionalOnMissingBean(value = GlobalWebExceptionHandlerAutoConfiguration.class)
 @RequiredArgsConstructor
+@AutoConfiguration
+@ControllerAdvice
+@RestController
+@Slf4j
 public class GlobalWebExceptionHandlerAutoConfiguration {
 
     protected static final MediaType MEDIA_TYPE = new MediaType("application", "json", StandardCharsets.UTF_8);

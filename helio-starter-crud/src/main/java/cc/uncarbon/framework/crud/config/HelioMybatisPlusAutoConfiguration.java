@@ -27,9 +27,9 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 @EnableTransactionManagement(
         proxyTargetClass = true
 )
+@RequiredArgsConstructor
 @AutoConfiguration
 @Slf4j
-@RequiredArgsConstructor
 public class HelioMybatisPlusAutoConfiguration {
 
     private final HelioProperties helioProperties;

@@ -3,9 +3,6 @@ package cc.uncarbon.framework.knife4j.config;
 
 import cc.uncarbon.framework.core.props.HelioProperties;
 import com.github.xiaoymin.knife4j.spring.annotations.EnableKnife4j;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
@@ -25,6 +22,10 @@ import springfox.documentation.spi.DocumentationType;
 import springfox.documentation.spi.service.contexts.SecurityContext;
 import springfox.documentation.spring.web.plugins.Docket;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+
 
 /**
  * Helio knife4j 自动配置类
@@ -33,10 +34,10 @@ import springfox.documentation.spring.web.plugins.Docket;
  * @author Uncarbon
  * @author xiaoymin
  */
-@RequiredArgsConstructor
 @EnableOpenApi
 @EnableKnife4j
 @Import(BeanValidatorPluginsConfiguration.class)
+@RequiredArgsConstructor
 @AutoConfiguration
 public class HelioKnife4jAutoConfiguration {
 

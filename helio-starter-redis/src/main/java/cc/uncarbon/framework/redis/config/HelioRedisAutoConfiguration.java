@@ -25,9 +25,9 @@ import org.springframework.data.redis.serializer.StringRedisSerializer;
  * @author Mark sunlightcs@gmail.com
  * @author Uncarbon
  */
-@RequiredArgsConstructor
 @EnableCaching
 @ConditionalOnClass(RedisConnectionFactory.class)
+@RequiredArgsConstructor
 @AutoConfiguration
 public class HelioRedisAutoConfiguration {
 
