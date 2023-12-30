@@ -22,6 +22,7 @@ import net.sf.jsqlparser.expression.LongValue;
 @Slf4j
 public class TenantLineSupport implements TenantSupport {
 
+    @SuppressWarnings("squid:S106")
     @Override
     public void support(HelioProperties helioProperties, MybatisPlusInterceptor interceptor) {
         Collection<String> ignoredTables = helioProperties.getTenant().getIgnoredTables();
