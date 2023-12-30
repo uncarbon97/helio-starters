@@ -2,6 +2,7 @@ package cc.uncarbon.framework.web.config;
 
 import cc.uncarbon.framework.core.constant.HelioConstant;
 import cc.uncarbon.framework.core.exception.BusinessException;
+import cc.uncarbon.framework.core.exception.HelioFrameworkException;
 import cc.uncarbon.framework.core.props.HelioProperties;
 import cc.uncarbon.framework.i18n.util.I18nUtil;
 import cc.uncarbon.framework.web.enums.GlobalWebExceptionI18nMessageEnum;
@@ -56,14 +57,14 @@ public class GlobalWebExceptionHandlerAutoConfiguration {
      */
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ExceptionHandler({BusinessException.class})
-    public ResponseEntity<ApiResult<?>> handleBusinessException(BusinessException e, HttpServletRequest request) {
+    public ResponseEntity<ApiResult<Void>> handleBusinessException(BusinessException e, HttpServletRequest request) {
         this.logError(e, request);
 
         /*
         @since 1.7.2，国际化支持；详见文档：进阶使用-国际化
          */
         String msg;
-        if (helioProperties.getI18n().getEnabled() && e.getCustomEnumField() != null) {
+        if (Boolean.TRUE.equals(helioProperties.getI18n().getEnabled()) && e.getCustomEnumField() != null) {
             // 如果启用了国际化，并制定了枚举值，则按国际化翻译值显示
             msg = I18nUtil.messageOf(e.getCustomEnumField(), e.getTemplateParams());
         } else {
@@ -71,8 +72,21 @@ public class GlobalWebExceptionHandlerAutoConfiguration {
             msg = e.getMessage();
         }
 
-        ApiResult<?> ret = ApiResult.fail(e.getCode(), msg);
+        ApiResult<Void> ret = ApiResult.fail(e.getCode(), msg);
         return createResponseEntity(HttpStatus.BAD_REQUEST, ret);
+    }
+
+    /**
+     * Helio脚手架内部出错异常类
+     */
+    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+    @ExceptionHandler({HelioFrameworkException.class})
+    public ResponseEntity<ApiResult<Void>> handleHelioFrameworkException(HelioFrameworkException e, HttpServletRequest request) {
+        this.logError(e, request);
+
+        GlobalWebExceptionI18nMessageEnum msgEnum = GlobalWebExceptionI18nMessageEnum.GLOBAL__INTERNAL_ERROR;
+        ApiResult<Void> ret = ApiResult.fail(HttpStatus.INTERNAL_SERVER_ERROR.value(), this.determineI18nMessage(msgEnum));
+        return createResponseEntity(HttpStatus.INTERNAL_SERVER_ERROR, ret);
     }
 
     /**
@@ -80,11 +94,11 @@ public class GlobalWebExceptionHandlerAutoConfiguration {
      */
     @ResponseStatus(HttpStatus.UNAUTHORIZED)
     @ExceptionHandler({NotLoginException.class})
-    public ResponseEntity<ApiResult<?>> handleNotLoginException(NotLoginException e, HttpServletRequest request) {
+    public ResponseEntity<ApiResult<Void>> handleNotLoginException(NotLoginException e, HttpServletRequest request) {
         this.logError(e, request);
 
         GlobalWebExceptionI18nMessageEnum msgEnum = GlobalWebExceptionI18nMessageEnum.GLOBAL__NO_LOGIN;
-        ApiResult<?> ret = ApiResult.fail(HttpStatus.UNAUTHORIZED.value(), this.getI18nMessage(msgEnum));
+        ApiResult<Void> ret = ApiResult.fail(HttpStatus.UNAUTHORIZED.value(), this.determineI18nMessage(msgEnum));
         return createResponseEntity(HttpStatus.UNAUTHORIZED, ret);
     }
 
@@ -93,11 +107,11 @@ public class GlobalWebExceptionHandlerAutoConfiguration {
      */
     @ResponseStatus(HttpStatus.FORBIDDEN)
     @ExceptionHandler({NotPermissionException.class})
-    public ResponseEntity<ApiResult<?>> handleNotPermissionException(NotPermissionException e, HttpServletRequest request) {
+    public ResponseEntity<ApiResult<Void>> handleNotPermissionException(NotPermissionException e, HttpServletRequest request) {
         this.logError(e, request);
 
         GlobalWebExceptionI18nMessageEnum msgEnum = GlobalWebExceptionI18nMessageEnum.GLOBAL__PERMISSION_NOT_MATCH;
-        ApiResult<?> ret = ApiResult.fail(HttpStatus.FORBIDDEN.value(), this.getI18nMessage(msgEnum));
+        ApiResult<Void> ret = ApiResult.fail(HttpStatus.FORBIDDEN.value(), this.determineI18nMessage(msgEnum));
         return createResponseEntity(HttpStatus.FORBIDDEN, ret);
     }
 
@@ -106,11 +120,11 @@ public class GlobalWebExceptionHandlerAutoConfiguration {
      */
     @ResponseStatus(HttpStatus.FORBIDDEN)
     @ExceptionHandler({NotRoleException.class})
-    public ResponseEntity<ApiResult<?>> handleNotRoleException(NotRoleException e, HttpServletRequest request) {
+    public ResponseEntity<ApiResult<Void>> handleNotRoleException(NotRoleException e, HttpServletRequest request) {
         this.logError(e, request);
 
         GlobalWebExceptionI18nMessageEnum msgEnum = GlobalWebExceptionI18nMessageEnum.GLOBAL__ROLE_NOT_MATCH;
-        ApiResult<?> ret = ApiResult.fail(HttpStatus.FORBIDDEN.value(), this.getI18nMessage(msgEnum));
+        ApiResult<Void> ret = ApiResult.fail(HttpStatus.FORBIDDEN.value(), this.determineI18nMessage(msgEnum));
         return createResponseEntity(HttpStatus.FORBIDDEN, ret);
     }
 
@@ -119,11 +133,11 @@ public class GlobalWebExceptionHandlerAutoConfiguration {
      */
     @ResponseStatus(HttpStatus.NOT_FOUND)
     @ExceptionHandler({NoHandlerFoundException.class})
-    public ResponseEntity<ApiResult<?>> handleNoHandlerFoundException(NoHandlerFoundException e, HttpServletRequest request) {
+    public ResponseEntity<ApiResult<Void>> handleNoHandlerFoundException(NoHandlerFoundException e, HttpServletRequest request) {
         this.logError(e, request);
 
         GlobalWebExceptionI18nMessageEnum msgEnum = GlobalWebExceptionI18nMessageEnum.GLOBAL__NOT_FOUND;
-        ApiResult<?> ret = ApiResult.fail(HttpStatus.NOT_FOUND.value(), this.getI18nMessage(msgEnum));
+        ApiResult<Void> ret = ApiResult.fail(HttpStatus.NOT_FOUND.value(), this.determineI18nMessage(msgEnum));
         return createResponseEntity(HttpStatus.NOT_FOUND, ret);
     }
 
@@ -140,11 +154,11 @@ public class GlobalWebExceptionHandlerAutoConfiguration {
      */
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ExceptionHandler({JsonParseException.class, HttpMessageNotReadableException.class, IllegalArgumentException.class, MethodArgumentTypeMismatchException.class})
-    public ResponseEntity<ApiResult<?>> handleJsonParseException(Exception e, HttpServletRequest request) {
+    public ResponseEntity<ApiResult<Void>> handleJsonParseException(Exception e, HttpServletRequest request) {
         this.logError(e, request);
 
         GlobalWebExceptionI18nMessageEnum msgEnum = GlobalWebExceptionI18nMessageEnum.GLOBAL__UNACCEPTABLE_PARAMETERS;
-        ApiResult<?> ret = ApiResult.fail(HttpStatus.NOT_ACCEPTABLE.value(), this.getI18nMessage(msgEnum));
+        ApiResult<Void> ret = ApiResult.fail(HttpStatus.NOT_ACCEPTABLE.value(), this.determineI18nMessage(msgEnum));
         return createResponseEntity(HttpStatus.NOT_ACCEPTABLE, ret);
     }
 
@@ -154,11 +168,12 @@ public class GlobalWebExceptionHandlerAutoConfiguration {
      */
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ExceptionHandler({MethodArgumentNotValidException.class, BindException.class})
-    public ResponseEntity<ApiResult<?>> handleBindException(BindException e, HttpServletRequest request) {
+    public ResponseEntity<ApiResult<InvalidFieldUtil.InvalidField>> handleBindException(BindException e, HttpServletRequest request) {
         this.logError(e, request);
 
         GlobalWebExceptionI18nMessageEnum msgEnum = GlobalWebExceptionI18nMessageEnum.GLOBAL__UNACCEPTABLE_PARAMETERS;
-        ApiResult<?> ret = ApiResult.fail(HttpStatus.NOT_ACCEPTABLE.value(), this.getI18nMessage(msgEnum), InvalidFieldUtil.getInvalidField(e.getBindingResult()));
+        ApiResult<InvalidFieldUtil.InvalidField> ret =
+                ApiResult.fail(HttpStatus.NOT_ACCEPTABLE.value(), this.determineI18nMessage(msgEnum), InvalidFieldUtil.getInvalidField(e.getBindingResult()));
         return createResponseEntity(HttpStatus.NOT_ACCEPTABLE, ret);
     }
 
@@ -167,11 +182,11 @@ public class GlobalWebExceptionHandlerAutoConfiguration {
      */
     @ResponseStatus(HttpStatus.METHOD_NOT_ALLOWED)
     @ExceptionHandler({HttpRequestMethodNotSupportedException.class})
-    public ResponseEntity<ApiResult<?>> handleHttpRequestMethodNotSupportedException(HttpRequestMethodNotSupportedException e, HttpServletRequest request) {
+    public ResponseEntity<ApiResult<Void>> handleHttpRequestMethodNotSupportedException(HttpRequestMethodNotSupportedException e, HttpServletRequest request) {
         this.logError(e, request);
 
         GlobalWebExceptionI18nMessageEnum msgEnum = GlobalWebExceptionI18nMessageEnum.GLOBAL__METHOD_NOT_ALLOWED;
-        ApiResult<?> ret = ApiResult.fail(HttpStatus.METHOD_NOT_ALLOWED.value(), this.getI18nMessage(msgEnum));
+        ApiResult<Void> ret = ApiResult.fail(HttpStatus.METHOD_NOT_ALLOWED.value(), this.determineI18nMessage(msgEnum));
         return createResponseEntity(HttpStatus.METHOD_NOT_ALLOWED, ret);
     }
 
@@ -181,7 +196,7 @@ public class GlobalWebExceptionHandlerAutoConfiguration {
      */
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     @ExceptionHandler({Exception.class})
-    public ResponseEntity<ApiResult<?>> handleException(Exception e, HttpServletRequest request) {
+    public ResponseEntity<ApiResult<Void>> handleException(Exception e, HttpServletRequest request) {
         // 打印堆栈，方便溯源
         this.logError(e, request, true);
 
@@ -193,7 +208,7 @@ public class GlobalWebExceptionHandlerAutoConfiguration {
         }
 
         GlobalWebExceptionI18nMessageEnum msgEnum = GlobalWebExceptionI18nMessageEnum.GLOBAL__INTERNAL_ERROR;
-        ApiResult<?> ret = ApiResult.fail(responseCode, this.getI18nMessage(msgEnum));
+        ApiResult<Void> ret = ApiResult.fail(responseCode, this.determineI18nMessage(msgEnum));
         return createResponseEntity(HttpStatus.INTERNAL_SERVER_ERROR, ret);
     }
 
@@ -203,15 +218,21 @@ public class GlobalWebExceptionHandlerAutoConfiguration {
     ----------------------------------------------------------------
      */
 
+    protected void logError(HelioFrameworkException e, HttpServletRequest request) {
+        log.error("❗ Helio framework has internal exception ❗ >> 异常类=[{}], URI=[{}], 消息=[{}]  ",
+                e.getClass().getName(), request.getRequestURI(), e.getMessage(), e);
+    }
+
     protected void logError(Exception e, HttpServletRequest request) {
         logError(e, request, false);
     }
 
     protected void logError(Exception e, HttpServletRequest request, boolean printExceptionStack) {
-        log.error("[Web][有异常被抛出] >> 异常类=[{}], URI=[{}], 消息=[{}]  {}", e.getClass().getName(), request.getRequestURI(), e.getMessage(), printExceptionStack ? e : null);
+        log.error("[Web][有异常被抛出] >> 异常类=[{}], URI=[{}], 消息=[{}]  {}",
+                e.getClass().getName(), request.getRequestURI(), e.getMessage(), printExceptionStack ? e : null);
     }
 
-    protected static ResponseEntity<ApiResult<?>> createResponseEntity(HttpStatus httpStatus, ApiResult<?> body) {
+    protected static <T> ResponseEntity<ApiResult<T>> createResponseEntity(HttpStatus httpStatus, ApiResult<T> body) {
         return ResponseEntity.status(httpStatus.value()).contentType(MEDIA_TYPE).body(body);
     }
 
@@ -220,8 +241,8 @@ public class GlobalWebExceptionHandlerAutoConfiguration {
      * @param msgEnum 全局异常处理国际化消息枚举
      * @return 消息文本
      */
-    protected String getI18nMessage(@NonNull GlobalWebExceptionI18nMessageEnum msgEnum) {
-        if (helioProperties.getI18n().getEnabled()) {
+    protected String determineI18nMessage(@NonNull GlobalWebExceptionI18nMessageEnum msgEnum) {
+        if (Boolean.TRUE.equals(helioProperties.getI18n().getEnabled())) {
             return I18nUtil.messageOf(msgEnum.i18nCode(), msgEnum.getDefaultValue());
         }
         return msgEnum.getDefaultValue();

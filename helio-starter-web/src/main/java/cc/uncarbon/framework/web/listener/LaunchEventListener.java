@@ -1,6 +1,6 @@
 package cc.uncarbon.framework.web.listener;
 
-import cn.hutool.core.util.StrUtil;
+import cn.hutool.core.text.CharSequenceUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.web.context.WebServerInitializedEvent;
 import org.springframework.context.event.EventListener;
@@ -19,6 +19,8 @@ import java.net.UnknownHostException;
  **/
 @Slf4j
 public class LaunchEventListener {
+
+    @SuppressWarnings("squid:S106")
     @Async
     @Order
     @EventListener(WebServerInitializedEvent.class)
@@ -32,7 +34,7 @@ public class LaunchEventListener {
         }
 
         String contextPath = env.getProperty("server.servlet.context-path");
-        if (StrUtil.isBlank(contextPath)) {
+        if (CharSequenceUtil.isBlank(contextPath)) {
             contextPath = "/";
         }
 
@@ -44,7 +46,7 @@ public class LaunchEventListener {
         }
 
         System.out.println(
-                StrUtil.format(
+                CharSequenceUtil.format(
                         "\n"+
                                 "----------------------------------------------------------" +
                                 "\n\tApplication '{}' is running! Access URLs:" +

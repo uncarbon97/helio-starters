@@ -24,9 +24,8 @@ import static cn.hutool.core.date.DatePattern.*;
  * 6. yyyy/MM/dd HH:mm:ss
  *
  * @author zuihou
- * @date 2020/6/18 上午10:50
  */
-@SuppressWarnings("ALL")
+@SuppressWarnings({"squid:S110", "squid:S6396"})
 public class LocalDateTimeDeserializer extends JSR310DateTimeDeserializerBase<LocalDateTime> {
     public static final LocalDateTimeDeserializer INSTANCE = new LocalDateTimeDeserializer();
     private static final long serialVersionUID = 1L;
@@ -100,12 +99,13 @@ public class LocalDateTimeDeserializer extends JSR310DateTimeDeserializerBase<Lo
         return null;
     }
 
+    @SuppressWarnings({"squid:S6541", "squid:S3776"})
     @Override
     public LocalDateTime deserialize(JsonParser parser, DeserializationContext context) throws IOException {
         // 字符串
         if (parser.hasTokenId(JsonTokenId.ID_STRING)) {
             String string = parser.getText().trim();
-            if (string.length() == 0) {
+            if (string.isEmpty()) {
                 return null;
             }
 
@@ -187,7 +187,7 @@ public class LocalDateTimeDeserializer extends JSR310DateTimeDeserializerBase<Lo
             return (LocalDateTime) parser.getEmbeddedObject();
         }
 
-        return _handleUnexpectedToken(context, parser, "当前参数需要数组、字符串、时间戳。");
+        return _handleUnexpectedToken(context, parser, "Current parameters require array, string, timestamp");
     }
 
 }

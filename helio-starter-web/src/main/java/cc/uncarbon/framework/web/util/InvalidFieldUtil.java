@@ -1,7 +1,7 @@
 package cc.uncarbon.framework.web.util;
 
 import cn.hutool.core.collection.CollUtil;
-import cn.hutool.core.util.StrUtil;
+import cn.hutool.core.text.CharSequenceUtil;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -107,7 +107,7 @@ public class InvalidFieldUtil {
     private String maskMessage(String defaultMessage) {
         // corner case
         if (defaultMessage == null) {
-            return StrUtil.EMPTY;
+            return CharSequenceUtil.EMPTY;
         }
 
         for (Entry<String, String> entry : MESSAGE_MASKING_MAPPER.entrySet()) {

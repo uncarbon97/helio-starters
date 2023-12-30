@@ -1,7 +1,8 @@
 package cc.uncarbon.framework.web.xss;
 
 import cn.hutool.core.io.IoUtil;
-import cn.hutool.core.util.StrUtil;
+import cn.hutool.core.text.CharSequenceUtil;
+import lombok.Getter;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 
@@ -20,11 +21,19 @@ import java.util.Map;
  *
  * @author Mark sunlightcs@gmail.com
  */
+@Getter
 public class XssHttpServletRequestWrapper extends HttpServletRequestWrapper {
-    //html过滤
+
+    /**
+     * html过滤器
+     */
     private static final HTMLFilter htmlFilter = new HTMLFilter();
-    //没被包装过的HttpServletRequest（特殊场景，需要自己过滤）
+
+    /**
+     * 没被包装过的HttpServletRequest（特殊场景，需要自己过滤）
+     */
     HttpServletRequest orgRequest;
+
 
     public XssHttpServletRequestWrapper(HttpServletRequest request) {
         super(request);
@@ -32,13 +41,12 @@ public class XssHttpServletRequestWrapper extends HttpServletRequestWrapper {
     }
 
     /**
-     * 获取最原始的request
+     * 工具方法：获取最原始的request
      */
     public static HttpServletRequest getOrgRequest(HttpServletRequest request) {
         if (request instanceof XssHttpServletRequestWrapper) {
             return ((XssHttpServletRequestWrapper) request).getOrgRequest();
         }
-
         return request;
     }
 
@@ -56,7 +64,7 @@ public class XssHttpServletRequestWrapper extends HttpServletRequestWrapper {
 
         // 为空，直接返回
         String json = IoUtil.read(super.getInputStream(), StandardCharsets.UTF_8);
-        if (StrUtil.isBlank(json)) {
+        if (CharSequenceUtil.isBlank(json)) {
             return super.getInputStream();
         }
 
@@ -76,7 +84,7 @@ public class XssHttpServletRequestWrapper extends HttpServletRequestWrapper {
 
             @Override
             public void setReadListener(ReadListener readListener) {
-                // nothing to do
+                // do nothing
             }
 
             @Override
@@ -89,7 +97,7 @@ public class XssHttpServletRequestWrapper extends HttpServletRequestWrapper {
     @Override
     public String getParameter(String name) {
         String value = super.getParameter(xssEncode(name));
-        if (StrUtil.isNotBlank(value)) {
+        if (CharSequenceUtil.isNotBlank(value)) {
             value = xssEncode(value);
         }
         return value;
@@ -99,7 +107,7 @@ public class XssHttpServletRequestWrapper extends HttpServletRequestWrapper {
     public String[] getParameterValues(String name) {
         String[] parameters = super.getParameterValues(name);
         if (parameters == null || parameters.length == 0) {
-            return null;
+            return parameters;
         }
 
         for (int i = 0; i < parameters.length; i++) {
@@ -112,8 +120,9 @@ public class XssHttpServletRequestWrapper extends HttpServletRequestWrapper {
     public Map<String, String[]> getParameterMap() {
         Map<String, String[]> map = new LinkedHashMap<>();
         Map<String, String[]> parameters = super.getParameterMap();
-        for (String key : parameters.keySet()) {
-            String[] values = parameters.get(key);
+        for (Map.Entry<String, String[]> entry : parameters.entrySet()) {
+            String key = entry.getKey();
+            String[] values = entry.getValue();
             for (int i = 0; i < values.length; i++) {
                 values[i] = xssEncode(values[i]);
             }
@@ -125,7 +134,7 @@ public class XssHttpServletRequestWrapper extends HttpServletRequestWrapper {
     @Override
     public String getHeader(String name) {
         String value = super.getHeader(xssEncode(name));
-        if (StrUtil.isNotBlank(value)) {
+        if (CharSequenceUtil.isNotBlank(value)) {
             value = xssEncode(value);
         }
         return value;
@@ -134,12 +143,4 @@ public class XssHttpServletRequestWrapper extends HttpServletRequestWrapper {
     private String xssEncode(String input) {
         return htmlFilter.filter(input);
     }
-
-    /**
-     * 获取最原始的request
-     */
-    public HttpServletRequest getOrgRequest() {
-        return orgRequest;
-    }
-
 }

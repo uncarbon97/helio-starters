@@ -1,7 +1,7 @@
 package cc.uncarbon.framework.web.xss;
 
 import cc.uncarbon.framework.core.exception.BusinessException;
-import cn.hutool.core.util.StrUtil;
+import cn.hutool.core.text.CharSequenceUtil;
 import org.springframework.util.StringUtils;
 
 /**
@@ -11,12 +11,16 @@ import org.springframework.util.StringUtils;
  */
 public class SQLFilter {
 
+    private SQLFilter() {
+    }
+
     /**
      * SQL注入过滤
-     * @param str  待验证的字符串
+     *
+     * @param str 待验证的字符串
      */
-    public static String sqlInject(String str){
-        if(StrUtil.isBlank(str)){
+    public static String sqlInject(String str) {
+        if (CharSequenceUtil.isBlank(str)) {
             return null;
         }
         // 去掉'|"|;|\字符
