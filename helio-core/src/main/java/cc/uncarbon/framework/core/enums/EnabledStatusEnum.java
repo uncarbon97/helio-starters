@@ -1,5 +1,6 @@
 package cc.uncarbon.framework.core.enums;
 
+import cc.uncarbon.framework.core.exception.UnreachableCodeException;
 import com.baomidou.mybatisplus.annotation.EnumValue;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -59,13 +60,12 @@ public enum EnabledStatusEnum implements HelioBaseEnum<Integer> {
             return null;
         }
 
-        switch (old) {
-            case DISABLED:
-                return ENABLED;
-            case ENABLED:
-                return DISABLED;
+        if (old == EnabledStatusEnum.DISABLED) {
+            return ENABLED;
+        } else if (old == EnabledStatusEnum.ENABLED) {
+            return DISABLED;
         }
 
-        throw new IllegalArgumentException();
+        throw new UnreachableCodeException();
     }
 }

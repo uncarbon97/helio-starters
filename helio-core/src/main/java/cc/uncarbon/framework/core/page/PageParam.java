@@ -7,7 +7,7 @@ import lombok.NoArgsConstructor;
 import lombok.experimental.Accessors;
 
 import java.io.Serializable;
-import java.util.function.Function;
+import java.util.function.UnaryOperator;
 
 /**
  * 分页查询参数
@@ -19,16 +19,6 @@ import java.util.function.Function;
 @NoArgsConstructor
 @Data
 public class PageParam implements Serializable {
-
-    /**
-     * 全局分页页码限制函数
-     */
-    public static Function<Integer, Integer> globalPageNumLimiter = null;
-
-    /**
-     * 全局分页大小限制函数（如：限制页大小上限为1000）
-     */
-    public static Function<Integer, Integer> globalPageSizeLimiter = null;
 
     @ApiModelProperty(value = "当前页码")
     private Integer pageNum;
@@ -54,5 +44,29 @@ public class PageParam implements Serializable {
             return globalPageSizeLimiter.apply(pageSize);
         }
         return pageSize;
+    }
+
+    /**
+     * 全局分页页码限制器
+     */
+    private static UnaryOperator<Integer> globalPageNumLimiter = null;
+
+    /**
+     * 指定全局分页页码限制器
+     */
+    public static synchronized void setGlobalPageNumLimiter(UnaryOperator<Integer> globalPageNumLimiter) {
+        PageParam.globalPageNumLimiter = globalPageNumLimiter;
+    }
+
+    /**
+     * 全局分页大小限制器（如：限制页大小上限为1000）
+     */
+    private static UnaryOperator<Integer> globalPageSizeLimiter = null;
+
+    /**
+     * 指定全局分页大小限制器
+     */
+    public static synchronized void setGlobalPageSizeLimiter(UnaryOperator<Integer> globalPageSizeLimiter) {
+        PageParam.globalPageSizeLimiter = globalPageSizeLimiter;
     }
 }

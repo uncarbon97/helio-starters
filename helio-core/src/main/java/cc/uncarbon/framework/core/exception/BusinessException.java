@@ -1,9 +1,8 @@
 package cc.uncarbon.framework.core.exception;
 
 import cc.uncarbon.framework.core.enums.HelioBaseEnum;
-import cn.hutool.core.util.StrUtil;
+import cn.hutool.core.text.CharSequenceUtil;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import lombok.NonNull;
 
 import static java.net.HttpURLConnection.HTTP_INTERNAL_ERROR;
@@ -13,50 +12,61 @@ import static java.net.HttpURLConnection.HTTP_INTERNAL_ERROR;
  *
  * @author Uncarbon
  */
-@NoArgsConstructor
+@SuppressWarnings("squid:S1948")
 @Getter
 public class BusinessException extends RuntimeException {
 
-    private Integer code = null;
+    private final Integer code;
 
     /*
     若使用枚举类参数的构造方法创建的本异常，则记录对应枚举类及模板参数
      */
-    private Enum<?> customEnumField;
-    private Object[] templateParams;
+    private final Enum<?> customEnumField;
+    private final Object[] templateParams;
+
 
     /**
      * 仅错误信息
+     *
      * @param msg 错误信息
      */
     public BusinessException(String msg) {
         super(msg);
         this.code = HTTP_INTERNAL_ERROR;
+        this.customEnumField = null;
+        this.templateParams = null;
     }
 
     /**
      * 错误码 + 错误信息
+     *
      * @param code 错误码
-     * @param msg 错误信息
+     * @param msg  错误信息
      */
     public BusinessException(int code, String msg) {
         super(msg);
         this.code = code;
+        this.customEnumField = null;
+        this.templateParams = null;
     }
 
     /**
      * 错误码 + 错误信息（支持模板参数填充）
-     * @param code 错误码
-     * @param msg 错误信息
-     * @param templateParams 模板参数
+     *
+     * @param code            错误码
+     * @param msg             错误信息
+     * @param templateParams  模板参数
      */
     public BusinessException(int code, String msg, Object... templateParams) {
-        super(StrUtil.format(msg, templateParams));
+        super(CharSequenceUtil.format(msg, templateParams));
         this.code = code;
+        this.customEnumField = null;
+        this.templateParams = templateParams;
     }
 
     /**
      * 从枚举类生成异常
+     *
      * @param customEnum 枚举类对象
      */
     public BusinessException(@NonNull HelioBaseEnum<Integer> customEnum) {
@@ -69,13 +79,17 @@ public class BusinessException extends RuntimeException {
          */
         if (customEnum.getClass().isEnum()) {
             this.customEnumField = (Enum<?>) customEnum;
+        } else {
+            this.customEnumField = null;
         }
+        this.templateParams = null;
     }
 
     /**
      * 从枚举类生成异常（错误信息支持模板参数填充）
-     * @param customEnum 枚举类对象
-     * @param templateParams label 中如果有占位符的话，向里面填充的模板参数
+     *
+     * @param customEnum      枚举类对象
+     * @param templateParams  label 中如果有占位符的话，向里面填充的模板参数
      */
     public BusinessException(@NonNull HelioBaseEnum<Integer> customEnum, Object... templateParams) {
         super(customEnum.formatLabel(templateParams));
@@ -87,6 +101,8 @@ public class BusinessException extends RuntimeException {
          */
         if (customEnum.getClass().isEnum()) {
             this.customEnumField = (Enum<?>) customEnum;
+        } else {
+            this.customEnumField = null;
         }
         this.templateParams = templateParams;
     }
@@ -98,5 +114,4 @@ public class BusinessException extends RuntimeException {
     public synchronized Throwable fillInStackTrace() {
         return this;
     }
-
 }

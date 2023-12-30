@@ -10,10 +10,13 @@ import java.util.function.BinaryOperator;
  */
 public class StreamFunction {
 
+    private StreamFunction() {
+    }
+
     /**
      * 用于 stream-collect-toMap 时，直接覆盖已存在的 key；不忽略的话，遇到重复项时默认会抛出异常
-     *
-     * 用法：stream().collect(Collectors.toMap( XXX, XXX, StreamFunction.ignoredThrowingMerger()))
+     * <p>
+     * 用法：stream().collect(Collectors.toMap(XXX, YYY, StreamFunction.ignoredThrowingMerger()))
      *
      * @param <T> 键类型
      * @return 键名

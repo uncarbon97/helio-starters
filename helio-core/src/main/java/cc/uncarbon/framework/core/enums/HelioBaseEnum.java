@@ -1,11 +1,13 @@
 package cc.uncarbon.framework.core.enums;
 
 import cc.uncarbon.framework.core.exception.BusinessException;
+import cc.uncarbon.framework.core.exception.HelioFrameworkException;
 import cn.hutool.core.collection.IterUtil;
+import cn.hutool.core.text.CharSequenceUtil;
 import cn.hutool.core.util.ArrayUtil;
 import cn.hutool.core.util.NumberUtil;
 import cn.hutool.core.util.ObjectUtil;
-import cn.hutool.core.util.StrUtil;
+
 import java.io.Serializable;
 import java.util.Arrays;
 import java.util.Optional;
@@ -121,7 +123,7 @@ public interface HelioBaseEnum<T> extends Serializable {
      */
     default int convertValue2Int() {
         if (this.getValue() == null) {
-            throw new IllegalArgumentException("枚举类的 value 不能为 null !");
+            throw new IllegalArgumentException("enum's value CANNOT be null");
         }
 
         if (this.getValue() instanceof Integer) {
@@ -140,7 +142,7 @@ public interface HelioBaseEnum<T> extends Serializable {
             return NumberUtil.toBigDecimal((String) this.getValue()).intValue();
         }
 
-        throw new IllegalArgumentException("枚举类的 value 不能自动转换为 int !");
+        throw new HelioFrameworkException("enum's value CANNOT convert to int");
     }
 
     default String formatLabel(Object... templateParams) {
@@ -148,7 +150,7 @@ public interface HelioBaseEnum<T> extends Serializable {
             return this.getLabel();
         }
 
-        return StrUtil.format(this.getLabel(), templateParams);
+        return CharSequenceUtil.format(this.getLabel(), templateParams);
     }
 
     /**
@@ -174,7 +176,7 @@ public interface HelioBaseEnum<T> extends Serializable {
      * @param templateParams label 中如果有占位符的话，向里面填充的模板参数
      */
     default void assertNotBlank(CharSequence cs, Object... templateParams) {
-        if (StrUtil.isNotBlank(cs)) {
+        if (CharSequenceUtil.isNotBlank(cs)) {
             return;
         }
 

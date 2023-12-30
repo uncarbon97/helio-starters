@@ -1,8 +1,9 @@
 package cc.uncarbon.framework.core.context;
 
 import com.alibaba.ttl.TransmittableThreadLocal;
-import java.util.Optional;
 import lombok.experimental.UtilityClass;
+
+import java.util.Optional;
 
 /**
  * 租户上下文持有者类
@@ -36,7 +37,7 @@ public class TenantContextHolder {
      *
      * @param newContext 新上下文，传 null 则为清除
      */
-    public synchronized void setTenantContext(TenantContext newContext) {
+    public void setTenantContext(TenantContext newContext) {
         if (newContext == null) {
             THREAD_LOCAL_CONTEXT.remove();
             return;
