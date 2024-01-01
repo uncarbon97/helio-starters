@@ -69,8 +69,6 @@
         <ons-client.version>1.8.8.1.Final</ons-client.version>
         <mybatis-plus-dynamic-datasource.version>3.5.2</mybatis-plus-dynamic-datasource.version>
 
-        <!-- for mitigating vulnerabilities versions -->
-
 
         <!-- DB Driver versions -->
         <mysql.version>8.0.28</mysql.version>
@@ -87,6 +85,11 @@
         <buildTime>v.${project.version} build ${maven.build.timestamp.format}</buildTime>
         <main.user.dir>${basedir}/..</main.user.dir>
         <maven-surefire-plugin.version>3.0.0-M5</maven-surefire-plugin.version>
+
+
+        <!-- for mitigating vulnerabilities -->
+        <guava.version>33.0.0-jre</guava.version>
+        <snakeyaml.version>1.33</snakeyaml.version>
     </properties>
 
     <!-- 全局使用 -->
@@ -107,6 +110,17 @@
     <dependencyManagement>
         <dependencies>
             <!-- for mitigating vulnerabilities -->
+            <dependency>
+                <groupId>com.google.guava</groupId>
+                <artifactId>guava</artifactId>
+                <version>${guava.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.yaml</groupId>
+                <artifactId>snakeyaml</artifactId>
+                <version>${snakeyaml.version}</version>
+            </dependency>
 
 
             <!-- sub starters -->
