@@ -1,8 +1,9 @@
 package cc.uncarbon.framework.core.context;
 
 import com.alibaba.ttl.TransmittableThreadLocal;
-import java.util.Optional;
 import lombok.experimental.UtilityClass;
+
+import java.util.Optional;
 
 /**
  * 用户上下文持有者类
@@ -36,7 +37,7 @@ public class UserContextHolder {
      *
      * @param newContext 新上下文，传 null 则为清除
      */
-    public synchronized void setUserContext(UserContext newContext) {
+    public void setUserContext(UserContext newContext) {
         if (newContext == null) {
             THREAD_LOCAL_CONTEXT.remove();
             return;

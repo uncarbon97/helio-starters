@@ -15,8 +15,8 @@ import org.apache.dubbo.rpc.*;
  * @author Zhu JW
  * @author Uncarbon
  **/
-@Slf4j
 @Activate(group = CommonConstants.CONSUMER)
+@Slf4j
 public class ConsumerContextFilter implements Filter {
 
     /**

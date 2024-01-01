@@ -2,16 +2,13 @@ package cc.uncarbon.framework.dubbo.filter;
 
 import cc.uncarbon.framework.core.exception.BusinessException;
 import cn.hutool.core.util.StrUtil;
-import java.lang.reflect.Method;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.dubbo.common.utils.ReflectUtils;
-import org.apache.dubbo.rpc.Invocation;
-import org.apache.dubbo.rpc.Invoker;
-import org.apache.dubbo.rpc.Result;
-import org.apache.dubbo.rpc.RpcContext;
-import org.apache.dubbo.rpc.RpcException;
+import org.apache.dubbo.rpc.*;
 import org.apache.dubbo.rpc.filter.ExceptionFilter;
 import org.apache.dubbo.rpc.service.GenericService;
+
+import java.lang.reflect.Method;
 
 /**
  * 自定义Dubbo异常处理
@@ -21,8 +18,6 @@ import org.apache.dubbo.rpc.service.GenericService;
  **/
 @Slf4j
 public class HelioDubboExceptionFilter extends ExceptionFilter {
-
-    private static final String BUSINESS_EXCEPTION_SIMPLE_CLASS_NAME = BusinessException.class.getSimpleName();
 
     @Override
     public void onResponse(Result appResponse, Invoker<?> invoker, Invocation invocation) {
@@ -75,9 +70,8 @@ public class HelioDubboExceptionFilter extends ExceptionFilter {
             if (exception instanceof RpcException) {
                 return;
             }
-
-            // 业务异常
-            if (className.contains(BUSINESS_EXCEPTION_SIMPLE_CLASS_NAME)) {
+            // directly throw if it's BusinessException
+            if (exception instanceof BusinessException) {
                 return;
             }
 

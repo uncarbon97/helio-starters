@@ -15,8 +15,8 @@ import org.springframework.context.annotation.Bean;
  *
  * @author Uncarbon
  */
-@AutoConfiguration
 @RequiredArgsConstructor
+@AutoConfiguration
 public class HelioTenantAutoConfiguration {
 
     private final HelioProperties helioProperties;

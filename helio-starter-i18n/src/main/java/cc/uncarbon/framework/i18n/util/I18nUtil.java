@@ -1,8 +1,8 @@
 package cc.uncarbon.framework.i18n.util;
 
 import cc.uncarbon.framework.core.enums.HelioBaseEnum;
+import cn.hutool.core.text.CharSequenceUtil;
 import cn.hutool.core.text.StrPool;
-import cn.hutool.core.util.StrUtil;
 import cn.hutool.extra.spring.SpringUtil;
 import lombok.experimental.UtilityClass;
 import lombok.extern.slf4j.Slf4j;
@@ -67,13 +67,13 @@ public class I18nUtil {
 
         try {
             String msg = getMessageSource().getMessage(code, null, locale != null ? locale : getDefaultLocale());
-            if (StrUtil.isEmpty(msg)) {
+            if (CharSequenceUtil.isEmpty(msg)) {
                 return msg;
             }
 
-            if (StrUtil.contains(msg, SLF4J_STYLE_PLACEHOLDER)) {
+            if (CharSequenceUtil.contains(msg, SLF4J_STYLE_PLACEHOLDER)) {
                 // 使用 hutool 的模板填充
-                return StrUtil.format(msg, templateParams);
+                return CharSequenceUtil.format(msg, templateParams);
             }
 
             return msg;
@@ -142,14 +142,14 @@ public class I18nUtil {
         // 尝试以较长的 枚举类短名.枚举值name 为 code 尝试获取翻译值
         i18nCode = String.format("%s.%s", enumField.getDeclaringClass().getSimpleName(), enumField.name());
         String i18nMessage = messageOf(locale, i18nCode, templateParams);
-        if (StrUtil.isNotEmpty(i18nMessage)) {
+        if (CharSequenceUtil.isNotEmpty(i18nMessage)) {
             return i18nMessage;
         }
 
         // 尝试以 枚举值name 为 code 尝试获取翻译值
         i18nCode = enumField.name();
         i18nMessage = messageOf(locale, i18nCode, templateParams);
-        if (StrUtil.isNotEmpty(i18nMessage)) {
+        if (CharSequenceUtil.isNotEmpty(i18nMessage)) {
             return i18nMessage;
         }
 

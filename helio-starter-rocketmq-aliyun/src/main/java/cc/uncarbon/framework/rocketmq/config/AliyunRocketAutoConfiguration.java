@@ -39,8 +39,8 @@ import java.util.concurrent.ConcurrentHashMap;
  * @author ThierrySquirrel
  * @author Uncarbon
  */
-@RequiredArgsConstructor
 @EnableConfigurationProperties(value = {AliyunRocketProperties.class})
+@RequiredArgsConstructor
 @AutoConfiguration
 public class AliyunRocketAutoConfiguration {
 

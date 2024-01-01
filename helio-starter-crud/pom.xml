@@ -5,7 +5,7 @@
     <parent>
         <artifactId>helio-starters</artifactId>
         <groupId>cc.uncarbon.framework</groupId>
-        <version>${revision}</version>
+        <version>1.10.0</version><!-- BATCH REPLACEMENT MARK -->
         <relativePath>../pom.xml</relativePath>
     </parent>
     <modelVersion>4.0.0</modelVersion>
@@ -16,11 +16,13 @@
     </properties>
 
     <dependencies>
+        <!-- 脚手架starter -->
         <dependency>
             <groupId>cc.uncarbon.framework</groupId>
             <artifactId>helio-core</artifactId>
         </dependency>
 
+        <!-- 这里写其他第三方依赖 -->
         <dependency>
             <groupId>com.baomidou</groupId>
             <artifactId>mybatis-plus-boot-starter</artifactId>

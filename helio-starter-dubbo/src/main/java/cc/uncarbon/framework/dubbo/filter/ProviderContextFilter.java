@@ -15,8 +15,8 @@ import org.apache.dubbo.rpc.*;
  * @author Zhu JW
  * @author Uncarbon
  **/
-@Slf4j
 @Activate(group = CommonConstants.PROVIDER)
+@Slf4j
 public class ProviderContextFilter implements Filter {
 
     /**

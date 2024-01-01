@@ -14,6 +14,7 @@ import org.springframework.util.ClassUtils;
 @Slf4j
 public class TenantDataSourceSupport implements TenantSupport {
 
+    @SuppressWarnings("squid:S106")
     @Override
     public void support(HelioProperties helioProperties, MybatisPlusInterceptor interceptor) {
         log.info("\n\n[多租户支持] >> 隔离级别: 数据源级");

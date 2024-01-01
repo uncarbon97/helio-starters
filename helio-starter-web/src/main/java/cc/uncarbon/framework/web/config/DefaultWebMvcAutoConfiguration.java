@@ -15,8 +15,8 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
  *
  * @author Uncarbon
  **/
-@Slf4j
 @AutoConfiguration
+@Slf4j
 public class DefaultWebMvcAutoConfiguration implements WebMvcConfigurer, WebBindingInitializer {
     /**
      * 自定义静态资源

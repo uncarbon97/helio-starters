@@ -38,6 +38,7 @@ public class InterceptRocket {
     private InterceptRocket() {
     }
 
+    @SuppressWarnings("squid:S107")
     public static <T extends Annotation> Object intercept(Long startDeliverTime, String shardingKeyFactory, RocketMessage rocketMessage, T annotation, Object proceed, Map<String, Object> consumerContainer, ThreadPoolExecutor threadPoolExecutor, ApplicationContext applicationContext) {
         RocketSerializer mqSerializer = applicationContext.getBean(RocketSerializer.class);
         byte[] body = mqSerializer.serialize(proceed);

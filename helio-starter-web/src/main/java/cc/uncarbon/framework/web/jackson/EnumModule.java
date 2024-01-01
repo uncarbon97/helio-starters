@@ -1,7 +1,7 @@
 package cc.uncarbon.framework.web.jackson;
 
 import cc.uncarbon.framework.core.enums.HelioBaseEnum;
-import cn.hutool.core.util.StrUtil;
+import cn.hutool.core.text.CharSequenceUtil;
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.Version;
@@ -57,7 +57,7 @@ public class EnumModule extends SimpleModule {
                 if (parser.getCurrentToken().isNumeric()) {
                     // 前端传递value
                     return HelioBaseEnum.of(this.enumType, parser.getIntValue()).orElseThrow(() -> new IllegalArgumentException("Unable to parse input value"));
-                } else if (StrUtil.isNotBlank(parser.getText())) {
+                } else if (CharSequenceUtil.isNotBlank(parser.getText())) {
                     // 前端传递label
                     return HelioBaseEnum.of(this.enumType, parser.getText()).orElseThrow(() -> new IllegalArgumentException("Unable to parse input value"));
                 } else {

@@ -1,8 +1,8 @@
 package cc.uncarbon.framework.web.util;
 
 import cn.hutool.core.collection.CollUtil;
+import cn.hutool.core.text.CharSequenceUtil;
 import cn.hutool.core.text.StrPool;
-import cn.hutool.core.util.StrUtil;
 import lombok.experimental.UtilityClass;
 
 import javax.servlet.http.HttpServletRequest;
@@ -52,12 +52,12 @@ public class IPUtil {
      */
     public String getClientIPAddress(HttpServletRequest request, int indexOfCommaSplit) {
         String source = getClientIPAddress(request);
-        if (!StrUtil.contains(source, StrPool.COMMA)) {
+        if (!CharSequenceUtil.contains(source, StrPool.COMMA)) {
             // 不含逗号
             return source;
         }
-        List<String> split = StrUtil.split(source, StrPool.COMMA);
-        return StrUtil.cleanBlank(CollUtil.get(split, indexOfCommaSplit));
+        List<String> split = CharSequenceUtil.split(source, StrPool.COMMA);
+        return CharSequenceUtil.cleanBlank(CollUtil.get(split, indexOfCommaSplit));
     }
 
 }

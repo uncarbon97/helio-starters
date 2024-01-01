@@ -1,6 +1,6 @@
 package cc.uncarbon.framework.core.context;
 
-import cc.uncarbon.framework.core.enums.HelioBaseEnum;
+import cn.hutool.core.lang.Dict;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -10,7 +10,6 @@ import lombok.experimental.SuperBuilder;
 
 import java.io.Serializable;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 /**
@@ -38,13 +37,6 @@ public class UserContext implements Serializable {
     @ApiModelProperty(value = "用户手机号")
     private String userPhoneNo;
 
-    /**
-     * @deprecated since 1.7.1, replaced by "userTypeStr"
-     */
-    @ApiModelProperty(value = "用户类型")
-    @Deprecated
-    private HelioBaseEnum<?> userType;
-
     @ApiModelProperty(value = "用户类型")
     private String userTypeStr;
 
@@ -55,7 +47,7 @@ public class UserContext implements Serializable {
     private List<String> roles;
 
     @ApiModelProperty(value = "附加数据")
-    private Map<String, Object> extraData;
+    private Dict extraData;
 
     @ApiModelProperty(value = "客户端IP地址")
     private String clientIP;

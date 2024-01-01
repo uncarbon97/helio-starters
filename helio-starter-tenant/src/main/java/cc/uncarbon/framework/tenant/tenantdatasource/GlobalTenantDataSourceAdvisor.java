@@ -1,5 +1,6 @@
 package cc.uncarbon.framework.tenant.tenantdatasource;
 
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
@@ -18,12 +19,15 @@ import org.springframework.beans.factory.BeanFactoryAware;
  * @author chill
  * @author Uncarbon
  */
+@EqualsAndHashCode(callSuper = true)
 @Slf4j
 @Getter
 public class GlobalTenantDataSourceAdvisor extends AbstractPointcutAdvisor implements BeanFactoryAware {
 
+    @SuppressWarnings("squid:S1948")
     private final Advice advice;
 
+    @SuppressWarnings("squid:S1948")
     private final Pointcut pointcut;
 
     public GlobalTenantDataSourceAdvisor(@NonNull GlobalTenantDataSourceInterceptor globalTenantDataSourceInterceptor) {

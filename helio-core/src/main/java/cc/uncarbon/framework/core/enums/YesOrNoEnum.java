@@ -1,5 +1,6 @@
 package cc.uncarbon.framework.core.enums;
 
+import cc.uncarbon.framework.core.exception.UnreachableCodeException;
 import com.baomidou.mybatisplus.annotation.EnumValue;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -58,13 +59,12 @@ public enum YesOrNoEnum implements HelioBaseEnum<Integer> {
             return null;
         }
 
-        switch (old) {
-            case YES:
-                return NO;
-            case NO:
-                return YES;
+        if (old == YesOrNoEnum.YES) {
+            return NO;
+        } else if (old == YesOrNoEnum.NO) {
+            return YES;
         }
 
-        throw new IllegalArgumentException();
+        throw new UnreachableCodeException();
     }
 }
