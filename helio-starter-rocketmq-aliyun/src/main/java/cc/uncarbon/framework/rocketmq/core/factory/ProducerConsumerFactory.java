@@ -56,18 +56,18 @@ public class ProducerConsumerFactory {
 				transactionMessage.tag();
 	}
 
-	public static Producer getProducer(Map<String, Object> consumerContainer, RocketMessage rocketMessage, CommonMessage commonMessage){
-		String producerConsumerKey = cc.uncarbon.framework.rocketmq.core.factory.ProducerConsumerFactory.getProducerConsumerKey(rocketMessage, commonMessage);
+	public static Producer getProducer(Map<String, Object> consumerContainer, RocketMessage rocketMessage, CommonMessage commonMessage) {
+		String producerConsumerKey = ProducerConsumerFactory.getProducerConsumerKey(rocketMessage, commonMessage);
 		return (Producer) consumerContainer.get(producerConsumerKey);
 	}
 
-	public static OrderProducer getProducer(Map<String, Object> consumerContainer, RocketMessage rocketMessage, OrderMessage orderMessage){
-		String producerConsumerKey = cc.uncarbon.framework.rocketmq.core.factory.ProducerConsumerFactory.getProducerConsumerKey(rocketMessage, orderMessage);
+	public static OrderProducer getProducer(Map<String, Object> consumerContainer, RocketMessage rocketMessage, OrderMessage orderMessage) {
+		String producerConsumerKey = ProducerConsumerFactory.getProducerConsumerKey(rocketMessage, orderMessage);
 		return (OrderProducer) consumerContainer.get(producerConsumerKey);
 	}
 
-	public static TransactionProducer getProducer(Map<String, Object> consumerContainer, RocketMessage rocketMessage, TransactionMessage transactionMessage){
-		String producerConsumerKey = cc.uncarbon.framework.rocketmq.core.factory.ProducerConsumerFactory.getProducerConsumerKey(rocketMessage, transactionMessage);
+	public static TransactionProducer getProducer(Map<String, Object> consumerContainer, RocketMessage rocketMessage, TransactionMessage transactionMessage) {
+		String producerConsumerKey = ProducerConsumerFactory.getProducerConsumerKey(rocketMessage, transactionMessage);
 		return (TransactionProducer) consumerContainer.get(producerConsumerKey);
 	}
 }

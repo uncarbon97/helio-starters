@@ -19,7 +19,6 @@ package cc.uncarbon.framework.rocketmq.core.factory.execution;
 
 import cc.uncarbon.framework.rocketmq.annotation.RocketMessage;
 import cc.uncarbon.framework.rocketmq.core.strategy.ProducerStrategy;
-import cc.uncarbon.framework.rocketmq.exception.RocketException;
 import cc.uncarbon.framework.rocketmq.thread.AbstractSendMessageThread;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.ApplicationContext;
@@ -56,11 +55,7 @@ public class SendMessageFactoryExecution extends AbstractSendMessageThread {
      */
     @Override
     protected void statsSendMessage(Long startDeliverTime, String shardingKeyFactory, Map<String, Object> consumerContainer, RocketMessage rocketMessage, Object message, byte[] bytes, ApplicationContext applicationContext) {
-        try {
-            ProducerStrategy.statsSendMessage(startDeliverTime, shardingKeyFactory, consumerContainer, rocketMessage, message, bytes, applicationContext);
-        } catch (RocketException e) {
-            log.error("statsSendMessage Error", e);
-        }
+        ProducerStrategy.statsSendMessage(startDeliverTime, shardingKeyFactory, consumerContainer, rocketMessage, message, bytes, applicationContext);
     }
 }
 
