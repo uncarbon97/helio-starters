@@ -7,12 +7,13 @@ import cc.uncarbon.framework.crud.support.TenantSupport;
 import com.baomidou.mybatisplus.extension.plugins.MybatisPlusInterceptor;
 import com.baomidou.mybatisplus.extension.plugins.handler.TenantLineHandler;
 import com.baomidou.mybatisplus.extension.plugins.inner.TenantLineInnerInterceptor;
-import java.util.Collection;
-import java.util.Objects;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import net.sf.jsqlparser.expression.Expression;
 import net.sf.jsqlparser.expression.LongValue;
+
+import java.util.Collection;
+import java.util.Objects;
 
 /**
  * 多租户支持-行级
@@ -22,7 +23,6 @@ import net.sf.jsqlparser.expression.LongValue;
 @Slf4j
 public class TenantLineSupport implements TenantSupport {
 
-    @SuppressWarnings("squid:S106")
     @Override
     public void support(HelioProperties helioProperties, MybatisPlusInterceptor interceptor) {
         Collection<String> ignoredTables = helioProperties.getTenant().getIgnoredTables();

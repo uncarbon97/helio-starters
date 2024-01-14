@@ -14,7 +14,6 @@ import java.util.WeakHashMap;
  *
  * @author Zhu JW
  **/
-@SuppressWarnings({"rawtypes", "unchecked"})
 public class EnumConverterFactory implements ConverterFactory<String, HelioBaseEnum> {
     private final Map<Class, Converter> converterCache = new WeakHashMap<>();
 

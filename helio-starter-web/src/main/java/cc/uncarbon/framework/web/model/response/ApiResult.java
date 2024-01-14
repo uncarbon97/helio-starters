@@ -17,7 +17,6 @@ import java.io.Serializable;
  *
  * @author Uncarbon
  */
-@SuppressWarnings("squid:S1948")
 @Accessors(chain = true)
 @AllArgsConstructor
 @NoArgsConstructor

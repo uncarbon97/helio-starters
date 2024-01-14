@@ -36,7 +36,6 @@ public class EnumModule extends SimpleModule {
         }
 
         @Override
-        @SuppressWarnings({"rawtypes", "unchecked"})
         public JsonDeserializer<?> findEnumDeserializer(Class<?> type, DeserializationConfig config, BeanDescription beanDesc) throws JsonMappingException {
             // HelioBaseEnum<?>，调用此序列化方法，否则使用 jackson 默认的序列化方法
             return HelioBaseEnum.class.isAssignableFrom(type) ?
@@ -67,7 +66,6 @@ public class EnumModule extends SimpleModule {
         }
     }
 
-    @SuppressWarnings({"rawtypes"})
     private static class EnumSerializer extends StdSerializer<HelioBaseEnum> {
 
         private EnumSerializer() {

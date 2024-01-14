@@ -20,7 +20,6 @@ import java.net.UnknownHostException;
 @Slf4j
 public class LaunchEventListener {
 
-    @SuppressWarnings("squid:S106")
     @Async
     @Order
     @EventListener(WebServerInitializedEvent.class)
