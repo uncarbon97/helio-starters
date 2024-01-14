@@ -2,17 +2,15 @@ package cc.uncarbon.framework.core.exception;
 
 import cc.uncarbon.framework.core.enums.HelioBaseEnum;
 import cn.hutool.core.text.CharSequenceUtil;
+import cn.hutool.http.HttpStatus;
 import lombok.Getter;
 import lombok.NonNull;
-
-import static java.net.HttpURLConnection.HTTP_INTERNAL_ERROR;
 
 /**
  * 业务异常类
  *
  * @author Uncarbon
  */
-@SuppressWarnings("squid:S1948")
 @Getter
 public class BusinessException extends RuntimeException {
 
@@ -32,7 +30,7 @@ public class BusinessException extends RuntimeException {
      */
     public BusinessException(String msg) {
         super(msg);
-        this.code = HTTP_INTERNAL_ERROR;
+        this.code = HttpStatus.HTTP_INTERNAL_ERROR;
         this.customEnumField = null;
         this.templateParams = null;
     }

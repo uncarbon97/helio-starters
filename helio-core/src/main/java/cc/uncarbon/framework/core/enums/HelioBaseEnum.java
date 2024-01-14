@@ -6,10 +6,10 @@ import cn.hutool.core.collection.IterUtil;
 import cn.hutool.core.text.CharSequenceUtil;
 import cn.hutool.core.util.ArrayUtil;
 import cn.hutool.core.util.NumberUtil;
-import cn.hutool.core.util.ObjectUtil;
 
 import java.io.Serializable;
-import java.util.Arrays;
+import java.util.Collections;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.function.Predicate;
 
@@ -99,13 +99,12 @@ public interface HelioBaseEnum<T> extends Serializable {
      * @param v value
      * @return 是否相等
      */
-    @SuppressWarnings("all")
     default boolean eq(Object v) {
         if (v == null) {
             return false;
         }
         if (v instanceof Object[]) {
-            v = Arrays.asList(v);
+            v = Collections.singletonList(v);
         }
         return this == v
                 || getValue() == v
@@ -122,24 +121,24 @@ public interface HelioBaseEnum<T> extends Serializable {
      * @return int value
      */
     default int convertValue2Int() {
-        if (this.getValue() == null) {
+        if (getValue() == null) {
             throw new IllegalArgumentException("enum's value CANNOT be null");
         }
 
-        if (this.getValue() instanceof Integer) {
-            return (Integer) this.getValue();
+        if (getValue() instanceof Integer) {
+            return (Integer) getValue();
         }
 
-        if (this.getValue() instanceof Long) {
-            return ((Long) this.getValue()).intValue();
+        if (getValue() instanceof Long) {
+            return ((Long) getValue()).intValue();
         }
 
-        if (this.getValue() instanceof Number) {
-            return ((Number) this.getValue()).intValue();
+        if (getValue() instanceof Number) {
+            return ((Number) getValue()).intValue();
         }
 
-        if (this.getValue() instanceof String) {
-            return NumberUtil.toBigDecimal((String) this.getValue()).intValue();
+        if (getValue() instanceof String) {
+            return NumberUtil.toBigDecimal((String) getValue()).intValue();
         }
 
         throw new HelioFrameworkException("enum's value CANNOT convert to int");
@@ -147,10 +146,10 @@ public interface HelioBaseEnum<T> extends Serializable {
 
     default String formatLabel(Object... templateParams) {
         if (ArrayUtil.isEmpty(templateParams)) {
-            return this.getLabel();
+            return getLabel();
         }
 
-        return CharSequenceUtil.format(this.getLabel(), templateParams);
+        return CharSequenceUtil.format(getLabel(), templateParams);
     }
 
     /**
@@ -161,11 +160,7 @@ public interface HelioBaseEnum<T> extends Serializable {
      * @param templateParams label 中如果有占位符的话，向里面填充的模板参数
      */
     default void assertNotNull(Object object, Object... templateParams) {
-        if (ObjectUtil.isNotNull(object)) {
-            return;
-        }
-
-        throw new BusinessException(this.convertValue2Int(), this.formatLabel(templateParams));
+        assertTrue(Objects.nonNull(object), templateParams);
     }
 
     /**
@@ -176,11 +171,7 @@ public interface HelioBaseEnum<T> extends Serializable {
      * @param templateParams label 中如果有占位符的话，向里面填充的模板参数
      */
     default void assertNotBlank(CharSequence cs, Object... templateParams) {
-        if (CharSequenceUtil.isNotBlank(cs)) {
-            return;
-        }
-
-        throw new BusinessException(this.convertValue2Int(), this.formatLabel(templateParams));
+        assertTrue(CharSequenceUtil.isNotBlank(cs), templateParams);
     }
 
     /**
@@ -191,11 +182,21 @@ public interface HelioBaseEnum<T> extends Serializable {
      * @param templateParams label 中如果有占位符的话，向里面填充的模板参数
      */
     default void assertNotEmpty(Iterable<?> iterable, Object... templateParams) {
-        if (IterUtil.isNotEmpty(iterable)) {
+        assertTrue(IterUtil.isNotEmpty(iterable), templateParams);
+    }
+
+    /**
+     * 断言为真
+     * 注意：枚举选项的 value 建议为整数类型
+     *
+     * @param expression 需要判断的对象
+     * @param templateParams label 中如果有占位符的话，向里面填充的模板参数
+     */
+    default void assertTrue(boolean expression, Object... templateParams) {
+        if (!expression) {
             return;
         }
-
-        throw new BusinessException(this.convertValue2Int(), this.formatLabel(templateParams));
+        throw new BusinessException(convertValue2Int(), formatLabel(templateParams));
     }
 
 }
