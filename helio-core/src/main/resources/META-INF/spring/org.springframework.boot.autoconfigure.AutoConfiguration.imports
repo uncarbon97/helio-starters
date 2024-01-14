@@ -1,2 +1,3 @@
 cc.uncarbon.framework.core.config.HelioPropertiesAutoConfiguration
 cc.uncarbon.framework.core.config.AdaptHistoryVersionAutoConfiguration
+cc.uncarbon.framework.core.config.StaticMethodAutoConfiguration
