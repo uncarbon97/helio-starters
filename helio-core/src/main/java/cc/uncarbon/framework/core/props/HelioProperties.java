@@ -36,6 +36,23 @@ public class HelioProperties {
          */
         private final List<String> excludeRoutes = new ArrayList<>(64);
 
+        private final Xss xss = new Xss();
+
+
+        @Data
+        public static class Xss {
+
+            /**
+             * 是否启用XSS Filter
+             */
+            private boolean enabled;
+
+            /**
+             * XSS Filter不进行过滤的路由（直接放行）
+             */
+            private List<String> excludes = new ArrayList<>();
+
+        }
     }
 
     @Data
