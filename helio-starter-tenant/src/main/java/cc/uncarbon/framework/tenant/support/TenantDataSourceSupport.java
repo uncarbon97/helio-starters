@@ -21,7 +21,8 @@ public class TenantDataSourceSupport implements TenantSupport {
         System.err.println("数据源级多租户支持还处于试验阶段，请经过测试后再投入生产使用！");
 
         try {
-            Class.forName("com.baomidou.dynamic.datasource.DynamicRoutingDataSource", false, ClassUtils.getDefaultClassLoader());
+            Class.forName("com.baomidou.dynamic.datasource.DynamicRoutingDataSource",
+                    false, ClassUtils.getDefaultClassLoader());
         } catch (ClassNotFoundException cnfe) {
             System.err.println("\n\n ERROR: 没有找到 dynamic-datasource-spring-boot-starter 依赖，请检查是否引入");
         }

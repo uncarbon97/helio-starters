@@ -12,6 +12,7 @@ import java.util.List;
 
 /**
  * 分页查询结果
+ * @param <T> records字段的泛型类型
  *
  * @author Uncarbon
  */

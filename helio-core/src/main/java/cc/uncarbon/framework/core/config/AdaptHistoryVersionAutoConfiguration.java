@@ -30,12 +30,12 @@ public class AdaptHistoryVersionAutoConfiguration implements EnvironmentAware {
     /**
      * 旧的配置keys
      */
-    private static final String[] oldPropertyPrefixes = {"helio.crud.tenant."};
+    private static final String[] OLD_PROPERTY_PREFIXES = {"helio.crud.tenant."};
 
     /**
      * 新的配置keys
      */
-    private static final String[] newPropertyPrefixes = {"helio.tenant."};
+    private static final String[] NEW_PROPERTY_PREFIXES = {"helio.tenant."};
 
     /**
      * 过时属性警告提示文案
@@ -80,15 +80,15 @@ public class AdaptHistoryVersionAutoConfiguration implements EnvironmentAware {
 
         for (Map.Entry<String, Object> entry : bootProp.entrySet()) {
             String key = entry.getKey();
-            for (int i = 0; i < oldPropertyPrefixes.length; i++) {
-                if (key.startsWith(oldPropertyPrefixes[i])) {
-                    String newKey = key.replace(oldPropertyPrefixes[i], newPropertyPrefixes[i]);
+            for (int i = 0; i < OLD_PROPERTY_PREFIXES.length; i++) {
+                if (key.startsWith(OLD_PROPERTY_PREFIXES[i])) {
+                    String newKey = key.replace(OLD_PROPERTY_PREFIXES[i], NEW_PROPERTY_PREFIXES[i]);
                     newMap.put(newKey, bootProp.get(key));
 
                     // 前缀相同的话，提示信息就保持一条（利用 Set 特性）
                     deprecatedPropertyWarnings.add(
                             CharSequenceUtil.format("配置文件属性前缀 {}* 已过时、不向下兼容，请转移到 {}* 下",
-                                    oldPropertyPrefixes[i], newPropertyPrefixes[i])
+                                    OLD_PROPERTY_PREFIXES[i], NEW_PROPERTY_PREFIXES[i])
                     );
                 }
             }

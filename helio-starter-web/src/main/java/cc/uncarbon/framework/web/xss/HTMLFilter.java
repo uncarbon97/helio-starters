@@ -122,7 +122,7 @@ public final class HTMLFilter {
      * unbalanced angle brackets will be html escaped.
      */
     private final boolean alwaysMakeTags;
-    private boolean vDebug = false;
+    private final boolean vDebug = false;
 
     /**
      * Default constructor.
@@ -374,7 +374,7 @@ public final class HTMLFilter {
                     ending = "";
                 }
 
-                if (ending == null || ending.length() < 1) {
+                if (ending == null || ending.isEmpty()) {
                     if (vTagCounts.containsKey(name)) {
                         vTagCounts.put(name, vTagCounts.get(name) + 1);
                     } else {

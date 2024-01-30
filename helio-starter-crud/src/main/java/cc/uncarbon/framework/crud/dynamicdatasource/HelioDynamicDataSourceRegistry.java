@@ -68,8 +68,7 @@ public class HelioDynamicDataSourceRegistry {
                 // 补充字段
                 dataSourceProperty
                         .setPoolName(dataSourceDefinition.getName())
-                        .setType(HikariDataSource.class)
-                ;
+                        .setType(HikariDataSource.class);
 
                 // 创建动态数据源
                 DataSource dataSource = dataSourceCreator.createDataSource(dataSourceProperty);
@@ -84,7 +83,8 @@ public class HelioDynamicDataSourceRegistry {
         }
 
         if (!successFlag) {
-            log.error("动态添加新数据源失败，原因：没有 DataSourceDefinitionProvider 提供 {} 的 DataSourceDefinition", dataSourceName);
+            log.error("动态添加新数据源失败，原因：没有 DataSourceDefinitionProvider 提供 {} 的 DataSourceDefinition",
+                    dataSourceName);
         }
 
         return successFlag;

@@ -34,7 +34,8 @@ public class EnumConverterFactory implements ConverterFactory<String, HelioBaseE
 
         @Override
         public T convert(@NonNull Object value) {
-            return HelioBaseEnum.of(this.enumType, value).orElseThrow(() -> new BusinessException("Contains illegal enumeration value"));
+            return HelioBaseEnum.of(this.enumType, value)
+                    .orElseThrow(() -> new BusinessException("Contains illegal enumeration value"));
         }
     }
 }

@@ -26,7 +26,7 @@ import java.util.concurrent.ConcurrentHashMap;
 @UtilityClass
 public class InvalidFieldUtil {
 
-    private final Map<String, String> MESSAGE_MASKING_MAPPER = new ConcurrentHashMap<>(16);
+    private static final Map<String, String> MESSAGE_MASKING_MAPPER = new ConcurrentHashMap<>(16);
 
     static {
         // Failed to convert property value of type 'java.lang.String' to required type 'java.time.LocalDateTime' for property 'beginAt'; ...

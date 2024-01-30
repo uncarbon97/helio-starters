@@ -5,7 +5,8 @@ package cc.uncarbon.framework.ratelimit.constant;
  */
 public final class RateLimitConstant {
 
-    private RateLimitConstant() {}
+    private RateLimitConstant() {
+    }
 
     /**
      * Redis Key前缀

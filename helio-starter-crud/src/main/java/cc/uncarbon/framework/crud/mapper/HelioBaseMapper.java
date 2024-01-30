@@ -16,8 +16,8 @@ import java.util.stream.Collectors;
 
 /**
  * 持久层基础模板，在Mybatis-Plus BaseMapper上进一步增加功能
- * E = ENTITY 实体类
- * T = 实体类主键ID类型
+ * @param <E> 实体类
+ * @param <T> 实体类主键ID类型
  *
  * @author Uncarbon
  */
@@ -40,6 +40,7 @@ public interface HelioBaseMapper<E extends HelioBaseEntity<T>, T extends Seriali
         if (CollUtil.isEmpty(entityList)) {
             return Collections.emptyMap();
         }
-        return entityList.stream().collect(Collectors.toMap(idMapper, nameMapper, StreamFunction.ignoredThrowingMerger()));
+        return entityList.stream()
+                .collect(Collectors.toMap(idMapper, nameMapper, StreamFunction.ignoredThrowingMerger()));
     }
 }

@@ -29,10 +29,8 @@ public class TenantLineSupport implements TenantSupport {
 
         // 添加行级租户内联拦截器
         interceptor.addInnerInterceptor(
-                new TenantLineInnerInterceptor(
-                        new HelioLineTenantHandler(
-                                helioProperties.getTenant().getPrivilegedTenantId(),
-                                ignoredTables)
+                new TenantLineInnerInterceptor(new HelioLineTenantHandler(
+                        helioProperties.getTenant().getPrivilegedTenantId(), ignoredTables)
                 )
         );
 
@@ -42,6 +40,9 @@ public class TenantLineSupport implements TenantSupport {
     }
 
 
+    /**
+     * 行级租户mybatis-plus拦截器实现类
+     */
     @AllArgsConstructor
     public static class HelioLineTenantHandler implements TenantLineHandler {
 

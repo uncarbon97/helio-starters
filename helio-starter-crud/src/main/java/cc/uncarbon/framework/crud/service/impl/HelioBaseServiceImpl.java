@@ -9,8 +9,8 @@ import lombok.NoArgsConstructor;
 
 /**
  * 服务实现类基础模板
- * M = MAPPER 持久层 interface
- * E = ENTITY 实体类
+ * @param <M> 持久层接口
+ * @param <E> 实体类
  *
  * @author Uncarbon
  */

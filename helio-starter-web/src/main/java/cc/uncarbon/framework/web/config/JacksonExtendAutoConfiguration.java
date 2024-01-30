@@ -11,10 +11,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.jdk8.Jdk8Module;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
-import java.text.SimpleDateFormat;
-import java.time.ZoneId;
-import java.util.Locale;
-import java.util.TimeZone;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.AutoConfigureBefore;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
@@ -22,6 +18,11 @@ import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Primary;
 import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
+
+import java.text.SimpleDateFormat;
+import java.time.ZoneId;
+import java.util.Locale;
+import java.util.TimeZone;
 
 /**
  * Jackson 自动配置类
@@ -64,7 +65,7 @@ public class JacksonExtendAutoConfiguration {
                 .configure(JsonReadFeature.ALLOW_UNESCAPED_CONTROL_CHARS.mappedFeature(), true)
                 // 忽略不能转移的字符
                 .configure(JsonReadFeature.ALLOW_BACKSLASH_ESCAPING_ANY_CHARACTER.mappedFeature(), true)
-                // 在使用spring boot + jpa/hibernate，如果实体字段上加有FetchType.LAZY，并使用jackson序列化为json串时，会遇到SerializationFeature.FAIL_ON_EMPTY_BEANS异常
+                // 如果实体字段上加有FetchType.LAZY，并使用jackson序列化为json串时，会遇到FAIL_ON_EMPTY_BEANS异常
                 .configure(SerializationFeature.FAIL_ON_EMPTY_BEANS, false)
                 // 忽略未知字段
                 .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)

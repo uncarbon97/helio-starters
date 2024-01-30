@@ -8,7 +8,7 @@ import java.util.function.BinaryOperator;
  *
  * @author Uncarbon
  */
-public class StreamFunction {
+public final class StreamFunction {
 
     private StreamFunction() {
     }

@@ -15,6 +15,7 @@ import java.util.function.Predicate;
 
 /**
  * 基础枚举类
+ * @param <T> 枚举类value字段的类型
  *
  * @author Zhu JW
  * @author Uncarbon
@@ -46,7 +47,11 @@ public interface HelioBaseEnum<T> extends Serializable {
      * @see #find(Class, Predicate)
      */
     static <T extends Enum<?> & HelioBaseEnum<?>> Optional<T> findByValue(Class<T> type, Object value) {
-        return find(type, e -> e.getValue() == value || e.getValue().equals(value) || String.valueOf(e.getValue()).equalsIgnoreCase(String.valueOf(value)));
+        return find(type,
+                e -> e.getValue() == value
+                        || e.getValue().equals(value)
+                        || String.valueOf(e.getValue()).equalsIgnoreCase(String.valueOf(value))
+        );
     }
 
     /**
@@ -70,7 +75,10 @@ public interface HelioBaseEnum<T> extends Serializable {
     static <E extends HelioBaseEnum<?>> Optional<E> of(Class<E> type, Object value) {
         if (type.isEnum()) {
             for (E enumConstant : type.getEnumConstants()) {
-                Predicate<E> predicate = e -> e.getValue() == value || e.getValue().equals(value) || String.valueOf(e.getValue()).equalsIgnoreCase(String.valueOf(value));
+                Predicate<E> predicate =
+                        e -> e.getValue() == value
+                                || e.getValue().equals(value)
+                                || String.valueOf(e.getValue()).equalsIgnoreCase(String.valueOf(value));
                 if (predicate.test(enumConstant)) {
                     return Optional.of(enumConstant);
                 }
