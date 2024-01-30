@@ -7,11 +7,11 @@ import cn.hutool.core.date.DatePattern;
  *
  * @author Uncarbon
  */
-public class HelioConstant {
+public final class HelioConstant {
     private HelioConstant() {
     }
 
-    public static class Dubbo {
+    public static final class Dubbo {
         private Dubbo() {
         }
 
@@ -21,7 +21,7 @@ public class HelioConstant {
         public static final int RPC_EXCEPTION_RESPONSE_CODE = 1;
     }
 
-    public static class Message {
+    public static final class Message {
         private Message() {
         }
 
@@ -29,7 +29,7 @@ public class HelioConstant {
         public static final String SUCCESS = "操作成功";
     }
 
-    public static class Version {
+    public static final class Version {
         private Version() {
         }
 
@@ -44,7 +44,7 @@ public class HelioConstant {
         public static final String DUBBO_VERSION_V1 = "1.0.0";
     }
 
-    public static class Jackson {
+    public static final class Jackson {
         private Jackson() {
         }
 
@@ -53,7 +53,7 @@ public class HelioConstant {
         public static final String DATE_TIME_FORMAT = DatePattern.NORM_DATETIME_PATTERN;
     }
 
-    public static class CRUD {
+    public static final class CRUD {
         private CRUD() {
         }
 
@@ -94,7 +94,7 @@ public class HelioConstant {
 
     }
 
-    public static class Regex {
+    public static final class Regex {
         private Regex() {
         }
 
@@ -102,7 +102,7 @@ public class HelioConstant {
         public static final String EMAIL = "^\\w+([-+.]\\w+)*@\\w+([-.]\\w+)*\\.\\w+([-.]\\w+)*$";
     }
 
-    public static class Permission {
+    public static final class Permission {
         private Permission() {
         }
 
@@ -112,7 +112,7 @@ public class HelioConstant {
         public static final String DELETE = "delete";
     }
 
-    public static class Tenant {
+    public static final class Tenant {
         private Tenant() {
         }
 

@@ -21,11 +21,11 @@ public class XssAutoConfiguration {
 
     @Bean
     @ConditionalOnMissingBean
-    @ConditionalOnProperty(value = "helio.security.xss.enabled", havingValue = "true")
+    @ConditionalOnProperty(value = "helio.security.xss.enabled", havingValue = "true", matchIfMissing = true)
     public FilterRegistrationBean<XssFilter> xssFilterRegistration(HelioProperties helioProperties) {
         FilterRegistrationBean<XssFilter> registration = new FilterRegistrationBean<>();
         registration.setDispatcherTypes(DispatcherType.REQUEST);
-        registration.setFilter(new XssFilter(helioProperties.getSecurity().getXss().getExcludes()));
+        registration.setFilter(new XssFilter(helioProperties.getSecurity().getXss().getExcludedRoutes()));
         registration.addUrlPatterns("/*");
         registration.setName("xssFilter");
         registration.setOrder(Ordered.LOWEST_PRECEDENCE);

@@ -202,9 +202,8 @@ public interface HelioBaseEnum<T> extends Serializable {
      */
     default void assertTrue(boolean expression, Object... templateParams) {
         if (!expression) {
-            return;
+            throw new BusinessException(this, templateParams);
         }
-        throw new BusinessException(this, templateParams);
     }
 
 }

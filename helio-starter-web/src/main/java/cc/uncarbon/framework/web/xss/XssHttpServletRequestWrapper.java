@@ -27,7 +27,7 @@ public class XssHttpServletRequestWrapper extends HttpServletRequestWrapper {
     /**
      * html过滤器
      */
-    private static final HTMLFilter htmlFilter = new HTMLFilter();
+    private static final HTMLFilter HTML_FILTER = new HTMLFilter();
 
     /**
      * 没被包装过的HttpServletRequest（特殊场景，需要自己过滤）
@@ -141,6 +141,6 @@ public class XssHttpServletRequestWrapper extends HttpServletRequestWrapper {
     }
 
     private String xssEncode(String input) {
-        return htmlFilter.filter(input);
+        return HTML_FILTER.filter(input);
     }
 }

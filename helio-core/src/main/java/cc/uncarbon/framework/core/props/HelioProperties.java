@@ -32,7 +32,7 @@ public class HelioProperties {
     public static class Security {
 
         /**
-         * 放行路由地址，不进行登录校验
+         * 放行路由地址，不进行登录校验（默认用于app-api）
          */
         private final List<String> excludeRoutes = new ArrayList<>(64);
 
@@ -43,14 +43,15 @@ public class HelioProperties {
         public static class Xss {
 
             /**
-             * 是否启用XSS Filter
+             * 是否启用XSS Filter（默认启用）
              */
-            private boolean enabled;
+            private boolean enabled = true;
 
             /**
-             * XSS Filter不进行过滤的路由（直接放行）
+             * 不进行XSS过滤的路由，直接放行
+             * 注意单词是被动态噢
              */
-            private List<String> excludes = new ArrayList<>();
+            private List<String> excludedRoutes = new ArrayList<>();
 
         }
     }

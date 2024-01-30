@@ -58,7 +58,7 @@
         <!-- 3rd-party versions -->
         <lombok.version>1.18.30</lombok.version>
         <slf4j.version>1.7.36</slf4j.version>
-        <hutool.version>5.8.24</hutool.version>
+        <hutool.version>5.8.25</hutool.version>
         <sa-token.version>1.37.0</sa-token.version>
         <transmittable-thread-local.version>2.14.2</transmittable-thread-local.version>
         <!-- 如果 mp 较新版存在问题，可以回退至 3.5.3.1 或 3.5.4 试试  -->

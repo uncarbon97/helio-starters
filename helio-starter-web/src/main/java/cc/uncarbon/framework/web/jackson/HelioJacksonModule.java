@@ -1,6 +1,6 @@
 package cc.uncarbon.framework.web.jackson;
 
-import cn.hutool.core.date.DatePattern;
+import cc.uncarbon.framework.core.constant.HelioConstant;
 import com.fasterxml.jackson.databind.module.SimpleModule;
 import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
 import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateDeserializer;
@@ -15,6 +15,7 @@ import java.math.BigInteger;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
 
 /**
  * 自定义序列化规则
@@ -33,13 +34,17 @@ public class HelioJacksonModule extends SimpleModule {
 
         /*
         时间相关；时区跟随JVM设置
-         */
-        this.addSerializer(LocalDateTime.class, new LocalDateTimeSerializer(DatePattern.NORM_DATETIME_FORMATTER));
-        this.addSerializer(LocalDate.class, new LocalDateSerializer(DatePattern.NORM_DATE_FORMATTER));
-        this.addSerializer(LocalTime.class, new LocalTimeSerializer(DatePattern.NORM_TIME_FORMATTER));
-        this.addDeserializer(LocalDateTime.class, new LocalDateTimeDeserializer(DatePattern.NORM_DATETIME_FORMATTER));
-        this.addDeserializer(LocalDate.class, new LocalDateDeserializer(DatePattern.NORM_DATE_FORMATTER));
-        this.addDeserializer(LocalTime.class, new LocalTimeDeserializer(DatePattern.NORM_TIME_FORMATTER));
+        */
+        // emmm knife4j-aggression用的hutool 5.4.1版本还没有DatePattern.*FORMATTER常量，为了兼容只能先手动构造了
+        DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern(HelioConstant.Jackson.DATE_TIME_FORMAT);
+        DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern(HelioConstant.Jackson.DATE_FORMAT);
+        DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern(HelioConstant.Jackson.TIME_FORMAT);
+        this.addSerializer(LocalDateTime.class, new LocalDateTimeSerializer(dateTimeFormatter));
+        this.addSerializer(LocalDate.class, new LocalDateSerializer(dateFormatter));
+        this.addSerializer(LocalTime.class, new LocalTimeSerializer(timeFormatter));
+        this.addDeserializer(LocalDateTime.class, new LocalDateTimeDeserializer(dateTimeFormatter));
+        this.addDeserializer(LocalDate.class, new LocalDateDeserializer(dateFormatter));
+        this.addDeserializer(LocalTime.class, new LocalTimeDeserializer(timeFormatter));
     }
 
 }
