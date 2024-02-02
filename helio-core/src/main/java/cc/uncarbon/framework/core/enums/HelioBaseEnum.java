@@ -15,7 +15,7 @@ import java.util.function.Predicate;
 
 /**
  * 基础枚举类
- * @param <T> 枚举类value字段的类型
+ * @param <T> 枚举类value字段的类型，建议为整数类型
  *
  * @author Zhu JW
  * @author Uncarbon
@@ -170,7 +170,6 @@ public interface HelioBaseEnum<T> extends Serializable {
 
     /**
      * 断言不为null
-     * 注意：枚举选项的 value 建议为整数类型
      *
      * @param object 需要判断的对象
      * @param templateParams label 中如果有占位符的话，向里面填充的模板参数
@@ -181,9 +180,8 @@ public interface HelioBaseEnum<T> extends Serializable {
 
     /**
      * 断言不为空文本
-     * 注意：枚举选项的 value 建议为整数类型
      *
-     * @param cs 需要判断的对象
+     * @param cs 需要判断的文本
      * @param templateParams label 中如果有占位符的话，向里面填充的模板参数
      */
     default void assertNotBlank(CharSequence cs, Object... templateParams) {
@@ -192,9 +190,8 @@ public interface HelioBaseEnum<T> extends Serializable {
 
     /**
      * 断言不为空集合
-     * 注意：枚举选项的 value 建议为整数类型
      *
-     * @param iterable 需要判断的对象
+     * @param iterable 需要判断的集合
      * @param templateParams label 中如果有占位符的话，向里面填充的模板参数
      */
     default void assertNotEmpty(Iterable<?> iterable, Object... templateParams) {
@@ -203,13 +200,24 @@ public interface HelioBaseEnum<T> extends Serializable {
 
     /**
      * 断言为真
-     * 注意：枚举选项的 value 建议为整数类型
      *
-     * @param expression 需要判断的对象
+     * @param expression 需要判断的表达式
      * @param templateParams label 中如果有占位符的话，向里面填充的模板参数
      */
     default void assertTrue(boolean expression, Object... templateParams) {
         if (!expression) {
+            throw new BusinessException(this, templateParams);
+        }
+    }
+
+    /**
+     * 断言为假
+     *
+     * @param expression 需要判断的表达式
+     * @param templateParams label 中如果有占位符的话，向里面填充的模板参数
+     */
+    default void assertFalse(boolean expression, Object... templateParams) {
+        if (expression) {
             throw new BusinessException(this, templateParams);
         }
     }
