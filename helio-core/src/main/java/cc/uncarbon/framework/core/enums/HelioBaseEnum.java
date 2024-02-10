@@ -2,12 +2,14 @@ package cc.uncarbon.framework.core.enums;
 
 import cc.uncarbon.framework.core.exception.BusinessException;
 import cc.uncarbon.framework.core.exception.HelioFrameworkException;
+import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.collection.IterUtil;
 import cn.hutool.core.text.CharSequenceUtil;
 import cn.hutool.core.util.ArrayUtil;
 import cn.hutool.core.util.NumberUtil;
 
 import java.io.Serializable;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Objects;
 import java.util.Optional;
@@ -196,6 +198,28 @@ public interface HelioBaseEnum<T> extends Serializable {
      */
     default void assertNotEmpty(Iterable<?> iterable, Object... templateParams) {
         assertTrue(IterUtil.isNotEmpty(iterable), templateParams);
+    }
+
+    /**
+     * 断言集合中存在
+     *
+     * @param collection 需要判断的集合
+     * @param item 需要寻找的集合元素
+     * @param templateParams label 中如果有占位符的话，向里面填充的模板参数
+     */
+    default <E> void assertContains(Collection<E> collection, E item, Object... templateParams) {
+        assertTrue(CollUtil.contains(collection, item), templateParams);
+    }
+
+    /**
+     * 断言集合中不存在
+     *
+     * @param collection 需要判断的集合
+     * @param item 需要寻找的集合元素
+     * @param templateParams label 中如果有占位符的话，向里面填充的模板参数
+     */
+    default <E> void assertNotContains(Collection<E> collection, E item, Object... templateParams) {
+        assertTrue(!CollUtil.contains(collection, item), templateParams);
     }
 
     /**

@@ -3,7 +3,6 @@ package cc.uncarbon.framework.crud.mapper;
 import cc.uncarbon.framework.core.function.StreamFunction;
 import cc.uncarbon.framework.crud.entity.HelioBaseEntity;
 import cn.hutool.core.collection.CollUtil;
-import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 
 import java.io.Serializable;
@@ -23,20 +22,19 @@ import java.util.stream.Collectors;
  */
 public interface HelioBaseMapper<E extends HelioBaseEntity<T>, T extends Serializable> extends BaseMapper<E> {
 
+    /**
+     * 根据IDs查询
+     */
     default List<E> selectByIds(Collection<T> ids) {
-        if (CollUtil.isEmpty(ids)) {
-            return Collections.emptyList();
-        }
-        return this.selectList(new LambdaQueryWrapper<E>().in(HelioBaseEntity::getId, ids));
+        return selectBatchIds(ids);
     }
 
     /**
      * 取ID👉名 映射map
      */
-    default Map<T, String> getNameMap(Class<E> entityClass, Collection<T> ids,
+    default Map<T, String> getNameMap(Collection<T> ids,
                                       Function<E, T> idMapper, Function<E, String> nameMapper) {
-
-        List<E> entityList = this.selectByIds(ids);
+        List<E> entityList = selectBatchIds(ids);
         if (CollUtil.isEmpty(entityList)) {
             return Collections.emptyMap();
         }
