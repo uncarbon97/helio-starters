@@ -92,7 +92,6 @@
         <guava.version>33.0.0-jre</guava.version>
         <snakeyaml.version>1.33</snakeyaml.version>
         <protobuf-java.version>3.25.1</protobuf-java.version>
-        <undertow-core.version>2.3.10.Final</undertow-core.version>
         <icu4j.version>74.2</icu4j.version>
         <json-path.version>2.8.0</json-path.version>
         <xnio-api.version>3.8.12.Final</xnio-api.version>
@@ -133,12 +132,6 @@
                 <groupId>com.google.protobuf</groupId>
                 <artifactId>protobuf-java</artifactId>
                 <version>${protobuf-java.version}</version>
-            </dependency>
-
-            <dependency>
-                <groupId>io.undertow</groupId>
-                <artifactId>undertow-core</artifactId>
-                <version>${undertow-core.version}</version>
             </dependency>
 
             <dependency>
