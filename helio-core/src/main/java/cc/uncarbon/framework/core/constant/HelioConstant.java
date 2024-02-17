@@ -1,6 +1,7 @@
 package cc.uncarbon.framework.core.constant;
 
 import cn.hutool.core.date.DatePattern;
+import cn.hutool.core.lang.RegexPool;
 
 /**
  * Helio 基础常量定义
@@ -98,9 +99,15 @@ public final class HelioConstant {
         private Regex() {
         }
 
-        public static final String CHINA_MAINLAND_PHONE_NO =
-                "^[1](([3][0-9])|([4][5-9])|([5][0-3,5-9])|([6][5,6])|([7][0-8])|([8][0-9])|([9][1,8,9]))[0-9]{8}$";
-        public static final String EMAIL = "^\\w+([-+.]\\w+)*@\\w+([-.]\\w+)*\\.\\w+([-.]\\w+)*$";
+        /**
+         * 中国大陆手机号
+         */
+        public static final String CHINA_MAINLAND_PHONE_NO = RegexPool.MOBILE;
+
+        /**
+         * 电子邮箱
+         */
+        public static final String EMAIL = RegexPool.EMAIL;
     }
 
     public static final class Permission {
