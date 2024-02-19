@@ -1,9 +1,8 @@
-package cc.uncarbon.framework.ratelimit.exception;
-
-import cc.uncarbon.framework.core.exception.HelioFrameworkException;
+package cc.uncarbon.framework.core.exception;
 
 /**
  * 限流策略异常
+ * 用于helio-starter-rate-limit-redis
  */
 public class RateLimitStrategyException extends HelioFrameworkException {
 

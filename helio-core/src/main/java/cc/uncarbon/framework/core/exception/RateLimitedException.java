@@ -1,12 +1,12 @@
-package cc.uncarbon.framework.ratelimit.exception;
+package cc.uncarbon.framework.core.exception;
 
 import cc.uncarbon.framework.core.enums.HelioBaseEnum;
-import cc.uncarbon.framework.core.exception.BusinessException;
 import cn.hutool.http.HttpStatus;
 import lombok.NonNull;
 
 /**
  * 已被限流异常
+ * 用于helio-starter-rate-limit-redis
  */
 public class RateLimitedException extends BusinessException {
 

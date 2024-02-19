@@ -1,8 +1,8 @@
 package cc.uncarbon.framework.ratelimit.stratrgy.impl;
 
 import cc.uncarbon.framework.ratelimit.annotation.UseRateLimit;
-import cc.uncarbon.framework.ratelimit.exception.RateLimitStrategyException;
-import cc.uncarbon.framework.ratelimit.exception.RateLimitedException;
+import cc.uncarbon.framework.core.exception.RateLimitStrategyException;
+import cc.uncarbon.framework.core.exception.RateLimitedException;
 import cn.hutool.core.text.CharSequenceUtil;
 import cn.hutool.core.text.StrPool;
 import lombok.RequiredArgsConstructor;
