@@ -14,7 +14,6 @@ import java.util.WeakHashMap;
  *
  * @author Zhu JW
  **/
-@SuppressWarnings({"rawtypes", "unchecked"})
 public class EnumConverterFactory implements ConverterFactory<String, HelioBaseEnum> {
     private final Map<Class, Converter> converterCache = new WeakHashMap<>();
 
@@ -35,7 +34,8 @@ public class EnumConverterFactory implements ConverterFactory<String, HelioBaseE
 
         @Override
         public T convert(@NonNull Object value) {
-            return HelioBaseEnum.of(this.enumType, value).orElseThrow(() -> new BusinessException("Contains illegal enumeration value"));
+            return HelioBaseEnum.of(this.enumType, value)
+                    .orElseThrow(() -> new BusinessException("Contains illegal enumeration value"));
         }
     }
 }

@@ -13,7 +13,7 @@ import java.util.Optional;
 @UtilityClass
 public class UserContextHolder {
 
-    private final TransmittableThreadLocal<UserContext> THREAD_LOCAL_CONTEXT = new TransmittableThreadLocal<>();
+    private static final TransmittableThreadLocal<UserContext> THREAD_LOCAL_CONTEXT = new TransmittableThreadLocal<>();
 
 
     /**

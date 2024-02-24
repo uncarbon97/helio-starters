@@ -9,7 +9,7 @@ import org.springframework.util.StringUtils;
  *
  * @author Mark sunlightcs@gmail.com
  */
-public class SQLFilter {
+public final class SQLFilter {
 
     private SQLFilter() {
     }

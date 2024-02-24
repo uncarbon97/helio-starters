@@ -32,7 +32,9 @@ public class RateLimitByClientIPStrategy extends SimpleRedisBasedRateLimitStrate
     @Override
     protected String determineRedisKey(UseRateLimit annotation, JoinPoint point) {
         final String splitter = StrPool.COLON;
-        return RateLimitConstant.REDIS_KEY_PREFIX + "ip" + splitter + currentClientIP() + splitter + determineMark(annotation, point);
+        // 编译器将自动优化
+        return RateLimitConstant.REDIS_KEY_PREFIX
+                + "ip" + splitter + currentClientIP() + splitter + determineMark(annotation, point);
     }
 
     /**
@@ -46,7 +48,8 @@ public class RateLimitByClientIPStrategy extends SimpleRedisBasedRateLimitStrate
 
         // 尝试从request中得到未登录用户的IP地址
         try {
-            ServletRequestAttributes servletRequestAttributes = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
+            ServletRequestAttributes servletRequestAttributes =
+                    (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
             if (servletRequestAttributes != null) {
                 return IPUtil.getClientIPAddress(servletRequestAttributes.getRequest(), 0);
             }

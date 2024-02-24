@@ -10,6 +10,7 @@ import org.springframework.context.MessageSource;
 import org.springframework.context.NoSuchMessageException;
 
 import java.util.Locale;
+import java.util.function.Supplier;
 
 /**
  * 获取 i18n 资源
@@ -21,8 +22,21 @@ import java.util.Locale;
 @Slf4j
 public class I18nUtil {
 
-    private final MessageSource MESSAGE_SOURCE = SpringUtil.getBean(MessageSource.class);
+    /**
+     * Spring提供的MessageSource
+     */
+    private static final MessageSource MESSAGE_SOURCE = SpringUtil.getBean(MessageSource.class);
+
+    /**
+     * Slf4j风格的占位符
+     */
     private static final String SLF4J_STYLE_PLACEHOLDER = StrPool.DELIM_START + StrPool.DELIM_END;
+
+    /**
+     * Locale实例对象提供者
+     */
+    private Supplier<Locale> localeSupplier = I18nUtil::getDefaultLocale;
+
 
     /**
      * 取Spring提供的MessageSource
@@ -32,11 +46,25 @@ public class I18nUtil {
     }
 
     /**
-     * 取默认locale
-     * 强国际化SaaS需求，也许可以改造成从特定ThreadLocal或者UserContextHolder中获取
+     * 取默认Locale
      */
     public Locale getDefaultLocale() {
         return Locale.getDefault();
+    }
+
+    /**
+     * 取Locale实例对象
+     * 由localeSupplier产生返回值
+     */
+    public Locale determineLocale() {
+        return localeSupplier.get();
+    }
+
+    /**
+     * 置Locale实例对象提供者
+     */
+    public synchronized void setLocaleSupplier(Supplier<Locale> localeSupplier) {
+        I18nUtil.localeSupplier = localeSupplier;
     }
 
     /**
@@ -48,7 +76,7 @@ public class I18nUtil {
      * @return null or 国际化翻译值
      */
     public String messageOf(String code, Object... templateParams) {
-        return messageOf(getDefaultLocale(), code, templateParams);
+        return messageOf(determineLocale(), code, templateParams);
     }
 
     /**
@@ -66,7 +94,7 @@ public class I18nUtil {
         }
 
         try {
-            String msg = getMessageSource().getMessage(code, null, locale != null ? locale : getDefaultLocale());
+            String msg = getMessageSource().getMessage(code, null, locale != null ? locale : determineLocale());
             if (CharSequenceUtil.isEmpty(msg)) {
                 return msg;
             }
@@ -93,7 +121,7 @@ public class I18nUtil {
      * @return null or 国际化翻译值
      */
     public String messageOf(String code, String defaultValue, Object... templateParams) {
-        return messageOf(getDefaultLocale(), code, defaultValue, templateParams);
+        return messageOf(determineLocale(), code, defaultValue, templateParams);
     }
 
     /**
@@ -120,7 +148,7 @@ public class I18nUtil {
      * @return null or 国际化翻译值
      */
     public String messageOf(Enum<?> enumField, Object... templateParams) {
-        return messageOf(getDefaultLocale(), enumField, templateParams);
+        return messageOf(determineLocale(), enumField, templateParams);
     }
 
     /**

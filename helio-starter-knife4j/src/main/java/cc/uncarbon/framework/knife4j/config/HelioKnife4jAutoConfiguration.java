@@ -59,11 +59,10 @@ public class HelioKnife4jAutoConfiguration {
                 .build()
                 // 在调试页上附加请求头
                 .securityContexts(Collections.singletonList(this.securityContext()))
-                .securitySchemes(Collections.singletonList(this.apiKeyOfToken()))
-                ;
+                .securitySchemes(Collections.singletonList(this.apiKeyOfToken()));
     }
 
-    private ApiInfo apiInfo(){
+    private ApiInfo apiInfo() {
         return new ApiInfoBuilder()
                 .title(helioProperties.getKnife4j().getTitle())
                 .description(helioProperties.getKnife4j().getDescription())

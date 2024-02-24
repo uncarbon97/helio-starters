@@ -2,17 +2,15 @@ package cc.uncarbon.framework.core.exception;
 
 import cc.uncarbon.framework.core.enums.HelioBaseEnum;
 import cn.hutool.core.text.CharSequenceUtil;
+import cn.hutool.http.HttpStatus;
 import lombok.Getter;
 import lombok.NonNull;
-
-import static java.net.HttpURLConnection.HTTP_INTERNAL_ERROR;
 
 /**
  * 业务异常类
  *
  * @author Uncarbon
  */
-@SuppressWarnings("squid:S1948")
 @Getter
 public class BusinessException extends RuntimeException {
 
@@ -32,7 +30,7 @@ public class BusinessException extends RuntimeException {
      */
     public BusinessException(String msg) {
         super(msg);
-        this.code = HTTP_INTERNAL_ERROR;
+        this.code = HttpStatus.HTTP_INTERNAL_ERROR;
         this.customEnumField = null;
         this.templateParams = null;
     }
@@ -69,9 +67,9 @@ public class BusinessException extends RuntimeException {
      *
      * @param customEnum 枚举类对象
      */
-    public BusinessException(@NonNull HelioBaseEnum<Integer> customEnum) {
+    public BusinessException(@NonNull HelioBaseEnum<?> customEnum) {
         super(customEnum.getLabel());
-        this.code = customEnum.getValue();
+        this.code = customEnum.getValueAsInt();
 
         /*
         @since 1.7.2 国际化支持
@@ -91,9 +89,9 @@ public class BusinessException extends RuntimeException {
      * @param customEnum      枚举类对象
      * @param templateParams  label 中如果有占位符的话，向里面填充的模板参数
      */
-    public BusinessException(@NonNull HelioBaseEnum<Integer> customEnum, Object... templateParams) {
+    public BusinessException(@NonNull HelioBaseEnum<?> customEnum, Object... templateParams) {
         super(customEnum.formatLabel(templateParams));
-        this.code = customEnum.getValue();
+        this.code = customEnum.getValueAsInt();
 
         /*
         @since 1.7.2 国际化支持

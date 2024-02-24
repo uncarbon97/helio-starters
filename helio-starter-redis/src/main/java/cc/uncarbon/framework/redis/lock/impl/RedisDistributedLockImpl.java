@@ -29,7 +29,6 @@ public class RedisDistributedLockImpl implements RedisDistributedLock {
         return this.lock(lockName, TimeUnit.SECONDS, holdDuration);
     }
 
-    @SuppressWarnings("squid:S2222")
     @Override
     public RLock lock(String lockName, TimeUnit unit, int holdDuration) {
         RLock lock = this.getRedissonLockByName(lockName);
@@ -43,7 +42,6 @@ public class RedisDistributedLockImpl implements RedisDistributedLock {
         return this.tryLock(lockName, TimeUnit.SECONDS, waitDuration, holdDuration);
     }
 
-    @SuppressWarnings({"squid:S2142", "squid:S2222"})
     @Override
     public boolean tryLock(String lockName, TimeUnit unit, int waitDuration, int holdDuration) {
         RLock lock = this.getRedissonLockByName(lockName);

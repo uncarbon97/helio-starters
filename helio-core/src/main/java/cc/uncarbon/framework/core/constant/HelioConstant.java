@@ -1,17 +1,18 @@
 package cc.uncarbon.framework.core.constant;
 
 import cn.hutool.core.date.DatePattern;
+import cn.hutool.core.lang.RegexPool;
 
 /**
  * Helio 基础常量定义
  *
  * @author Uncarbon
  */
-public class HelioConstant {
+public final class HelioConstant {
     private HelioConstant() {
     }
 
-    public static class Dubbo {
+    public static final class Dubbo {
         private Dubbo() {
         }
 
@@ -21,7 +22,7 @@ public class HelioConstant {
         public static final int RPC_EXCEPTION_RESPONSE_CODE = 1;
     }
 
-    public static class Message {
+    public static final class Message {
         private Message() {
         }
 
@@ -29,7 +30,7 @@ public class HelioConstant {
         public static final String SUCCESS = "操作成功";
     }
 
-    public static class Version {
+    public static final class Version {
         private Version() {
         }
 
@@ -44,7 +45,7 @@ public class HelioConstant {
         public static final String DUBBO_VERSION_V1 = "1.0.0";
     }
 
-    public static class Jackson {
+    public static final class Jackson {
         private Jackson() {
         }
 
@@ -53,7 +54,7 @@ public class HelioConstant {
         public static final String DATE_TIME_FORMAT = DatePattern.NORM_DATETIME_PATTERN;
     }
 
-    public static class CRUD {
+    public static final class CRUD {
         private CRUD() {
         }
 
@@ -94,15 +95,22 @@ public class HelioConstant {
 
     }
 
-    public static class Regex {
+    public static final class Regex {
         private Regex() {
         }
 
-        public static final String CHINA_MAINLAND_PHONE_NO = "^[1](([3][0-9])|([4][5-9])|([5][0-3,5-9])|([6][5,6])|([7][0-8])|([8][0-9])|([9][1,8,9]))[0-9]{8}$";
-        public static final String EMAIL = "^\\w+([-+.]\\w+)*@\\w+([-.]\\w+)*\\.\\w+([-.]\\w+)*$";
+        /**
+         * 中国大陆手机号
+         */
+        public static final String CHINA_MAINLAND_PHONE_NO = RegexPool.MOBILE;
+
+        /**
+         * 电子邮箱
+         */
+        public static final String EMAIL = RegexPool.EMAIL;
     }
 
-    public static class Permission {
+    public static final class Permission {
         private Permission() {
         }
 
@@ -112,7 +120,7 @@ public class HelioConstant {
         public static final String DELETE = "delete";
     }
 
-    public static class Tenant {
+    public static final class Tenant {
         private Tenant() {
         }
 

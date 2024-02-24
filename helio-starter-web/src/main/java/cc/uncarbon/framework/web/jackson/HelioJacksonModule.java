@@ -4,6 +4,7 @@ import cc.uncarbon.framework.core.constant.HelioConstant;
 import com.fasterxml.jackson.databind.module.SimpleModule;
 import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
 import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateDeserializer;
+import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateTimeDeserializer;
 import com.fasterxml.jackson.datatype.jsr310.deser.LocalTimeDeserializer;
 import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateSerializer;
 import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateTimeSerializer;
@@ -24,7 +25,7 @@ public class HelioJacksonModule extends SimpleModule {
     public HelioJacksonModule() {
         super();
         /*
-         大整数转字符串, 避免精度丢失问题
+        大整数转字符串, 避免精度丢失问题
          */
         this.addSerializer(Long.class, ToStringSerializer.instance);
         this.addSerializer(Long.TYPE, ToStringSerializer.instance);
@@ -32,14 +33,18 @@ public class HelioJacksonModule extends SimpleModule {
         this.addSerializer(BigDecimal.class, ToStringSerializer.instance);
 
         /*
-        时间相关
-         */
-        this.addSerializer(LocalDateTime.class, new LocalDateTimeSerializer(DateTimeFormatter.ofPattern(HelioConstant.Jackson.DATE_TIME_FORMAT)));
-        this.addSerializer(LocalDate.class, new LocalDateSerializer(DateTimeFormatter.ofPattern(HelioConstant.Jackson.DATE_FORMAT)));
-        this.addSerializer(LocalTime.class, new LocalTimeSerializer(DateTimeFormatter.ofPattern(HelioConstant.Jackson.TIME_FORMAT)));
-        this.addDeserializer(LocalDateTime.class, LocalDateTimeDeserializer.INSTANCE);
-        this.addDeserializer(LocalDate.class, new LocalDateDeserializer(DateTimeFormatter.ofPattern(HelioConstant.Jackson.DATE_FORMAT)));
-        this.addDeserializer(LocalTime.class, new LocalTimeDeserializer(DateTimeFormatter.ofPattern(HelioConstant.Jackson.TIME_FORMAT)));
+        时间相关；时区跟随JVM设置
+        */
+        // emmm knife4j-aggression用的hutool 5.4.1版本还没有DatePattern.*FORMATTER常量，为了兼容只能先手动构造了
+        DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern(HelioConstant.Jackson.DATE_TIME_FORMAT);
+        DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern(HelioConstant.Jackson.DATE_FORMAT);
+        DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern(HelioConstant.Jackson.TIME_FORMAT);
+        this.addSerializer(LocalDateTime.class, new LocalDateTimeSerializer(dateTimeFormatter));
+        this.addSerializer(LocalDate.class, new LocalDateSerializer(dateFormatter));
+        this.addSerializer(LocalTime.class, new LocalTimeSerializer(timeFormatter));
+        this.addDeserializer(LocalDateTime.class, new LocalDateTimeDeserializer(dateTimeFormatter));
+        this.addDeserializer(LocalDate.class, new LocalDateDeserializer(dateFormatter));
+        this.addDeserializer(LocalTime.class, new LocalTimeDeserializer(timeFormatter));
     }
 
 }

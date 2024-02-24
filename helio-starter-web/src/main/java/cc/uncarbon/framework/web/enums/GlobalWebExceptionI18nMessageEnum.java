@@ -9,7 +9,6 @@ import lombok.Getter;
  *
  * @author Uncarbon
  */
-@SuppressWarnings("squid:S115")
 @AllArgsConstructor
 @Getter
 public enum GlobalWebExceptionI18nMessageEnum {

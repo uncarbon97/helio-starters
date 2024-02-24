@@ -1,8 +1,8 @@
 package cc.uncarbon.framework.ratelimit.stratrgy.impl;
 
 import cc.uncarbon.framework.ratelimit.annotation.UseRateLimit;
-import cc.uncarbon.framework.ratelimit.exception.RateLimitStrategyException;
-import cc.uncarbon.framework.ratelimit.exception.RateLimitedException;
+import cc.uncarbon.framework.core.exception.RateLimitStrategyException;
+import cc.uncarbon.framework.core.exception.RateLimitedException;
 import cn.hutool.core.text.CharSequenceUtil;
 import cn.hutool.core.text.StrPool;
 import lombok.RequiredArgsConstructor;
@@ -28,19 +28,20 @@ public abstract class SimpleRedisBasedRateLimitStrategy {
 
     /**
      * 预置限流Lua脚本
+     * 编译器将自动优化
      */
-    private static final String LUA_SCRIPT = "local key = KEYS[1]\n" +
-            "local count = tonumber(ARGV[1])\n" +
-            "local time = tonumber(ARGV[2])\n" +
-            "local current = redis.call('get', key);\n" +
-            "if current and tonumber(current) > count then\n" +
-            "    return tonumber(current);\n" +
-            "end\n" +
-            "current = redis.call('incr', key)\n" +
-            "if tonumber(current) == 1 then\n" +
-            "    redis.call('expire', key, time)\n" +
-            "end\n" +
-            "return tonumber(current);";
+    private static final String LUA_SCRIPT = "local key = KEYS[1]\n"
+            + "local count = tonumber(ARGV[1])\n"
+            + "local time = tonumber(ARGV[2])\n"
+            + "local current = redis.call('get', key);\n"
+            + "if current and tonumber(current) > count then\n"
+            + "    return tonumber(current);\n"
+            + "end\n"
+            + "current = redis.call('incr', key)\n"
+            + "if tonumber(current) == 1 then\n"
+            + "    redis.call('expire', key, time)\n"
+            + "end\n"
+            + "return tonumber(current);";
 
     /**
      * 预置限流Lua脚本的 RedisScript 类实例
@@ -48,7 +49,9 @@ public abstract class SimpleRedisBasedRateLimitStrategy {
     private static final RedisScript<Long> REDIS_SCRIPT = RedisScript.of(LUA_SCRIPT, Long.class);
 
 
-    protected void performRateLimitCheck(UseRateLimit annotation, JoinPoint point, Supplier<RateLimitedException> rateLimitedExceptionSupplier) throws RateLimitStrategyException {
+    protected void performRateLimitCheck(UseRateLimit annotation, JoinPoint point,
+                                         Supplier<RateLimitedException> rateLimitedExceptionSupplier)
+            throws RateLimitStrategyException {
         long duration = annotation.duration();
         long max = annotation.max();
 

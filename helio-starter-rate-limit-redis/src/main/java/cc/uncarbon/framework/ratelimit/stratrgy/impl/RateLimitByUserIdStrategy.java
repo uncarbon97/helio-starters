@@ -31,7 +31,9 @@ public class RateLimitByUserIdStrategy extends SimpleRedisBasedRateLimitStrategy
     @Override
     protected String determineRedisKey(UseRateLimit annotation, JoinPoint point) {
         final String splitter = StrPool.COLON;
-        return RateLimitConstant.REDIS_KEY_PREFIX + "userId" + splitter + currentUserId() + splitter + determineMark(annotation, point);
+        // 编译器将自动优化
+        return RateLimitConstant.REDIS_KEY_PREFIX
+                + "userId" + splitter + currentUserId() + splitter + determineMark(annotation, point);
     }
 
     /**

@@ -2,19 +2,22 @@ package cc.uncarbon.framework.core.enums;
 
 import cc.uncarbon.framework.core.exception.BusinessException;
 import cc.uncarbon.framework.core.exception.HelioFrameworkException;
+import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.collection.IterUtil;
 import cn.hutool.core.text.CharSequenceUtil;
 import cn.hutool.core.util.ArrayUtil;
 import cn.hutool.core.util.NumberUtil;
-import cn.hutool.core.util.ObjectUtil;
 
 import java.io.Serializable;
-import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.function.Predicate;
 
 /**
  * 基础枚举类
+ * @param <T> 枚举类value字段的类型，建议为整数类型
  *
  * @author Zhu JW
  * @author Uncarbon
@@ -46,7 +49,11 @@ public interface HelioBaseEnum<T> extends Serializable {
      * @see #find(Class, Predicate)
      */
     static <T extends Enum<?> & HelioBaseEnum<?>> Optional<T> findByValue(Class<T> type, Object value) {
-        return find(type, e -> e.getValue() == value || e.getValue().equals(value) || String.valueOf(e.getValue()).equalsIgnoreCase(String.valueOf(value)));
+        return find(type,
+                e -> e.getValue() == value
+                        || e.getValue().equals(value)
+                        || String.valueOf(e.getValue()).equalsIgnoreCase(String.valueOf(value))
+        );
     }
 
     /**
@@ -70,7 +77,10 @@ public interface HelioBaseEnum<T> extends Serializable {
     static <E extends HelioBaseEnum<?>> Optional<E> of(Class<E> type, Object value) {
         if (type.isEnum()) {
             for (E enumConstant : type.getEnumConstants()) {
-                Predicate<E> predicate = e -> e.getValue() == value || e.getValue().equals(value) || String.valueOf(e.getValue()).equalsIgnoreCase(String.valueOf(value));
+                Predicate<E> predicate =
+                        e -> e.getValue() == value
+                                || e.getValue().equals(value)
+                                || String.valueOf(e.getValue()).equalsIgnoreCase(String.valueOf(value));
                 if (predicate.test(enumConstant)) {
                     return Optional.of(enumConstant);
                 }
@@ -99,13 +109,12 @@ public interface HelioBaseEnum<T> extends Serializable {
      * @param v value
      * @return 是否相等
      */
-    @SuppressWarnings("all")
     default boolean eq(Object v) {
         if (v == null) {
             return false;
         }
         if (v instanceof Object[]) {
-            v = Arrays.asList(v);
+            v = Collections.singletonList(v);
         }
         return this == v
                 || getValue() == v
@@ -118,84 +127,123 @@ public interface HelioBaseEnum<T> extends Serializable {
     /**
      * 将不定类型的 value 统一转换为 int
      * 按常见的数据类型依次判断，提高命中率
+     * @deprecated since 1.10.1, replaced with getValueAsInt()
      *
      * @return int value
      */
+    @Deprecated
     default int convertValue2Int() {
-        if (this.getValue() == null) {
+        return getValueAsInt();
+    }
+
+    /**
+     * 将不定类型的 value 统一转换为 int
+     * 按常见的数据类型依次判断，提高命中率
+     *
+     * @return int value
+     */
+    default int getValueAsInt() {
+        T value = getValue();
+        if (value == null) {
             throw new IllegalArgumentException("enum's value CANNOT be null");
         }
-
-        if (this.getValue() instanceof Integer) {
-            return (Integer) this.getValue();
+        if (value instanceof Integer) {
+            return (Integer) value;
         }
-
-        if (this.getValue() instanceof Long) {
-            return ((Long) this.getValue()).intValue();
+        if (value instanceof Long) {
+            return ((Long) value).intValue();
         }
-
-        if (this.getValue() instanceof Number) {
-            return ((Number) this.getValue()).intValue();
+        if (value instanceof Number) {
+            return ((Number) value).intValue();
         }
-
-        if (this.getValue() instanceof String) {
-            return NumberUtil.toBigDecimal((String) this.getValue()).intValue();
+        if (value instanceof String) {
+            return NumberUtil.toBigDecimal((String) value).intValue();
         }
-
         throw new HelioFrameworkException("enum's value CANNOT convert to int");
     }
 
     default String formatLabel(Object... templateParams) {
         if (ArrayUtil.isEmpty(templateParams)) {
-            return this.getLabel();
+            return getLabel();
         }
 
-        return CharSequenceUtil.format(this.getLabel(), templateParams);
+        return CharSequenceUtil.format(getLabel(), templateParams);
     }
 
     /**
      * 断言不为null
-     * 注意：枚举选项的 value 建议为整数类型
      *
      * @param object 需要判断的对象
      * @param templateParams label 中如果有占位符的话，向里面填充的模板参数
      */
     default void assertNotNull(Object object, Object... templateParams) {
-        if (ObjectUtil.isNotNull(object)) {
-            return;
-        }
-
-        throw new BusinessException(this.convertValue2Int(), this.formatLabel(templateParams));
+        assertTrue(Objects.nonNull(object), templateParams);
     }
 
     /**
      * 断言不为空文本
-     * 注意：枚举选项的 value 建议为整数类型
      *
-     * @param cs 需要判断的对象
+     * @param cs 需要判断的文本
      * @param templateParams label 中如果有占位符的话，向里面填充的模板参数
      */
     default void assertNotBlank(CharSequence cs, Object... templateParams) {
-        if (CharSequenceUtil.isNotBlank(cs)) {
-            return;
-        }
-
-        throw new BusinessException(this.convertValue2Int(), this.formatLabel(templateParams));
+        assertTrue(CharSequenceUtil.isNotBlank(cs), templateParams);
     }
 
     /**
      * 断言不为空集合
-     * 注意：枚举选项的 value 建议为整数类型
      *
-     * @param iterable 需要判断的对象
+     * @param iterable 需要判断的集合
      * @param templateParams label 中如果有占位符的话，向里面填充的模板参数
      */
     default void assertNotEmpty(Iterable<?> iterable, Object... templateParams) {
-        if (IterUtil.isNotEmpty(iterable)) {
-            return;
-        }
+        assertTrue(IterUtil.isNotEmpty(iterable), templateParams);
+    }
 
-        throw new BusinessException(this.convertValue2Int(), this.formatLabel(templateParams));
+    /**
+     * 断言集合中存在
+     *
+     * @param collection 需要判断的集合
+     * @param item 需要寻找的集合元素
+     * @param templateParams label 中如果有占位符的话，向里面填充的模板参数
+     */
+    default <E> void assertContains(Collection<E> collection, E item, Object... templateParams) {
+        assertTrue(CollUtil.contains(collection, item), templateParams);
+    }
+
+    /**
+     * 断言集合中不存在
+     *
+     * @param collection 需要判断的集合
+     * @param item 需要寻找的集合元素
+     * @param templateParams label 中如果有占位符的话，向里面填充的模板参数
+     */
+    default <E> void assertNotContains(Collection<E> collection, E item, Object... templateParams) {
+        assertTrue(!CollUtil.contains(collection, item), templateParams);
+    }
+
+    /**
+     * 断言为真
+     *
+     * @param expression 需要判断的表达式
+     * @param templateParams label 中如果有占位符的话，向里面填充的模板参数
+     */
+    default void assertTrue(boolean expression, Object... templateParams) {
+        if (!expression) {
+            throw new BusinessException(this, templateParams);
+        }
+    }
+
+    /**
+     * 断言为假
+     *
+     * @param expression 需要判断的表达式
+     * @param templateParams label 中如果有占位符的话，向里面填充的模板参数
+     */
+    default void assertFalse(boolean expression, Object... templateParams) {
+        if (expression) {
+            throw new BusinessException(this, templateParams);
+        }
     }
 
 }

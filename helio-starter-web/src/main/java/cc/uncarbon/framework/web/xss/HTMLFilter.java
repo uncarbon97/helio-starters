@@ -57,7 +57,6 @@ public final class HTMLFilter {
     private static final Pattern P_ENTITY_UNICODE = Pattern.compile("&#x([0-9a-f]+);?");
     private static final Pattern P_ENCODE = Pattern.compile("%([0-9a-f]{2});?");
     private static final Pattern P_VALID_ENTITIES = Pattern.compile("&([^&;]*)(?=(;|&|$))");
-    @SuppressWarnings("squid:S6019")
     private static final Pattern P_VALID_QUOTES = Pattern.compile("(>|^)([^<]+?)(<|$)", Pattern.DOTALL);
     private static final Pattern P_END_ARROW = Pattern.compile("^>");
     private static final Pattern P_BODY_TO_END = Pattern.compile("<([^>]*?)(?=<|$)");
@@ -123,7 +122,7 @@ public final class HTMLFilter {
      * unbalanced angle brackets will be html escaped.
      */
     private final boolean alwaysMakeTags;
-    private boolean vDebug = false;
+    private final boolean vDebug = false;
 
     /**
      * Default constructor.
@@ -319,7 +318,6 @@ public final class HTMLFilter {
         return result;
     }
 
-    @SuppressWarnings({"squid:S6541", "squid:S3776"})
     private String processTag(final String s) {
         // ending tags
         Matcher m = P_END_TAG.matcher(s);
@@ -376,7 +374,7 @@ public final class HTMLFilter {
                     ending = "";
                 }
 
-                if (ending == null || ending.length() < 1) {
+                if (ending == null || ending.isEmpty()) {
                     if (vTagCounts.containsKey(name)) {
                         vTagCounts.put(name, vTagCounts.get(name) + 1);
                     } else {

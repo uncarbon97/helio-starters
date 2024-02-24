@@ -6,9 +6,10 @@ import cc.uncarbon.framework.crud.support.TenantSupport;
 import com.baomidou.mybatisplus.extension.plugins.MybatisPlusInterceptor;
 import com.baomidou.mybatisplus.extension.plugins.handler.TableNameHandler;
 import com.baomidou.mybatisplus.extension.plugins.inner.DynamicTableNameInnerInterceptor;
-import java.util.Collection;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+
+import java.util.Collection;
 
 /**
  * 多租户支持-表级
@@ -34,6 +35,9 @@ public class TenantTableSupport implements TenantSupport {
                 ignoredTables);
     }
 
+    /**
+     * 表级租户mybatis-plus拦截器实现类
+     */
     @AllArgsConstructor
     public static class HelioTableTenantHandler implements TableNameHandler {
 

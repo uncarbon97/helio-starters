@@ -1,7 +1,7 @@
 package cc.uncarbon.framework.ratelimit.stratrgy;
 
 import cc.uncarbon.framework.ratelimit.annotation.UseRateLimit;
-import cc.uncarbon.framework.ratelimit.exception.RateLimitedException;
+import cc.uncarbon.framework.core.exception.RateLimitedException;
 import org.aspectj.lang.JoinPoint;
 
 /**

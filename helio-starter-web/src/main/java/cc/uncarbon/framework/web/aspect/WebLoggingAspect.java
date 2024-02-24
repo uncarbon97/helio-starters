@@ -9,7 +9,6 @@ import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.web.context.request.RequestAttributes;
 import org.springframework.web.context.request.RequestContextHolder;
-import org.springframework.web.context.request.ServletRequestAttributes;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.ArrayList;
@@ -58,32 +57,11 @@ public class WebLoggingAspect {
     public Object restControllerAround(ProceedingJoinPoint point) throws Throwable {
         RequestAttributes requestAttributes = RequestContextHolder.getRequestAttributes();
         assert requestAttributes != null;
-        HttpServletRequest request = ((ServletRequestAttributes) requestAttributes).getRequest();
+        HttpServletRequest request = (HttpServletRequest) RequestContextHolder.getRequestAttributes();
 
-        /*
-        请求体记录
-         */
-        StringBuilder reqLog = new StringBuilder(500);
-        List<Object> reqLogParameters = new ArrayList<>();
+        recordRequest(point, request);
 
-        reqLog.append("\n\n================  Request Start  ================\n");
-
-        // 打印路由  e.g. POST: /api/v1/doSth
-        reqLog.append("{}: {} \n");
-        reqLogParameters.add(request.getMethod());
-        reqLogParameters.add(request.getRequestURI());
-
-        // 打印入参
-        reqLog.append("Parameters: {} \n");
-        reqLogParameters.add(Arrays.stream(point.getArgs()).map(Object::toString).collect(Collectors.joining("\n")));
-
-        reqLog.append("================   Request End   ================\n");
-
-        log.debug(reqLog.toString(), reqLogParameters.toArray());
-
-        /*
-        响应体记录
-         */
+        // 记录响应体
         StringBuilder repLog = new StringBuilder(200);
         List<Object> repLogParameters = new ArrayList<>();
 
@@ -94,22 +72,52 @@ public class WebLoggingAspect {
             Object result = point.proceed();
             repLog.append("result: {} \n");
             repLogParameters.add(result);
-
             return result;
         } catch (IllegalArgumentException e) {
             log.error("Illegal argument: {} in {}.{}()", Arrays.toString(point.getArgs()),
                     point.getSignature().getDeclaringTypeName(), point.getSignature().getName());
-
             throw e;
         } finally {
-            long duration = TimeUnit.NANOSECONDS.toMillis(System.nanoTime() - beginAt);
-            repLog.append("{}: {} (elapsed {} ms)\n");
-            repLogParameters.add(request.getMethod());
-            repLogParameters.add(request.getRequestURI());
-            repLogParameters.add(duration);
-            repLog.append("================   Response End   ================\n");
+            if (log.isDebugEnabled()) {
+                long duration = TimeUnit.NANOSECONDS.toMillis(System.nanoTime() - beginAt);
+                repLog.append("{}: {} (elapsed {} ms)\n");
+                repLogParameters.add(request.getMethod());
+                repLogParameters.add(request.getRequestURI());
+                repLogParameters.add(duration);
+                repLog.append("================   Response End   ================\n");
+                log.debug(repLog.toString(), repLogParameters.toArray());
+            }
+        }
+    }
 
-            log.debug(repLog.toString(), repLogParameters.toArray());
+    /*
+    ----------------------------------------------------------------
+                        私有方法 private methods
+    ----------------------------------------------------------------
+     */
+
+    /**
+     * 记录请求体
+     */
+    private void recordRequest(ProceedingJoinPoint point, HttpServletRequest request) {
+        if (log.isDebugEnabled()) {
+            StringBuilder reqLog = new StringBuilder(500);
+            List<Object> reqLogParameters = new ArrayList<>();
+
+            reqLog.append("\n\n================  Request Start  ================\n");
+
+            // 打印路由  e.g. POST: /api/v1/doSth
+            reqLog.append("{}: {} \n");
+            reqLogParameters.add(request.getMethod());
+            reqLogParameters.add(request.getRequestURI());
+
+            // 打印入参
+            reqLog.append("Parameters: {} \n");
+            reqLogParameters.add(Arrays.stream(point.getArgs()).map(Object::toString).collect(Collectors.joining("\n")));
+
+            reqLog.append("================   Request End   ================\n");
+
+            log.debug(reqLog.toString(), reqLogParameters.toArray());
         }
     }
 }

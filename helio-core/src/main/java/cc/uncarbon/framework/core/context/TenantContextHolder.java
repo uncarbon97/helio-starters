@@ -13,7 +13,7 @@ import java.util.Optional;
 @UtilityClass
 public class TenantContextHolder {
 
-    private final TransmittableThreadLocal<TenantContext> THREAD_LOCAL_CONTEXT = new TransmittableThreadLocal<>();
+    private static final TransmittableThreadLocal<TenantContext> THREAD_LOCAL_CONTEXT = new TransmittableThreadLocal<>();
 
 
     /**

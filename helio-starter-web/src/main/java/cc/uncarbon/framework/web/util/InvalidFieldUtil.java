@@ -26,18 +26,18 @@ import java.util.concurrent.ConcurrentHashMap;
 @UtilityClass
 public class InvalidFieldUtil {
 
-    /**
-     * 特定关键词时-指定文案映射关系
-     * 使用 public 修饰符以支持外部变更
-     */
-    public final Map<String, String> MESSAGE_MASKING_MAPPER = new ConcurrentHashMap<>(16);
+    private static final Map<String, String> MESSAGE_MASKING_MAPPER = new ConcurrentHashMap<>(16);
 
     static {
-        /*
-        完整的默认消息
-        Failed to convert property value of type 'java.lang.String' to required type 'java.time.LocalDateTime' for property 'beginAt'; nested exception is org.springframework.core.convert.ConversionFailedException: Failed to convert from type [java.lang.String] to type [@com.fasterxml.jackson.annotation.JsonFormat @io.swagger.annotations.ApiModelProperty @org.springframework.format.annotation.DateTimeFormat java.time.LocalDateTime] for value '2022-08-18'; nested exception is java.lang.IllegalArgumentException: Parse attempt failed for value [2022-08-18]
-         */
+        // Failed to convert property value of type 'java.lang.String' to required type 'java.time.LocalDateTime' for property 'beginAt'; ...
         MESSAGE_MASKING_MAPPER.put("Failed to convert property value of type", "错误参数格式或值");
+    }
+
+    /**
+     * @return 返回内置的「特定关键词时-指定文案映射关系 map」
+     */
+    public Map<String, String> mapper() {
+        return MESSAGE_MASKING_MAPPER;
     }
 
     /**

@@ -24,10 +24,7 @@ import org.springframework.beans.factory.BeanFactoryAware;
 @Getter
 public class GlobalTenantDataSourceAdvisor extends AbstractPointcutAdvisor implements BeanFactoryAware {
 
-    @SuppressWarnings("squid:S1948")
     private final Advice advice;
-
-    @SuppressWarnings("squid:S1948")
     private final Pointcut pointcut;
 
     public GlobalTenantDataSourceAdvisor(@NonNull GlobalTenantDataSourceInterceptor globalTenantDataSourceInterceptor) {

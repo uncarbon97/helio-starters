@@ -16,7 +16,7 @@ import java.time.LocalDateTime;
 
 /**
  * 基础实体类，默认含[行级租户ID]
- * T = 主键类型，一般用 Long
+ * @param <T> 主键类型，一般用 Long
  *
  * @author Uncarbon
  */

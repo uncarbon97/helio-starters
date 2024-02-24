@@ -14,10 +14,10 @@ import java.io.Serializable;
 
 /**
  * HTTP接口通用返回对象
+ * @param <T> 承载数据类型
  *
  * @author Uncarbon
  */
-@SuppressWarnings("squid:S1948")
 @Accessors(chain = true)
 @AllArgsConstructor
 @NoArgsConstructor
@@ -50,7 +50,9 @@ public class ApiResult<T> implements Serializable {
     }
 
     public static <T> ApiResult<T> data(T data) {
-        return build(HttpStatus.HTTP_OK, ObjectUtil.isEmpty(data) ? HelioConstant.Message.NULL : HelioConstant.Message.SUCCESS, data);
+        return build(HttpStatus.HTTP_OK,
+                ObjectUtil.isEmpty(data) ? HelioConstant.Message.NULL : HelioConstant.Message.SUCCESS,
+                data);
     }
 
     public static <T> ApiResult<T> data(String msg, T data) {

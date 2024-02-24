@@ -30,21 +30,20 @@ public class EnumModule extends SimpleModule {
         this.addSerializer(new EnumSerializer());
     }
 
-    private static class CustomDeserializers extends SimpleDeserializers {
+    private static final class CustomDeserializers extends SimpleDeserializers {
         private CustomDeserializers() {
-
         }
 
         @Override
-        @SuppressWarnings({"rawtypes", "unchecked"})
-        public JsonDeserializer<?> findEnumDeserializer(Class<?> type, DeserializationConfig config, BeanDescription beanDesc) throws JsonMappingException {
+        public JsonDeserializer<?> findEnumDeserializer(Class<?> type, DeserializationConfig config,
+                                                        BeanDescription beanDesc) throws JsonMappingException {
             // HelioBaseEnum<?>，调用此序列化方法，否则使用 jackson 默认的序列化方法
-            return HelioBaseEnum.class.isAssignableFrom(type) ?
-                    new EnumDeserializer(type) :
-                    super.findEnumDeserializer(type, config, beanDesc);
+            return HelioBaseEnum.class.isAssignableFrom(type)
+                    ? new EnumDeserializer(type)
+                    : super.findEnumDeserializer(type, config, beanDesc);
         }
 
-        private static class EnumDeserializer<E extends HelioBaseEnum<?>> extends StdScalarDeserializer<E> {
+        private static final class EnumDeserializer<E extends HelioBaseEnum<?>> extends StdScalarDeserializer<E> {
             private final Class<E> enumType;
 
             private EnumDeserializer(Class<E> clazz) {
@@ -56,10 +55,12 @@ public class EnumModule extends SimpleModule {
             public E deserialize(JsonParser parser, DeserializationContext context) throws IOException {
                 if (parser.getCurrentToken().isNumeric()) {
                     // 前端传递value
-                    return HelioBaseEnum.of(this.enumType, parser.getIntValue()).orElseThrow(() -> new IllegalArgumentException("Unable to parse input value"));
+                    return HelioBaseEnum.of(this.enumType, parser.getIntValue())
+                            .orElseThrow(() -> new IllegalArgumentException("Unable to parse input value"));
                 } else if (CharSequenceUtil.isNotBlank(parser.getText())) {
                     // 前端传递label
-                    return HelioBaseEnum.of(this.enumType, parser.getText()).orElseThrow(() -> new IllegalArgumentException("Unable to parse input value"));
+                    return HelioBaseEnum.of(this.enumType, parser.getText())
+                            .orElseThrow(() -> new IllegalArgumentException("Unable to parse input value"));
                 } else {
                     throw new IllegalArgumentException("Unable to parse input value 'cause wrong type");
                 }
@@ -67,15 +68,15 @@ public class EnumModule extends SimpleModule {
         }
     }
 
-    @SuppressWarnings({"rawtypes"})
-    private static class EnumSerializer extends StdSerializer<HelioBaseEnum> {
+    private static final class EnumSerializer extends StdSerializer<HelioBaseEnum> {
 
         private EnumSerializer() {
             super(HelioBaseEnum.class);
         }
 
         @Override
-        public void serialize(HelioBaseEnum data, JsonGenerator jsonGenerator, SerializerProvider provider) throws IOException {
+        public void serialize(HelioBaseEnum data, JsonGenerator jsonGenerator, SerializerProvider provider)
+                throws IOException {
             jsonGenerator.writeObject(data.getValue());
             jsonGenerator.writeFieldName(jsonGenerator.getOutputContext().getCurrentName() + "Label");
             jsonGenerator.writeString(data.getLabel());
