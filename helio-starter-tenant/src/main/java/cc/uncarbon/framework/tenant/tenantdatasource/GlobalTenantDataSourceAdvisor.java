@@ -34,8 +34,8 @@ public class GlobalTenantDataSourceAdvisor extends AbstractPointcutAdvisor imple
 
     @Override
     public void setBeanFactory(@NonNull BeanFactory beanFactory) throws BeansException {
-        if (this.advice instanceof BeanFactoryAware) {
-            ((BeanFactoryAware) this.advice).setBeanFactory(beanFactory);
+        if (this.advice instanceof BeanFactoryAware beanFactoryAware) {
+            beanFactoryAware.setBeanFactory(beanFactory);
         }
     }
 

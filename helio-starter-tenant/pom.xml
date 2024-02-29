@@ -5,7 +5,7 @@
     <parent>
         <artifactId>helio-starters</artifactId>
         <groupId>cc.uncarbon.framework</groupId>
-        <version>1.11.0</version><!-- BATCH REPLACEMENT MARK -->
+        <version>2.0.0</version><!-- BATCH REPLACEMENT MARK -->
     </parent>
     <modelVersion>4.0.0</modelVersion>
 

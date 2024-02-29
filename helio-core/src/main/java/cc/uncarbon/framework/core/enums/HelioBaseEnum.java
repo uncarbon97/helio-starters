@@ -127,18 +127,6 @@ public interface HelioBaseEnum<T> extends Serializable {
     /**
      * 将不定类型的 value 统一转换为 int
      * 按常见的数据类型依次判断，提高命中率
-     * @deprecated since 1.10.1, replaced with getValueAsInt()
-     *
-     * @return int value
-     */
-    @Deprecated
-    default int convertValue2Int() {
-        return getValueAsInt();
-    }
-
-    /**
-     * 将不定类型的 value 统一转换为 int
-     * 按常见的数据类型依次判断，提高命中率
      *
      * @return int value
      */
@@ -147,17 +135,17 @@ public interface HelioBaseEnum<T> extends Serializable {
         if (value == null) {
             throw new IllegalArgumentException("enum's value CANNOT be null");
         }
-        if (value instanceof Integer) {
-            return (Integer) value;
+        if (value instanceof Integer i) {
+            return i;
         }
-        if (value instanceof Long) {
-            return ((Long) value).intValue();
+        if (value instanceof Long l) {
+            return l.intValue();
         }
-        if (value instanceof Number) {
-            return ((Number) value).intValue();
+        if (value instanceof Number n) {
+            return n.intValue();
         }
-        if (value instanceof String) {
-            return NumberUtil.toBigDecimal((String) value).intValue();
+        if (value instanceof String s) {
+            return NumberUtil.toBigDecimal(s).intValue();
         }
         throw new HelioFrameworkException("enum's value CANNOT convert to int");
     }

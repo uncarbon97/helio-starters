@@ -52,8 +52,8 @@ public class AdaptHistoryVersionAutoConfiguration implements EnvironmentAware {
             Map<String, Object> newMap = new LinkedHashMap<>();
             for (PropertySource<?> source : sources) {
                 // 根据类判断是否为 SpringBoot .yml 或者 .properties 的配置
-                if (source instanceof OriginTrackedMapPropertySource) {
-                    processPropertySource((OriginTrackedMapPropertySource) source, newMap);
+                if (source instanceof OriginTrackedMapPropertySource originTrackedMapPropertySource) {
+                    processPropertySource(originTrackedMapPropertySource, newMap);
                 }
             }
 

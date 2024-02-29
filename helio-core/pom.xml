@@ -2,13 +2,15 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0"
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <packaging>jar</packaging>
+
     <parent>
         <artifactId>helio-starters</artifactId>
         <groupId>cc.uncarbon.framework</groupId>
-        <version>1.11.0</version><!-- BATCH REPLACEMENT MARK -->
+        <version>2.0.0</version><!-- BATCH REPLACEMENT MARK -->
         <relativePath>../pom.xml</relativePath>
     </parent>
-    <modelVersion>4.0.0</modelVersion>
 
     <artifactId>helio-core</artifactId>
 
@@ -50,8 +52,8 @@
 
         <!-- javax validation 注解包 -->
         <dependency>
-            <groupId>javax.validation</groupId>
-            <artifactId>validation-api</artifactId>
+            <groupId>jakarta.validation</groupId>
+            <artifactId>jakarta.validation-api</artifactId>
         </dependency>
 
         <!-- TTL -->
@@ -66,10 +68,10 @@
             <artifactId>hutool-all</artifactId>
         </dependency>
 
-        <!-- knife4j 注解包 -->
+        <!-- SpringDoc 注解包 -->
         <dependency>
-            <groupId>com.github.xiaoymin</groupId>
-            <artifactId>knife4j-annotations</artifactId>
+            <groupId>io.swagger.core.v3</groupId>
+            <artifactId>swagger-annotations</artifactId>
         </dependency>
 
         <!-- mybatis-plus 注解包 -->
@@ -78,5 +80,4 @@
             <artifactId>mybatis-plus-annotation</artifactId>
         </dependency>
     </dependencies>
-
 </project>

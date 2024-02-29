@@ -3,7 +3,7 @@ package cc.uncarbon.framework.crud.entity;
 import cc.uncarbon.framework.core.constant.HelioConstant;
 import com.baomidou.mybatisplus.annotation.*;
 import com.fasterxml.jackson.annotation.JsonFormat;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -11,6 +11,7 @@ import lombok.experimental.Accessors;
 import lombok.experimental.SuperBuilder;
 import org.springframework.format.annotation.DateTimeFormat;
 
+import java.io.Serial;
 import java.io.Serializable;
 import java.time.LocalDateTime;
 
@@ -27,20 +28,21 @@ import java.time.LocalDateTime;
 @Data
 public abstract class HelioBaseEntity<T extends Serializable> implements Serializable {
 
+    @Serial
     private static final long serialVersionUID = 1L;
 
 
     /**
      * 主键ID
      */
-    @ApiModelProperty(value = "主键ID")
+    @Schema(description = "主键ID")
     @TableId(value = "id", type = IdType.ASSIGN_ID)
     private T id;
 
     /**
      * 行级租户ID
      */
-    @ApiModelProperty(value = "行级租户ID")
+    @Schema(description = "行级租户ID")
     @TableField(value = HelioConstant.CRUD.COLUMN_TENANT_ID, fill = FieldFill.INSERT)
     private Long tenantId;
 
@@ -48,7 +50,7 @@ public abstract class HelioBaseEntity<T extends Serializable> implements Seriali
      * 乐观锁
      * 需自行加@Version注解才有效
      */
-    @ApiModelProperty(value = "乐观锁", notes = "需再次复制本字段，并自行加 @Version 注解才有效")
+    @Schema(description = "乐观锁", title = "需再次复制本字段，并自行加 @Version 注解才有效")
     @TableField(value = "revision")
     private Long revision;
 
@@ -56,7 +58,7 @@ public abstract class HelioBaseEntity<T extends Serializable> implements Seriali
      * 逻辑删除标识
      * 0=否 1=是
      */
-    @ApiModelProperty(value = "逻辑删除标识", notes = "0=否 1=是")
+    @Schema(description = "逻辑删除标识", title = "0=否 1=是")
     @TableLogic
     @TableField(value = "del_flag")
     private Integer delFlag;
@@ -64,7 +66,7 @@ public abstract class HelioBaseEntity<T extends Serializable> implements Seriali
     /**
      * 创建时刻
      */
-    @ApiModelProperty(value = "创建时刻")
+    @Schema(description = "创建时刻")
     @DateTimeFormat(pattern = HelioConstant.Jackson.DATE_TIME_FORMAT)
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = HelioConstant.Jackson.DATE_TIME_FORMAT)
     @TableField(value = HelioConstant.CRUD.COLUMN_CREATED_AT, fill = FieldFill.INSERT)
@@ -73,14 +75,14 @@ public abstract class HelioBaseEntity<T extends Serializable> implements Seriali
     /**
      * 创建者
      */
-    @ApiModelProperty(value = "创建者")
+    @Schema(description = "创建者")
     @TableField(value = HelioConstant.CRUD.COLUMN_CREATED_BY, fill = FieldFill.INSERT)
     private String createdBy;
 
     /**
      * 更新时刻
      */
-    @ApiModelProperty(value = "更新时刻")
+    @Schema(description = "更新时刻")
     @DateTimeFormat(pattern = HelioConstant.Jackson.DATE_TIME_FORMAT)
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = HelioConstant.Jackson.DATE_TIME_FORMAT)
     @TableField(value = HelioConstant.CRUD.COLUMN_UPDATED_AT, fill = FieldFill.INSERT_UPDATE)
@@ -89,7 +91,7 @@ public abstract class HelioBaseEntity<T extends Serializable> implements Seriali
     /**
      * 更新者
      */
-    @ApiModelProperty(value = "更新者")
+    @Schema(description = "更新者")
     @TableField(value = HelioConstant.CRUD.COLUMN_UPDATED_BY, fill = FieldFill.INSERT_UPDATE)
     private String updatedBy;
 

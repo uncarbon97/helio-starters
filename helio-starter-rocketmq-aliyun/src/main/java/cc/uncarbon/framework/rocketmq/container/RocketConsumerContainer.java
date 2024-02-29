@@ -25,11 +25,11 @@ import cc.uncarbon.framework.rocketmq.core.factory.execution.ThreadPoolExecutorE
 import cc.uncarbon.framework.rocketmq.core.serializer.RocketSerializer;
 import cc.uncarbon.framework.rocketmq.core.utils.AnnotatedMethodsUtils;
 import cc.uncarbon.framework.rocketmq.props.AliyunRocketProperties;
+import jakarta.annotation.PostConstruct;
 import lombok.NonNull;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 
-import javax.annotation.PostConstruct;
 import java.util.concurrent.ThreadPoolExecutor;
 
 /**

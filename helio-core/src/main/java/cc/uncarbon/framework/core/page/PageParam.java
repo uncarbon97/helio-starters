@@ -1,6 +1,6 @@
 package cc.uncarbon.framework.core.page;
 
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -20,7 +20,7 @@ import java.util.function.UnaryOperator;
 @Data
 public class PageParam implements Serializable {
 
-    @ApiModelProperty(value = "当前页码")
+    @Schema(description = "当前页码")
     private Integer pageNum;
     public Integer getPageNum() {
         if (pageNum == null) {
@@ -33,7 +33,7 @@ public class PageParam implements Serializable {
         return pageNum;
     }
 
-    @ApiModelProperty(value = "当前页大小")
+    @Schema(description = "当前页大小")
     private Integer pageSize;
     public Integer getPageSize() {
         if (pageSize == null) {

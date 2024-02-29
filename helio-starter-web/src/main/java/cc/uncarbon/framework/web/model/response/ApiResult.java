@@ -4,7 +4,7 @@ import cc.uncarbon.framework.core.constant.HelioConstant;
 import cc.uncarbon.framework.core.enums.HelioBaseEnum;
 import cn.hutool.core.util.ObjectUtil;
 import cn.hutool.http.HttpStatus;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -24,13 +24,13 @@ import java.io.Serializable;
 @Data
 public class ApiResult<T> implements Serializable {
 
-    @ApiModelProperty(value = "状态码")
+    @Schema(description = "状态码")
     private int code;
 
-    @ApiModelProperty(value = "返回消息")
+    @Schema(description = "返回消息")
     private String msg;
 
-    @ApiModelProperty(value = "承载数据")
+    @Schema(description = "承载数据")
     private T data;
 
     public static <T> ApiResult<T> success() {

@@ -1,93 +1,56 @@
 package cc.uncarbon.framework.knife4j.config;
 
-
 import cc.uncarbon.framework.core.props.HelioProperties;
+import cc.uncarbon.framework.knife4j.customizer.HelioBaseEnumCustomizer;
+import cn.hutool.core.text.CharSequenceUtil;
 import com.github.xiaoymin.knife4j.spring.annotations.EnableKnife4j;
-import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Value;
+import io.swagger.v3.oas.models.OpenAPI;
+import io.swagger.v3.oas.models.info.Info;
+import io.swagger.v3.oas.models.security.SecurityRequirement;
+import org.springdoc.core.configuration.SpringDocConfiguration;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Import;
-import org.springframework.core.annotation.Order;
-import springfox.bean.validators.configuration.BeanValidatorPluginsConfiguration;
-import springfox.documentation.builders.ApiInfoBuilder;
-import springfox.documentation.builders.PathSelectors;
-import springfox.documentation.builders.RequestHandlerSelectors;
-import springfox.documentation.oas.annotations.EnableOpenApi;
-import springfox.documentation.service.ApiInfo;
-import springfox.documentation.service.ApiKey;
-import springfox.documentation.service.AuthorizationScope;
-import springfox.documentation.service.SecurityReference;
-import springfox.documentation.spi.DocumentationType;
-import springfox.documentation.spi.service.contexts.SecurityContext;
-import springfox.documentation.spring.web.plugins.Docket;
-
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
+import org.springframework.core.env.ConfigurableEnvironment;
 
 
 /**
  * Helio knife4j 自动配置类
- * 参考http://events.jianshu.io/p/2f19c1863da0
  *
  * @author Uncarbon
  * @author xiaoymin
  */
-@EnableOpenApi
+@Import(value = {HelioBaseEnumCustomizer.class})
 @EnableKnife4j
-@Import(BeanValidatorPluginsConfiguration.class)
-@RequiredArgsConstructor
-@AutoConfiguration
+@ConditionalOnExpression(value = "!${knife4j.production:false}")
+@AutoConfiguration(before = SpringDocConfiguration.class)
 public class HelioKnife4jAutoConfiguration {
 
-    @Value(value = "${sa-token.token-name:Authorization}")
-    private String headerTokenName;
-
-    private final HelioProperties helioProperties;
-
-
     @Bean
-    @Order(value = 1)
-    public Docket groupRestApi() {
-        return new Docket(DocumentationType.OAS_30)
-                .apiInfo(this.apiInfo())
-                .select()
-                // 对所有API进行抓取
-                .apis(RequestHandlerSelectors.any())
-                .paths(PathSelectors.any())
-                .build()
-                // 在调试页上附加请求头
-                .securityContexts(Collections.singletonList(this.securityContext()))
-                .securitySchemes(Collections.singletonList(this.apiKeyOfToken()));
+    @ConditionalOnMissingBean(value = OpenAPI.class)
+    public OpenAPI openApi(HelioProperties helioProperties, ConfigurableEnvironment env) {
+        OpenAPI openApi = new OpenAPI();
+        // 基本信息
+        Info info = buildInfo(helioProperties);
+        openApi.info(info);
+
+        // 安全方案
+        String headerTokenName = CharSequenceUtil.blankToDefault(env.getProperty("sa-token.token-name"), "Authorization");
+        SecurityRequirement securityRequirement = new SecurityRequirement().addList(headerTokenName);
+        openApi.addSecurityItem(securityRequirement);
+
+        return openApi;
     }
 
-    private ApiInfo apiInfo() {
-        return new ApiInfoBuilder()
-                .title(helioProperties.getKnife4j().getTitle())
-                .description(helioProperties.getKnife4j().getDescription())
-                .termsOfServiceUrl("")
-                .contact(ApiInfo.DEFAULT_CONTACT)
-                .version(helioProperties.getKnife4j().getVersion())
-                .build();
-    }
-
-    private SecurityContext securityContext() {
-        List<SecurityReference> references = new ArrayList<>();
-
-        AuthorizationScope authorizationScope = new AuthorizationScope("global", "accessEverything");
-        AuthorizationScope[] authorizationScopes = new AuthorizationScope[1];
-        authorizationScopes[0] = authorizationScope;
-
-        references.add(new SecurityReference(headerTokenName, authorizationScopes));
-
-        return SecurityContext.builder()
-                .securityReferences(references)
-                .build();
-    }
-
-    private ApiKey apiKeyOfToken() {
-        return new ApiKey(headerTokenName, headerTokenName, "header");
+    private Info buildInfo(HelioProperties helioProperties) {
+        Info info = new Info();
+        HelioProperties.Knife4j knife4j = helioProperties.getKnife4j();
+        info.setTitle(knife4j.getTitle());
+        info.setDescription(knife4j.getDescription());
+        info.setVersion(knife4j.getVersion());
+        return info;
     }
 
 }

@@ -1,6 +1,6 @@
 package cc.uncarbon.framework.core.page;
 
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -22,16 +22,16 @@ import java.util.List;
 @Data
 public class PageResult<T extends Serializable> implements Serializable {
 
-    @ApiModelProperty(value = "当前页")
+    @Schema(description = "当前页")
     private long current;
 
-    @ApiModelProperty(value = "当前页数量")
+    @Schema(description = "当前页数量")
     private long size;
 
-    @ApiModelProperty(value = "总量")
+    @Schema(description = "总量")
     private long total;
 
-    @ApiModelProperty(value = "记录")
+    @Schema(description = "记录")
     private List<T> records;
 
 

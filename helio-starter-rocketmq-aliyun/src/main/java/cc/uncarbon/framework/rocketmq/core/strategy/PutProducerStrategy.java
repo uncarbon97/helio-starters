@@ -47,8 +47,7 @@ public class PutProducerStrategy {
     }
 
     public static void putProducer(Map<String, Object> producerConsumer, RocketMessage rocketMessage, Object bean, AliyunRocketProperties rocketProperties, ApplicationContext applicationContext) {
-        if (bean instanceof CommonMessage) {
-            CommonMessage commonMessage = (CommonMessage) bean;
+        if (bean instanceof CommonMessage commonMessage) {
             String producerConsumerKey = ProducerConsumerFactory.getProducerConsumerKey(rocketMessage, commonMessage);
             Producer producer = ProducerFactory.createProducer(rocketMessage, rocketProperties);
             ThreadPoolExecutor callbackThreadPoolExecutor = ThreadPoolFactory.createCallbackThreadPoolExecutor(rocketProperties);
@@ -57,16 +56,14 @@ public class PutProducerStrategy {
             producerConsumer.put(producerConsumerKey, producer);
             return;
         }
-        if (bean instanceof OrderMessage) {
-            OrderMessage orderMessage = (OrderMessage) bean;
+        if (bean instanceof OrderMessage orderMessage) {
             String producerConsumerKey = ProducerConsumerFactory.getProducerConsumerKey(rocketMessage, orderMessage);
             OrderProducer orderProducer = ProducerFactory.createOrderProducer(rocketMessage, rocketProperties);
             orderProducer.start();
             producerConsumer.put(producerConsumerKey, orderProducer);
             return;
         }
-        if (bean instanceof TransactionMessage) {
-            TransactionMessage transactionMessage = (TransactionMessage) bean;
+        if (bean instanceof TransactionMessage transactionMessage) {
             String producerConsumerKey = ProducerConsumerFactory.getProducerConsumerKey(rocketMessage, transactionMessage);
             LocalTransactionChecker localTransactionChecker = ApplicationContextUtils.getLocalTransactionChecker(applicationContext, transactionMessage.transactionStatus(), transactionMessage.checker());
             TransactionProducer transactionProducer = ProducerFactory.createTransactionProducer(rocketMessage, rocketProperties, localTransactionChecker);

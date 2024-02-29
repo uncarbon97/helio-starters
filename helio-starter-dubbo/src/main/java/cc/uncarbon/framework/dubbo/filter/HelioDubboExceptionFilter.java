@@ -28,22 +28,18 @@ public class HelioDubboExceptionFilter extends ExceptionFilter {
 
         try {
             Throwable exception = appResponse.getException();
-            if (isExceptionCheckedOrAppearsInSign(invoker, invocation, exception)) {
-                return;
+            if (!isExceptionCheckedOrAppearsInSign(invoker, invocation, exception)) {
+                // for the exception not found in method's signature, print ERROR message in server's log.
+                log.error(
+                        "Got unchecked and undeclared exception which called by {}. service: {}, method: {}, exception: {} >> {}",
+                        RpcContext.getServiceContext().getRemoteAddress(), invoker.getInterface().getName(),
+                        invocation.getMethodName(), exception.getClass().getName(), exception.getMessage(), exception);
+
+                if (!canReturnDirectly(invoker, exception)) {
+                    // wrap with RuntimeException and throw back to the client
+                    appResponse.setException(new RuntimeException(StrUtil.toString(exception)));
+                }
             }
-
-            // for the exception not found in method's signature, print ERROR message in server's log.
-            log.error(
-                    "Got unchecked and undeclared exception which called by {}. service: {}, method: {}, exception: {} >> {}",
-                    RpcContext.getServiceContext().getRemoteAddress(), invoker.getInterface().getName(),
-                    invocation.getMethodName(), exception.getClass().getName(), exception.getMessage(), exception);
-
-            if (canReturnDirectly(invoker, exception)) {
-                return;
-            }
-
-            // otherwise, wrap with RuntimeException and throw back to the client
-            appResponse.setException(new RuntimeException(StrUtil.toString(exception)));
         } catch (NoSuchMethodException cause) {
             // ignored
         } catch (Throwable cause) {

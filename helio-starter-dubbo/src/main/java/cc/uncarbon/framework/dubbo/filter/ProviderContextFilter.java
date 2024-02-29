@@ -33,15 +33,13 @@ public class ProviderContextFilter implements Filter {
             TenantContextHolder.clear();
 
             Object attachment = serverAttachment.getObjectAttachment(UserContext.CAMEL_NAME);
-            if (attachment instanceof UserContext) {
-                UserContext userContext = (UserContext) attachment;
+            if (attachment instanceof UserContext userContext) {
                 UserContextHolder.setUserContext(userContext);
                 log.debug("[Dubbo RPC] 取出当前用户上下文 >> {}", userContext);
             }
 
             attachment = serverAttachment.getObjectAttachment(TenantContext.CAMEL_NAME);
-            if (attachment instanceof TenantContext) {
-                TenantContext tenantContext = (TenantContext) attachment;
+            if (attachment instanceof TenantContext tenantContext) {
                 TenantContextHolder.setTenantContext(tenantContext);
                 log.debug("[Dubbo RPC] 取出当前租户上下文 >> {}", tenantContext);
             }

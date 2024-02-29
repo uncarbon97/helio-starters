@@ -12,6 +12,7 @@ import cn.dev33.satoken.exception.NotLoginException;
 import cn.dev33.satoken.exception.NotPermissionException;
 import cn.dev33.satoken.exception.NotRoleException;
 import com.fasterxml.jackson.core.JsonParseException;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -30,8 +31,8 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 import org.springframework.web.servlet.NoHandlerFoundException;
+import org.springframework.web.servlet.resource.NoResourceFoundException;
 
-import javax.servlet.http.HttpServletRequest;
 import java.nio.charset.StandardCharsets;
 
 /**
@@ -132,8 +133,8 @@ public class GlobalWebExceptionHandlerAutoConfiguration {
      * 404 NOT FOUND
      */
     @ResponseStatus(HttpStatus.NOT_FOUND)
-    @ExceptionHandler({NoHandlerFoundException.class})
-    public ResponseEntity<ApiResult<Void>> handleNoHandlerFoundException(NoHandlerFoundException e, HttpServletRequest request) {
+    @ExceptionHandler({NoHandlerFoundException.class, NoResourceFoundException.class})
+    public ResponseEntity<ApiResult<Void>> handleNoHandlerFoundException(Exception e, HttpServletRequest request) {
         this.logError(e, request);
 
         GlobalWebExceptionI18nMessageEnum msgEnum = GlobalWebExceptionI18nMessageEnum.GLOBAL__NOT_FOUND;
