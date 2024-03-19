@@ -26,8 +26,9 @@ public class ConsumerContextFilter implements Filter {
      */
     @Override
     public Result invoke(Invoker<?> invoker, Invocation invocation) throws RpcException {
-        RpcContextAttachment clientAttachment = RpcContext.getClientAttachment();
-        if (clientAttachment.isConsumerSide()) {
+        if (isConsumerSide(invoker)) {
+            RpcContextAttachment clientAttachment = RpcContext.getClientAttachment();
+
             UserContext userContext = UserContextHolder.getUserContext();
             if (userContext != null) {
                 log.debug("[Dubbo RPC] 设置当前用户上下文 >> {}", userContext);
@@ -42,6 +43,14 @@ public class ConsumerContextFilter implements Filter {
             }
         }
         return invoker.invoke(invocation);
+    }
+
+    /**
+     * 原来的 clientAttachment.isConsumerSide() 抽风了，只能手撸一个了
+     * @return 调用源是否为【消费者】
+     */
+    private boolean isConsumerSide(Invoker<?> invoker) {
+        return CommonConstants.CONSUMER_SIDE.equals(invoker.getUrl().getSide());
     }
 
 }

@@ -4,9 +4,11 @@ import cc.uncarbon.framework.core.props.HelioProperties;
 import cc.uncarbon.framework.knife4j.customizer.HelioBaseEnumCustomizer;
 import cn.hutool.core.text.CharSequenceUtil;
 import com.github.xiaoymin.knife4j.spring.annotations.EnableKnife4j;
+import io.swagger.v3.oas.models.Components;
 import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.info.Info;
 import io.swagger.v3.oas.models.security.SecurityRequirement;
+import io.swagger.v3.oas.models.security.SecurityScheme;
 import org.springdoc.core.configuration.SpringDocConfiguration;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
@@ -33,13 +35,26 @@ public class HelioKnife4jAutoConfiguration {
     public OpenAPI openApi(HelioProperties helioProperties, ConfigurableEnvironment env) {
         OpenAPI openApi = new OpenAPI();
         // 基本信息
-        Info info = buildInfo(helioProperties);
-        openApi.info(info);
+        openApi.setInfo(buildInfo(helioProperties));
 
-        // 安全方案
+        // 全局安全要求
         String headerTokenName = CharSequenceUtil.blankToDefault(env.getProperty("sa-token.token-name"), "Authorization");
-        SecurityRequirement securityRequirement = new SecurityRequirement().addList(headerTokenName);
-        openApi.addSecurityItem(securityRequirement);
+        SecurityScheme securityScheme = new SecurityScheme()
+                // 取个名字，方便被引用
+                .name(headerTokenName)
+                .type(SecurityScheme.Type.APIKEY)
+                .in(SecurityScheme.In.HEADER);
+
+        SecurityRequirement securityRequirement = new SecurityRequirement()
+                // 引用上面定义的SecurityScheme
+                .addList(headerTokenName);
+
+        openApi
+                .components(new Components()
+                        // 在components里定义SecurityScheme
+                        .addSecuritySchemes("APIKEY", securityScheme))
+                // 添加SecurityRequirement作为全局安全要求
+                .addSecurityItem(securityRequirement);
 
         return openApi;
     }

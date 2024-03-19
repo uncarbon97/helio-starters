@@ -8,8 +8,8 @@ import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Pointcut;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
-import org.springframework.web.context.request.RequestAttributes;
 import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -23,10 +23,10 @@ import java.util.stream.Collectors;
  *
  * @author Uncarbon
  */
-@Aspect
-@Slf4j
-@AutoConfiguration
 @ConditionalOnExpression("${helio.web.logging.enabled:false}")
+@Aspect
+@AutoConfiguration
+@Slf4j
 public class WebLoggingAspect {
 
     /**
@@ -55,9 +55,9 @@ public class WebLoggingAspect {
      */
     @Around("restControllerPointcut() && applicationPackagePointcut()")
     public Object restControllerAround(ProceedingJoinPoint point) throws Throwable {
-        RequestAttributes requestAttributes = RequestContextHolder.getRequestAttributes();
+        ServletRequestAttributes requestAttributes = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
         assert requestAttributes != null;
-        HttpServletRequest request = (HttpServletRequest) RequestContextHolder.getRequestAttributes();
+        HttpServletRequest request = requestAttributes.getRequest();
 
         recordRequest(point, request);
 

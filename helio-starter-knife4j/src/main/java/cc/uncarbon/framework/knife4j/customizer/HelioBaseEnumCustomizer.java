@@ -44,7 +44,8 @@ public class HelioBaseEnumCustomizer implements PropertyCustomizer, ParameterCus
     }
 
     /**
-     * 主要用于 @Parameter 注解标记的字段，或路径参数/Query
+     *
+     * 主要用于 @Parameter 注解标记的字段，以及路径参数、Query
      */
     @Override
     public Parameter customize(Parameter parameterModel, MethodParameter methodParameter) {
