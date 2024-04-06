@@ -31,11 +31,11 @@
 
     <groupId>cc.uncarbon.framework</groupId>
     <artifactId>helio-starters</artifactId>
-    <version>1.11.0</version><!-- BATCH REPLACEMENT MARK -->
+    <version>1.11.1</version><!-- BATCH REPLACEMENT MARK -->
 
     <properties>
         <!-- core versions -->
-        <revision>1.11.0</revision>
+        <revision>1.11.1</revision>
         <helio-starters.version>${revision}</helio-starters.version>
         <!-- 可根据实际JDK版本修改；JDK8则改为'1.8'  JDK11则改为'11'  JDK17则改为'17'  JDK21则改为'21' -->
         <java.version>1.8</java.version>
