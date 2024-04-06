@@ -1,11 +1,11 @@
 package cc.uncarbon.framework.web.xss;
 
 import cn.hutool.core.collection.CollUtil;
+import jakarta.servlet.*;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.util.AntPathMatcher;
 
-import javax.servlet.*;
-import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
 import java.util.List;
 

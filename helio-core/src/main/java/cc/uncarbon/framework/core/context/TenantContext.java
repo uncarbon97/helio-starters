@@ -1,12 +1,13 @@
 package cc.uncarbon.framework.core.context;
 
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.Accessors;
 import lombok.experimental.SuperBuilder;
 
+import java.io.Serial;
 import java.io.Serializable;
 
 /**
@@ -21,14 +22,15 @@ import java.io.Serializable;
 @Data
 public class TenantContext implements Serializable {
 
+    @Serial
     private static final long serialVersionUID = 1L;
 
     public static final String CAMEL_NAME = "tenantContext";
 
-    @ApiModelProperty(value = "租户ID")
+    @Schema(description = "租户ID")
     private Long tenantId;
 
-    @ApiModelProperty(value = "租户名")
+    @Schema(description = "租户名")
     private String tenantName;
 
 }

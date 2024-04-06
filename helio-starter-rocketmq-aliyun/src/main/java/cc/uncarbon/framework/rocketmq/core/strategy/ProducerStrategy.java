@@ -42,20 +42,17 @@ public class ProducerStrategy {
     }
 
     public static void statsSendMessage(Long startDeliverTime, String shardingKeyFactory, Map<String, Object> consumerContainer, RocketMessage rocketMessage, Object message, byte[] bytes, ApplicationContext applicationContext) {
-        if (message instanceof CommonMessage) {
-            CommonMessage commonMessage = (CommonMessage) message;
+        if (message instanceof CommonMessage commonMessage) {
             Producer producer = ProducerConsumerFactory.getProducer(consumerContainer, rocketMessage, commonMessage);
             SendMessageFactory.sendMessage(startDeliverTime, producer, commonMessage, bytes, applicationContext);
             return;
         }
-        if (message instanceof OrderMessage) {
-            OrderMessage orderMessage = (OrderMessage) message;
+        if (message instanceof OrderMessage orderMessage) {
             OrderProducer orderProducer = ProducerConsumerFactory.getProducer(consumerContainer, rocketMessage, orderMessage);
             SendMessageFactory.sendMessage(orderProducer, orderMessage, bytes, shardingKeyFactory);
             return;
         }
-        if (message instanceof TransactionMessage) {
-            TransactionMessage transactionMessage = (TransactionMessage) message;
+        if (message instanceof TransactionMessage transactionMessage) {
             TransactionProducer transactionProducer = ProducerConsumerFactory.getProducer(consumerContainer, rocketMessage, transactionMessage);
             SendMessageFactory.sendMessage(transactionProducer, transactionMessage, bytes, applicationContext);
         }

@@ -3,9 +3,9 @@ package cc.uncarbon.framework.web.util;
 import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.text.CharSequenceUtil;
 import cn.hutool.core.text.StrPool;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.experimental.UtilityClass;
 
-import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 
 /**

@@ -1,13 +1,13 @@
 package cc.uncarbon.framework.web.model.request;
 
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.validation.constraints.NotEmpty;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.Accessors;
 import lombok.experimental.SuperBuilder;
 
-import javax.validation.constraints.NotEmpty;
 import java.io.Serializable;
 import java.util.List;
 
@@ -26,7 +26,7 @@ import java.util.List;
 @Data
 public class IdsDTO<T extends Serializable> implements Serializable {
 
-    @ApiModelProperty(value = "主键ID数组", required = true)
+    @Schema(description = "主键ID数组", requiredMode = Schema.RequiredMode.REQUIRED)
     @NotEmpty(message = "ids不能为空")
     private List<T> ids;
 

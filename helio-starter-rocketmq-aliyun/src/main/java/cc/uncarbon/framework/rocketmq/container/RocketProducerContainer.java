@@ -20,11 +20,11 @@ import cc.uncarbon.framework.rocketmq.annotation.RocketMessage;
 import cc.uncarbon.framework.rocketmq.core.factory.ThreadPoolFactory;
 import cc.uncarbon.framework.rocketmq.core.strategy.RocketConsumerStrategy;
 import cc.uncarbon.framework.rocketmq.props.AliyunRocketProperties;
+import jakarta.annotation.PostConstruct;
 import lombok.NonNull;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 
-import javax.annotation.PostConstruct;
 import java.util.Map;
 import java.util.concurrent.ThreadPoolExecutor;
 

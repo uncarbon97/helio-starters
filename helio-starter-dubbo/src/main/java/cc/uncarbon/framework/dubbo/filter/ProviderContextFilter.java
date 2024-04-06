@@ -26,27 +26,34 @@ public class ProviderContextFilter implements Filter {
      */
     @Override
     public Result invoke(Invoker<?> invoker, Invocation invocation) throws RpcException {
-        RpcContextAttachment serverAttachment = RpcContext.getServerAttachment();
-        if (serverAttachment.isProviderSide()) {
+        if (isProviderSide(invoker)) {
+            RpcContextAttachment serverAttachment = RpcContext.getServerAttachment();
+
             // 清理数据，避免线程池化复用残留
             UserContextHolder.clear();
             TenantContextHolder.clear();
 
             Object attachment = serverAttachment.getObjectAttachment(UserContext.CAMEL_NAME);
-            if (attachment instanceof UserContext) {
-                UserContext userContext = (UserContext) attachment;
+            if (attachment instanceof UserContext userContext) {
                 UserContextHolder.setUserContext(userContext);
                 log.debug("[Dubbo RPC] 取出当前用户上下文 >> {}", userContext);
             }
 
             attachment = serverAttachment.getObjectAttachment(TenantContext.CAMEL_NAME);
-            if (attachment instanceof TenantContext) {
-                TenantContext tenantContext = (TenantContext) attachment;
+            if (attachment instanceof TenantContext tenantContext) {
                 TenantContextHolder.setTenantContext(tenantContext);
                 log.debug("[Dubbo RPC] 取出当前租户上下文 >> {}", tenantContext);
             }
         }
 
         return invoker.invoke(invocation);
+    }
+
+    /**
+     * 原来的 serverAttachment.isProviderSide() 抽风了，只能手撸一个了
+     * @return 调用源是否为【提供者】
+     */
+    private boolean isProviderSide(Invoker<?> invoker) {
+        return CommonConstants.PROVIDER.equals(invoker.getUrl().getSide());
     }
 }

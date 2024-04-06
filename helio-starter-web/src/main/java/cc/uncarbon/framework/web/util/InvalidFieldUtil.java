@@ -2,7 +2,7 @@ package cc.uncarbon.framework.web.util;
 
 import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.text.CharSequenceUtil;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -90,10 +90,10 @@ public class InvalidFieldUtil {
     @Data
     public static class InvalidField {
 
-        @ApiModelProperty(value = "字段名")
+        @Schema(description = "字段名")
         private String fieldName;
 
-        @ApiModelProperty(value = "错误原因")
+        @Schema(description = "错误原因")
         private String message;
 
     }
