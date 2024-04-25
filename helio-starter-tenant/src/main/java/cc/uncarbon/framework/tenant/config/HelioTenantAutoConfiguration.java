@@ -8,6 +8,7 @@ import cc.uncarbon.framework.tenant.support.TenantLineSupport;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Primary;
 
 /**
  * Helio 多租户自动配置类
@@ -23,6 +24,7 @@ public class HelioTenantAutoConfiguration {
 
 
     @Bean
+    @Primary
     public TenantSupport tenantSupport() {
         if (!Boolean.TRUE.equals(helioProperties.getTenant().getEnabled())) {
             // 引入了 starter，但未启用多租户
