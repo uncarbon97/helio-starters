@@ -6,6 +6,7 @@ import org.redisson.api.RLock;
 import org.redisson.api.RedissonClient;
 
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicReference;
 
 /**
  * Redis分布式可重入锁，基于Redisson实现
@@ -19,7 +20,7 @@ public class RedisDistributedLockImpl implements RedisDistributedLock {
     /**
      * 锁名称前缀
      */
-    private static final String LOCK_KEY_PREFIX = "distributedLock:";
+    private static final AtomicReference<String> LOCK_KEY_PREFIX = new AtomicReference<>("distributedLock:");
 
     private final RedissonClient redissonClient;
 
@@ -80,7 +81,12 @@ public class RedisDistributedLockImpl implements RedisDistributedLock {
         }
     }
 
+    @Override
+    public void setLockKeyPrefix(String newPrefix) {
+        LOCK_KEY_PREFIX.set(newPrefix);
+    }
+
     private RLock getRedissonLockByName(String lockName) {
-        return redissonClient.getLock(LOCK_KEY_PREFIX + lockName);
+        return redissonClient.getLock(LOCK_KEY_PREFIX.get() + lockName);
     }
 }

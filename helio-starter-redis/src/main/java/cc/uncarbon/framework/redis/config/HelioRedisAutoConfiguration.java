@@ -2,8 +2,8 @@ package cc.uncarbon.framework.redis.config;
 
 import cc.uncarbon.framework.redis.lock.RedisDistributedLock;
 import cc.uncarbon.framework.redis.lock.impl.RedisDistributedLockImpl;
-import cc.uncarbon.framework.redis.support.RedisDistributedLockSupport;
-import cc.uncarbon.framework.redis.support.impl.RedisDistributedLockSupportImpl;
+import cc.uncarbon.framework.redis.template.RedisDistributedLockTemplate;
+import cc.uncarbon.framework.redis.template.impl.RedisDistributedLockTemplateImpl;
 import lombok.RequiredArgsConstructor;
 import org.redisson.api.RedissonClient;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
@@ -81,11 +81,11 @@ public class HelioRedisAutoConfiguration {
     }
 
     /**
-     * Redis分布式可重入锁辅助类
+     * Redis分布式可重入锁模板类
      */
     @Bean
     @ConditionalOnMissingBean
-    public RedisDistributedLockSupport redisDistributedLockSupport(RedisDistributedLock redisDistributedLock) {
-        return new RedisDistributedLockSupportImpl(redisDistributedLock);
+    public RedisDistributedLockTemplate redisDistributedLockTemplate(RedisDistributedLock redisDistributedLock) {
+        return new RedisDistributedLockTemplateImpl(redisDistributedLock);
     }
 }
