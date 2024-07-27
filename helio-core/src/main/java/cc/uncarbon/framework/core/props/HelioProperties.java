@@ -38,6 +38,8 @@ public class HelioProperties {
 
         private final Xss xss = new Xss();
 
+        private final SaTokenLocalCache saTokenLocalCache = new SaTokenLocalCache();
+
 
         @Data
         public static class Xss {
@@ -52,6 +54,32 @@ public class HelioProperties {
              * 注意单词是被动态噢
              */
             private List<String> excludedRoutes = new ArrayList<>();
+
+        }
+
+        /**
+         * ！！！试验性功能！！！
+         * SA-Token 读取时，本地缓存一定时长，减少对 Redis 的 IO
+         * 在多实例部署时存在一定安全风险，有可能用户登出时，A机器的缓存已清除，但B机器的缓存还认为有效。所以请谨慎设置本地缓存有效时长
+         * @since 2.1.0
+         */
+        @Data
+        public static class SaTokenLocalCache {
+
+            /**
+             * 是否启用
+             */
+            private boolean enabled = false;
+
+            /**
+             * 本地缓存有效时长，单位=秒
+             */
+            private long duration = 5;
+
+            /**
+             * 本地缓存最大容量，注意：每次超过容量都会触发一次清理过程
+             */
+            private int capacity = 4000;
 
         }
     }

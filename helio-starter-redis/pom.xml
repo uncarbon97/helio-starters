@@ -8,7 +8,7 @@
     <parent>
         <artifactId>helio-starters</artifactId>
         <groupId>cc.uncarbon.framework</groupId>
-        <version>2.0.0</version><!-- BATCH REPLACEMENT MARK -->
+        <version>2.1.0</version><!-- BATCH REPLACEMENT MARK -->
         <relativePath>../pom.xml</relativePath>
     </parent>
 
@@ -19,6 +19,12 @@
     </properties>
 
     <dependencies>
+        <!-- 脚手架starter -->
+        <dependency>
+            <groupId>cc.uncarbon.framework</groupId>
+            <artifactId>helio-core</artifactId>
+        </dependency>
+
         <!-- 这里写其他第三方依赖 -->
         <dependency>
             <groupId>org.redisson</groupId>

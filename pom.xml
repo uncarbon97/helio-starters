@@ -25,31 +25,31 @@
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
-        <version>3.2.3</version>
+        <version>3.3.2</version>
         <relativePath/>
     </parent>
 
     <groupId>cc.uncarbon.framework</groupId>
     <artifactId>helio-starters</artifactId>
-    <version>2.0.0</version><!-- BATCH REPLACEMENT MARK -->
+    <version>2.1.0</version><!-- BATCH REPLACEMENT MARK -->
 
     <properties>
         <!-- core versions -->
-        <revision>2.0.0</revision>
+        <revision>2.1.0</revision>
         <helio-starters.version>${revision}</helio-starters.version>
         <!-- 可根据实际JDK版本修改；JDK17则改为'17'  JDK21则改为'21' -->
         <java.version>17</java.version>
         <!-- 若变更Spring Boot版本, 上面parent依赖版本也要变 -->
-        <spring-boot.version>3.2.3</spring-boot.version>
+        <spring-boot.version>3.3.2</spring-boot.version>
 
 
         <!-- Spring Cloud versions -->
         <!-- https://mvnrepository.com/artifact/org.springframework.cloud/spring-cloud-dependencies -->
-        <spring-cloud.version>2023.0.0</spring-cloud.version>
+        <spring-cloud.version>2023.0.3</spring-cloud.version>
         <spring-cloud-starter-bootstrap.version>4.1.1</spring-cloud-starter-bootstrap.version>
 
         <!-- Spring Cloud Alibaba versions -->
-        <spring-cloud-alibaba.version>2023.0.0.0-RC1</spring-cloud-alibaba.version>
+        <spring-cloud-alibaba.version>2023.0.1.2</spring-cloud-alibaba.version>
         <dubbo.version>3.2.11</dubbo.version>
         <seata.vesion>2.0.0</seata.vesion>
         <nacos-client.vesion>2.3.0</nacos-client.vesion>
@@ -58,8 +58,8 @@
         <!-- 3rd-party versions -->
         <lombok.version>1.18.30</lombok.version>
         <slf4j.version>2.0.12</slf4j.version>
-        <hutool.version>5.8.25</hutool.version>
-        <sa-token.version>1.37.0</sa-token.version>
+        <hutool.version>5.8.28</hutool.version>
+        <sa-token.version>1.38.0</sa-token.version>
         <transmittable-thread-local.version>2.14.5</transmittable-thread-local.version>
         <!-- 如果 mp 较新版存在问题，可以回退至 3.5.3.1 或 3.5.4 试试  -->
         <mybatis-plus.version>3.5.5</mybatis-plus.version>
@@ -90,8 +90,9 @@
 
 
         <!-- for mitigating vulnerabilities -->
-        <guava.version>33.0.0-jre</guava.version>
-        <commons-compress.version>1.26.0</commons-compress.version>
+        <guava.version>33.2.1-jre</guava.version>
+        <commons-compress.version>1.26.2</commons-compress.version>
+        <xnio-api.version>3.8.16.Final</xnio-api.version>
     </properties>
 
     <!-- 全局使用 -->
@@ -123,6 +124,12 @@
                 <groupId>org.apache.commons</groupId>
                 <artifactId>commons-compress</artifactId>
                 <version>${commons-compress.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.jboss.xnio</groupId>
+                <artifactId>xnio-api</artifactId>
+                <version>${xnio-api.version}</version>
             </dependency>
 
             <!-- sub starters -->
