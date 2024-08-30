@@ -16,7 +16,6 @@
         <module>helio-starter-redis</module>
         <module>helio-starter-rocketmq-aliyun</module>
         <module>helio-starter-satoken</module>
-        <module>helio-starter-seata</module>
         <module>helio-starter-tenant</module>
         <module>helio-starter-test</module>
         <module>helio-starter-web</module>
@@ -25,22 +24,21 @@
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
-        <version>3.3.2</version>
+        <version>3.3.3</version>
         <relativePath/>
     </parent>
 
     <groupId>cc.uncarbon.framework</groupId>
     <artifactId>helio-starters</artifactId>
-    <version>2.1.0</version><!-- BATCH REPLACEMENT MARK -->
+    <version>2.2.0</version><!-- BATCH REPLACEMENT MARK -->
 
     <properties>
         <!-- core versions -->
-        <revision>2.1.0</revision>
-        <helio-starters.version>${revision}</helio-starters.version>
+        <helio-starters.version>2.2.0</helio-starters.version>
         <!-- 可根据实际JDK版本修改；JDK17则改为'17'  JDK21则改为'21' -->
         <java.version>17</java.version>
         <!-- 若变更Spring Boot版本, 上面parent依赖版本也要变 -->
-        <spring-boot.version>3.3.2</spring-boot.version>
+        <spring-boot.version>3.3.3</spring-boot.version>
 
 
         <!-- Spring Cloud versions -->
@@ -51,30 +49,29 @@
         <!-- Spring Cloud Alibaba versions -->
         <spring-cloud-alibaba.version>2023.0.1.2</spring-cloud-alibaba.version>
         <dubbo.version>3.2.11</dubbo.version>
-        <seata.vesion>2.0.0</seata.vesion>
         <nacos-client.vesion>2.3.0</nacos-client.vesion>
 
 
         <!-- 3rd-party versions -->
         <lombok.version>1.18.30</lombok.version>
         <slf4j.version>2.0.12</slf4j.version>
-        <hutool.version>5.8.28</hutool.version>
-        <sa-token.version>1.38.0</sa-token.version>
+        <hutool.version>5.8.31</hutool.version>
+        <sa-token.version>1.39.0</sa-token.version>
         <transmittable-thread-local.version>2.14.5</transmittable-thread-local.version>
-        <!-- 如果 mp 较新版存在问题，可以回退至 3.5.3.1 或 3.5.4 试试  -->
-        <mybatis-plus.version>3.5.5</mybatis-plus.version>
+        <!-- 如果 mp 较新版存在问题，可以回退至 3.5.5 试试  -->
+        <mybatis-plus.version>3.5.7</mybatis-plus.version>
         <knife4j.version>4.5.0</knife4j.version>
         <springdoc-annotations.version>2.2.20</springdoc-annotations.version>
         <!-- https://mvnrepository.com/artifact/org.redisson/redisson-spring-boot-starter -->
-        <redisson.version>3.27.0</redisson.version>
-        <aspectj.version>1.9.6</aspectj.version>
+        <redisson.version>3.33.0</redisson.version>
+        <aspectj.version>1.9.22.1</aspectj.version>
         <ons-client.version>1.8.8.1.Final</ons-client.version>
         <mybatis-plus-dynamic-datasource.version>3.5.2</mybatis-plus-dynamic-datasource.version>
 
 
         <!-- DB Driver versions -->
         <mysql.version>8.3.0</mysql.version>
-        <postgresql.version>42.7.2</postgresql.version>
+        <postgresql.version>42.7.4</postgresql.version>
 
 
         <!-- Maven properties -->
@@ -131,6 +128,7 @@
                 <artifactId>xnio-api</artifactId>
                 <version>${xnio-api.version}</version>
             </dependency>
+
 
             <!-- sub starters -->
             <dependency>
@@ -201,12 +199,6 @@
 
             <dependency>
                 <groupId>cc.uncarbon.framework</groupId>
-                <artifactId>helio-starter-seata</artifactId>
-                <version>${helio-starters.version}</version>
-            </dependency>
-
-            <dependency>
-                <groupId>cc.uncarbon.framework</groupId>
                 <artifactId>helio-starter-tenant</artifactId>
                 <version>${helio-starters.version}</version>
             </dependency>
@@ -222,6 +214,7 @@
                 <artifactId>helio-starter-web</artifactId>
                 <version>${helio-starters.version}</version>
             </dependency>
+
 
             <!-- CORE dependencies -->
             <dependency>
@@ -421,14 +414,6 @@
             </dependency>
 
 
-            <!-- SEATA dependencies -->
-            <dependency>
-                <groupId>io.seata</groupId>
-                <artifactId>seata-spring-boot-starter</artifactId>
-                <version>${seata.vesion}</version>
-            </dependency>
-
-
             <!-- TEST dependencies -->
             <dependency>
                 <groupId>org.springframework.boot</groupId>
@@ -484,9 +469,4 @@
             </dependency>
         </dependencies>
     </dependencyManagement>
-
-
-    <!-- 项目构建 -->
-    <build>
-    </build>
 </project>

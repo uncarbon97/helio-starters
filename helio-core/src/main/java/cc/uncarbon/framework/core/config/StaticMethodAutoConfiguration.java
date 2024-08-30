@@ -1,6 +1,7 @@
 package cc.uncarbon.framework.core.config;
 
 import cn.hutool.http.HttpGlobalConfig;
+import jakarta.annotation.PostConstruct;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 
 /**
@@ -16,7 +17,8 @@ public class StaticMethodAutoConfiguration {
     private static final int HUTOOL_HTTP_UTIL_DEFAULT_TIMEOUT = 30000;
 
 
-    public StaticMethodAutoConfiguration() {
+    @PostConstruct
+    public void postConstruct() {
         HttpGlobalConfig.setTimeout(HUTOOL_HTTP_UTIL_DEFAULT_TIMEOUT);
     }
 }
