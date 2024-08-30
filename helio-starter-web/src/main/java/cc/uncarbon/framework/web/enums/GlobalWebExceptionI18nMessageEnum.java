@@ -23,9 +23,7 @@ public enum GlobalWebExceptionI18nMessageEnum {
     /**
      * 一般为最后兜底使用
      */
-    GLOBAL__INTERNAL_ERROR("请稍后再试"),
-
-    ;
+    GLOBAL__INTERNAL_ERROR("请稍后再试"),;
 
     private final String defaultValue;
 

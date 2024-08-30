@@ -59,19 +59,16 @@ public class ConsumerFactoryExecution extends AbstractConsumerThread {
             OrderConsumer orderConsumer = ConsumerFactory.createOrderConsumer(properties);
             orderConsumer.subscribe(consumerListener.topic(), consumerListener.tag(), new DefaultMessageOrderListener(methodFactoryExecution));
             orderConsumer.start();
-            return;
-        }
-        if (consumerListener.batchConsumer()) {
+        } else if (consumerListener.batchConsumer()) {
             properties.put(PropertyKeyConst.ConsumeMessageBatchMaxSize, consumerListener.consumeMessageBatchMaxSize());
             properties.put(PropertyKeyConst.BatchConsumeMaxAwaitDurationInSeconds, consumerListener.batchConsumeMaxAwaitDurationInSeconds());
             BatchConsumer batchConsumer = ConsumerFactory.createBatchConsumer(properties);
             batchConsumer.subscribe(consumerListener.topic(), consumerListener.tag(), new DefaultBatchMessageListener(methodFactoryExecution));
             batchConsumer.start();
-            return;
+        } else {
+            Consumer consumer = ConsumerFactory.createConsumer(properties);
+            consumer.subscribe(consumerListener.topic(), consumerListener.tag(), new DefaultMessageListener(methodFactoryExecution));
+            consumer.start();
         }
-
-        Consumer consumer = ConsumerFactory.createConsumer(properties);
-        consumer.subscribe(consumerListener.topic(), consumerListener.tag(), new DefaultMessageListener(methodFactoryExecution));
-        consumer.start();
     }
 }

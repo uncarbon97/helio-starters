@@ -36,7 +36,7 @@ import org.springframework.context.ApplicationContext;
  * @author ThierrySquirrel
  * @since JDK 1.8
  */
-public class SendMessageFactory {
+public final class SendMessageFactory {
     private SendMessageFactory() {
     }
 

@@ -30,7 +30,7 @@ import java.util.Properties;
  * @author ThierrySquirrel
  * @since JDK 1.8
  */
-public class ConsumerPropertiesFactory {
+public final class ConsumerPropertiesFactory {
 	private ConsumerPropertiesFactory() {
 	}
 

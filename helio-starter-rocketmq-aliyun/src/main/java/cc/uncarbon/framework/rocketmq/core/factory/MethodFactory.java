@@ -27,7 +27,7 @@ import java.lang.reflect.Method;
  * @since JDK 1.8
  */
 
-public class MethodFactory {
+public final class MethodFactory {
 	private MethodFactory() {
 	}
 

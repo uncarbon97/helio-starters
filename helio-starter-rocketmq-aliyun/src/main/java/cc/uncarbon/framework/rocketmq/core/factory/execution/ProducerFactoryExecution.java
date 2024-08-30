@@ -34,7 +34,8 @@ import java.util.Map;
  */
 public class ProducerFactoryExecution extends AbstractProducerThread {
 
-	public ProducerFactoryExecution(Map<String, Object> producerConsumer, RocketMessage rocketMessage, Object bean, AliyunRocketProperties rocketProperties, ApplicationContext applicationContext) {
+	public ProducerFactoryExecution(Map<String, Object> producerConsumer, RocketMessage rocketMessage, Object bean,
+									AliyunRocketProperties rocketProperties, ApplicationContext applicationContext) {
 		super(producerConsumer, rocketMessage, bean, rocketProperties, applicationContext);
 	}
 
@@ -48,7 +49,8 @@ public class ProducerFactoryExecution extends AbstractProducerThread {
 	 * @param applicationContext applicationContext
 	 */
 	@Override
-	protected void statsPutProducer(Map<String, Object> producerConsumer, RocketMessage rocketMessage, Object bean, AliyunRocketProperties rocketProperties, ApplicationContext applicationContext) {
+	protected void statsPutProducer(Map<String, Object> producerConsumer, RocketMessage rocketMessage, Object bean,
+									AliyunRocketProperties rocketProperties, ApplicationContext applicationContext) {
 		PutProducerStrategy.putProducer(producerConsumer, rocketMessage, bean, rocketProperties, applicationContext);
 	}
 }

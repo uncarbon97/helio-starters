@@ -29,7 +29,7 @@ import java.util.Properties;
  * @author ThierrySquirrel
  * @since JDK 1.8
  */
-public class PropertiesFactory {
+public final class PropertiesFactory {
 	private PropertiesFactory() {
 	}
 

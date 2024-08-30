@@ -40,7 +40,9 @@ public abstract class AbstractSendMessageThread implements Runnable {
     private byte[] bytes;
     private ApplicationContext applicationContext;
 
-    protected AbstractSendMessageThread(Long startDeliverTime, String shardingKeyFactory, Map<String, Object> consumerContainer, RocketMessage rocketMessage, Object message, byte[] bytes, ApplicationContext applicationContext) {
+    protected AbstractSendMessageThread(Long startDeliverTime, String shardingKeyFactory,
+                                        Map<String, Object> consumerContainer, RocketMessage rocketMessage,
+                                        Object message, byte[] bytes, ApplicationContext applicationContext) {
         this.startDeliverTime = startDeliverTime;
         this.shardingKeyFactory = shardingKeyFactory;
         this.consumerContainer = consumerContainer;
@@ -61,11 +63,13 @@ public abstract class AbstractSendMessageThread implements Runnable {
      * @param bytes              bytes
      * @param applicationContext applicationContext
      */
-    protected abstract void statsSendMessage(Long startDeliverTime, String shardingKeyFactory, Map<String, Object> consumerContainer, RocketMessage rocketMessage, Object message, byte[] bytes, ApplicationContext applicationContext);
+    protected abstract void statsSendMessage(Long startDeliverTime, String shardingKeyFactory,
+                                             Map<String, Object> consumerContainer, RocketMessage rocketMessage,
+                                             Object message, byte[] bytes, ApplicationContext applicationContext);
 
     @Override
     public void run() {
-        statsSendMessage (startDeliverTime, shardingKeyFactory, consumerContainer,
+        statsSendMessage(startDeliverTime, shardingKeyFactory, consumerContainer,
                 rocketMessage,
                 message,
                 bytes,

@@ -37,8 +37,9 @@ import java.util.Map;
 @Slf4j
 public class SendMessageFactoryExecution extends AbstractSendMessageThread {
 
-
-    public SendMessageFactoryExecution(Long startDeliverTime, String shardingKeyFactory, Map<String, Object> consumerContainer, RocketMessage rocketMessage, Object message, byte[] bytes, ApplicationContext applicationContext) {
+    public SendMessageFactoryExecution(Long startDeliverTime, String shardingKeyFactory,
+                                       Map<String, Object> consumerContainer, RocketMessage rocketMessage,
+                                       Object message, byte[] bytes, ApplicationContext applicationContext) {
         super(startDeliverTime, shardingKeyFactory, consumerContainer, rocketMessage, message, bytes, applicationContext);
     }
 
@@ -54,7 +55,9 @@ public class SendMessageFactoryExecution extends AbstractSendMessageThread {
      * @param applicationContext applicationContext
      */
     @Override
-    protected void statsSendMessage(Long startDeliverTime, String shardingKeyFactory, Map<String, Object> consumerContainer, RocketMessage rocketMessage, Object message, byte[] bytes, ApplicationContext applicationContext) {
+    protected void statsSendMessage(Long startDeliverTime, String shardingKeyFactory,
+                                    Map<String, Object> consumerContainer, RocketMessage rocketMessage,
+                                    Object message, byte[] bytes, ApplicationContext applicationContext) {
         ProducerStrategy.statsSendMessage(startDeliverTime, shardingKeyFactory, consumerContainer, rocketMessage, message, bytes, applicationContext);
     }
 }

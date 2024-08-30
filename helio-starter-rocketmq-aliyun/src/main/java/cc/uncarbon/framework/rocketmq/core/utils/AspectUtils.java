@@ -31,7 +31,7 @@ import java.lang.reflect.Parameter;
  * @author ThierrySquirrel
  * @since JDK 1.8
  */
-public class AspectUtils {
+public final class AspectUtils {
 	private AspectUtils() {
 	}
 

@@ -33,7 +33,7 @@ import org.springframework.context.ApplicationContext;
  * @author ThierrySquirrel
  * @since JDK 1.8
  */
-public class ApplicationContextUtils {
+public final class ApplicationContextUtils {
 	private ApplicationContextUtils() {
 	}
 

@@ -32,20 +32,16 @@ import org.springframework.context.ApplicationContext;
  * @author ThierrySquirrel
  * @since JDK 1.8
  */
-public class SendMessageStrategy {
+public final class SendMessageStrategy {
 	private SendMessageStrategy() {
 	}
 
 	public static void send(CommonMessage commonMessage, Producer producer, Message message, ApplicationContext applicationContext) {
 		if (commonMessage.messageSendType().equals(MessageSendType.SEND)) {
 			producer.send(message);
-			return;
-		}
-		if (commonMessage.messageSendType().equals(MessageSendType.SEND_ASYNC)) {
+		} else if (commonMessage.messageSendType().equals(MessageSendType.SEND_ASYNC)) {
 			producer.sendAsync(message, ApplicationContextUtils.getSendCallback(applicationContext, commonMessage.callback()));
-			return;
-		}
-		if (commonMessage.messageSendType().equals(MessageSendType.SEND_ONE_WAY)) {
+		} else if (commonMessage.messageSendType().equals(MessageSendType.SEND_ONE_WAY)) {
 			producer.sendOneway(message);
 		}
 	}

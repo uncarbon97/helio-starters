@@ -32,7 +32,7 @@ import java.util.concurrent.TimeUnit;
  * @author ThierrySquirrel
  * @since JDK 1.8
  */
-public class ThreadPoolFactory {
+public final class ThreadPoolFactory {
     private ThreadPoolFactory() {
     }
 

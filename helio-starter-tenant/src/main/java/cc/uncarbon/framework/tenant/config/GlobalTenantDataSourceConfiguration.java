@@ -12,8 +12,7 @@ import org.springframework.context.annotation.Role;
 
 /**
  * 基于全局 AOP 的数据源级多租户配置类
- * 参考
- * https://blog.csdn.net/w57685321/article/details/106823660
+ * <a href="https://blog.csdn.net/w57685321/article/details/106823660">参考文章</a>
  *
  * @author Uncarbon
  */
