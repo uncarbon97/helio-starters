@@ -14,9 +14,8 @@ import lombok.Getter;
 public enum EnabledStatusEnum implements HelioBaseEnum<Integer> {
 
     DISABLED(0, "禁用"),
-    ENABLED(1, "启用"),
+    ENABLED(1, "启用"),;
 
-    ;
     @EnumValue
     private final Integer value;
     private final String label;

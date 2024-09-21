@@ -4,6 +4,7 @@ import cc.uncarbon.framework.core.enums.HelioBaseEnum;
 import cn.hutool.core.text.CharSequenceUtil;
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.core.JsonParser;
+import com.fasterxml.jackson.core.JsonStreamContext;
 import com.fasterxml.jackson.core.Version;
 import com.fasterxml.jackson.databind.*;
 import com.fasterxml.jackson.databind.deser.std.StdScalarDeserializer;
@@ -78,9 +79,12 @@ public class EnumModule extends SimpleModule {
         public void serialize(HelioBaseEnum data, JsonGenerator jsonGenerator, SerializerProvider provider)
                 throws IOException {
             jsonGenerator.writeObject(data.getValue());
-            jsonGenerator.writeFieldName(jsonGenerator.getOutputContext().getCurrentName() + "Label");
-            jsonGenerator.writeString(data.getLabel());
+            JsonStreamContext outputContext = jsonGenerator.getOutputContext();
+            if (!outputContext.inArray()) {
+                // 不在数组或集合中，序列化标签
+                jsonGenerator.writeFieldName(outputContext.getCurrentName() + "Label");
+                jsonGenerator.writeString(data.getLabel());
+            }
         }
     }
-
 }

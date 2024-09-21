@@ -39,7 +39,8 @@ public abstract class AbstractProducerThread implements Runnable {
 	private AliyunRocketProperties rocketProperties;
 	private ApplicationContext applicationContext;
 
-	protected AbstractProducerThread(Map<String, Object> producerConsumer, RocketMessage rocketMessage, Object bean, AliyunRocketProperties rocketProperties, ApplicationContext applicationContext) {
+	protected AbstractProducerThread(Map<String, Object> producerConsumer, RocketMessage rocketMessage, Object bean,
+									 AliyunRocketProperties rocketProperties, ApplicationContext applicationContext) {
 		this.producerConsumer = producerConsumer;
 		this.rocketMessage = rocketMessage;
 		this.bean = bean;
@@ -56,7 +57,9 @@ public abstract class AbstractProducerThread implements Runnable {
 	 * @param rocketProperties   rocketProperties
 	 * @param applicationContext applicationContext
 	 */
-	protected abstract void statsPutProducer(Map<String, Object> producerConsumer, RocketMessage rocketMessage, Object bean, AliyunRocketProperties rocketProperties, ApplicationContext applicationContext);
+	protected abstract void statsPutProducer(Map<String, Object> producerConsumer, RocketMessage rocketMessage,
+											 Object bean, AliyunRocketProperties rocketProperties,
+											 ApplicationContext applicationContext);
 
 	@Override
 	public void run() {

@@ -28,7 +28,7 @@ import java.lang.reflect.Parameter;
  * @author ThierrySquirrel
  * @since JDK 11
  */
-public class ShardingKeyFactory {
+public final class ShardingKeyFactory {
     private ShardingKeyFactory() {
     }
 

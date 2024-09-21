@@ -1,5 +1,6 @@
 package cc.uncarbon.framework.tenant.config;
 
+import cc.uncarbon.framework.core.enums.TenantIsolateLevelEnum;
 import cc.uncarbon.framework.core.props.HelioProperties;
 import cc.uncarbon.framework.crud.support.TenantSupport;
 import cc.uncarbon.framework.crud.support.impl.DefaultTenantSupport;
@@ -31,16 +32,14 @@ public class HelioTenantAutoConfiguration {
             return new DefaultTenantSupport();
         }
 
-        switch (helioProperties.getTenant().getIsolateLevel()) {
-            case LINE:
-                // 行级
-                return new TenantLineSupport();
-            case DATASOURCE:
-                // 数据源级
-                return new TenantDataSourceSupport();
-            default:
-                throw new IllegalArgumentException("启用多租户功能后，请正确配置对应的多租户隔离级别(helio.tenant.isolate-level)");
+        TenantIsolateLevelEnum isolateLevel = helioProperties.getTenant().getIsolateLevel();
+        if (isolateLevel == TenantIsolateLevelEnum.LINE) {
+            // 行级
+            return new TenantLineSupport();
+        } else if (isolateLevel == TenantIsolateLevelEnum.DATASOURCE) {
+            // 数据源级
+            return new TenantDataSourceSupport();
         }
+        throw new IllegalArgumentException("启用多租户功能后，请正确配置对应的多租户隔离级别(helio.tenant.isolate-level)");
     }
-
 }

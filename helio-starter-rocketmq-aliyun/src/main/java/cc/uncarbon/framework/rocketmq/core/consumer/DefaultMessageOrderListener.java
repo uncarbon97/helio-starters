@@ -38,7 +38,7 @@ public class DefaultMessageOrderListener extends AbstractRocketListener implemen
 
 
     public DefaultMessageOrderListener(MethodFactoryExecution methodFactoryExecution) {
-        super (methodFactoryExecution);
+        super(methodFactoryExecution);
     }
 
     /**
@@ -52,11 +52,11 @@ public class DefaultMessageOrderListener extends AbstractRocketListener implemen
      */
     @Override
     public OrderAction consume(Message message, ConsumeOrderContext context) {
-        log.info (">>>> Order message:{}>>>>", message);
+        log.info(">>>> Order message:{}>>>>", message);
         try {
-            super.getMethodFactoryExecution ().methodExecution (message.getBody ());
+            super.getMethodFactoryExecution().methodExecution(message.getBody());
         } catch (RocketException e) {
-            super.printErrorLog ();
+            super.printErrorLog();
             return OrderAction.Suspend;
         }
         return OrderAction.Success;

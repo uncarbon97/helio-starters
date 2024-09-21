@@ -38,11 +38,12 @@ import java.util.concurrent.ThreadPoolExecutor;
  * @since JDK 1.8
  */
 
-public class RocketConsumerStrategy {
+public final class RocketConsumerStrategy {
     private RocketConsumerStrategy() {
     }
 
-    public static void putProducer(ThreadPoolExecutor threadPoolExecutor, Map<String, Object> producerConsumer, Object bean, AliyunRocketProperties rocketProperties, ApplicationContext applicationContext) {
+    public static void putProducer(ThreadPoolExecutor threadPoolExecutor, Map<String, Object> producerConsumer,
+                                   Object bean, AliyunRocketProperties rocketProperties, ApplicationContext applicationContext) {
         RocketMessage rocketMessage = bean.getClass().getAnnotation(RocketMessage.class);
         AnnotatedMethodsUtils.getMethodAndAnnotation(bean, CommonMessage.class).
                 forEach((method, commonMessage) -> {

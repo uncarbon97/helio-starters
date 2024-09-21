@@ -34,40 +34,34 @@ import java.util.Map;
  * @author ThierrySquirrel
  * @since JDK 1.8
  */
-public class ProducerConsumerFactory {
-	private ProducerConsumerFactory() {
-	}
+public final class ProducerConsumerFactory {
+    private ProducerConsumerFactory() {
+    }
 
-	public static String getProducerConsumerKey(RocketMessage rocketMessage, CommonMessage commonMessage) {
-		return rocketMessage.groupID() +
-				commonMessage.topic() +
-				commonMessage.tag();
-	}
+    public static String getProducerConsumerKey(RocketMessage rocketMessage, CommonMessage commonMessage) {
+        return rocketMessage.groupID() + commonMessage.topic() + commonMessage.tag();
+    }
 
-	public static String getProducerConsumerKey(RocketMessage rocketMessage, OrderMessage orderMessage) {
-		return rocketMessage.groupID() +
-				orderMessage.topic() +
-				orderMessage.tag();
-	}
+    public static String getProducerConsumerKey(RocketMessage rocketMessage, OrderMessage orderMessage) {
+        return rocketMessage.groupID() + orderMessage.topic() + orderMessage.tag();
+    }
 
-	public static String getProducerConsumerKey(RocketMessage rocketMessage, TransactionMessage transactionMessage) {
-		return rocketMessage.groupID() +
-				transactionMessage.topic() +
-				transactionMessage.tag();
-	}
+    public static String getProducerConsumerKey(RocketMessage rocketMessage, TransactionMessage transactionMessage) {
+        return rocketMessage.groupID() + transactionMessage.topic() + transactionMessage.tag();
+    }
 
-	public static Producer getProducer(Map<String, Object> consumerContainer, RocketMessage rocketMessage, CommonMessage commonMessage) {
-		String producerConsumerKey = ProducerConsumerFactory.getProducerConsumerKey(rocketMessage, commonMessage);
-		return (Producer) consumerContainer.get(producerConsumerKey);
-	}
+    public static Producer getProducer(Map<String, Object> consumerContainer, RocketMessage rocketMessage, CommonMessage commonMessage) {
+        String producerConsumerKey = ProducerConsumerFactory.getProducerConsumerKey(rocketMessage, commonMessage);
+        return (Producer) consumerContainer.get(producerConsumerKey);
+    }
 
-	public static OrderProducer getProducer(Map<String, Object> consumerContainer, RocketMessage rocketMessage, OrderMessage orderMessage) {
-		String producerConsumerKey = ProducerConsumerFactory.getProducerConsumerKey(rocketMessage, orderMessage);
-		return (OrderProducer) consumerContainer.get(producerConsumerKey);
-	}
+    public static OrderProducer getProducer(Map<String, Object> consumerContainer, RocketMessage rocketMessage, OrderMessage orderMessage) {
+        String producerConsumerKey = ProducerConsumerFactory.getProducerConsumerKey(rocketMessage, orderMessage);
+        return (OrderProducer) consumerContainer.get(producerConsumerKey);
+    }
 
-	public static TransactionProducer getProducer(Map<String, Object> consumerContainer, RocketMessage rocketMessage, TransactionMessage transactionMessage) {
-		String producerConsumerKey = ProducerConsumerFactory.getProducerConsumerKey(rocketMessage, transactionMessage);
-		return (TransactionProducer) consumerContainer.get(producerConsumerKey);
-	}
+    public static TransactionProducer getProducer(Map<String, Object> consumerContainer, RocketMessage rocketMessage, TransactionMessage transactionMessage) {
+        String producerConsumerKey = ProducerConsumerFactory.getProducerConsumerKey(rocketMessage, transactionMessage);
+        return (TransactionProducer) consumerContainer.get(producerConsumerKey);
+    }
 }

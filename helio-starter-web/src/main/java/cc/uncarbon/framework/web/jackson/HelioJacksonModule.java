@@ -35,7 +35,7 @@ public class HelioJacksonModule extends SimpleModule {
         /*
         时间相关；时区跟随JVM设置
         */
-        // emmm knife4j-aggression用的hutool 5.4.1版本还没有DatePattern.*FORMATTER常量，为了兼容只能先手动构造了
+        // knife4j-aggression用的hutool 5.4.1版本还没有DatePattern.*FORMATTER常量，为了兼容只能先手动构造了
         DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern(HelioConstant.Jackson.DATE_TIME_FORMAT);
         DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern(HelioConstant.Jackson.DATE_FORMAT);
         DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern(HelioConstant.Jackson.TIME_FORMAT);

@@ -20,9 +20,7 @@ public enum IdGeneratorStrategyEnum implements HelioBaseEnum<Integer> {
     /**
      * Mybatis-Plus 提供的 Sequence 算法（类雪花）
      */
-    SEQUENCE(2, "Mybatis-Plus Sequence"),
-
-    ;
+    SEQUENCE(2, "Mybatis-Plus Sequence"),;
 
     private final Integer value;
     private final String label;

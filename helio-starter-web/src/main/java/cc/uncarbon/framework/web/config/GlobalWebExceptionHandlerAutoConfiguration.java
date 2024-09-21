@@ -12,6 +12,7 @@ import cn.dev33.satoken.exception.NotLoginException;
 import cn.dev33.satoken.exception.NotPermissionException;
 import cn.dev33.satoken.exception.NotRoleException;
 import com.fasterxml.jackson.core.JsonParseException;
+import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
@@ -23,6 +24,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.validation.BindException;
+import org.springframework.web.HttpMediaTypeNotSupportedException;
 import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
@@ -179,11 +181,13 @@ public class GlobalWebExceptionHandlerAutoConfiguration {
     }
 
     /**
-     * 请求方式不对, 比如POST接口用了GET请求
+     * 请求方式不对
+     * HttpRequestMethodNotSupportedException 如：POST接口用了GET请求
+     * HttpMediaTypeNotSupportedException 如：Content-type应为application/json的，使用了text/plain
      */
     @ResponseStatus(HttpStatus.METHOD_NOT_ALLOWED)
-    @ExceptionHandler({HttpRequestMethodNotSupportedException.class})
-    public ResponseEntity<ApiResult<Void>> handleHttpRequestMethodNotSupportedException(HttpRequestMethodNotSupportedException e, HttpServletRequest request) {
+    @ExceptionHandler({HttpRequestMethodNotSupportedException.class, HttpMediaTypeNotSupportedException.class})
+    public ResponseEntity<ApiResult<Void>> handleServletException(ServletException e, HttpServletRequest request) {
         this.logError(e, request);
 
         GlobalWebExceptionI18nMessageEnum msgEnum = GlobalWebExceptionI18nMessageEnum.GLOBAL__METHOD_NOT_ALLOWED;

@@ -29,7 +29,7 @@ import com.aliyun.openservices.ons.api.Message;
  * @author ThierrySquirrel
  * @since JDK 1.8
  */
-public class MessageFactory {
+public final class MessageFactory {
 	private MessageFactory() {
 	}
 

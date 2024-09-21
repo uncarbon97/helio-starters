@@ -35,7 +35,7 @@ import java.util.Properties;
  * @author ThierrySquirrel
  * @since JDK 1.8
  */
-public class ProducerFactory {
+public final class ProducerFactory {
 	private ProducerFactory() {
 	}
 

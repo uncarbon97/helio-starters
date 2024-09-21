@@ -13,9 +13,8 @@ import lombok.Getter;
 public enum YesOrNoEnum implements HelioBaseEnum<Integer> {
 
     NO(0, "否"),
-    YES(1, "是"),
+    YES(1, "是"),;
 
-    ;
     @EnumValue
     private final Integer value;
     private final String label;

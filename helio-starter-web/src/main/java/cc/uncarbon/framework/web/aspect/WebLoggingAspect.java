@@ -34,7 +34,6 @@ public class WebLoggingAspect {
      */
     @Pointcut("within(@org.springframework.web.bind.annotation.RestController *)")
     public void restControllerPointcut() {
-        // AOP Pointcut
     }
 
     /**
@@ -42,7 +41,6 @@ public class WebLoggingAspect {
      */
     @Pointcut("within(cc.uncarbon.framework..*) || within(cc.uncarbon.module..*)")
     public void applicationPackagePointcut() {
-        // AOP Pointcut
     }
 
     /**

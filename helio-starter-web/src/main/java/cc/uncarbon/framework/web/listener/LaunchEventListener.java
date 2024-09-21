@@ -46,13 +46,15 @@ public class LaunchEventListener {
 
         System.out.println(
                 CharSequenceUtil.format(
-                        "\n"
-                                + "----------------------------------------------------------"
-                                + "\n\tApplication '{}' is running! Access URLs:"
-                                + "\n\tLocal: \t\t{}://127.0.0.1:{}{}"
-                                + "\n\tExternal: \t{}://{}:{}{}"
-                                + "\n----------------------------------------------------------"
-                                + "\n",
+                        """
+
+                                ----------------------------------------------------------
+                                \tApplication '{}' is running! Access URLs:
+                                \tLocal: \t\t{}://127.0.0.1:{}{}
+                                \tExternal: \t{}://{}:{}{}
+                                ----------------------------------------------------------
+
+                                """,
                         env.getProperty("spring.application.name"),
                         protocol,
                         port,

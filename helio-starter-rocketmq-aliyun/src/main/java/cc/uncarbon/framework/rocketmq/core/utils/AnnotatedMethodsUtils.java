@@ -31,7 +31,7 @@ import java.util.Map;
  * @author ThierrySquirrel
  * @since JDK 1.8
  */
-public class AnnotatedMethodsUtils {
+public final class AnnotatedMethodsUtils {
 	private AnnotatedMethodsUtils() {
 	}
 
