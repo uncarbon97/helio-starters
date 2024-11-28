@@ -14,6 +14,10 @@ import cn.hutool.core.util.RandomUtil;
 public record FormattedRedisKey<V>(
         String key,
         KeyTypeEnum keyType,
+        /**
+         * @deprecated valueClass 并没有实际用途，未来移除
+         */
+        @Deprecated(since = "2.3.0", forRemoval = true)
         Class<V> valueClass,
         long durationSeconds
 ) {
@@ -36,5 +40,13 @@ public record FormattedRedisKey<V>(
             throw new IllegalArgumentException("no-expiration key CANNOT calculate randomDurationSeconds");
         }
         return (long)(RandomUtil.randomDouble(this.durationSeconds * minRatio, this.durationSeconds * maxRatio));
+    }
+
+    /**
+     * @return durationSeconds的 int 形式
+     * @throws ArithmeticException 需要注意数值溢出风险
+     */
+    public int durationSecondsAsInt() throws ArithmeticException {
+        return Math.toIntExact(this.durationSeconds);
     }
 }
