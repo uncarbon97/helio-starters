@@ -7,17 +7,13 @@ import cn.hutool.core.util.RandomUtil;
  * 已固定好键名的 Redis Key
  * @param key 已固定好的键名
  * @param keyType 键类型
- * @param valueClass 值类型
+ * @param valueClass 值类型【@deprecated 并没有实际用途，未来移除】
  * @param durationSeconds 有效时长，永久为-1，可通过 hasExpiration() 方法判断
  * @param <V>
  */
 public record FormattedRedisKey<V>(
         String key,
         KeyTypeEnum keyType,
-        /**
-         * @deprecated valueClass 并没有实际用途，未来移除
-         */
-        @Deprecated(since = "2.3.0", forRemoval = true)
         Class<V> valueClass,
         long durationSeconds
 ) {
