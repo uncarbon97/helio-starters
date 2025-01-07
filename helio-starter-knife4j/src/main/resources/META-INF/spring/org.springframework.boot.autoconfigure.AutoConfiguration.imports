@@ -1,1 +1,2 @@
 cc.uncarbon.framework.knife4j.config.HelioKnife4jAutoConfiguration
+com.github.xiaoymin.knife4j.spring.configuration.Knife4jAutoConfiguration
