@@ -29,11 +29,11 @@
 
     <groupId>cc.uncarbon.framework</groupId>
     <artifactId>helio-starters</artifactId>
-    <version>2.3.0-SNAPSHOT</version><!-- BATCH REPLACEMENT MARK -->
+    <version>2.3.0</version><!-- BATCH REPLACEMENT MARK -->
 
     <properties>
         <!-- core versions -->
-        <helio-starters.version>2.3.0-SNAPSHOT</helio-starters.version>
+        <helio-starters.version>2.3.0</helio-starters.version>
         <!-- 可根据实际JDK版本修改；JDK17则改为'17'  JDK21则改为'21' -->
         <java.version>17</java.version>
         <!-- 若变更Spring Boot版本, 上面parent依赖版本也要变 -->
