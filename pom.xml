@@ -29,11 +29,11 @@
 
     <groupId>cc.uncarbon.framework</groupId>
     <artifactId>helio-starters</artifactId>
-    <version>2.3.0</version><!-- BATCH REPLACEMENT MARK -->
+    <version>2.3.1</version><!-- BATCH REPLACEMENT MARK -->
 
     <properties>
         <!-- core versions -->
-        <helio-starters.version>2.3.0</helio-starters.version>
+        <helio-starters.version>2.3.1</helio-starters.version>
         <!-- 可根据实际JDK版本修改；JDK17则改为'17'  JDK21则改为'21' -->
         <java.version>17</java.version>
         <!-- 若变更Spring Boot版本, 上面parent依赖版本也要变 -->
@@ -64,8 +64,9 @@
         <!-- 如果 mp 较新版存在问题，可以回退至 3.5.5 试试  -->
         <mybatis-plus.version>3.5.7</mybatis-plus.version>
         <knife4j.version>4.5.0</knife4j.version>
-        <!-- 以下两个 springdoc 依赖，版本需要配套 -->
-        <springdoc-openapi-starter.version>2.8.1</springdoc-openapi-starter.version>
+        <!-- 以下两个 SpringDoc 依赖不完全配套，但能适配 Spring Boot 3.4.x -->
+        <!-- https://central.sonatype.com/artifact/org.springdoc/springdoc-openapi-starter-common/版本号/dependencies -->
+        <springdoc-openapi-starter.version>2.7.0</springdoc-openapi-starter.version>
         <springdoc-annotations.version>2.2.27</springdoc-annotations.version>
 
         <!-- https://mvnrepository.com/artifact/org.redisson/redisson-spring-boot-starter -->

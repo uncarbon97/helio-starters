@@ -4,6 +4,7 @@ import cc.uncarbon.framework.core.props.HelioProperties;
 import cc.uncarbon.framework.knife4j.customizer.HelioBaseEnumCustomizer;
 import cc.uncarbon.framework.knife4j.customizer.Knife4jOpenApiCustomizerOverride;
 import cn.hutool.core.text.CharSequenceUtil;
+import com.github.xiaoymin.knife4j.spring.configuration.Knife4jAutoConfiguration;
 import io.swagger.v3.oas.models.Components;
 import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.info.Info;
@@ -24,10 +25,10 @@ import org.springframework.core.env.ConfigurableEnvironment;
  * @author Uncarbon
  * @author xiaoymin
  */
-@Import(value = {HelioBaseEnumCustomizer.class, Knife4jOpenApiCustomizerOverride.class})
-// 需要控制自动配置类加载顺序，去除显式 @EnableKnife4j，改为在 org.springframework.boot.autoconfigure.AutoConfiguration.imports 文件中手动引入
+// 需要控制自动配置类加载顺序，去除显式 @EnableKnife4j
+@Import(value = {Knife4jOpenApiCustomizerOverride.class, HelioBaseEnumCustomizer.class, Knife4jAutoConfiguration.class, SpringDocConfiguration.class})
 @ConditionalOnExpression(value = "!${knife4j.production:false}")
-@AutoConfiguration(before = SpringDocConfiguration.class)
+@AutoConfiguration
 public class HelioKnife4jAutoConfiguration {
 
     @Bean
