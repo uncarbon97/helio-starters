@@ -6,7 +6,6 @@ import cc.uncarbon.framework.ratelimit.constant.RateLimitConstant;
 import cc.uncarbon.framework.ratelimit.stratrgy.RateLimitStrategy;
 import cc.uncarbon.framework.web.util.IPUtil;
 import cn.hutool.core.text.CharSequenceUtil;
-import cn.hutool.core.text.StrPool;
 import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.JoinPoint;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -31,10 +30,7 @@ public class RateLimitByClientIPStrategy extends SimpleRedisBasedRateLimitStrate
 
     @Override
     protected String determineRedisKey(UseRateLimit annotation, JoinPoint point) {
-        final String splitter = StrPool.COLON;
-        // 编译器将自动优化
-        return RateLimitConstant.REDIS_KEY_PREFIX
-                + "ip" + splitter + currentClientIP() + splitter + determineMark(annotation, point);
+        return CharSequenceUtil.format("{}ip:{}:{}", RateLimitConstant.REDIS_KEY_PREFIX, currentClientIP(), determineMark(annotation, point));
     }
 
     /**

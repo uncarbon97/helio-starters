@@ -4,7 +4,7 @@ import cc.uncarbon.framework.core.context.UserContextHolder;
 import cc.uncarbon.framework.ratelimit.annotation.UseRateLimit;
 import cc.uncarbon.framework.ratelimit.constant.RateLimitConstant;
 import cc.uncarbon.framework.ratelimit.stratrgy.RateLimitStrategy;
-import cn.hutool.core.text.StrPool;
+import cn.hutool.core.text.CharSequenceUtil;
 import cn.hutool.core.util.ObjectUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.JoinPoint;
@@ -30,10 +30,7 @@ public class RateLimitByUserIdStrategy extends SimpleRedisBasedRateLimitStrategy
 
     @Override
     protected String determineRedisKey(UseRateLimit annotation, JoinPoint point) {
-        final String splitter = StrPool.COLON;
-        // 编译器将自动优化
-        return RateLimitConstant.REDIS_KEY_PREFIX
-                + "userId" + splitter + currentUserId() + splitter + determineMark(annotation, point);
+        return CharSequenceUtil.format("{}userId:{}:{}", RateLimitConstant.REDIS_KEY_PREFIX, currentUserId(), determineMark(annotation, point));
     }
 
     /**

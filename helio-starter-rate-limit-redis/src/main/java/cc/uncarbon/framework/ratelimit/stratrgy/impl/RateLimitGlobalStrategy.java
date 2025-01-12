@@ -3,7 +3,7 @@ package cc.uncarbon.framework.ratelimit.stratrgy.impl;
 import cc.uncarbon.framework.ratelimit.annotation.UseRateLimit;
 import cc.uncarbon.framework.ratelimit.constant.RateLimitConstant;
 import cc.uncarbon.framework.ratelimit.stratrgy.RateLimitStrategy;
-import cn.hutool.core.text.StrPool;
+import cn.hutool.core.text.CharSequenceUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.JoinPoint;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -28,8 +28,6 @@ public class RateLimitGlobalStrategy extends SimpleRedisBasedRateLimitStrategy i
      */
     @Override
     protected String determineRedisKey(UseRateLimit annotation, JoinPoint point) {
-        final String splitter = StrPool.COLON;
-        // 由编译器自动使用StringBuilder拼接，下同
-        return RateLimitConstant.REDIS_KEY_PREFIX + "global" + splitter + determineMark(annotation, point);
+        return CharSequenceUtil.format("{}global:{}", RateLimitConstant.REDIS_KEY_PREFIX, determineMark(annotation, point));
     }
 }

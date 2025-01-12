@@ -28,21 +28,25 @@ public abstract class SimpleRedisBasedRateLimitStrategy {
 
     /**
      * 预置限流Lua脚本
-     * 编译器将自动优化
      */
     private static final String LUA_SCRIPT = """
         local key = KEYS[1]
         local count = tonumber(ARGV[1])
         local time = tonumber(ARGV[2])
-        local current = redis.call('get', key);
-        if current and tonumber(current) > count then
-            return tonumber(current);
+        local current = redis.call('get', key)
+
+        if current then
+            current = tonumber(current)
+            if current > count then
+                return current
+            end
+            current = redis.call('incr', key)
+        else
+            current = 1
+            redis.call('set', key, current, 'EX', time)
         end
-        current = redis.call('incr', key)
-        if tonumber(current) == 1 then
-            redis.call('expire', key, time)
-        end
-        return tonumber(current);
+
+        return current
         """;
 
     /**
@@ -54,8 +58,8 @@ public abstract class SimpleRedisBasedRateLimitStrategy {
     protected void performRateLimitCheck(UseRateLimit annotation, JoinPoint point,
                                          Supplier<RateLimitedException> rateLimitedExceptionSupplier)
             throws RateLimitStrategyException {
-        long duration = annotation.duration();
-        long max = annotation.max();
+        int duration = annotation.duration();
+        int max = annotation.max();
 
         String redisKey = determineRedisKey(annotation, point);
         Long current = objectRedisTemplate.execute(REDIS_SCRIPT, Collections.singletonList(redisKey), max, duration);

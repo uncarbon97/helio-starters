@@ -25,7 +25,9 @@ public class RedisKeyDefinition<V> {
 
     /**
      * 值类型对应 Class
+     * @deprecated 并没有实际用途，未来移除
      */
+    @Deprecated(since = "2.3.0", forRemoval = true)
     private final Class<V> valueClass;
 
     /**
@@ -38,8 +40,46 @@ public class RedisKeyDefinition<V> {
      * 不设置有效时长
      * @param keyTemplate 键名模板，占位符需要用 {}
      * @param keyType 键类型
-     * @param valueClass 值类型对应 Class
      */
+    public RedisKeyDefinition(String keyTemplate, KeyTypeEnum keyType) {
+        this.keyTemplate = keyTemplate;
+        this.keyType = keyType;
+        this.valueClass = null;
+        this.durationSeconds = -1;
+    }
+
+    /**
+     * 有设置有效时长
+     * @param keyTemplate 键名模板，占位符需要用 {}
+     * @param keyType 键类型
+     * @param duration 有效时长
+     * @param timeUnit 有效时长的单位，最低为秒
+     */
+    public RedisKeyDefinition(String keyTemplate, KeyTypeEnum keyType, long duration, TimeUnit timeUnit) {
+        if (timeUnit == TimeUnit.NANOSECONDS || timeUnit == TimeUnit.MICROSECONDS || timeUnit == TimeUnit.MILLISECONDS) {
+            throw new IllegalArgumentException("timeUnit CANNOT be NANOSECONDS or MICROSECONDS or MILLISECONDS");
+        }
+
+        this.keyTemplate = keyTemplate;
+        this.keyType = keyType;
+        this.valueClass = null;
+
+        // 兜底：最短缓存1s
+        long asSeconds = timeUnit.toSeconds(duration);
+        if (asSeconds < 1) {
+            asSeconds = 1;
+        }
+        this.durationSeconds = asSeconds;
+    }
+
+    /**
+     * 不设置有效时长
+     * @param keyTemplate 键名模板，占位符需要用 {}
+     * @param keyType 键类型
+     * @param valueClass 值类型对应 Class
+     * @deprecated valueClass 并没有实际用途，未来移除
+     */
+    @Deprecated(since = "2.3.0", forRemoval = true)
     public RedisKeyDefinition(String keyTemplate, KeyTypeEnum keyType, Class<V> valueClass) {
         this.keyTemplate = keyTemplate;
         this.keyType = keyType;
@@ -54,7 +94,9 @@ public class RedisKeyDefinition<V> {
      * @param valueClass 值类型对应 Class
      * @param duration 有效时长
      * @param timeUnit 有效时长的单位，最低为秒
+     * @deprecated valueClass 并没有实际用途，未来移除
      */
+    @Deprecated(since = "2.3.0", forRemoval = true)
     public RedisKeyDefinition(String keyTemplate, KeyTypeEnum keyType, Class<V> valueClass, long duration, TimeUnit timeUnit) {
         if (timeUnit == TimeUnit.NANOSECONDS || timeUnit == TimeUnit.MICROSECONDS || timeUnit == TimeUnit.MILLISECONDS) {
             throw new IllegalArgumentException("timeUnit CANNOT be NANOSECONDS or MICROSECONDS or MILLISECONDS");
@@ -78,6 +120,6 @@ public class RedisKeyDefinition<V> {
      */
     public FormattedRedisKey<V> format(Object... params) {
         return new FormattedRedisKey<>(CharSequenceUtil.format(this.keyTemplate, params),
-                this.keyType, this.valueClass, this.durationSeconds);
+                this.keyType, null, this.durationSeconds);
     }
 }

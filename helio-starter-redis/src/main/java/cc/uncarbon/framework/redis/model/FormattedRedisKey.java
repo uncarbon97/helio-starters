@@ -7,7 +7,7 @@ import cn.hutool.core.util.RandomUtil;
  * 已固定好键名的 Redis Key
  * @param key 已固定好的键名
  * @param keyType 键类型
- * @param valueClass 值类型
+ * @param valueClass 值类型【@deprecated 并没有实际用途，未来移除】
  * @param durationSeconds 有效时长，永久为-1，可通过 hasExpiration() 方法判断
  * @param <V>
  */
@@ -36,5 +36,13 @@ public record FormattedRedisKey<V>(
             throw new IllegalArgumentException("no-expiration key CANNOT calculate randomDurationSeconds");
         }
         return (long)(RandomUtil.randomDouble(this.durationSeconds * minRatio, this.durationSeconds * maxRatio));
+    }
+
+    /**
+     * @return durationSeconds的 int 形式
+     * @throws ArithmeticException 需要注意数值溢出风险
+     */
+    public int durationSecondsAsInt() throws ArithmeticException {
+        return Math.toIntExact(this.durationSeconds);
     }
 }

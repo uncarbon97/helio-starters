@@ -24,44 +24,51 @@
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
-        <version>3.3.3</version>
-        <relativePath/>
+        <version>3.4.1</version>
     </parent>
 
     <groupId>cc.uncarbon.framework</groupId>
     <artifactId>helio-starters</artifactId>
-    <version>2.2.0</version><!-- BATCH REPLACEMENT MARK -->
+    <version>2.3.1</version><!-- BATCH REPLACEMENT MARK -->
 
     <properties>
         <!-- core versions -->
-        <helio-starters.version>2.2.0</helio-starters.version>
+        <helio-starters.version>2.3.1</helio-starters.version>
         <!-- 可根据实际JDK版本修改；JDK17则改为'17'  JDK21则改为'21' -->
         <java.version>17</java.version>
         <!-- 若变更Spring Boot版本, 上面parent依赖版本也要变 -->
-        <spring-boot.version>3.3.3</spring-boot.version>
+        <spring-boot.version>3.4.1</spring-boot.version>
 
 
         <!-- Spring Cloud versions -->
         <!-- https://mvnrepository.com/artifact/org.springframework.cloud/spring-cloud-dependencies -->
-        <spring-cloud.version>2023.0.3</spring-cloud.version>
-        <spring-cloud-starter-bootstrap.version>4.1.1</spring-cloud-starter-bootstrap.version>
+        <spring-cloud.version>2023.0.4</spring-cloud.version>
+        <spring-cloud-starter.version>4.2.0</spring-cloud-starter.version>
+        <spring-cloud-starter-bootstrap.version>${spring-cloud-starter.version}</spring-cloud-starter-bootstrap.version>
+        <spring-cloud-commons.version>${spring-cloud-starter.version}</spring-cloud-commons.version>
+        <spring-cloud-context.version>${spring-cloud-starter.version}</spring-cloud-context.version>
+
 
         <!-- Spring Cloud Alibaba versions -->
-        <spring-cloud-alibaba.version>2023.0.1.2</spring-cloud-alibaba.version>
-        <dubbo.version>3.2.11</dubbo.version>
-        <nacos-client.vesion>2.3.0</nacos-client.vesion>
+        <spring-cloud-alibaba.version>2023.0.3.2</spring-cloud-alibaba.version>
+        <dubbo.version>3.3.2</dubbo.version>
+        <nacos-client.vesion>2.4.3</nacos-client.vesion>
 
 
         <!-- 3rd-party versions -->
         <lombok.version>1.18.30</lombok.version>
         <slf4j.version>2.0.12</slf4j.version>
-        <hutool.version>5.8.31</hutool.version>
+        <hutool.version>5.8.34</hutool.version>
         <sa-token.version>1.39.0</sa-token.version>
         <transmittable-thread-local.version>2.14.5</transmittable-thread-local.version>
         <!-- 如果 mp 较新版存在问题，可以回退至 3.5.5 试试  -->
         <mybatis-plus.version>3.5.7</mybatis-plus.version>
         <knife4j.version>4.5.0</knife4j.version>
-        <springdoc-annotations.version>2.2.20</springdoc-annotations.version>
+        <!-- 以下两个 SpringDoc 依赖不完全配套，但能适配 Spring Boot 3.4.x -->
+        <!-- https://central.sonatype.com/artifact/org.springdoc/springdoc-openapi-starter-common/版本号/dependencies -->
+        <springdoc-openapi-starter.version>2.7.0</springdoc-openapi-starter.version>
+        <springdoc-annotations.version>2.2.27</springdoc-annotations.version>
+
         <!-- https://mvnrepository.com/artifact/org.redisson/redisson-spring-boot-starter -->
         <redisson.version>3.33.0</redisson.version>
         <aspectj.version>1.9.22.1</aspectj.version>
@@ -247,6 +254,24 @@
             <!-- CLOUD dependencies -->
             <dependency>
                 <groupId>org.springframework.cloud</groupId>
+                <artifactId>spring-cloud-starter</artifactId>
+                <version>${spring-cloud-starter.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.springframework.cloud</groupId>
+                <artifactId>spring-cloud-commons</artifactId>
+                <version>${spring-cloud-commons.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.springframework.cloud</groupId>
+                <artifactId>spring-cloud-context</artifactId>
+                <version>${spring-cloud-context.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.springframework.cloud</groupId>
                 <artifactId>spring-cloud-starter-bootstrap</artifactId>
                 <version>${spring-cloud-starter-bootstrap.version}</version>
             </dependency>
@@ -259,6 +284,14 @@
                     <exclusion>
                         <groupId>com.alibaba.nacos</groupId>
                         <artifactId>nacos-client</artifactId>
+                    </exclusion>
+                    <exclusion>
+                        <groupId>org.springframework.cloud</groupId>
+                        <artifactId>spring-cloud-commons</artifactId>
+                    </exclusion>
+                    <exclusion>
+                        <groupId>org.springframework.cloud</groupId>
+                        <artifactId>spring-cloud-context</artifactId>
                     </exclusion>
                 </exclusions>
             </dependency>
@@ -273,12 +306,6 @@
                         <artifactId>nacos-client</artifactId>
                     </exclusion>
                 </exclusions>
-            </dependency>
-
-            <dependency>
-                <groupId>com.alibaba.cloud</groupId>
-                <artifactId>spring-cloud-starter-alibaba-sentinel</artifactId>
-                <version>${spring-cloud-alibaba.version}</version>
             </dependency>
 
             <dependency>
@@ -365,6 +392,13 @@
                 <groupId>io.swagger.core.v3</groupId>
                 <artifactId>swagger-annotations</artifactId>
                 <version>${springdoc-annotations.version}</version>
+            </dependency>
+
+            <!-- Knife4j 默认引入的 SpringDoc 版本还没有适配 Spring Boot 3.4.x，需要手动升级底层依赖 -->
+            <dependency>
+                <groupId>org.springdoc</groupId>
+                <artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
+                <version>${springdoc-openapi-starter.version}</version>
             </dependency>
 
 
@@ -469,4 +503,12 @@
             </dependency>
         </dependencies>
     </dependencyManagement>
+
+    <!-- 仓库信息 -->
+    <scm>
+        <tag>2.x</tag>
+        <url>https://github.com/uncarbon97/helio-starters.git</url>
+        <connection>scm:git:https://github.com/uncarbon97/helio-starters.git</connection>
+        <developerConnection>scm:git:https://github.com/uncarbon97/helio-starters.git</developerConnection>
+    </scm>
 </project>
