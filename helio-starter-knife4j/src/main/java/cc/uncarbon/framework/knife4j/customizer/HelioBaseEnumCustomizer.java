@@ -1,11 +1,14 @@
 package cc.uncarbon.framework.knife4j.customizer;
 
 import cc.uncarbon.framework.core.enums.HelioBaseEnum;
-import cn.hutool.core.text.CharSequenceUtil;
-import cn.hutool.core.text.StrPool;
+import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.util.ArrayUtil;
 import cn.hutool.core.util.StrUtil;
+import com.fasterxml.jackson.databind.JavaType;
+import com.fasterxml.jackson.databind.type.CollectionType;
 import com.fasterxml.jackson.databind.type.SimpleType;
+import com.fasterxml.jackson.databind.type.TypeBase;
+import com.fasterxml.jackson.databind.type.TypeBindings;
 import io.swagger.v3.core.converter.AnnotatedType;
 import io.swagger.v3.oas.models.media.Schema;
 import io.swagger.v3.oas.models.parameters.Parameter;
@@ -14,8 +17,10 @@ import org.springdoc.core.customizers.PropertyCustomizer;
 import org.springframework.core.MethodParameter;
 import org.springframework.stereotype.Component;
 
+import java.lang.reflect.Type;
 import java.util.Arrays;
 import java.util.Objects;
+import java.util.Optional;
 
 /**
  * HelioBaseEnum子枚举增强
@@ -32,8 +37,6 @@ import java.util.Objects;
 @Component
 public class HelioBaseEnumCustomizer implements PropertyCustomizer, ParameterCustomizer {
 
-    protected static final String TYPE_NAME_KEYWORD_COLLECTION_TYPE = "collection type;";
-    protected static final String TYPE_NAME_KEYWORD_SIMPLE_TYPE = "simple type, class ";
     protected static final String SCHEMA_TYPE_INTEGER = "integer";
     protected static final String SCHEMA_FORMAT_INT32 = "int32";
     protected static final String SCHEMA_FORMAT_INT64 = "int64";
@@ -45,21 +48,28 @@ public class HelioBaseEnumCustomizer implements PropertyCustomizer, ParameterCus
     public Schema<?> customize(Schema schema, AnnotatedType propertyType) {
         if (Objects.nonNull(schema) && Objects.nonNull(propertyType)) {
             try {
-                HelioBaseEnum<?>[] enumItems = findHelioBaseEnumInGenerics(propertyType.getType().getTypeName());
-                if (ArrayUtil.isNotEmpty(enumItems)) {
-                    updateSchema(schema, enumItems, true);
-                    return schema;
+                Type propertyTypeType = propertyType.getType();
+                if (propertyTypeType instanceof SimpleType simpleType) {
+                    // 非数组形式
+                    Class<?> rawClass = simpleType.getRawClass();
+                    if (HelioBaseEnum.class.isAssignableFrom(rawClass)) {
+                        HelioBaseEnum<?>[] enumItems = (HelioBaseEnum<?>[]) rawClass.getEnumConstants();
+                        updateSchema(schema, enumItems, false);
+                    }
+                } else if (propertyTypeType instanceof CollectionType collectionType) {
+                    // 数组形式
+                    Class<?> rawClass = Optional.of(collectionType)
+                            .map(TypeBase::getBindings)
+                            .map(TypeBindings::getTypeParameters)
+                            .map(CollUtil::getFirst)
+                            .map(JavaType::getRawClass)
+                            .orElse(null);
+                    if (rawClass != null && HelioBaseEnum.class.isAssignableFrom(rawClass)) {
+                        HelioBaseEnum<?>[] enumItems = (HelioBaseEnum<?>[]) rawClass.getEnumConstants();
+                        updateSchema(schema, enumItems, true);
+                    }
                 }
-
-                SimpleType simpleType = (SimpleType) propertyType.getType();
-                if (HelioBaseEnum.class.isAssignableFrom(simpleType.getRawClass())) {
-                    enumItems = (HelioBaseEnum<?>[]) simpleType.getRawClass().getEnumConstants();
-                    updateSchema(schema, enumItems, false);
-                    return schema;
-                }
-            } catch (Exception e) {
-                // fail to customize, ignored
-            }
+            } catch (Exception ignore) {}
         }
         return schema;
     }
@@ -76,34 +86,6 @@ public class HelioBaseEnumCustomizer implements PropertyCustomizer, ParameterCus
             parameterModel.setDescription(determineDescription(enumItems, parameterModel.getDescription()));
         }
         return parameterModel;
-    }
-
-    /**
-     * 尝试在文本描述中，寻找泛型中实现了 HelioBaseEnum 的枚举
-     */
-    protected HelioBaseEnum<?>[] findHelioBaseEnumInGenerics(String typeName) {
-        // 也许是枚举类的全限定名数组
-        String[] maybeEnumClassNames = {};
-        if (CharSequenceUtil.contains(typeName, TYPE_NAME_KEYWORD_COLLECTION_TYPE)) {
-            // 硬编码，针对类似 List<YesOrNoEnum> 的集合类型字段
-            maybeEnumClassNames = CharSequenceUtil.subBetweenAll(typeName, TYPE_NAME_KEYWORD_SIMPLE_TYPE, StrPool.BRACKET_END);
-        }
-        if (ArrayUtil.isNotEmpty(maybeEnumClassNames)) {
-            ClassLoader classLoader = getClass().getClassLoader();
-            // 从后往前匹配，一般最内层的泛型在最后
-            for (int i = maybeEnumClassNames.length - 1; i >= 0; i--) {
-                String maybeEnumClassName = maybeEnumClassNames[i];
-                try {
-                    Class<?> maybeEnumClass = Class.forName(maybeEnumClassName, false, classLoader);
-                    if (HelioBaseEnum.class.isAssignableFrom(maybeEnumClass)) {
-                        return (HelioBaseEnum<?>[]) maybeEnumClass.getEnumConstants();
-                    }
-                } catch (ClassNotFoundException e) {
-                    // ignored
-                }
-            }
-        }
-        return new HelioBaseEnum[]{};
     }
 
     /**
