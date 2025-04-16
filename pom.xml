@@ -24,7 +24,7 @@
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
-        <version>3.4.3</version>
+        <version>3.4.4</version>
     </parent>
 
     <groupId>cc.uncarbon.framework</groupId>
@@ -37,7 +37,7 @@
         <!-- 可根据实际JDK版本修改；JDK17则改为'17'  JDK21则改为'21' -->
         <java.version>17</java.version>
         <!-- 若变更Spring Boot版本, 上面parent依赖版本也要变 -->
-        <spring-boot.version>3.4.3</spring-boot.version>
+        <spring-boot.version>3.4.4</spring-boot.version>
 
 
         <!-- Spring Cloud versions -->
@@ -371,21 +371,8 @@
             <!-- KNIFE4J dependencies -->
             <dependency>
                 <groupId>com.github.xiaoymin</groupId>
-                <artifactId>knife4j-core</artifactId>
+                <artifactId>knife4j-openapi3-ui</artifactId>
                 <version>${knife4j.version}</version>
-            </dependency>
-
-            <dependency>
-                <groupId>com.github.xiaoymin</groupId>
-                <artifactId>knife4j-openapi3-jakarta-spring-boot-starter</artifactId>
-                <version>${knife4j.version}</version>
-                <!-- 单体应用可以不要 guava，微服务应用通过 nacos-client 引入 guava -->
-                <exclusions>
-                    <exclusion>
-                        <groupId>com.google.guava</groupId>
-                        <artifactId>guava</artifactId>
-                    </exclusion>
-                </exclusions>
             </dependency>
 
             <!-- SpringDoc 注解包-->

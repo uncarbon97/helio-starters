@@ -28,19 +28,18 @@
         <!-- 这里写其他第三方依赖 -->
         <dependency>
             <groupId>com.github.xiaoymin</groupId>
-            <artifactId>knife4j-openapi3-jakarta-spring-boot-starter</artifactId>
-            <exclusions>
-                <!-- 用不到 -->
-                <exclusion>
-                    <groupId>org.webjars</groupId>
-                    <artifactId>swagger-ui</artifactId>
-                </exclusion>
-            </exclusions>
+            <artifactId>knife4j-openapi3-ui</artifactId>
         </dependency>
 
         <dependency>
             <groupId>org.springdoc</groupId>
             <artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>jakarta.servlet</groupId>
+            <artifactId>jakarta.servlet-api</artifactId>
+            <scope>provided</scope>
         </dependency>
     </dependencies>
 </project>
