@@ -1,7 +1,7 @@
 package cc.uncarbon.framework.satoken.dao;
 
 import cc.uncarbon.framework.core.cache.TimedCacheEx;
-import cn.dev33.satoken.dao.SaTokenDaoRedisJackson;
+import cn.dev33.satoken.dao.SaTokenDaoForRedisTemplate;
 
 /**
  * SA-Token 读取时，本地缓存一定时长，减少对 Redis 的 IO
@@ -11,7 +11,7 @@ import cn.dev33.satoken.dao.SaTokenDaoRedisJackson;
  * @since 2.1.0
  * @author Uncarbon
  */
-public class SaTokenLocalCacheDao extends SaTokenDaoRedisJackson {
+public class SaTokenLocalCacheDao extends SaTokenDaoForRedisTemplate {
 
     /**
      * 标记 key 为空值
