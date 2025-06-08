@@ -24,20 +24,20 @@
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
-        <version>3.4.1</version>
+        <version>3.4.6</version>
     </parent>
 
     <groupId>cc.uncarbon.framework</groupId>
     <artifactId>helio-starters</artifactId>
-    <version>2.3.1</version><!-- BATCH REPLACEMENT MARK -->
+    <version>2.4.0</version><!-- BATCH REPLACEMENT MARK -->
 
     <properties>
         <!-- core versions -->
-        <helio-starters.version>2.3.1</helio-starters.version>
+        <helio-starters.version>2.4.0</helio-starters.version>
         <!-- 可根据实际JDK版本修改；JDK17则改为'17'  JDK21则改为'21' -->
         <java.version>17</java.version>
         <!-- 若变更Spring Boot版本, 上面parent依赖版本也要变 -->
-        <spring-boot.version>3.4.1</spring-boot.version>
+        <spring-boot.version>3.4.6</spring-boot.version>
 
 
         <!-- Spring Cloud versions -->
@@ -58,12 +58,13 @@
         <!-- 3rd-party versions -->
         <lombok.version>1.18.30</lombok.version>
         <slf4j.version>2.0.12</slf4j.version>
-        <hutool.version>5.8.34</hutool.version>
-        <sa-token.version>1.39.0</sa-token.version>
+        <hutool.version>5.8.38</hutool.version>
+        <sa-token.version>1.44.0</sa-token.version>
         <transmittable-thread-local.version>2.14.5</transmittable-thread-local.version>
         <!-- 如果 mp 较新版存在问题，可以回退至 3.5.5 试试  -->
         <mybatis-plus.version>3.5.7</mybatis-plus.version>
-        <knife4j.version>4.5.0</knife4j.version>
+        <!-- 不要升级 knife4j，升级 SpringDoc 依赖版本即可 -->
+        <knife4j.version>4.4.0</knife4j.version>
         <!-- 以下两个 SpringDoc 依赖不完全配套，但能适配 Spring Boot 3.4.x -->
         <!-- https://central.sonatype.com/artifact/org.springdoc/springdoc-openapi-starter-common/版本号/dependencies -->
         <springdoc-openapi-starter.version>2.7.0</springdoc-openapi-starter.version>
@@ -77,7 +78,7 @@
 
 
         <!-- DB Driver versions -->
-        <mysql.version>8.3.0</mysql.version>
+        <mysql.version>9.2.0</mysql.version>
         <postgresql.version>42.7.4</postgresql.version>
 
 
@@ -370,21 +371,8 @@
             <!-- KNIFE4J dependencies -->
             <dependency>
                 <groupId>com.github.xiaoymin</groupId>
-                <artifactId>knife4j-core</artifactId>
+                <artifactId>knife4j-openapi3-ui</artifactId>
                 <version>${knife4j.version}</version>
-            </dependency>
-
-            <dependency>
-                <groupId>com.github.xiaoymin</groupId>
-                <artifactId>knife4j-openapi3-jakarta-spring-boot-starter</artifactId>
-                <version>${knife4j.version}</version>
-                <!-- 单体应用可以不要 guava，微服务应用通过 nacos-client 引入 guava -->
-                <exclusions>
-                    <exclusion>
-                        <groupId>com.google.guava</groupId>
-                        <artifactId>guava</artifactId>
-                    </exclusion>
-                </exclusions>
             </dependency>
 
             <!-- SpringDoc 注解包-->
@@ -394,7 +382,7 @@
                 <version>${springdoc-annotations.version}</version>
             </dependency>
 
-            <!-- Knife4j 默认引入的 SpringDoc 版本还没有适配 Spring Boot 3.4.x，需要手动升级底层依赖 -->
+            <!-- 手动调适 SpringDoc 与 Spring Boot 的版本 -->
             <dependency>
                 <groupId>org.springdoc</groupId>
                 <artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
