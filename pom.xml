@@ -429,12 +429,6 @@
                 <version>${sa-token.version}</version>
             </dependency>
 
-            <dependency>
-                <groupId>cn.dev33</groupId>
-                <artifactId>sa-token-redisson-jackson</artifactId>
-                <version>${sa-token.version}</version>
-            </dependency>
-
 
             <!-- TEST dependencies -->
             <dependency>
