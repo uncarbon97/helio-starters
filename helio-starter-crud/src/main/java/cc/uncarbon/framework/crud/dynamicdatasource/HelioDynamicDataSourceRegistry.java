@@ -2,9 +2,9 @@ package cc.uncarbon.framework.crud.dynamicdatasource;
 
 import cn.hutool.core.bean.BeanUtil;
 import com.baomidou.dynamic.datasource.DynamicRoutingDataSource;
-import com.baomidou.dynamic.datasource.creator.HikariDataSourceCreator;
-import com.baomidou.dynamic.datasource.spring.boot.autoconfigure.DataSourceProperty;
-import com.zaxxer.hikari.HikariDataSource;
+import com.baomidou.dynamic.datasource.creator.DataSourceProperty;
+import com.baomidou.dynamic.datasource.creator.hikaricp.HikariCpConfig;
+import com.baomidou.dynamic.datasource.creator.hikaricp.HikariDataSourceCreator;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.ObjectProvider;
@@ -66,16 +66,17 @@ public class HelioDynamicDataSourceRegistry {
                 BeanUtil.copyProperties(dataSourceDefinition, dataSourceProperty);
 
                 // 补充字段
-                dataSourceProperty
-                        .setPoolName(dataSourceDefinition.getName())
-                        .setType(HikariDataSource.class);
+                dataSourceProperty.setPoolName(dataSourceDefinition.getName());
+                dataSourceProperty.setHikari(new HikariCpConfig());
+
+                provider.beforeCreateDataSource(dataSourceProperty);
 
                 // 创建动态数据源
                 DataSource dataSource = dataSourceCreator.createDataSource(dataSourceProperty);
 
                 // 添加新数据源
                 dynamicRoutingDataSource.addDataSource(dataSourceName, dataSource);
-                log.info("已动态添加新数据源 {}", dataSourceName);
+                log.info("[crud][动态数据源] >> 已动态添加新数据源 {}", dataSourceName);
 
                 successFlag = true;
                 break;
@@ -83,7 +84,7 @@ public class HelioDynamicDataSourceRegistry {
         }
 
         if (!successFlag) {
-            log.error("动态添加新数据源失败，原因：没有 DataSourceDefinitionProvider 提供 {} 的 DataSourceDefinition",
+            log.error("[crud][动态数据源] >> 动态添加新数据源失败，原因：没有 DataSourceDefinitionProvider 提供 {} 的 DataSourceDefinition",
                     dataSourceName);
         }
 

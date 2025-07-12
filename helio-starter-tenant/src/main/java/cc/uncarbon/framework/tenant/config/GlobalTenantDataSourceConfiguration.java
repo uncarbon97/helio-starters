@@ -4,11 +4,14 @@ import cc.uncarbon.framework.crud.dynamicdatasource.HelioDynamicDataSourceRegist
 import cc.uncarbon.framework.tenant.tenantdatasource.GlobalTenantDataSourceAdvisor;
 import cc.uncarbon.framework.tenant.tenantdatasource.GlobalTenantDataSourceInterceptor;
 import com.baomidou.dynamic.datasource.DynamicRoutingDataSource;
+import com.baomidou.dynamic.datasource.provider.DynamicDataSourceProvider;
 import com.baomidou.dynamic.datasource.spring.boot.autoconfigure.DynamicDataSourceProperties;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Role;
+
+import java.util.List;
 
 /**
  * 基于全局 AOP 的数据源级多租户配置类
@@ -20,9 +23,10 @@ public class GlobalTenantDataSourceConfiguration {
 
     @Bean
     @ConditionalOnMissingBean
-    public DynamicRoutingDataSource dynamicRoutingDataSource() {
-        return new DynamicRoutingDataSource();
+    public DynamicRoutingDataSource dynamicRoutingDataSource(DynamicDataSourceProvider ymlDynamicDataSourceProvider) {
+        return new DynamicRoutingDataSource(List.of(ymlDynamicDataSourceProvider));
     }
+
 
     @Bean
     @ConditionalOnMissingBean
