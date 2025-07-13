@@ -97,6 +97,8 @@
         <guava.version>33.2.1-jre</guava.version>
         <commons-compress.version>1.26.2</commons-compress.version>
         <xnio-api.version>3.8.16.Final</xnio-api.version>
+        <commons-lang3.no-vulnerability-version>3.18.0</commons-lang3.no-vulnerability-version>
+        <commons-io.no-vulnerability-version>2.19.0</commons-io.no-vulnerability-version>
     </properties>
 
     <!-- 全局使用 -->
@@ -134,6 +136,18 @@
                 <groupId>org.jboss.xnio</groupId>
                 <artifactId>xnio-api</artifactId>
                 <version>${xnio-api.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.apache.commons</groupId>
+                <artifactId>commons-lang3</artifactId>
+                <version>${commons-lang3.no-vulnerability-version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>commons-io</groupId>
+                <artifactId>commons-io</artifactId>
+                <version>${commons-io.no-vulnerability-version}</version>
             </dependency>
 
 
