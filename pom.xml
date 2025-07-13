@@ -44,7 +44,6 @@
         <!-- https://mvnrepository.com/artifact/org.springframework.cloud/spring-cloud-dependencies -->
         <spring-cloud.version>2023.0.4</spring-cloud.version>
         <spring-cloud-starter.version>4.2.0</spring-cloud-starter.version>
-        <spring-cloud-starter-bootstrap.version>${spring-cloud-starter.version}</spring-cloud-starter-bootstrap.version>
         <spring-cloud-commons.version>${spring-cloud-starter.version}</spring-cloud-commons.version>
         <spring-cloud-context.version>${spring-cloud-starter.version}</spring-cloud-context.version>
 
@@ -269,12 +268,6 @@
                 <groupId>org.springframework.cloud</groupId>
                 <artifactId>spring-cloud-context</artifactId>
                 <version>${spring-cloud-context.version}</version>
-            </dependency>
-
-            <dependency>
-                <groupId>org.springframework.cloud</groupId>
-                <artifactId>spring-cloud-starter-bootstrap</artifactId>
-                <version>${spring-cloud-starter-bootstrap.version}</version>
             </dependency>
 
             <dependency>
