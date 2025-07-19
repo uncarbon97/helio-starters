@@ -69,7 +69,7 @@ public class HelioDynamicDataSourceRegistry {
                 dataSourceProperty.setPoolName(dataSourceDefinition.getName());
                 dataSourceProperty.setHikari(new HikariCpConfig());
 
-                provider.beforeCreateDataSource(dataSourceProperty);
+                provider.beforeCreateDataSourceThroughBaomidou(dataSourceProperty);
 
                 // 创建动态数据源
                 DataSource dataSource = dataSourceCreator.createDataSource(dataSourceProperty);
