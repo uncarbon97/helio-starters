@@ -8,11 +8,12 @@
     <parent>
         <artifactId>helio-starters</artifactId>
         <groupId>cc.uncarbon.framework</groupId>
-        <version>2.4.1-SNAPSHOT</version><!-- BATCH REPLACEMENT MARK -->
+        <version>2.4.1</version><!-- BATCH REPLACEMENT MARK -->
         <relativePath>../pom.xml</relativePath>
     </parent>
 
     <artifactId>helio-starter-test</artifactId>
+    <name>${project.artifactId}</name>
 
     <properties>
 
@@ -23,6 +24,7 @@
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-test</artifactId>
+            <version>${spring-boot.version}</version>
         </dependency>
     </dependencies>
 </project>

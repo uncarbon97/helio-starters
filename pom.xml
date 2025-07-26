@@ -27,13 +27,17 @@
         <version>3.4.7</version>
     </parent>
 
+    <name>${project.artifactId}</name>
+    <description>Java project for Helio development framework</description>
+    <url>https://github.com/uncarbon97/</url>
+
     <groupId>cc.uncarbon.framework</groupId>
     <artifactId>helio-starters</artifactId>
-    <version>2.4.1-SNAPSHOT</version><!-- BATCH REPLACEMENT MARK -->
+    <version>2.4.1</version><!-- BATCH REPLACEMENT MARK -->
 
     <properties>
         <!-- core versions -->
-        <helio-starters.version>2.4.1-SNAPSHOT</helio-starters.version>
+        <helio-starters.version>2.4.1</helio-starters.version>
         <!-- 可根据实际JDK版本修改；JDK17则改为'17'  JDK21则改为'21' -->
         <java.version>17</java.version>
         <!-- 若变更Spring Boot版本, 上面parent依赖版本也要变 -->
