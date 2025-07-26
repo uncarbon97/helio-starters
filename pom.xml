@@ -24,27 +24,30 @@
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
-        <version>3.4.6</version>
+        <version>3.4.7</version>
     </parent>
+
+    <name>${project.artifactId}</name>
+    <description>Java project for Helio development framework</description>
+    <url>https://github.com/uncarbon97/</url>
 
     <groupId>cc.uncarbon.framework</groupId>
     <artifactId>helio-starters</artifactId>
-    <version>2.4.0</version><!-- BATCH REPLACEMENT MARK -->
+    <version>2.4.1</version><!-- BATCH REPLACEMENT MARK -->
 
     <properties>
         <!-- core versions -->
-        <helio-starters.version>2.4.0</helio-starters.version>
+        <helio-starters.version>2.4.1</helio-starters.version>
         <!-- 可根据实际JDK版本修改；JDK17则改为'17'  JDK21则改为'21' -->
         <java.version>17</java.version>
         <!-- 若变更Spring Boot版本, 上面parent依赖版本也要变 -->
-        <spring-boot.version>3.4.6</spring-boot.version>
+        <spring-boot.version>3.4.7</spring-boot.version>
 
 
         <!-- Spring Cloud versions -->
         <!-- https://mvnrepository.com/artifact/org.springframework.cloud/spring-cloud-dependencies -->
         <spring-cloud.version>2023.0.4</spring-cloud.version>
         <spring-cloud-starter.version>4.2.0</spring-cloud-starter.version>
-        <spring-cloud-starter-bootstrap.version>${spring-cloud-starter.version}</spring-cloud-starter-bootstrap.version>
         <spring-cloud-commons.version>${spring-cloud-starter.version}</spring-cloud-commons.version>
         <spring-cloud-context.version>${spring-cloud-starter.version}</spring-cloud-context.version>
 
@@ -74,12 +77,12 @@
         <redisson.version>3.33.0</redisson.version>
         <aspectj.version>1.9.22.1</aspectj.version>
         <ons-client.version>1.8.8.1.Final</ons-client.version>
-        <mybatis-plus-dynamic-datasource.version>3.5.2</mybatis-plus-dynamic-datasource.version>
+        <mybatis-plus-dynamic-datasource.version>4.3.1</mybatis-plus-dynamic-datasource.version>
 
 
         <!-- DB Driver versions -->
         <mysql.version>9.2.0</mysql.version>
-        <postgresql.version>42.7.4</postgresql.version>
+        <postgresql.version>42.7.7</postgresql.version>
 
 
         <!-- Maven properties -->
@@ -98,6 +101,8 @@
         <guava.version>33.2.1-jre</guava.version>
         <commons-compress.version>1.26.2</commons-compress.version>
         <xnio-api.version>3.8.16.Final</xnio-api.version>
+        <commons-lang3.no-vulnerability-version>3.18.0</commons-lang3.no-vulnerability-version>
+        <commons-io.no-vulnerability-version>2.19.0</commons-io.no-vulnerability-version>
     </properties>
 
     <!-- 全局使用 -->
@@ -135,6 +140,18 @@
                 <groupId>org.jboss.xnio</groupId>
                 <artifactId>xnio-api</artifactId>
                 <version>${xnio-api.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.apache.commons</groupId>
+                <artifactId>commons-lang3</artifactId>
+                <version>${commons-lang3.no-vulnerability-version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>commons-io</groupId>
+                <artifactId>commons-io</artifactId>
+                <version>${commons-io.no-vulnerability-version}</version>
             </dependency>
 
 
@@ -272,12 +289,6 @@
             </dependency>
 
             <dependency>
-                <groupId>org.springframework.cloud</groupId>
-                <artifactId>spring-cloud-starter-bootstrap</artifactId>
-                <version>${spring-cloud-starter-bootstrap.version}</version>
-            </dependency>
-
-            <dependency>
                 <groupId>com.alibaba.cloud</groupId>
                 <artifactId>spring-cloud-starter-alibaba-nacos-discovery</artifactId>
                 <version>${spring-cloud-alibaba.version}</version>
@@ -355,7 +366,7 @@
 
             <dependency>
                 <groupId>com.baomidou</groupId>
-                <artifactId>dynamic-datasource-spring-boot-starter</artifactId>
+                <artifactId>dynamic-datasource-spring-boot3-starter</artifactId>
                 <version>${mybatis-plus-dynamic-datasource.version}</version>
             </dependency>
 
@@ -426,12 +437,6 @@
             <dependency>
                 <groupId>cn.dev33</groupId>
                 <artifactId>sa-token-redis-jackson</artifactId>
-                <version>${sa-token.version}</version>
-            </dependency>
-
-            <dependency>
-                <groupId>cn.dev33</groupId>
-                <artifactId>sa-token-redisson-jackson</artifactId>
                 <version>${sa-token.version}</version>
             </dependency>
 

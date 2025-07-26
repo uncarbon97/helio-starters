@@ -8,11 +8,12 @@
     <parent>
         <artifactId>helio-starters</artifactId>
         <groupId>cc.uncarbon.framework</groupId>
-        <version>2.4.0</version><!-- BATCH REPLACEMENT MARK -->
+        <version>2.4.1</version><!-- BATCH REPLACEMENT MARK -->
         <relativePath>../pom.xml</relativePath>
     </parent>
 
     <artifactId>helio-starter-cloud</artifactId>
+    <name>${project.artifactId}</name>
 
     <properties>
 
@@ -26,11 +27,6 @@
         </dependency>
 
         <!-- 这里写其他第三方依赖 -->
-        <dependency>
-            <groupId>org.springframework.cloud</groupId>
-            <artifactId>spring-cloud-starter-bootstrap</artifactId>
-        </dependency>
-
         <dependency>
             <groupId>com.alibaba.cloud</groupId>
             <artifactId>spring-cloud-starter-alibaba-nacos-discovery</artifactId>
