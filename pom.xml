@@ -103,6 +103,8 @@
         <xnio-api.version>3.8.16.Final</xnio-api.version>
         <commons-lang3.no-vulnerability-version>3.18.0</commons-lang3.no-vulnerability-version>
         <commons-io.no-vulnerability-version>2.19.0</commons-io.no-vulnerability-version>
+        <undertow-core.safe-version>2.3.19.Final</undertow-core.safe-version>
+        <netty-codec.safe-version>4.1.125.Final</netty-codec.safe-version>
     </properties>
 
     <!-- 全局使用 -->
@@ -152,6 +154,18 @@
                 <groupId>commons-io</groupId>
                 <artifactId>commons-io</artifactId>
                 <version>${commons-io.no-vulnerability-version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>io.undertow</groupId>
+                <artifactId>undertow-core</artifactId>
+                <version>${undertow-core.safe-version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>io.netty</groupId>
+                <artifactId>netty-codec</artifactId>
+                <version>${netty-codec.safe-version}</version>
             </dependency>
 
 
