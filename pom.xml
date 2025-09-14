@@ -45,15 +45,17 @@
 
 
         <!-- Spring Cloud versions -->
+        <!-- https://spring.io/projects/spring-cloud -->
         <!-- https://mvnrepository.com/artifact/org.springframework.cloud/spring-cloud-dependencies -->
-        <spring-cloud.version>2023.0.4</spring-cloud.version>
-        <spring-cloud-starter.version>4.2.0</spring-cloud-starter.version>
+        <spring-cloud.version>2025.0.0</spring-cloud.version>
+        <spring-cloud-starter.version>4.3.0</spring-cloud-starter.version>
         <spring-cloud-commons.version>${spring-cloud-starter.version}</spring-cloud-commons.version>
         <spring-cloud-context.version>${spring-cloud-starter.version}</spring-cloud-context.version>
 
 
         <!-- Spring Cloud Alibaba versions -->
-        <spring-cloud-alibaba.version>2023.0.3.2</spring-cloud-alibaba.version>
+        <!-- https://mvnrepository.com/artifact/com.alibaba.cloud/spring-cloud-starter-alibaba-nacos-discovery -->
+        <spring-cloud-alibaba.version>2025.0.0.0-preview</spring-cloud-alibaba.version>
         <dubbo.version>3.3.2</dubbo.version>
         <nacos-client.vesion>2.4.3</nacos-client.vesion>
 
@@ -64,11 +66,11 @@
         <hutool.version>5.8.38</hutool.version>
         <sa-token.version>1.44.0</sa-token.version>
         <transmittable-thread-local.version>2.14.5</transmittable-thread-local.version>
-        <!-- 如果 mp 较新版存在问题，可以回退至 3.5.5 试试  -->
+        <!-- 如果 mp 较新版存在问题，可以回退至 3.5.7 试试  -->
         <mybatis-plus.version>3.5.14</mybatis-plus.version>
         <!-- 不要升级 knife4j，升级 SpringDoc 依赖版本即可 -->
         <knife4j.version>4.4.0</knife4j.version>
-        <!-- 以下两个 SpringDoc 依赖不完全配套，但能适配 Spring Boot 3.4.x -->
+        <!-- 以下两个 SpringDoc 依赖不完全配套，但能适配 Spring Boot 3.5.x -->
         <!-- https://central.sonatype.com/artifact/org.springdoc/springdoc-openapi-starter-common/版本号/dependencies -->
         <springdoc-openapi-starter.version>2.7.0</springdoc-openapi-starter.version>
         <springdoc-annotations.version>2.2.27</springdoc-annotations.version>
