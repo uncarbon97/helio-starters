@@ -55,7 +55,7 @@
 
         <!-- Spring Cloud Alibaba versions -->
         <!-- https://mvnrepository.com/artifact/com.alibaba.cloud/spring-cloud-starter-alibaba-nacos-discovery -->
-        <spring-cloud-alibaba.version>2025.0.0.0-preview</spring-cloud-alibaba.version>
+        <spring-cloud-alibaba.version>2023.0.3.3</spring-cloud-alibaba.version>
         <dubbo.version>3.3.2</dubbo.version>
         <nacos-client.vesion>2.4.3</nacos-client.vesion>
 
@@ -106,7 +106,7 @@
         <commons-lang3.no-vulnerability-version>3.18.0</commons-lang3.no-vulnerability-version>
         <commons-io.no-vulnerability-version>2.19.0</commons-io.no-vulnerability-version>
         <undertow-core.safe-version>2.3.19.Final</undertow-core.safe-version>
-        <netty-codec.safe-version>4.1.125.Final</netty-codec.safe-version>
+        <netty-codec.safe-version>4.1.127.Final</netty-codec.safe-version>
     </properties>
 
     <!-- 全局使用 -->
@@ -167,6 +167,12 @@
             <dependency>
                 <groupId>io.netty</groupId>
                 <artifactId>netty-codec</artifactId>
+                <version>${netty-codec.safe-version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>io.netty</groupId>
+                <artifactId>netty-codec-http</artifactId>
                 <version>${netty-codec.safe-version}</version>
             </dependency>
 
