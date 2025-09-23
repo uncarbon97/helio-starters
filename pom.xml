@@ -93,18 +93,16 @@
         <maven.version>3.6.3</maven.version>
         <maven.compiler.source>${java.version}</maven.compiler.source>
         <maven.compiler.target>${java.version}</maven.compiler.target>
-        <maven.build.timestamp.format>yyyyMMddHHmmss</maven.build.timestamp.format>
-        <buildTime>v.${project.version} build ${maven.build.timestamp.format}</buildTime>
-        <main.user.dir>${basedir}/..</main.user.dir>
+        <maven.compiler.compilerVersion>${java.version}</maven.compiler.compilerVersion>
         <maven-surefire-plugin.version>3.0.0-M5</maven-surefire-plugin.version>
 
 
         <!-- for mitigating vulnerabilities -->
-        <guava.version>33.2.1-jre</guava.version>
-        <commons-compress.version>1.26.2</commons-compress.version>
-        <xnio-api.version>3.8.16.Final</xnio-api.version>
-        <commons-lang3.no-vulnerability-version>3.18.0</commons-lang3.no-vulnerability-version>
-        <commons-io.no-vulnerability-version>2.19.0</commons-io.no-vulnerability-version>
+        <guava.safe-version>33.2.1-jre</guava.safe-version>
+        <commons-compress.safe-version>1.26.2</commons-compress.safe-version>
+        <xnio-api.safe-version>3.8.16.Final</xnio-api.safe-version>
+        <commons-lang3.safe-version>3.18.0</commons-lang3.safe-version>
+        <commons-io.safe-version>2.19.0</commons-io.safe-version>
         <undertow-core.safe-version>2.3.19.Final</undertow-core.safe-version>
         <netty-codec.safe-version>4.1.127.Final</netty-codec.safe-version>
     </properties>
@@ -131,31 +129,31 @@
             <dependency>
                 <groupId>com.google.guava</groupId>
                 <artifactId>guava</artifactId>
-                <version>${guava.version}</version>
+                <version>${guava.safe-version}</version>
             </dependency>
 
             <dependency>
                 <groupId>org.apache.commons</groupId>
                 <artifactId>commons-compress</artifactId>
-                <version>${commons-compress.version}</version>
+                <version>${commons-compress.safe-version}</version>
             </dependency>
 
             <dependency>
                 <groupId>org.jboss.xnio</groupId>
                 <artifactId>xnio-api</artifactId>
-                <version>${xnio-api.version}</version>
+                <version>${xnio-api.safe-version}</version>
             </dependency>
 
             <dependency>
                 <groupId>org.apache.commons</groupId>
                 <artifactId>commons-lang3</artifactId>
-                <version>${commons-lang3.no-vulnerability-version}</version>
+                <version>${commons-lang3.safe-version}</version>
             </dependency>
 
             <dependency>
                 <groupId>commons-io</groupId>
                 <artifactId>commons-io</artifactId>
-                <version>${commons-io.no-vulnerability-version}</version>
+                <version>${commons-io.safe-version}</version>
             </dependency>
 
             <dependency>
