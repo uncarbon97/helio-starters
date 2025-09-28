@@ -36,13 +36,19 @@ public class ProviderContextFilter implements Filter {
             Object attachment = serverAttachment.getObjectAttachment(UserContext.CAMEL_NAME);
             if (attachment instanceof UserContext userContext) {
                 UserContextHolder.setUserContext(userContext);
-                log.debug("[Dubbo RPC] 取出当前用户上下文 >> {}", userContext);
+
+                if (log.isDebugEnabled()) {
+                    log.debug("[Dubbo RPC] 取出当前用户上下文 >> {}", userContext);
+                }
             }
 
             attachment = serverAttachment.getObjectAttachment(TenantContext.CAMEL_NAME);
             if (attachment instanceof TenantContext tenantContext) {
                 TenantContextHolder.setTenantContext(tenantContext);
-                log.debug("[Dubbo RPC] 取出当前租户上下文 >> {}", tenantContext);
+
+                if (log.isDebugEnabled()) {
+                    log.debug("[Dubbo RPC] 取出当前租户上下文 >> {}", tenantContext);
+                }
             }
         }
 
@@ -53,7 +59,7 @@ public class ProviderContextFilter implements Filter {
      * 原来的 serverAttachment.isProviderSide() 抽风了，只能手撸一个了
      * @return 调用源是否为【提供者】
      */
-    private boolean isProviderSide(Invoker<?> invoker) {
+    private static boolean isProviderSide(Invoker<?> invoker) {
         return CommonConstants.PROVIDER.equals(invoker.getUrl().getSide());
     }
 }

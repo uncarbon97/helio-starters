@@ -31,14 +31,18 @@ public class ConsumerContextFilter implements Filter {
 
             UserContext userContext = UserContextHolder.getUserContext();
             if (userContext != null) {
-                log.debug("[Dubbo RPC] 设置当前用户上下文 >> {}", userContext);
+                if (log.isDebugEnabled()) {
+                    log.debug("[Dubbo RPC] 设置当前用户上下文 >> {}", userContext);
+                }
                 clientAttachment.setAttachment(UserContext.CAMEL_NAME, userContext);
             }
 
             TenantContext tenantContext = TenantContextHolder.getTenantContext();
             if (tenantContext != null && tenantContext.getTenantId() != null) {
                 // 实际启用了租户
-                log.debug("[Dubbo RPC] 设置当前租户上下文 >> {}", tenantContext);
+                if (log.isDebugEnabled()) {
+                    log.debug("[Dubbo RPC] 设置当前租户上下文 >> {}", tenantContext);
+                }
                 clientAttachment.setAttachment(TenantContext.CAMEL_NAME, tenantContext);
             }
         }
@@ -49,7 +53,7 @@ public class ConsumerContextFilter implements Filter {
      * 原来的 clientAttachment.isConsumerSide() 抽风了，只能手撸一个了
      * @return 调用源是否为【消费者】
      */
-    private boolean isConsumerSide(Invoker<?> invoker) {
+    private static boolean isConsumerSide(Invoker<?> invoker) {
         return CommonConstants.CONSUMER_SIDE.equals(invoker.getUrl().getSide());
     }
 

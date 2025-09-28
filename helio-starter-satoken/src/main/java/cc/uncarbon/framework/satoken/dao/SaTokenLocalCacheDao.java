@@ -2,6 +2,7 @@ package cc.uncarbon.framework.satoken.dao;
 
 import cc.uncarbon.framework.core.cache.TimedCacheEx;
 import cn.dev33.satoken.dao.SaTokenDaoForRedisTemplate;
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * SA-Token 读取时，本地缓存一定时长，减少对 Redis 的 IO
@@ -11,6 +12,7 @@ import cn.dev33.satoken.dao.SaTokenDaoForRedisTemplate;
  * @since 2.1.0
  * @author Uncarbon
  */
+@Slf4j
 public class SaTokenLocalCacheDao extends SaTokenDaoForRedisTemplate {
 
     /**
@@ -42,6 +44,8 @@ public class SaTokenLocalCacheDao extends SaTokenDaoForRedisTemplate {
         // 默认开nullValueMarker的清理定时任务，避免长时间缓存空值
         enableNullValueMarkerPruneSchedule(400);
         // 不默认开stringValueCache、objectValueCache的清理定时任务
+
+        log.info("[framework][SA-Token] 本地二级缓存已生效");
     }
 
     /**
