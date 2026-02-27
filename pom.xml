@@ -6,21 +6,50 @@
     <packaging>pom</packaging>
 
     <groupId>cc.uncarbon.framework</groupId>
-    <artifactId>helio-starters</artifactId>
-    <version>2.5.0</version><!-- BATCH REPLACEMENT MARK -->
+    <artifactId>helio-starters-parent</artifactId>
+    <version>${revision}</version>
 
     <name>${project.artifactId}</name>
     <description>Java project for Helio development framework</description>
-    <url>https://github.com/uncarbon97/</url>
+    <url>https://github.com/uncarbon97</url>
+
+    <properties>
+        <revision>4.0.0-SNAPSHOT</revision>
+        <java.version>21</java.version>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+        <maven.compiler.source>${java.version}</maven.compiler.source>
+        <maven.compiler.target>${java.version}</maven.compiler.target>
+    </properties>
 
     <modules>
         <module>helio-bom</module>
         <module>helio-dependencies</module>
+        <module>helio-framework-core</module>
+        <module>helio-framework-starter</module>
     </modules>
 
-    <dependencies>
+    <dependencyManagement>
+        <dependencies>
+            <!-- 内部依赖版本管理 -->
+            <dependency>
+                <groupId>cc.uncarbon.framework</groupId>
+                <artifactId>helio-bom</artifactId>
+                <version>${revision}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
 
-    </dependencies>
+            <!-- 外部依赖版本管理 -->
+            <dependency>
+                <groupId>cc.uncarbon.framework</groupId>
+                <artifactId>helio-dependencies</artifactId>
+                <version>${revision}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
 
     <!-- 仓库信息 -->
     <scm>

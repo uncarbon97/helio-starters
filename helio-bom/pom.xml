@@ -9,6 +9,9 @@
     <artifactId>helio-bom</artifactId>
     <version>${revision}</version>
     <name>${project.artifactId}</name>
+    <description>
+        统一管理 Helio 脚手架内部依赖的版本号
+    </description>
 
     <properties>
         <revision>4.0.0-SNAPSHOT</revision>
@@ -18,94 +21,14 @@
         <dependencies>
             <dependency>
                 <groupId>cc.uncarbon.framework</groupId>
-                <artifactId>helio-core</artifactId>
+                <artifactId>helio-framework-core</artifactId>
                 <version>${revision}</version>
             </dependency>
 
             <dependency>
                 <groupId>cc.uncarbon.framework</groupId>
-                <artifactId>helio-starter-aop</artifactId>
+                <artifactId>helio-framework-starter</artifactId>
                 <version>${revision}</version>
-            </dependency>
-
-            <dependency>
-                <groupId>cc.uncarbon.framework</groupId>
-                <artifactId>helio-starter-cloud</artifactId>
-                <version>${revision}</version>
-            </dependency>
-
-            <dependency>
-                <groupId>cc.uncarbon.framework</groupId>
-                <artifactId>helio-starter-crud</artifactId>
-                <version>${revision}</version>
-            </dependency>
-
-            <dependency>
-                <groupId>cc.uncarbon.framework</groupId>
-                <artifactId>helio-starter-dubbo</artifactId>
-                <version>${revision}</version>
-            </dependency>
-
-            <dependency>
-                <groupId>cc.uncarbon.framework</groupId>
-                <artifactId>helio-starter-i18n</artifactId>
-                <version>${revision}</version>
-            </dependency>
-
-            <dependency>
-                <groupId>cc.uncarbon.framework</groupId>
-                <artifactId>helio-starter-knife4j</artifactId>
-                <version>${revision}</version>
-            </dependency>
-
-            <dependency>
-                <groupId>cc.uncarbon.framework</groupId>
-                <artifactId>helio-starter-rate-limit-redis</artifactId>
-                <version>${revision}</version>
-            </dependency>
-
-            <dependency>
-                <groupId>cc.uncarbon.framework</groupId>
-                <artifactId>helio-starter-redis</artifactId>
-                <version>${revision}</version>
-            </dependency>
-
-            <dependency>
-                <groupId>cc.uncarbon.framework</groupId>
-                <artifactId>helio-starter-rocketmq-aliyun</artifactId>
-                <version>${revision}</version>
-            </dependency>
-
-            <dependency>
-                <groupId>cc.uncarbon.framework</groupId>
-                <artifactId>helio-starter-satoken</artifactId>
-                <version>${revision}</version>
-            </dependency>
-
-            <dependency>
-                <groupId>cc.uncarbon.framework</groupId>
-                <artifactId>helio-starter-tenant</artifactId>
-                <version>${revision}</version>
-            </dependency>
-
-            <dependency>
-                <groupId>cc.uncarbon.framework</groupId>
-                <artifactId>helio-starter-test</artifactId>
-                <version>${revision}</version>
-            </dependency>
-
-            <dependency>
-                <groupId>cc.uncarbon.framework</groupId>
-                <artifactId>helio-starter-web</artifactId>
-                <version>${revision}</version>
-            </dependency>
-
-            <dependency>
-                <groupId>cc.uncarbon.framework</groupId>
-                <artifactId>helio-dependencies</artifactId>
-                <version>${revision}</version>
-                <type>pom</type>
-                <scope>import</scope>
             </dependency>
         </dependencies>
     </dependencyManagement>
