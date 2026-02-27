@@ -1,7 +1,7 @@
 package cc.uncarbon.framework.web.jackson;
 
-import cc.uncarbon.framework.helio.core.enums.HelioBaseEnum;
-import cc.uncarbon.framework.helio.core.exception.BusinessException;
+import cc.uncarbon.framework.helio.base.enums.HelioBaseEnum;
+import cc.uncarbon.framework.helio.base.exception.BusinessException;
 import lombok.NonNull;
 import org.springframework.core.convert.converter.Converter;
 import org.springframework.core.convert.converter.ConverterFactory;

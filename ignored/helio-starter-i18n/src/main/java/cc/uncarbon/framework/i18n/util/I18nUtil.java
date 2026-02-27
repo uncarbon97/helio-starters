@@ -1,6 +1,6 @@
 package cc.uncarbon.framework.i18n.util;
 
-import cc.uncarbon.framework.helio.core.enums.HelioBaseEnum;
+import cc.uncarbon.framework.helio.base.enums.HelioBaseEnum;
 import cn.hutool.core.text.CharSequenceUtil;
 import cn.hutool.core.text.StrPool;
 import cn.hutool.extra.spring.SpringUtil;

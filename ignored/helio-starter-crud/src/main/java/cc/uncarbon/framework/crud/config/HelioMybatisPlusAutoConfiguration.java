@@ -1,7 +1,7 @@
 package cc.uncarbon.framework.crud.config;
 
-import cc.uncarbon.framework.helio.core.enums.IdGeneratorStrategyEnum;
-import cc.uncarbon.framework.helio.core.props.HelioProperties;
+import cc.uncarbon.framework.helio.base.enums.IdGeneratorStrategyEnum;
+import cc.uncarbon.framework.helio.base.props.HelioProperties;
 import cc.uncarbon.framework.crud.handler.HelioSequenceIdGenerateHandler;
 import cc.uncarbon.framework.crud.handler.HelioSnowflakeIdGenerateHandler;
 import cc.uncarbon.framework.crud.handler.MybatisPlusAutoFillColumnHandler;

@@ -1,7 +1,7 @@
 package cc.uncarbon.framework.web.model.response;
 
-import cc.uncarbon.framework.helio.core.constant.HelioConstant;
-import cc.uncarbon.framework.helio.core.enums.HelioBaseEnum;
+import cc.uncarbon.framework.helio.base.constant.HelioConstant;
+import cc.uncarbon.framework.helio.base.enums.HelioBaseEnum;
 import cn.hutool.core.util.ObjectUtil;
 import cn.hutool.http.HttpStatus;
 import io.swagger.v3.oas.annotations.media.Schema;

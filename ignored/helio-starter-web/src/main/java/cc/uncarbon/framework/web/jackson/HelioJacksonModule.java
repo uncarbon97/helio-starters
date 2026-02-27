@@ -1,6 +1,6 @@
 package cc.uncarbon.framework.web.jackson;
 
-import cc.uncarbon.framework.helio.core.constant.HelioConstant;
+import cc.uncarbon.framework.helio.base.constant.HelioConstant;
 import com.fasterxml.jackson.databind.module.SimpleModule;
 import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
 import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateDeserializer;

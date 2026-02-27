@@ -1,6 +1,6 @@
 package cc.uncarbon.framework.satoken.dao;
 
-import cc.uncarbon.framework.helio.core.cache.TimedCacheEx;
+import cc.uncarbon.framework.helio.base.cache.TimedCacheEx;
 import cn.dev33.satoken.dao.SaTokenDaoForRedisTemplate;
 import lombok.extern.slf4j.Slf4j;
 

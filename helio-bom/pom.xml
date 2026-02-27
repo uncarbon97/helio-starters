@@ -21,13 +21,19 @@
         <dependencies>
             <dependency>
                 <groupId>cc.uncarbon.framework</groupId>
-                <artifactId>helio-framework-core</artifactId>
+                <artifactId>helio-core-base</artifactId>
                 <version>${revision}</version>
             </dependency>
 
             <dependency>
                 <groupId>cc.uncarbon.framework</groupId>
-                <artifactId>helio-framework-starter</artifactId>
+                <artifactId>helio-starter-base</artifactId>
+                <version>${revision}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>cc.uncarbon.framework</groupId>
+                <artifactId>helio-core-tenant</artifactId>
                 <version>${revision}</version>
             </dependency>
         </dependencies>

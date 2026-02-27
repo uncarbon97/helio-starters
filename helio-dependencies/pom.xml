@@ -42,7 +42,7 @@
 
     <dependencyManagement>
         <dependencies>
-            <!-- Spring Boot 家族依赖 -->
+            <!-- Spring Boot ecosystem -->
             <dependency>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-dependencies</artifactId>
@@ -51,7 +51,7 @@
                 <scope>import</scope>
             </dependency>
 
-            <!-- BEGIN: helio-framework-XXX -->
+            <!-- for helio-starter-base BEGIN -->
             <dependency>
                 <groupId>org.projectlombok</groupId>
                 <artifactId>lombok</artifactId>
@@ -65,14 +65,14 @@
                 <version>${springdoc-annotations.version}</version>
             </dependency>
 
-            <!-- END: helio-framework-XXX -->
-
-
+            <!-- 阿里 TTL 跨线程 ThreadLocal -->
             <dependency>
                 <groupId>com.alibaba</groupId>
                 <artifactId>transmittable-thread-local</artifactId>
                 <version>${transmittable-thread-local.version}</version>
             </dependency>
+
+            <!-- for helio-starter-base END -->
 
             <dependency>
                 <groupId>cn.hutool</groupId>

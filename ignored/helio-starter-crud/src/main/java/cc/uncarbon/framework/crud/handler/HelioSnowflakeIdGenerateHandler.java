@@ -1,7 +1,7 @@
 package cc.uncarbon.framework.crud.handler;
 
-import cc.uncarbon.framework.helio.core.enums.IdGeneratorStrategyEnum;
-import cc.uncarbon.framework.helio.core.props.HelioProperties;
+import cc.uncarbon.framework.helio.base.enums.IdGeneratorStrategyEnum;
+import cc.uncarbon.framework.helio.base.props.HelioProperties;
 import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.lang.Singleton;
 import cn.hutool.core.lang.Snowflake;

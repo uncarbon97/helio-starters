@@ -1,6 +1,6 @@
 package cc.uncarbon.framework.ratelimit.stratrgy.impl;
 
-import cc.uncarbon.framework.helio.core.context.UserContextHolder;
+import cc.uncarbon.framework.helio.base.context.UserContextHolder;
 import cc.uncarbon.framework.ratelimit.annotation.UseRateLimit;
 import cc.uncarbon.framework.ratelimit.constant.RateLimitConstant;
 import cc.uncarbon.framework.ratelimit.stratrgy.RateLimitStrategy;

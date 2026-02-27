@@ -1,6 +1,6 @@
 package cc.uncarbon.framework.crud.entity;
 
-import cc.uncarbon.framework.helio.core.constant.HelioConstant;
+import cc.uncarbon.framework.helio.base.constant.HelioConstant;
 import com.baomidou.mybatisplus.annotation.TableField;
 import lombok.AllArgsConstructor;
 import lombok.Data;

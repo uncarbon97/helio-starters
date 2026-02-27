@@ -1,13 +1,11 @@
 package cc.uncarbon.framework.crud.handler;
 
-import cc.uncarbon.framework.helio.core.context.TenantContextHolder;
-import cc.uncarbon.framework.helio.core.context.UserContextHolder;
+import cc.uncarbon.framework.helio.base.context.TenantContextHolder;
+import cc.uncarbon.framework.helio.base.context.UserContextHolder;
 import com.baomidou.mybatisplus.core.handlers.MetaObjectHandler;
 import org.apache.ibatis.reflection.MetaObject;
 
 import java.time.LocalDateTime;
-
-import static cc.uncarbon.framework.helio.core.constant.HelioConstant.CRUD.*;
 
 /**
  * 字段自动填充, 摘自Mybatis-Plus官方例程

@@ -1,6 +1,6 @@
 package cc.uncarbon.framework.satoken.config;
 
-import cc.uncarbon.framework.helio.core.props.HelioProperties;
+import cc.uncarbon.framework.helio.base.props.HelioProperties;
 import cc.uncarbon.framework.satoken.dao.SaTokenLocalCacheDao;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;

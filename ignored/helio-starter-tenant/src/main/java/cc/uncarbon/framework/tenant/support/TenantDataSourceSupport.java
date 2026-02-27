@@ -1,6 +1,6 @@
 package cc.uncarbon.framework.tenant.support;
 
-import cc.uncarbon.framework.helio.core.props.HelioProperties;
+import cc.uncarbon.framework.helio.base.props.HelioProperties;
 import cc.uncarbon.framework.crud.support.TenantSupport;
 import com.baomidou.mybatisplus.extension.plugins.MybatisPlusInterceptor;
 import lombok.extern.slf4j.Slf4j;

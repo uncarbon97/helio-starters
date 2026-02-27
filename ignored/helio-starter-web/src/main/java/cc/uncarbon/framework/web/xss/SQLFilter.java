@@ -1,6 +1,6 @@
 package cc.uncarbon.framework.web.xss;
 
-import cc.uncarbon.framework.helio.core.exception.BusinessException;
+import cc.uncarbon.framework.helio.base.exception.BusinessException;
 import cn.hutool.core.text.CharSequenceUtil;
 import org.springframework.util.StringUtils;
 

@@ -1,6 +1,6 @@
 package cc.uncarbon.framework.web.config;
 
-import cc.uncarbon.framework.helio.core.props.HelioProperties;
+import cc.uncarbon.framework.helio.base.props.HelioProperties;
 import cc.uncarbon.framework.web.xss.XssFilter;
 import jakarta.servlet.DispatcherType;
 import org.springframework.boot.autoconfigure.AutoConfiguration;

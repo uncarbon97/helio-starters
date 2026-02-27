@@ -1,6 +1,6 @@
 package cc.uncarbon.framework.crud.mapper;
 
-import cc.uncarbon.framework.helio.core.function.StreamFunction;
+import cc.uncarbon.framework.helio.base.function.StreamFunction;
 import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.util.ArrayUtil;

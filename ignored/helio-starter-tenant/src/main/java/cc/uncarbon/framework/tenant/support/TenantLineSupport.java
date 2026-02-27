@@ -1,8 +1,8 @@
 package cc.uncarbon.framework.tenant.support;
 
-import cc.uncarbon.framework.helio.core.constant.HelioConstant;
-import cc.uncarbon.framework.helio.core.context.TenantContextHolder;
-import cc.uncarbon.framework.helio.core.props.HelioProperties;
+import cc.uncarbon.framework.helio.base.constant.HelioConstant;
+import cc.uncarbon.framework.helio.base.context.TenantContextHolder;
+import cc.uncarbon.framework.helio.base.props.HelioProperties;
 import cc.uncarbon.framework.crud.support.TenantSupport;
 import com.baomidou.mybatisplus.extension.plugins.MybatisPlusInterceptor;
 import com.baomidou.mybatisplus.extension.plugins.handler.TenantLineHandler;

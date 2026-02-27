@@ -1,7 +1,7 @@
 package cc.uncarbon.framework.tenant.config;
 
-import cc.uncarbon.framework.helio.core.enums.TenantIsolateLevelEnum;
-import cc.uncarbon.framework.helio.core.props.HelioProperties;
+import cc.uncarbon.framework.helio.base.enums.TenantIsolateLevelEnum;
+import cc.uncarbon.framework.helio.base.props.HelioProperties;
 import cc.uncarbon.framework.crud.support.TenantSupport;
 import cc.uncarbon.framework.crud.support.impl.DefaultTenantSupport;
 import cc.uncarbon.framework.tenant.support.TenantDataSourceSupport;

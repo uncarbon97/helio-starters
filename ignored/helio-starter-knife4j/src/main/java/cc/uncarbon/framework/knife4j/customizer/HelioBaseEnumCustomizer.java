@@ -1,6 +1,6 @@
 package cc.uncarbon.framework.knife4j.customizer;
 
-import cc.uncarbon.framework.helio.core.enums.HelioBaseEnum;
+import cc.uncarbon.framework.helio.base.enums.HelioBaseEnum;
 import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.util.ArrayUtil;
 import cn.hutool.core.util.StrUtil;

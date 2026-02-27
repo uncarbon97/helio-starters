@@ -1,9 +1,9 @@
 package cc.uncarbon.framework.web.config;
 
-import cc.uncarbon.framework.helio.core.constant.HelioConstant;
-import cc.uncarbon.framework.helio.core.exception.BusinessException;
-import cc.uncarbon.framework.helio.core.exception.HelioFrameworkException;
-import cc.uncarbon.framework.helio.core.props.HelioProperties;
+import cc.uncarbon.framework.helio.base.constant.HelioConstant;
+import cc.uncarbon.framework.helio.base.exception.BusinessException;
+import cc.uncarbon.framework.helio.base.exception.HelioFrameworkException;
+import cc.uncarbon.framework.helio.base.props.HelioProperties;
 import cc.uncarbon.framework.i18n.util.I18nUtil;
 import cc.uncarbon.framework.web.enums.GlobalWebExceptionI18nMessageEnum;
 import cc.uncarbon.framework.web.model.response.ApiResult;

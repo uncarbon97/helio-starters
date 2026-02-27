@@ -1,7 +1,7 @@
 package cc.uncarbon.framework.tenant.tenantdatasource;
 
-import cc.uncarbon.framework.helio.core.constant.HelioConstant.CRUD;
-import cc.uncarbon.framework.helio.core.context.TenantContextHolder;
+import cc.uncarbon.framework.helio.base.constant.HelioConstant.CRUD;
+import cc.uncarbon.framework.helio.base.context.TenantContextHolder;
 import cc.uncarbon.framework.crud.dynamicdatasource.HelioDynamicDataSourceRegistry;
 import com.baomidou.dynamic.datasource.toolkit.DynamicDataSourceContextHolder;
 import lombok.NonNull;

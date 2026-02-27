@@ -1,6 +1,6 @@
 package cc.uncarbon.framework.crud.handler;
 
-import cc.uncarbon.framework.helio.core.enums.IdGeneratorStrategyEnum;
+import cc.uncarbon.framework.helio.base.enums.IdGeneratorStrategyEnum;
 import cn.hutool.core.net.NetUtil;
 import com.baomidou.mybatisplus.core.incrementer.DefaultIdentifierGenerator;
 import lombok.extern.slf4j.Slf4j;

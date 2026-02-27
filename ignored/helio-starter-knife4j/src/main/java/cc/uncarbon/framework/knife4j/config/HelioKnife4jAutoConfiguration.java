@@ -1,6 +1,6 @@
 package cc.uncarbon.framework.knife4j.config;
 
-import cc.uncarbon.framework.helio.core.props.HelioProperties;
+import cc.uncarbon.framework.helio.base.props.HelioProperties;
 import cc.uncarbon.framework.knife4j.customizer.HelioBaseEnumCustomizer;
 import cc.uncarbon.framework.knife4j.filter.AbstractSecurityFilter;
 import cc.uncarbon.framework.knife4j.filter.JakartaProductionSecurityFilter;

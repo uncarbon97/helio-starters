@@ -1,6 +1,6 @@
 package cc.uncarbon.framework.web.config;
 
-import cc.uncarbon.framework.helio.core.constant.HelioConstant;
+import cc.uncarbon.framework.helio.base.constant.HelioConstant;
 import cc.uncarbon.framework.web.jackson.EnumModule;
 import cc.uncarbon.framework.web.jackson.HelioJacksonModule;
 import com.fasterxml.jackson.annotation.JsonInclude;

@@ -25,8 +25,9 @@
     <modules>
         <module>helio-bom</module>
         <module>helio-dependencies</module>
-        <module>helio-framework-core</module>
-        <module>helio-framework-starter</module>
+        <module>helio-core-base</module>
+        <module>helio-starter-base</module>
+        <module>helio-core-tenant</module>
     </modules>
 
     <dependencyManagement>

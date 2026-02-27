@@ -1,6 +1,6 @@
 package cc.uncarbon.framework.web.jackson;
 
-import cc.uncarbon.framework.helio.core.enums.HelioBaseEnum;
+import cc.uncarbon.framework.helio.base.enums.HelioBaseEnum;
 import cn.hutool.core.text.CharSequenceUtil;
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.core.JsonParser;
