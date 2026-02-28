@@ -12,10 +12,10 @@
         <relativePath>../pom.xml</relativePath>
     </parent>
 
-    <artifactId>helio-core-tenant</artifactId>
+    <artifactId>helio-core-data</artifactId>
     <name>${project.artifactId}</name>
     <description>
-        Helio 租户核心包
+        Helio 数据访问核心包
     </description>
 
     <dependencies>

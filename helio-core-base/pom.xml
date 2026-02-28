@@ -15,8 +15,7 @@
     <artifactId>helio-core-base</artifactId>
     <name>${project.artifactId}</name>
     <description>
-        Helio 脚手架核心包
-        包含：POJO、常量、枚举、异常等
+        Helio 基础核心包
     </description>
 
     <dependencies>
@@ -29,6 +28,12 @@
         <dependency>
             <groupId>io.swagger.core.v3</groupId>
             <artifactId>swagger-annotations</artifactId>
+        </dependency>
+
+        <!-- mybatis-plus 注解包 -->
+        <dependency>
+            <groupId>com.baomidou</groupId>
+            <artifactId>mybatis-plus-annotation</artifactId>
         </dependency>
     </dependencies>
 </project>

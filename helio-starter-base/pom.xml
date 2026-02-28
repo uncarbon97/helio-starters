@@ -15,12 +15,11 @@
     <artifactId>helio-starter-base</artifactId>
     <name>${project.artifactId}</name>
     <description>
-        Helio 脚手架启动包
-        包含：自动配置、Spring Bean 等
+        Helio 基础启动包
     </description>
 
     <dependencies>
-        <!-- 关联核心包 -->
+        <!-- 引用基础核心包 -->
         <dependency>
             <groupId>cc.uncarbon.framework</groupId>
             <artifactId>helio-core-base</artifactId>
@@ -51,11 +50,17 @@
             <artifactId>spring-boot-configuration-processor</artifactId>
         </dependency>
 
-        <!-- 阿里 TTL 跨线程 ThreadLocal-->
+        <!-- 阿里 TTL-->
         <dependency>
             <groupId>com.alibaba</groupId>
             <artifactId>transmittable-thread-local</artifactId>
         </dependency>
+
+
+
+
+
+
 
         <!-- Jackson 注解包 -->
         <dependency>
@@ -73,12 +78,6 @@
         <dependency>
             <groupId>cn.hutool</groupId>
             <artifactId>hutool-all</artifactId>
-        </dependency>
-
-        <!-- mybatis-plus 注解包 -->
-        <dependency>
-            <groupId>com.baomidou</groupId>
-            <artifactId>mybatis-plus-annotation</artifactId>
         </dependency>
     </dependencies>
 </project>

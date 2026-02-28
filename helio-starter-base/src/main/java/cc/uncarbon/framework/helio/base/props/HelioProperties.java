@@ -1,8 +1,7 @@
 package cc.uncarbon.framework.helio.base.props;
 
 import cc.uncarbon.framework.helio.base.constant.HelioConstant;
-import cc.uncarbon.framework.helio.base.enums.IdGeneratorStrategyEnum;
-import cc.uncarbon.framework.helio.base.enums.TenantIsolateLevelEnum;
+import cc.uncarbon.framework.helio.base.enums.TenantStrategyEnum;
 import lombok.Data;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
@@ -20,40 +19,33 @@ import java.util.List;
 @Data
 public class HelioProperties {
 
-    private final Security security = new Security();
-    private final Crud crud = new Crud();
-    private final Knife4j knife4j = new Knife4j();
+    private final WebSecurity webSecurity = new WebSecurity();
+    private final WebLogging webLogging = new WebLogging();
+    private final Data data = new Data();
     private final Tenant tenant = new Tenant();
-    private final Web web = new Web();
     private final I18n i18n = new I18n();
 
 
-    @Data
-    public static class Security {
-
-        /**
-         * 放行路由地址，不进行登录校验（默认用于app-api）
-         */
-        private final List<String> excludeRoutes = new ArrayList<>(64);
+    @lombok.Data
+    public static class WebSecurity {
 
         private final Xss xss = new Xss();
-
         private final SaTokenLocalCache saTokenLocalCache = new SaTokenLocalCache();
 
 
-        @Data
+        @lombok.Data
         public static class Xss {
 
             /**
-             * 是否启用XSS Filter（默认启用）
+             * 是否启用 XSS Filter
+             * 默认启用
              */
             private boolean enabled = true;
 
             /**
              * 不进行XSS过滤的路由，直接放行
-             * 注意单词是被动态噢
              */
-            private List<String> excludedRoutes = new ArrayList<>();
+            private List<String> ignoredUrls = new ArrayList<>();
 
         }
 
@@ -63,7 +55,7 @@ public class HelioProperties {
          * 在多实例部署时存在一定安全风险，有可能用户登出时，A机器的缓存已清除，但B机器的缓存还认为有效。所以请谨慎设置本地缓存有效时长
          * @since 2.1.0
          */
-        @Data
+        @lombok.Data
         public static class SaTokenLocalCache {
 
             /**
@@ -84,8 +76,18 @@ public class HelioProperties {
         }
     }
 
-    @Data
-    public static class Crud {
+    @lombok.Data
+    public static class WebLogging {
+
+        /**
+         * 是否启用 Web 访问日志切面，默认为 false
+         */
+        private Boolean enabled = Boolean.FALSE;
+
+    }
+
+    @lombok.Data
+    public static class Data {
 
         /**
          * 乐观锁插件
@@ -103,7 +105,7 @@ public class HelioProperties {
         private String dbType = "mysql";
 
 
-        @Data
+        @lombok.Data
         public static class OptimisticLock {
 
             /**
@@ -113,13 +115,8 @@ public class HelioProperties {
 
         }
 
-        @Data
+        @lombok.Data
         public static class IdGenerator {
-
-            /**
-             * ID生成器策略 默认为SNOWFLAKE
-             */
-            private IdGeneratorStrategyEnum strategy = IdGeneratorStrategyEnum.SNOWFLAKE;
 
             /**
              * 雪花ID-起始时刻 默认为2021-01-01
@@ -134,27 +131,7 @@ public class HelioProperties {
         }
     }
 
-    @Data
-    public static class Knife4j {
-
-        /**
-         * Knife4j UI 上显示的标题
-         */
-        private String title = "";
-
-        /**
-         * Knife4j UI 上显示的简介
-         */
-        private String description = "";
-
-        /**
-         * Knife4j UI 上显示的版本号
-         */
-        private String version = "";
-
-    }
-
-    @Data
+    @lombok.Data
     public static class Tenant {
 
         /**
@@ -165,7 +142,7 @@ public class HelioProperties {
         /**
          * 多租户隔离级别 默认为行级
          */
-        private TenantIsolateLevelEnum isolateLevel = TenantIsolateLevelEnum.LINE;
+        private TenantStrategyEnum isolateLevel = TenantStrategyEnum.LINE;
 
         /**
          * 哪些表忽略租户隔离 仅对【行级】隔离级别有效
@@ -179,24 +156,7 @@ public class HelioProperties {
 
     }
 
-    @Data
-    public static class Web {
-
-        private final Logging logging = new Logging();
-
-        @Data
-        public static class Logging {
-
-            /**
-             * 是否启用 Web 访问日志切面，默认为 false
-             */
-            private Boolean enabled = Boolean.FALSE;
-
-        }
-
-    }
-
-    @Data
+    @lombok.Data
     public static class I18n {
 
         /**

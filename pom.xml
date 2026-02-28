@@ -26,8 +26,11 @@
         <module>helio-bom</module>
         <module>helio-dependencies</module>
         <module>helio-core-base</module>
-        <module>helio-starter-base</module>
+        <module>helio-core-data</module>
         <module>helio-core-tenant</module>
+        <module>helio-starter-base</module>
+        <module>helio-starter-data</module>
+        <module>helio-starter-tenant</module>
     </modules>
 
     <dependencyManagement>

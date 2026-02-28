@@ -33,7 +33,25 @@
 
             <dependency>
                 <groupId>cc.uncarbon.framework</groupId>
+                <artifactId>helio-core-data</artifactId>
+                <version>${revision}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>cc.uncarbon.framework</groupId>
+                <artifactId>helio-starter-data</artifactId>
+                <version>${revision}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>cc.uncarbon.framework</groupId>
                 <artifactId>helio-core-tenant</artifactId>
+                <version>${revision}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>cc.uncarbon.framework</groupId>
+                <artifactId>helio-starter-tenant</artifactId>
                 <version>${revision}</version>
             </dependency>
         </dependencies>
