@@ -5,8 +5,8 @@ package cc.uncarbon.framework.helio.satoken.constant;
  *
  * @author Uncarbon
  */
-public final class Permission {
-    private Permission() {
+public final class PermissionPattern {
+    private PermissionPattern() {
     }
 
     public static final String READ = "read";

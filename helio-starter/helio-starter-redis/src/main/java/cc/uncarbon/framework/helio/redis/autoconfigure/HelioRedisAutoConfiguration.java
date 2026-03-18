@@ -1,4 +1,4 @@
-package cc.uncarbon.framework.redis.config;
+package cc.uncarbon.framework.helio.redis.autoconfigure;
 
 import cc.uncarbon.framework.redis.lock.RedisDistributedLock;
 import cc.uncarbon.framework.redis.lock.impl.RedisDistributedLockImpl;
@@ -26,7 +26,7 @@ import org.springframework.data.redis.serializer.StringRedisSerializer;
  * @author Uncarbon
  */
 @EnableCaching
-@ConditionalOnClass(RedisConnectionFactory.class)
+@ConditionalOnClass(value = RedisConnectionFactory.class)
 @RequiredArgsConstructor
 @AutoConfiguration
 public class HelioRedisAutoConfiguration {

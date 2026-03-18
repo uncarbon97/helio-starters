@@ -1,19 +1,21 @@
-package cc.uncarbon.framework.satoken.dao;
+package cc.uncarbon.framework.helio.satoken.dao;
 
 import cc.uncarbon.framework.helio.base.cache.TimedCacheEx;
 import cn.dev33.satoken.dao.SaTokenDaoForRedisTemplate;
 import lombok.extern.slf4j.Slf4j;
 
 /**
- * SA-Token 读取时，本地缓存一定时长，减少对 Redis 的 IO
- * 在多实例部署时存在一定安全风险，有可能用户登出时，A机器的缓存已清除，但B机器的缓存还认为有效。所以请谨慎设置本地缓存有效时长
- * 底层实现为读写锁，大量数据下需要注意 FullGC 风险
+ * 在 SA-Token 读取时，本地缓存一定时长，减少对 Redis 的 IO
+ * 在多实例部署时存在一定安全风险：用户登出时，A机器的缓存已清除，但B机器的缓存还认为有效
+ * 所以请谨慎设置本地缓存有效时长
  *
- * @since 2.1.0
  * @author Uncarbon
+ * @since 2.1.0
  */
 @Slf4j
 public class SaTokenLocalCacheDao extends SaTokenDaoForRedisTemplate {
+
+    private static final String LOG_PREFIX = "[SaTokenLocalCacheDao]";
 
     /**
      * 标记 key 为空值
@@ -25,6 +27,7 @@ public class SaTokenLocalCacheDao extends SaTokenDaoForRedisTemplate {
 
     /**
      * 创建本地缓存 SaTokenDao
+     *
      * @param duration 本地缓存有效时长，单位=秒
      * @param capacity 本地缓存最大容量，注意：每次超过容量都会触发一次清理过程
      */
@@ -45,11 +48,12 @@ public class SaTokenLocalCacheDao extends SaTokenDaoForRedisTemplate {
         enableNullValueMarkerPruneSchedule(400);
         // 不默认开stringValueCache、objectValueCache的清理定时任务
 
-        log.info("[framework][SA-Token] 本地二级缓存已生效");
+        log.info(LOG_PREFIX + " 已启用");
     }
 
     /**
-     * 开nullValueMarker的清理定时任务
+     * 开 nullValueMarker 的清理定时任务
+     *
      * @param delay 间隔时长，单位毫秒
      */
     public void enableNullValueMarkerPruneSchedule(long delay) {
@@ -57,14 +61,15 @@ public class SaTokenLocalCacheDao extends SaTokenDaoForRedisTemplate {
     }
 
     /**
-     * 关nullValueMarker的清理定时任务
+     * 关 nullValueMarker 的清理定时任务
      */
     public void disableNullValueMarkerPruneSchedule() {
         this.nullValueMarker.cancelPruneSchedule();
     }
 
     /**
-     * 开stringValueCache的清理定时任务
+     * 开 stringValueCache 的清理定时任务
+     *
      * @param delay 间隔时长，单位毫秒
      */
     public void enableStringValueCachePruneSchedule(long delay) {
@@ -72,14 +77,15 @@ public class SaTokenLocalCacheDao extends SaTokenDaoForRedisTemplate {
     }
 
     /**
-     * 关stringValueCache的清理定时任务
+     * 关 stringValueCache 的清理定时任务
      */
     public void disableStringValueCachePruneSchedule() {
         this.stringValueCache.cancelPruneSchedule();
     }
 
     /**
-     * 开objectValueCache的清理定时任务
+     * 开 objectValueCache 的清理定时任务
+     *
      * @param delay 间隔时长，单位毫秒
      */
     public void enableObjectValueCachePruneSchedule(long delay) {
@@ -87,7 +93,7 @@ public class SaTokenLocalCacheDao extends SaTokenDaoForRedisTemplate {
     }
 
     /**
-     * 关objectValueCache的清理定时任务
+     * 关 objectValueCache 的清理定时任务
      */
     public void disableObjectValueCachePruneSchedule() {
         this.objectValueCache.cancelPruneSchedule();

@@ -5,7 +5,7 @@ import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 
 /**
- * properties 解析自动配置类
+ * Helio 配置属性解析自动配置类
  *
  * @author Uncarbon
  */

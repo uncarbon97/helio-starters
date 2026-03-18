@@ -31,31 +31,34 @@
             <artifactId>helio-core-mybatis</artifactId>
         </dependency>
 
-        <!-- 第三方依赖 -->
+        <!-- mybatis-plus 启动包 -->
         <dependency>
             <groupId>com.baomidou</groupId>
-            <artifactId>mybatis-plus-spring-boot3-starter</artifactId>
+            <artifactId>mybatis-plus-spring-boot4-starter</artifactId>
         </dependency>
 
+        <!-- mybatis-plus ^3.5.9 需要另外追加 -->
         <dependency>
             <groupId>com.baomidou</groupId>
             <artifactId>mybatis-plus-jsqlparser</artifactId>
         </dependency>
 
+        <!-- MySQL JDBC 驱动 -->
         <dependency>
             <groupId>com.mysql</groupId>
             <artifactId>mysql-connector-j</artifactId>
         </dependency>
 
+        <!-- PostgreSQL JDBC 驱动 -->
         <dependency>
             <groupId>org.postgresql</groupId>
             <artifactId>postgresql</artifactId>
         </dependency>
 
+        <!-- 动态数据源 -->
         <dependency>
             <groupId>com.baomidou</groupId>
-            <artifactId>dynamic-datasource-spring-boot3-starter</artifactId>
-            <optional>true</optional>
+            <artifactId>dynamic-datasource-spring-boot4-starter</artifactId>
         </dependency>
     </dependencies>
 </project>

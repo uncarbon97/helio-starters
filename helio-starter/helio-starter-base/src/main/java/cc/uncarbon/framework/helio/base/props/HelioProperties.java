@@ -11,7 +11,7 @@ import java.util.LinkedHashSet;
 import java.util.List;
 
 /**
- * 配置项会被反序列化到本 Spring Bean 中，可自行依赖注入后使用
+ * 配置属性会被反序列化到本 Spring Bean 中，可自行依赖注入后使用
  *
  * @author Uncarbon
  */
@@ -19,44 +19,29 @@ import java.util.List;
 @Data
 public class HelioProperties {
 
+    private final Satoken satoken = new Satoken();
+
     private final WebSecurity webSecurity = new WebSecurity();
     private final WebLogging webLogging = new WebLogging();
-    private final Data data = new Data();
+    private final Mybatis mybatis = new Mybatis();
     private final Tenant tenant = new Tenant();
     private final I18n i18n = new I18n();
 
 
-    @lombok.Data
-    public static class WebSecurity {
+    @Data
+    public static class Satoken {
 
-        private final Xss xss = new Xss();
-        private final SaTokenLocalCache saTokenLocalCache = new SaTokenLocalCache();
-
-
-        @lombok.Data
-        public static class Xss {
-
-            /**
-             * 是否启用 XSS Filter
-             * 默认启用
-             */
-            private boolean enabled = true;
-
-            /**
-             * 不进行XSS过滤的路由，直接放行
-             */
-            private List<String> ignoredUrls = new ArrayList<>();
-
-        }
+        private final LocalCacheDao localCacheDao = new LocalCacheDao();
 
         /**
-         * ！！！试验性功能！！！
-         * SA-Token 读取时，本地缓存一定时长，减少对 Redis 的 IO
-         * 在多实例部署时存在一定安全风险，有可能用户登出时，A机器的缓存已清除，但B机器的缓存还认为有效。所以请谨慎设置本地缓存有效时长
+         * 在 SA-Token 读取时，本地缓存一定时长，减少对 Redis 的 IO
+         * 在多实例部署时存在一定安全风险：用户登出时，A机器的缓存已清除，但B机器的缓存还认为有效
+         * 所以请谨慎设置本地缓存有效时长
+         *
          * @since 2.1.0
          */
-        @lombok.Data
-        public static class SaTokenLocalCache {
+        @Data
+        public static class LocalCacheDao {
 
             /**
              * 是否启用
@@ -76,7 +61,31 @@ public class HelioProperties {
         }
     }
 
-    @lombok.Data
+
+    @Data
+    public static class WebSecurity {
+
+        private final Xss xss = new Xss();
+
+
+        @Data
+        public static class Xss {
+
+            /**
+             * 是否启用 XSS Filter
+             * 默认启用
+             */
+            private boolean enabled = true;
+
+            /**
+             * 不进行XSS过滤的路由，直接放行
+             */
+            private List<String> ignoredUrls = new ArrayList<>();
+
+        }
+    }
+
+    @Data
     public static class WebLogging {
 
         /**
@@ -86,8 +95,8 @@ public class HelioProperties {
 
     }
 
-    @lombok.Data
-    public static class Data {
+    @Data
+    public static class Mybatis {
 
         /**
          * 乐观锁插件
@@ -105,7 +114,7 @@ public class HelioProperties {
         private String dbType = "mysql";
 
 
-        @lombok.Data
+        @Data
         public static class OptimisticLock {
 
             /**
@@ -115,7 +124,7 @@ public class HelioProperties {
 
         }
 
-        @lombok.Data
+        @Data
         public static class IdGenerator {
 
             /**
@@ -131,7 +140,7 @@ public class HelioProperties {
         }
     }
 
-    @lombok.Data
+    @Data
     public static class Tenant {
 
         /**
@@ -156,7 +165,7 @@ public class HelioProperties {
 
     }
 
-    @lombok.Data
+    @Data
     public static class I18n {
 
         /**
