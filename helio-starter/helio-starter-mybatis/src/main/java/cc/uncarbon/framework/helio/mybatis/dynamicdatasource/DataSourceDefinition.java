@@ -5,23 +5,15 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.Accessors;
-import lombok.experimental.SuperBuilder;
-
-import java.io.Serial;
-import java.io.Serializable;
 
 /**
  * 动态数据源定义
  */
 @Accessors(chain = true)
-@SuperBuilder
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
-public class DataSourceDefinition implements Serializable {
-
-    @Serial
-    private static final long serialVersionUID = 1L;
+public class DataSourceDefinition {
 
     /**
      * 数据源名称，切换数据源时需要这个，最好不用数字开头

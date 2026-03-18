@@ -46,7 +46,7 @@ public class HelioProperties {
             /**
              * 是否启用
              */
-            private boolean enabled = false;
+            private Boolean enabled = false;
 
             /**
              * 本地缓存有效时长，单位=秒

@@ -1,4 +1,4 @@
-package cc.uncarbon.framework.helio.mybatis.config;
+package cc.uncarbon.framework.helio.mybatis.autoconfigure;
 
 import cc.uncarbon.framework.helio.base.enums.IdGeneratorStrategyEnum;
 import cc.uncarbon.framework.helio.base.props.HelioProperties;
@@ -12,8 +12,11 @@ import com.baomidou.mybatisplus.extension.plugins.MybatisPlusInterceptor;
 import com.baomidou.mybatisplus.extension.plugins.inner.BlockAttackInnerInterceptor;
 import com.baomidou.mybatisplus.extension.plugins.inner.OptimisticLockerInnerInterceptor;
 import com.baomidou.mybatisplus.extension.plugins.inner.PaginationInnerInterceptor;
+import com.baomidou.mybatisplus.extension.plugins.inner.TenantLineInnerInterceptor;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.ObjectProvider;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
@@ -32,6 +35,9 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 @Slf4j
 public class HelioMybatisPlusAutoConfiguration {
 
+    @Autowired(required = false)
+    private TenantLineInnerInterceptor tenantLineInterceptor;
+
     private final HelioProperties helioProperties;
 
 
@@ -43,16 +49,17 @@ public class HelioMybatisPlusAutoConfiguration {
         MybatisPlusInterceptor interceptor = new MybatisPlusInterceptor();
 
         /*
-        https://baomidou.com/pages/2976a3/#%E5%B1%9E%E6%80%A7
-        使用多个功能需要注意顺序关系,建议使用如下顺序
-
-        多租户,动态表名
-        分页,乐观锁
-        sql性能规范,防止全表更新与删除
+        https://baomidou.com/plugins/
+        使用多个插件时，需要注意它们的顺序。建议的顺序是：
+        多租户、动态表名
+        分页、乐观锁
+        SQL 性能规范、防止全表更新与删除
+        总结：对 SQL 进行单次改造的插件应优先放入，不对 SQL 进行改造的插件最后放入。
          */
         if (Boolean.TRUE.equals(helioProperties.getTenant().getEnabled())) {
-            // 配置文件中启用了多租户功能，注入对应支持 bean
-            tenantSupport.support(helioProperties, interceptor);
+            if (tenantLineInterceptor != null) {
+                interceptor.addInnerInterceptor(tenantLineInterceptor);
+            }
         }
 
         /*

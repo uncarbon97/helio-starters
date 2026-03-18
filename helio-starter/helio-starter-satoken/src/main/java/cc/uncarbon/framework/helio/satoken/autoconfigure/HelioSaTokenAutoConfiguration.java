@@ -12,14 +12,14 @@ import org.springframework.core.type.AnnotatedTypeMetadata;
 import java.util.Objects;
 
 /**
- * SA-Token 本地缓存自动配置类
+ * Helio 关于 SA-Token 自动配置类
  *
  * @author Uncarbon
  */
 @AutoConfiguration
-public class SaTokenLocalCacheDaoAutoConfiguration {
+public class HelioSaTokenAutoConfiguration {
 
-    @Conditional(value = ConditionalOnLocalCacheDaoEnabled.class)
+    @Conditional(value = OnLocalCacheDaoEnabled.class)
     @ConditionalOnMissingBean(value = SaTokenDao.class)
     @Primary
     @Bean
@@ -28,11 +28,11 @@ public class SaTokenLocalCacheDaoAutoConfiguration {
         return new SaTokenLocalCacheDao(subProp.getDuration(), subProp.getCapacity());
     }
 
-    private static class ConditionalOnLocalCacheDaoEnabled implements Condition {
+    private static class OnLocalCacheDaoEnabled implements Condition {
         @Override
         public boolean matches(ConditionContext context, @NonNull AnnotatedTypeMetadata metadata) {
             HelioProperties helioProperties = Objects.requireNonNull(context.getBeanFactory()).getBean(HelioProperties.class);
-            return helioProperties.getSatoken().getLocalCacheDao().isEnabled();
+            return Boolean.TRUE.equals(helioProperties.getSatoken().getLocalCacheDao().getEnabled());
         }
     }
 

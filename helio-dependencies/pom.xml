@@ -158,8 +158,6 @@
             <!-- 以上用于 helio-*-redis -->
 
             <!-- 以下用于 helio-*-satoken -->
-            <!-- 以上用于 helio-*-satoken -->
-
             <!-- SA-Token 启动包 -->
             <dependency>
                 <groupId>cn.dev33</groupId>
@@ -167,21 +165,13 @@
                 <version>${sa-token.version}</version>
             </dependency>
 
-            <!-- SA-Token 基于Jackson读写Redis支持包 TODO 确定实际的包 -->
+            <!-- SA-Token 集成 Redis -->
             <dependency>
                 <groupId>cn.dev33</groupId>
                 <artifactId>sa-token-redis-jackson</artifactId>
                 <version>${sa-token.version}</version>
             </dependency>
-
-
-            <!-- TEST dependencies -->
-            <dependency>
-                <groupId>org.springframework.boot</groupId>
-                <artifactId>spring-boot-starter-test</artifactId>
-                <version>${spring-boot.version}</version>
-            </dependency>
-
+            <!-- 以上用于 helio-*-satoken -->
 
             <!-- WEB dependencies -->
             <dependency>

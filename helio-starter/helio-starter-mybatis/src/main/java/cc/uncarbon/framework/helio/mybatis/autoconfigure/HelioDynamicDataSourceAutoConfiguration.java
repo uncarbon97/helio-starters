@@ -1,4 +1,4 @@
-package cc.uncarbon.framework.helio.mybatis.config;
+package cc.uncarbon.framework.helio.mybatis.autoconfigure;
 
 import cc.uncarbon.framework.helio.mybatis.dynamicdatasource.DataSourceDefinitionProvider;
 import cc.uncarbon.framework.helio.mybatis.dynamicdatasource.HelioDynamicDataSourceRegistry;

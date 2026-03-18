@@ -1,8 +1,9 @@
-package cc.uncarbon.framework.helio.mybatis.config;
+package cc.uncarbon.framework.helio.mybatis.autoconfigure;
 
-import javax.sql.DataSource;
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.context.annotation.Bean;
+
+import javax.sql.DataSource;
 
 
 /**
