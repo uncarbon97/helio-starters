@@ -15,7 +15,7 @@
     <artifactId>helio-core-mybatis</artifactId>
     <name>${project.artifactId}</name>
     <description>
-        Helio集成Mybatis核心包
+        Helio 集成Mybatis核心包
     </description>
 
     <dependencies>

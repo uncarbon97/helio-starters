@@ -1,16 +1,11 @@
 package cc.uncarbon.framework.helio.tenant.strategy;
 
 import cc.uncarbon.framework.helio.base.constant.HelioConstant;
-import cc.uncarbon.framework.helio.base.context.TenantContextHolder;
 import cc.uncarbon.framework.helio.base.props.HelioProperties;
-import cc.uncarbon.framework.crud.support.TenantSupport;
-import com.baomidou.mybatisplus.extension.plugins.MybatisPlusInterceptor;
-import com.baomidou.mybatisplus.extension.plugins.handler.TenantLineHandler;
-import com.baomidou.mybatisplus.extension.plugins.inner.TenantLineInnerInterceptor;
+import cc.uncarbon.framework.helio.tenant.context.TenantContextHolder;
+import com.sun.jdi.LongValue;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import net.sf.jsqlparser.expression.Expression;
-import net.sf.jsqlparser.expression.LongValue;
 
 import java.util.Collection;
 import java.util.Objects;

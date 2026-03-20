@@ -1,4 +1,4 @@
-package cc.uncarbon.framework.web.jackson;
+package cc.uncarbon.framework.helio.jackson;
 
 import cc.uncarbon.framework.helio.base.constant.HelioConstant;
 import com.fasterxml.jackson.databind.module.SimpleModule;

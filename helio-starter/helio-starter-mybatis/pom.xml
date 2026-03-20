@@ -15,7 +15,8 @@
     <artifactId>helio-starter-mybatis</artifactId>
     <name>${project.artifactId}</name>
     <description>
-        Helio集成Mybatis启动包
+        Helio 集成Mybatis启动包
+
     </description>
 
     <dependencies>

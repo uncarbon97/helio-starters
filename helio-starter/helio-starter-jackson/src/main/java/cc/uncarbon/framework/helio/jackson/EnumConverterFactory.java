@@ -1,8 +1,7 @@
-package cc.uncarbon.framework.web.jackson;
+package cc.uncarbon.framework.helio.jackson;
 
-import cc.uncarbon.framework.helio.base.enums.HelioBaseEnum;
-import cc.uncarbon.framework.helio.base.exception.BusinessException;
-import lombok.NonNull;
+import cc.uncarbon.framework.helio.base.enums.BaseEnum;
+import org.jspecify.annotations.NonNull;
 import org.springframework.core.convert.converter.Converter;
 import org.springframework.core.convert.converter.ConverterFactory;
 
@@ -14,17 +13,20 @@ import java.util.WeakHashMap;
  *
  * @author Zhu JW
  **/
-public class EnumConverterFactory implements ConverterFactory<String, HelioBaseEnum> {
+public class EnumConverterFactory implements ConverterFactory<String, BaseEnum> {
+
+    @SuppressWarnings("rawtypes")
     private final Map<Class, Converter> converterCache = new WeakHashMap<>();
 
+    @SuppressWarnings("rawtypes")
     @Override
-    public <T extends HelioBaseEnum> Converter<String, T> getConverter(@NonNull Class<T> targetType) {
+    public <T extends BaseEnum> Converter<String, T> getConverter(@NonNull Class<T> targetType) {
         return converterCache.computeIfAbsent(targetType,
                 k -> converterCache.put(k, new EnumConverter(k))
         );
     }
 
-    protected static class EnumConverter<T extends HelioBaseEnum<T>> implements Converter<Object, T> {
+    protected static class EnumConverter<T extends BaseEnum<T>> implements Converter<Object, T> {
 
         private final Class<T> enumType;
 
@@ -34,8 +36,8 @@ public class EnumConverterFactory implements ConverterFactory<String, HelioBaseE
 
         @Override
         public T convert(@NonNull Object value) {
-            return HelioBaseEnum.of(this.enumType, value)
-                    .orElseThrow(() -> new BusinessException("Contains illegal enumeration value"));
+            return BaseEnum.of(this.enumType, value)
+                    .orElseThrow(() -> new IllegalArgumentException("cannot convert value to BaseEnum"));
         }
     }
 }

@@ -7,7 +7,7 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * 不使用租户
+ * 本注解的作用域内，忽略租户
  *
  * @author Uncarbon
  */

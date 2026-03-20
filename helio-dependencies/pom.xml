@@ -89,6 +89,12 @@
             <!-- hutool -->
             <dependency>
                 <groupId>cn.hutool</groupId>
+                <artifactId>hutool-core</artifactId>
+                <version>${hutool.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>cn.hutool</groupId>
                 <artifactId>hutool-all</artifactId>
                 <version>${hutool.version}</version>
             </dependency>
@@ -140,6 +146,7 @@
             <!-- 以上用于 helio-*-mybatis -->
 
             <!-- 以下用于 helio-*-redis -->
+            <!-- redisson 启动包 -->
             <dependency>
                 <groupId>org.redisson</groupId>
                 <artifactId>redisson-spring-boot-starter</artifactId>

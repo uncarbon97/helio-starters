@@ -15,7 +15,7 @@
     <artifactId>helio-starter-satoken</artifactId>
     <name>${project.artifactId}</name>
     <description>
-        Helio集成Redis启动包
+        Helio 集成SA-Token启动包
     </description>
 
     <dependencies>

@@ -15,7 +15,7 @@
     <artifactId>helio-core-satoken</artifactId>
     <name>${project.artifactId}</name>
     <description>
-        Helio集成Redis核心包
+        Helio 集成SA-Token核心包
     </description>
 
     <dependencies>

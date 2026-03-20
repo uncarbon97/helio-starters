@@ -5,8 +5,10 @@ import cc.uncarbon.framework.redis.lock.impl.RedisDistributedLockImpl;
 import cc.uncarbon.framework.redis.template.RedisDistributedLockTemplate;
 import cc.uncarbon.framework.redis.template.impl.RedisDistributedLockTemplateImpl;
 import lombok.RequiredArgsConstructor;
+import net.bytebuddy.dynamic.scaffold.TypeWriter;
 import org.redisson.api.RedissonClient;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.cache.annotation.EnableCaching;
@@ -15,36 +17,38 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.data.redis.connection.RedisConnectionFactory;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.serializer.GenericJackson2JsonRedisSerializer;
+import org.springframework.data.redis.serializer.GenericJacksonJsonRedisSerializer;
 import org.springframework.data.redis.serializer.StringRedisSerializer;
+import tools.jackson.databind.ObjectMapper;
 
 
 /**
  * Helio Redis 自动配置类
  *
- * @author zuihou
- * @author Mark sunlightcs@gmail.com
  * @author Uncarbon
  */
-@EnableCaching
-@ConditionalOnClass(value = RedisConnectionFactory.class)
 @RequiredArgsConstructor
 @AutoConfiguration
 public class HelioRedisAutoConfiguration {
 
     @Bean
     @ConditionalOnMissingBean
-    public RedisTemplate<?, ?> redisTemplate(RedisConnectionFactory factory) {
+    @ConditionalOnBean(value = {RedisConnectionFactory.class, ObjectMapper.class})
+    public RedisTemplate<?, ?> redisTemplate(final RedisConnectionFactory factory,
+                                             final ObjectMapper objectMapper) {
         RedisTemplate<?, ?> redisTemplate = new RedisTemplate<>();
 
         redisTemplate.setConnectionFactory(factory);
 
         // 指定相应的序列化方案
         StringRedisSerializer keySerializer = new StringRedisSerializer();
-        GenericJackson2JsonRedisSerializer valueSerializer = new GenericJackson2JsonRedisSerializer();
+        GenericJacksonJsonRedisSerializer valueSerializer = new GenericJacksonJsonRedisSerializer(objectMapper);
 
+        // 键名序列化
         redisTemplate.setKeySerializer(keySerializer);
         redisTemplate.setHashKeySerializer(keySerializer);
 
+        // 键值序列化
         redisTemplate.setValueSerializer(valueSerializer);
         redisTemplate.setHashValueSerializer(valueSerializer);
 
@@ -81,7 +85,7 @@ public class HelioRedisAutoConfiguration {
     }
 
     /**
-     * Redis分布式可重入锁模板类
+     * 分布式锁模板
      */
     @Bean
     @ConditionalOnMissingBean

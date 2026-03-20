@@ -2,6 +2,7 @@ package cc.uncarbon.framework.helio.mybatis.handler;
 
 import cc.uncarbon.framework.helio.base.context.TenantContextHolder;
 import cc.uncarbon.framework.helio.base.context.UserContextHolder;
+import cc.uncarbon.framework.helio.mybatis.constant.EntityField;
 import com.baomidou.mybatisplus.core.handlers.MetaObjectHandler;
 import org.apache.ibatis.reflection.MetaObject;
 
@@ -16,18 +17,15 @@ public class MybatisPlusAutoFillColumnHandler implements MetaObjectHandler {
 
     @Override
     public void insertFill(MetaObject metaObject) {
-        this.strictInsertFill(metaObject, ENTITY_FIELD_TENANT_ID, Long.class, TenantContextHolder.getTenantId());
-        this.strictInsertFill(metaObject, ENTITY_FIELD_CREATED_AT, LocalDateTime.class, LocalDateTime.now());
-        this.strictInsertFill(metaObject, ENTITY_FIELD_CREATED_BY, String.class, UserContextHolder.getUserName());
-
-        // 同时加入更新字段
-        this.updateFill(metaObject);
+        this.strictInsertFill(metaObject, EntityField.TENANT_ID_FIELD, Long.class, TenantContextHolder.getTenantId());
+        this.strictInsertFill(metaObject, EntityField.CREATED_AT_FIELD, LocalDateTime.class, LocalDateTime.now());
+        this.strictInsertFill(metaObject, EntityField.CREATED_BY_FIELD, String.class, UserContextHolder.getUserName());
     }
 
     @Override
     public void updateFill(MetaObject metaObject) {
-        this.strictUpdateFill(metaObject, ENTITY_FIELD_UPDATED_AT, LocalDateTime.class, LocalDateTime.now());
-        this.strictUpdateFill(metaObject, ENTITY_FIELD_UPDATED_BY, String.class, UserContextHolder.getUserName());
+        this.strictUpdateFill(metaObject, EntityField.UPDATED_AT_FIELD, LocalDateTime.class, LocalDateTime.now());
+        this.strictUpdateFill(metaObject, EntityField.UPDATED_BY_FIELD, String.class, UserContextHolder.getUserName());
     }
 
 }

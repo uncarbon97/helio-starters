@@ -24,5 +24,11 @@
             <groupId>cc.uncarbon.framework</groupId>
             <artifactId>helio-core-base</artifactId>
         </dependency>
+
+        <!-- 阿里 TTL-->
+        <dependency>
+            <groupId>com.alibaba</groupId>
+            <artifactId>transmittable-thread-local</artifactId>
+        </dependency>
     </dependencies>
 </project>

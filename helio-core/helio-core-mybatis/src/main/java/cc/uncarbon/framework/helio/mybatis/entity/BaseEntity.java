@@ -34,7 +34,7 @@ public abstract class BaseEntity<T>  {
      * 行级租户ID
      */
     @Schema(description = "行级租户ID")
-    @TableField(value = EntityField.COLUMN_TENANT_ID, fill = FieldFill.INSERT)
+    @TableField(value = EntityField.TENANT_ID_COLUMN, fill = FieldFill.INSERT)
     private Long tenantId;
 
     /**
@@ -50,28 +50,28 @@ public abstract class BaseEntity<T>  {
      * 创建时刻
      */
     @Schema(description = "创建时刻")
-    @TableField(value = EntityField.COLUMN_CREATED_BY, fill = FieldFill.INSERT)
+    @TableField(value = EntityField.CREATED_BY_COLUMN, fill = FieldFill.INSERT)
     private LocalDateTime createdAt;
 
     /**
      * 创建者
      */
     @Schema(description = "创建者")
-    @TableField(value = EntityField.COLUMN_CREATED_BY, fill = FieldFill.INSERT)
+    @TableField(value = EntityField.CREATED_BY_COLUMN, fill = FieldFill.INSERT)
     private String createdBy;
 
     /**
      * 更新时刻
      */
     @Schema(description = "更新时刻")
-    @TableField(value = EntityField.COLUMN_UPDATED_AT, fill = FieldFill.UPDATE)
+    @TableField(value = EntityField.UPDATED_AT_COLUMN, fill = FieldFill.UPDATE)
     private LocalDateTime updatedAt;
 
     /**
      * 更新者
      */
     @Schema(description = "更新者")
-    @TableField(value = EntityField.COLUMN_UPDATED_BY, fill = FieldFill.UPDATE)
+    @TableField(value = EntityField.UPDATED_BY_COLUMN, fill = FieldFill.UPDATE)
     private String updatedBy;
 
 }
