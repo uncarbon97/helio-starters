@@ -1,6 +1,6 @@
-package cc.uncarbon.framework.redis.lock.impl;
+package cc.uncarbon.framework.helio.redis.lock.impl;
 
-import cc.uncarbon.framework.redis.lock.RedisDistributedLock;
+import cc.uncarbon.framework.helio.redis.lock.RedisDistributedLock;
 import lombok.RequiredArgsConstructor;
 import org.redisson.api.RLock;
 import org.redisson.api.RedissonClient;
@@ -9,7 +9,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
 
 /**
- * Redis分布式可重入锁，基于Redisson实现
+ * Redis 分布式可重入锁，基于 Redisson 实现
  *
  * @author dcy
  * @author Uncarbon
@@ -20,7 +20,7 @@ public class RedisDistributedLockImpl implements RedisDistributedLock {
     /**
      * 锁名称前缀
      */
-    private static final AtomicReference<String> LOCK_KEY_PREFIX = new AtomicReference<>("distributedLock:");
+    private static final AtomicReference<String> LOCK_KEY_PREFIX = new AtomicReference<>("distributed-lock:");
 
     private final RedissonClient redissonClient;
 
@@ -32,7 +32,7 @@ public class RedisDistributedLockImpl implements RedisDistributedLock {
 
     @Override
     public RLock lock(String lockName, TimeUnit unit, int holdDuration) {
-        RLock lock = this.getRedissonLockByName(lockName);
+        RLock lock = this.getRLockByName(lockName);
         lock.lock(holdDuration, unit);
 
         return lock;
@@ -45,7 +45,7 @@ public class RedisDistributedLockImpl implements RedisDistributedLock {
 
     @Override
     public boolean tryLock(String lockName, TimeUnit unit, int waitDuration, int holdDuration) {
-        RLock lock = this.getRedissonLockByName(lockName);
+        RLock lock = this.getRLockByName(lockName);
         try {
             return lock.tryLock(waitDuration, holdDuration, unit);
         } catch (InterruptedException ex) {
@@ -55,7 +55,7 @@ public class RedisDistributedLockImpl implements RedisDistributedLock {
 
     @Override
     public void unlock(String lockName) {
-        RLock lock = this.getRedissonLockByName(lockName);
+        RLock lock = this.getRLockByName(lockName);
         this.unlock(lock);
     }
 
@@ -66,7 +66,7 @@ public class RedisDistributedLockImpl implements RedisDistributedLock {
 
     @Override
     public void unlockSafely(String lockName) {
-        RLock lock = this.getRedissonLockByName(lockName);
+        RLock lock = this.getRLockByName(lockName);
         this.unlockSafely(lock);
     }
 
@@ -86,7 +86,7 @@ public class RedisDistributedLockImpl implements RedisDistributedLock {
         LOCK_KEY_PREFIX.set(newPrefix);
     }
 
-    private RLock getRedissonLockByName(String lockName) {
+    private RLock getRLockByName(String lockName) {
         return redissonClient.getLock(LOCK_KEY_PREFIX.get() + lockName);
     }
 }

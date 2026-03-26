@@ -1,11 +1,11 @@
-package cc.uncarbon.framework.redis.lock;
+package cc.uncarbon.framework.helio.redis.lock;
 
 import org.redisson.api.RLock;
 
 import java.util.concurrent.TimeUnit;
 
 /**
- * Redis分布式可重入锁
+ * Redis 分布式可重入锁
  *
  * @author dcy
  * @author Uncarbon
@@ -85,8 +85,8 @@ public interface RedisDistributedLock {
     void unlockSafely(RLock lock);
 
     /**
-     * 指定本类最终拼接的键名前缀
-     * 默认值为【distributedLock:】
+     * 修改分布式锁对应 redis-key 的前缀
+     * 默认值为【distributed-lock:】
      */
     void setLockKeyPrefix(String newPrefix);
 

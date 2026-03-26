@@ -1,22 +1,18 @@
 package cc.uncarbon.framework.helio.redis.autoconfigure;
 
-import cc.uncarbon.framework.redis.lock.RedisDistributedLock;
-import cc.uncarbon.framework.redis.lock.impl.RedisDistributedLockImpl;
-import cc.uncarbon.framework.redis.template.RedisDistributedLockTemplate;
-import cc.uncarbon.framework.redis.template.impl.RedisDistributedLockTemplateImpl;
+import cc.uncarbon.framework.helio.redis.lock.RedisDistributedLock;
+import cc.uncarbon.framework.helio.redis.lock.RedisDistributedLockTemplate;
+import cc.uncarbon.framework.helio.redis.lock.impl.RedisDistributedLockImpl;
+import cc.uncarbon.framework.helio.redis.lock.impl.RedisDistributedLockTemplateImpl;
 import lombok.RequiredArgsConstructor;
-import net.bytebuddy.dynamic.scaffold.TypeWriter;
 import org.redisson.api.RedissonClient;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
-import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.cache.interceptor.KeyGenerator;
 import org.springframework.context.annotation.Bean;
 import org.springframework.data.redis.connection.RedisConnectionFactory;
 import org.springframework.data.redis.core.RedisTemplate;
-import org.springframework.data.redis.serializer.GenericJackson2JsonRedisSerializer;
 import org.springframework.data.redis.serializer.GenericJacksonJsonRedisSerializer;
 import org.springframework.data.redis.serializer.StringRedisSerializer;
 import tools.jackson.databind.ObjectMapper;
@@ -89,7 +85,8 @@ public class HelioRedisAutoConfiguration {
      */
     @Bean
     @ConditionalOnMissingBean
-    public RedisDistributedLockTemplate redisDistributedLockTemplate(RedisDistributedLock redisDistributedLock) {
+    @ConditionalOnBean(value = RedisDistributedLock.class)
+    public RedisDistributedLockTemplate redisDistributedLockTemplate(final RedisDistributedLock redisDistributedLock) {
         return new RedisDistributedLockTemplateImpl(redisDistributedLock);
     }
 }

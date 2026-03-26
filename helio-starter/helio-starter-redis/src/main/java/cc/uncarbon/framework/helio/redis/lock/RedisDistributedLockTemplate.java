@@ -1,5 +1,6 @@
-package cc.uncarbon.framework.redis.template;
+package cc.uncarbon.framework.helio.redis.lock;
 
+import cc.uncarbon.framework.helio.redis.exception.AcquireLockFailedException;
 import jakarta.annotation.Nonnull;
 import jakarta.annotation.Nullable;
 
@@ -7,8 +8,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
 
 /**
- * Redis分布式可重入锁模板类
- * 编程式获取分布式锁，模板化分布式锁的使用方式
+ * Redis 分布式可重入锁，编程式使用方式
  *
  * @author Uncarbon
  */
@@ -23,7 +23,7 @@ public interface RedisDistributedLockTemplate {
      * @param lockedRunnable 锁内代码，建议单独开个子方法，通过lambda表达式引用
      */
     void executeWithLock(@Nonnull String lockName, @Nonnull TimeUnit unit, int holdDuration,
-                         @Nonnull Runnable lockedRunnable);
+                         @Nonnull Runnable lockedRunnable) throws AcquireLockFailedException;
 
     /**
      * 获取分布式锁并执行锁内代码，等待时长无限
@@ -35,7 +35,8 @@ public interface RedisDistributedLockTemplate {
      * @param exceptionHandler （可选）锁内代码异常处理过程
      */
     void executeWithLock(@Nonnull String lockName, @Nonnull TimeUnit unit, int holdDuration,
-                         @Nonnull Runnable lockedRunnable, @Nullable Consumer<Exception> exceptionHandler);
+                         @Nonnull Runnable lockedRunnable,
+                         @Nullable Consumer<Exception> exceptionHandler) throws AcquireLockFailedException;
 
     /**
      * 获取分布式锁并执行锁内代码
