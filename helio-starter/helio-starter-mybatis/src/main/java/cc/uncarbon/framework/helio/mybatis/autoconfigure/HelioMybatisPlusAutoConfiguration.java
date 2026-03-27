@@ -2,11 +2,10 @@ package cc.uncarbon.framework.helio.mybatis.autoconfigure;
 
 import cc.uncarbon.framework.helio.base.enums.IdGeneratorStrategyEnum;
 import cc.uncarbon.framework.helio.base.props.HelioProperties;
-import cc.uncarbon.framework.helio.mybatis.handler.HelioSequenceIdGenerateHandler;
 import cc.uncarbon.framework.helio.mybatis.handler.HelioSnowflakeIdGenerateHandler;
 import cc.uncarbon.framework.helio.mybatis.handler.MybatisPlusAutoFillColumnHandler;
-import cc.uncarbon.framework.helio.mybatis.support.TenantSupport;
-import cc.uncarbon.framework.helio.mybatis.support.impl.DefaultTenantSupport;
+import cc.uncarbon.framework.helio.mybatis.strategy.TenantSupport;
+import cc.uncarbon.framework.helio.mybatis.strategy.impl.DefaultTenantSupport;
 import com.baomidou.mybatisplus.core.incrementer.IdentifierGenerator;
 import com.baomidou.mybatisplus.extension.plugins.MybatisPlusInterceptor;
 import com.baomidou.mybatisplus.extension.plugins.inner.BlockAttackInnerInterceptor;
@@ -15,7 +14,6 @@ import com.baomidou.mybatisplus.extension.plugins.inner.PaginationInnerIntercept
 import com.baomidou.mybatisplus.extension.plugins.inner.TenantLineInnerInterceptor;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
@@ -43,9 +41,7 @@ public class HelioMybatisPlusAutoConfiguration {
 
     @Bean
     @ConditionalOnMissingBean
-    public MybatisPlusInterceptor mybatisPlusInterceptor(
-            TenantSupport tenantSupport
-    ) {
+    public MybatisPlusInterceptor mybatisPlusInterceptor() {
         MybatisPlusInterceptor interceptor = new MybatisPlusInterceptor();
 
         /*
@@ -95,10 +91,6 @@ public class HelioMybatisPlusAutoConfiguration {
 
         if (strategy == IdGeneratorStrategyEnum.SNOWFLAKE) {
             return new HelioSnowflakeIdGenerateHandler(helioProperties);
-        }
-
-        if (strategy == IdGeneratorStrategyEnum.SEQUENCE) {
-            return new HelioSequenceIdGenerateHandler();
         }
 
         throw new IllegalArgumentException("Value of 'helio.crud.idGenerator.strategy' is illegal");

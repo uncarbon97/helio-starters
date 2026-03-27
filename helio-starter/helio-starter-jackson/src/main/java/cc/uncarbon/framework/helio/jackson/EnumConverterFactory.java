@@ -37,7 +37,7 @@ public class EnumConverterFactory implements ConverterFactory<String, BaseEnum> 
         @Override
         public T convert(@NonNull Object value) {
             return BaseEnum.of(this.enumType, value)
-                    .orElseThrow(() -> new IllegalArgumentException("cannot convert value to BaseEnum"));
+                    .orElseThrow(() -> new IllegalArgumentException("Cannot convert value to BaseEnum"));
         }
     }
 }

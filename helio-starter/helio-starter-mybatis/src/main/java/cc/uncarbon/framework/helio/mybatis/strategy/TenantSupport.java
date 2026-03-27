@@ -1,4 +1,4 @@
-package cc.uncarbon.framework.helio.mybatis.support;
+package cc.uncarbon.framework.helio.mybatis.strategy;
 
 import cc.uncarbon.framework.helio.base.props.HelioProperties;
 import com.baomidou.mybatisplus.extension.plugins.MybatisPlusInterceptor;

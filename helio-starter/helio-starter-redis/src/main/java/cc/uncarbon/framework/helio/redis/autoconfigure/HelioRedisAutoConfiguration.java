@@ -1,5 +1,6 @@
 package cc.uncarbon.framework.helio.redis.autoconfigure;
 
+import cc.uncarbon.framework.helio.jackson.module.BigintOriginModule;
 import cc.uncarbon.framework.helio.redis.lock.RedisDistributedLock;
 import cc.uncarbon.framework.helio.redis.lock.RedisDistributedLockTemplate;
 import cc.uncarbon.framework.helio.redis.lock.impl.RedisDistributedLockImpl;
@@ -16,10 +17,11 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.serializer.GenericJacksonJsonRedisSerializer;
 import org.springframework.data.redis.serializer.StringRedisSerializer;
 import tools.jackson.databind.ObjectMapper;
+import tools.jackson.databind.json.JsonMapper;
 
 
 /**
- * Helio Redis 自动配置类
+ * Helio 集成Redis自动配置类
  *
  * @author Uncarbon
  */
@@ -29,16 +31,20 @@ public class HelioRedisAutoConfiguration {
 
     @Bean
     @ConditionalOnMissingBean
-    @ConditionalOnBean(value = {RedisConnectionFactory.class, ObjectMapper.class})
+    @ConditionalOnBean(value = {RedisConnectionFactory.class, JsonMapper.class})
     public RedisTemplate<?, ?> redisTemplate(final RedisConnectionFactory factory,
-                                             final ObjectMapper objectMapper) {
+                                             final JsonMapper jsonMapper) {
         RedisTemplate<?, ?> redisTemplate = new RedisTemplate<>();
-
         redisTemplate.setConnectionFactory(factory);
+
+        // Redis中保存的大整数，不必转换成字符串
+        JsonMapper jsonMapperForRedis = jsonMapper.rebuild()
+                .addModule(new BigintOriginModule())
+                .build();
 
         // 指定相应的序列化方案
         StringRedisSerializer keySerializer = new StringRedisSerializer();
-        GenericJacksonJsonRedisSerializer valueSerializer = new GenericJacksonJsonRedisSerializer(objectMapper);
+        GenericJacksonJsonRedisSerializer valueSerializer = new GenericJacksonJsonRedisSerializer(jsonMapperForRedis);
 
         // 键名序列化
         redisTemplate.setKeySerializer(keySerializer);
@@ -76,7 +82,8 @@ public class HelioRedisAutoConfiguration {
      */
     @Bean
     @ConditionalOnMissingBean
-    public RedisDistributedLock redisDistributedLock(RedissonClient redissonClient) {
+    @ConditionalOnBean(value = RedissonClient.class)
+    public RedisDistributedLock redisDistributedLock(final RedissonClient redissonClient) {
         return new RedisDistributedLockImpl(redissonClient);
     }
 

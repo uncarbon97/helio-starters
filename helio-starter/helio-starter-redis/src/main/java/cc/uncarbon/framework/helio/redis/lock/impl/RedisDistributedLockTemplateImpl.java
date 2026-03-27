@@ -1,12 +1,10 @@
 package cc.uncarbon.framework.helio.redis.lock.impl;
 
-import cc.uncarbon.framework.helio.redis.exception.AcquireLockFailedException;
 import cc.uncarbon.framework.helio.redis.lock.RedisDistributedLock;
 import cc.uncarbon.framework.helio.redis.lock.RedisDistributedLockTemplate;
-import cn.hutool.core.lang.Assert;
-import jakarta.annotation.Nonnull;
-import jakarta.annotation.Nullable;
 import lombok.RequiredArgsConstructor;
+import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
 import org.redisson.api.RLock;
 
 import java.util.concurrent.TimeUnit;
@@ -24,36 +22,36 @@ public class RedisDistributedLockTemplateImpl implements RedisDistributedLockTem
 
 
     @Override
-    public void executeWithLock(@Nonnull String lockName, @Nonnull TimeUnit unit, int holdDuration,
-                                @Nonnull Runnable lockedRunnable) throws AcquireLockFailedException {
-        executeWithLock(lockName, unit, holdDuration, lockedRunnable, null);
+    public boolean executeWithLock(@NonNull String lockName, @NonNull TimeUnit unit, int holdDuration,
+                                   @NonNull Runnable lockedRunnable) {
+        return executeWithLock(lockName, unit, holdDuration, lockedRunnable, null);
     }
 
     @Override
-    public void executeWithLock(@Nonnull String lockName, @Nonnull TimeUnit unit, int holdDuration,
-                                @Nonnull Runnable lockedRunnable,
-                                @Nullable Consumer<Exception> exceptionHandler) throws AcquireLockFailedException {
+    public boolean executeWithLock(@NonNull String lockName, @NonNull TimeUnit unit, int holdDuration,
+                                   @NonNull Runnable lockedRunnable,
+                                   @Nullable Consumer<Exception> exceptionHandler) {
         if (!(holdDuration > 0)) {
             throw new IllegalArgumentException("holdDuration must greater than 0");
         }
         RLock lock = redisDistributedLock.lock(lockName, unit, holdDuration);
         if (lock == null) {
-            throw new AcquireLockFailedException();
+            return false;
         }
-
         runAndAutoUnlock(lockName, lockedRunnable, exceptionHandler);
+        return true;
     }
 
     @Override
-    public boolean executeWithLock(@Nonnull final String lockName, @Nonnull final TimeUnit unit, int waitDuration, int holdDuration,
-                                   @Nonnull final Runnable lockedRunnable) {
+    public boolean executeWithLock(@NonNull String lockName, @NonNull TimeUnit unit, int waitDuration,
+                                   int holdDuration, @NonNull Runnable lockedRunnable) {
         return executeWithLock(lockName, unit, waitDuration, holdDuration, lockedRunnable, null);
     }
 
     @Override
-    public boolean executeWithLock(final @Nonnull String lockName, final @Nonnull TimeUnit unit, int waitDuration, int holdDuration,
-                                   final @Nonnull Runnable lockedRunnable,
-                                   final @Nullable Consumer<Exception> exceptionHandler){
+    public boolean executeWithLock(@NonNull String lockName, @NonNull TimeUnit unit, int waitDuration,
+                                   int holdDuration, @NonNull Runnable lockedRunnable,
+                                   @Nullable Consumer<Exception> exceptionHandler) {
         if (!(waitDuration > 0)) {
             throw new IllegalArgumentException("waitDuration must greater than 0");
         }

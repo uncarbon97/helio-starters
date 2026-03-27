@@ -14,9 +14,9 @@ import org.springframework.context.annotation.Bean;
  *
  * @author Uncarbon
  */
-@ConditionalOnClass(name = "com.baomidou.dynamic.datasource.DynamicRoutingDataSource")
 public class HelioDynamicDataSourceAutoConfiguration {
 
+    @ConditionalOnClass(name = "com.baomidou.dynamic.datasource.DynamicRoutingDataSource")
     @ConditionalOnBean(value = DynamicRoutingDataSource.class)
     @Bean
     public HelioDynamicDataSourceRegistry helioDynamicDataSourceRegistry(

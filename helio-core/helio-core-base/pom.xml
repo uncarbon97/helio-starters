@@ -37,6 +37,11 @@
             <artifactId>swagger-annotations</artifactId>
         </dependency>
 
+        <dependency>
+            <groupId>org.jspecify</groupId>
+            <artifactId>jspecify</artifactId>
+        </dependency>
+
         <!-- Hutool 核心，方便使用常见的Util -->
         <dependency>
             <groupId>cn.hutool</groupId>
