@@ -22,7 +22,7 @@ import java.io.IOException;
  * "valueLabel": "bar"
  * }
  *
- * @author Zhu JW
+ * @author hanfeng
  * @author Uncarbon
  **/
 public class BaseEnumFormatModuleBak extends SimpleModule {

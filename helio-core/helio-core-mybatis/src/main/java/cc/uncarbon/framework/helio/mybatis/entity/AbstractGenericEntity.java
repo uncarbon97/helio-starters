@@ -12,16 +12,15 @@ import java.time.LocalDateTime;
 
 /**
  * 基础实体类，默认含[行级租户ID]
- * @param <T> 主键类型，一般用 Long
  *
+ * @param <T> 主键类型，一般用 Long
  * @author Uncarbon
  */
 @Accessors(chain = true)
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
-public abstract class BaseEntity<T>  {
-
+public abstract class AbstractGenericEntity<T> implements Entity {
 
     /**
      * 主键ID

@@ -1,7 +1,7 @@
 package cc.uncarbon.framework.helio.tenant.strategy;
 
 import cc.uncarbon.framework.helio.base.constant.HelioConstant;
-import cc.uncarbon.framework.helio.base.props.HelioProperties;
+import cc.uncarbon.framework.helio.base.autoconfigure.HelioProperties;
 import cc.uncarbon.framework.helio.tenant.context.TenantContextHolder;
 import com.sun.jdi.LongValue;
 import lombok.AllArgsConstructor;

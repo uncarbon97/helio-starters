@@ -1,4 +1,4 @@
-package cc.uncarbon.framework.helio.base.props;
+package cc.uncarbon.framework.helio.base.autoconfigure;
 
 import cc.uncarbon.framework.helio.base.constant.HelioConstant;
 import cc.uncarbon.framework.helio.base.enums.TenantStrategyEnum;

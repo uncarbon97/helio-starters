@@ -23,8 +23,8 @@
     </properties>
 
     <modules>
-        <module>helio-bom</module>
-        <module>helio-dependencies</module>
+        <module>helio-starter-bom</module>
+        <module>helio-starter-dependencies</module>
         <module>helio-core/helio-core-base</module>
         <module>helio-core/helio-core-mybatis</module>
         <module>helio-core/helio-core-redis</module>
@@ -43,7 +43,7 @@
             <!-- 内部依赖版本管理 -->
             <dependency>
                 <groupId>cc.uncarbon.framework</groupId>
-                <artifactId>helio-bom</artifactId>
+                <artifactId>helio-starter-bom</artifactId>
                 <version>${revision}</version>
                 <type>pom</type>
                 <scope>import</scope>
@@ -52,7 +52,7 @@
             <!-- 外部依赖版本管理 -->
             <dependency>
                 <groupId>cc.uncarbon.framework</groupId>
-                <artifactId>helio-dependencies</artifactId>
+                <artifactId>helio-starter-dependencies</artifactId>
                 <version>${revision}</version>
                 <type>pom</type>
                 <scope>import</scope>

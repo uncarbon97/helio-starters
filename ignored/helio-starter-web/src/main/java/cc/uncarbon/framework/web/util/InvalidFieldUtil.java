@@ -20,7 +20,7 @@ import java.util.concurrent.ConcurrentHashMap;
 /**
  * 参数绑定验证
  *
- * @author Zhu JW
+ * @author hanfeng
  * @author Uncarbon
  **/
 @UtilityClass

@@ -1,7 +1,7 @@
 package cc.uncarbon.framework.helio.mybatis.autoconfigure;
 
 import cc.uncarbon.framework.helio.base.enums.IdGeneratorStrategyEnum;
-import cc.uncarbon.framework.helio.base.props.HelioProperties;
+import cc.uncarbon.framework.helio.base.autoconfigure.HelioProperties;
 import cc.uncarbon.framework.helio.mybatis.handler.HelioSnowflakeIdGenerateHandler;
 import cc.uncarbon.framework.helio.mybatis.handler.MybatisPlusAutoFillColumnHandler;
 import cc.uncarbon.framework.helio.mybatis.strategy.TenantSupport;

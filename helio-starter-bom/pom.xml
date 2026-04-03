@@ -6,7 +6,7 @@
     <packaging>pom</packaging>
 
     <groupId>cc.uncarbon.framework</groupId>
-    <artifactId>helio-bom</artifactId>
+    <artifactId>helio-starter-bom</artifactId>
     <version>${revision}</version>
     <name>${project.artifactId}</name>
     <description>

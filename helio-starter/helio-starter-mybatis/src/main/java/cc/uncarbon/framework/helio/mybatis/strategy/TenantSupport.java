@@ -1,6 +1,6 @@
 package cc.uncarbon.framework.helio.mybatis.strategy;
 
-import cc.uncarbon.framework.helio.base.props.HelioProperties;
+import cc.uncarbon.framework.helio.base.autoconfigure.HelioProperties;
 import com.baomidou.mybatisplus.extension.plugins.MybatisPlusInterceptor;
 
 /**

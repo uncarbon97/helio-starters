@@ -6,7 +6,7 @@
     <packaging>pom</packaging>
 
     <groupId>cc.uncarbon.framework</groupId>
-    <artifactId>helio-dependencies</artifactId>
+    <artifactId>helio-starter-dependencies</artifactId>
     <version>${revision}</version>
     <name>${project.artifactId}</name>
     <description>

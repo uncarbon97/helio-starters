@@ -1,6 +1,6 @@
 package cc.uncarbon.framework.helio.satoken.autoconfigure;
 
-import cc.uncarbon.framework.helio.base.props.HelioProperties;
+import cc.uncarbon.framework.helio.base.autoconfigure.HelioProperties;
 import cc.uncarbon.framework.helio.satoken.dao.SaTokenLocalCacheDao;
 import cn.dev33.satoken.dao.SaTokenDao;
 import org.jspecify.annotations.NonNull;

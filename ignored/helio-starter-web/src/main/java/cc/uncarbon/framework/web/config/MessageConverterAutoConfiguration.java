@@ -16,7 +16,7 @@ import java.util.List;
 /**
  * Jackson 类型转换器自动配置类
  *
- * @author Zhu JW
+ * @author hanfeng
  * @author Uncarbon
  **/
 @RequiredArgsConstructor

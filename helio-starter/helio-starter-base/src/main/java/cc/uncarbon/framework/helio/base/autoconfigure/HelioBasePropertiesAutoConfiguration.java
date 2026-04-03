@@ -1,6 +1,5 @@
 package cc.uncarbon.framework.helio.base.autoconfigure;
 
-import cc.uncarbon.framework.helio.base.props.HelioProperties;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 
@@ -9,8 +8,8 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
  *
  * @author Uncarbon
  */
-@EnableConfigurationProperties(value = {HelioProperties.class})
+@EnableConfigurationProperties(value = {HelioBaseProperties.class})
 @AutoConfiguration
-public class HelioPropertiesAutoConfiguration {
+public class HelioBasePropertiesAutoConfiguration {
 
 }

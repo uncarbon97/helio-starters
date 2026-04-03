@@ -11,7 +11,7 @@ import java.util.WeakHashMap;
 /**
  * 枚举转换
  *
- * @author Zhu JW
+ * @author hanfeng
  **/
 public class EnumConverterFactory implements ConverterFactory<String, BaseEnum> {
 

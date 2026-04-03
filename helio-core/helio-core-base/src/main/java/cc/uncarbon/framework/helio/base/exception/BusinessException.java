@@ -1,10 +1,9 @@
 package cc.uncarbon.framework.helio.base.exception;
 
-import cc.uncarbon.framework.helio.base.enums.BaseEnum;
 import cn.hutool.core.text.CharSequenceUtil;
-import cn.hutool.http.HttpStatus;
 import lombok.Getter;
-import lombok.NonNull;
+
+import java.io.Serializable;
 
 /**
  * 业务异常类
@@ -14,95 +13,71 @@ import lombok.NonNull;
 @Getter
 public class BusinessException extends RuntimeException {
 
-    private final Integer code;
-
-    /*
-    若使用枚举类参数的构造方法创建的本异常，则记录对应枚举类及模板参数
+    /**
+     * 默认错误码：有错误
      */
-    private final Enum<?> customEnumField;
-    private final Object[] templateParams;
+    public static final int DEFAULT_CODE_HAS_ERROR = 500;
+
+    /**
+     * 错误码，同时兼容整数与文本
+     */
+    private final Serializable code;
 
 
     /**
      * 仅错误信息
      *
-     * @param msg 错误信息
+     * @param errorMsg 错误信息
      */
-    public BusinessException(String msg) {
-        super(msg);
-        this.code = HttpStatus.HTTP_INTERNAL_ERROR;
-        this.customEnumField = null;
-        this.templateParams = null;
+    public BusinessException(String errorMsg) {
+        super(errorMsg);
+        this.code = DEFAULT_CODE_HAS_ERROR;
     }
 
     /**
      * 错误码 + 错误信息
      *
-     * @param code 错误码
-     * @param msg  错误信息
+     * @param code     错误码
+     * @param errorMsg 错误信息
      */
-    public BusinessException(int code, String msg) {
-        super(msg);
+    public BusinessException(int code, String errorMsg) {
+        super(errorMsg);
         this.code = code;
-        this.customEnumField = null;
-        this.templateParams = null;
     }
 
     /**
-     * 错误码 + 错误信息（支持模板参数填充）
+     * 错误码 + 错误信息
      *
-     * @param code            错误码
-     * @param msg             错误信息
-     * @param templateParams  模板参数
+     * @param code     错误码
+     * @param errorMsg 错误信息
      */
-    public BusinessException(int code, String msg, Object... templateParams) {
-        super(CharSequenceUtil.format(msg, templateParams));
+    public BusinessException(String code, String errorMsg) {
+        super(errorMsg);
         this.code = code;
-        this.customEnumField = null;
-        this.templateParams = templateParams;
     }
 
     /**
-     * 从枚举类生成异常
+     * 错误码 + 错误信息，支持字符串模板填充参数
      *
-     * @param customEnum 枚举类对象
+     * @param code             错误码
+     * @param errorMsgTemplate 错误信息模板，支持使用 {} 作为占位符
+     * @param templateParams   填充错误信息模板的参数
      */
-    public BusinessException(@NonNull BaseEnum<?> customEnum) {
-        super(customEnum.getLabel());
-        this.code = customEnum.getValueAsInt();
-
-        /*
-        @since 1.7.2 国际化支持
-        实际应用在GlobalWebExceptionHandlerAutoConfiguration.handleBusinessException
-         */
-        if (customEnum.getClass().isEnum()) {
-            this.customEnumField = (Enum<?>) customEnum;
-        } else {
-            this.customEnumField = null;
-        }
-        this.templateParams = null;
+    public BusinessException(int code, String errorMsgTemplate, Object... templateParams) {
+        super(CharSequenceUtil.format(errorMsgTemplate, templateParams));
+        this.code = code;
     }
 
     /**
-     * 从枚举类生成异常（错误信息支持模板参数填充）
+     * 错误码 + 错误信息，支持字符串模板填充参数
      *
-     * @param customEnum      枚举类对象
-     * @param templateParams  label 中如果有占位符的话，向里面填充的模板参数
+     * @param code             错误码
+     * @param errorMsgTemplate 错误信息模板，支持使用 {} 作为占位符
+     * @param templateParams   填充错误信息模板的参数
      */
-    public BusinessException(@NonNull BaseEnum<?> customEnum, Object... templateParams) {
-        super(customEnum.formatLabel(templateParams));
-        this.code = customEnum.getValueAsInt();
-
-        /*
-        @since 1.7.2 国际化支持
-        实际应用在GlobalWebExceptionHandlerAutoConfiguration.handleBusinessException
-         */
-        if (customEnum.getClass().isEnum()) {
-            this.customEnumField = (Enum<?>) customEnum;
-        } else {
-            this.customEnumField = null;
-        }
-        this.templateParams = templateParams;
+    public BusinessException(String code, String errorMsgTemplate, Object... templateParams) {
+        super(CharSequenceUtil.format(errorMsgTemplate, templateParams));
+        this.code = code;
     }
 
     /**

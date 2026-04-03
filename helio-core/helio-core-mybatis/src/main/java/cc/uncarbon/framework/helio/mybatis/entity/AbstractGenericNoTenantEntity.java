@@ -23,7 +23,7 @@ import java.io.Serializable;
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
-public abstract class NoTenantBaseEntity<T extends Serializable> extends BaseEntity<T> {
+public abstract class AbstractGenericNoTenantEntity<T extends Serializable> extends AbstractGenericEntity<T> {
 
     /**
      * 覆盖掉行级租户ID

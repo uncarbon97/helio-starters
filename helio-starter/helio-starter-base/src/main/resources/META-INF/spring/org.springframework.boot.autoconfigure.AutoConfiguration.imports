@@ -1,2 +1,2 @@
-cc.uncarbon.framework.helio.base.autoconfigure.HelioPropertiesAutoConfiguration
+cc.uncarbon.framework.helio.base.autoconfigure.HelioBasePropertiesAutoConfiguration
 cc.uncarbon.framework.helio.base.autoconfigure.StaticMethodAutoConfiguration

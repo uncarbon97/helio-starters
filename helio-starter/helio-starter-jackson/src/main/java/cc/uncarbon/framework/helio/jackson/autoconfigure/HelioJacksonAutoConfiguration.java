@@ -1,7 +1,7 @@
 package cc.uncarbon.framework.helio.jackson.autoconfigure;
 
 
-import cc.uncarbon.framework.helio.jackson.module.BaseEnumFormatModuleBak;
+import cc.uncarbon.framework.helio.jackson.module.BaseEnumFormatModule;
 import cc.uncarbon.framework.helio.jackson.module.BigintAsStringModule;
 import cc.uncarbon.framework.helio.jackson.module.DateTimeFormatModule;
 import com.fasterxml.jackson.annotation.JsonInclude;
@@ -17,7 +17,7 @@ import java.util.TimeZone;
 /**
  * Helio 集成Jackson自动配置类
  *
- * @author Zhu JW
+ * @author hanfeng
  * @author Uncarbon
  */
 //@AutoConfigureBefore({JacksonAutoConfiguration.class})
@@ -37,6 +37,7 @@ public class HelioJacksonAutoConfiguration {
                 .enable(tools.jackson.databind.SerializationFeature.ORDER_MAP_ENTRIES_BY_KEYS)
                 .addModule(new BigintAsStringModule())
                 .addModule(new DateTimeFormatModule())
+                .addModule(new BaseEnumFormatModule())
                 .changeDefaultPropertyInclusion(incl -> incl.withValueInclusion(JsonInclude.Include.ALWAYS))
                 .findAndAddModules()
                 .build();

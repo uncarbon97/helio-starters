@@ -1,7 +1,7 @@
 package cc.uncarbon.framework.helio.mybatis.handler;
 
 import cc.uncarbon.framework.helio.base.enums.IdGeneratorStrategyEnum;
-import cc.uncarbon.framework.helio.base.props.HelioProperties;
+import cc.uncarbon.framework.helio.base.autoconfigure.HelioProperties;
 import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.lang.Singleton;
 import cn.hutool.core.lang.Snowflake;
