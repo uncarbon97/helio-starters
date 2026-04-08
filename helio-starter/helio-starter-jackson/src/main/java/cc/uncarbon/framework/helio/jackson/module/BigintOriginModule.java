@@ -11,7 +11,7 @@ import java.math.BigInteger;
  * 序列化规则模块：大整数还原为数值形式展示
  *
  * @author Uncarbon
- **/
+ */
 public class BigintOriginModule extends SimpleModule {
 
     public BigintOriginModule() {

@@ -11,7 +11,7 @@ import java.math.BigInteger;
  * 序列化规则模块：大整数转字符串，避免精度丢失问题
  *
  * @author Uncarbon
- **/
+ */
 public class BigintAsStringModule extends SimpleModule {
 
     public BigintAsStringModule() {
