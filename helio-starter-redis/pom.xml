@@ -9,13 +9,13 @@
         <groupId>cc.uncarbon.framework</groupId>
         <artifactId>helio-starters-parent</artifactId>
         <version>${revision}</version>
-        <relativePath>../../pom.xml</relativePath>
+        <relativePath>../pom.xml</relativePath>
     </parent>
 
-    <artifactId>helio-starter-tenant</artifactId>
+    <artifactId>helio-starter-redis</artifactId>
     <name>${project.artifactId}</name>
     <description>
-        Helio 多租户启动包
+        Helio 集成Redis启动包
     </description>
 
     <dependencies>
@@ -25,24 +25,24 @@
             <artifactId>helio-starter-base</artifactId>
         </dependency>
 
-        <!-- 引用配套核心包 -->
+        <!-- 无配套核心包 -->
+
+        <!-- 引用 Jackson 启动包 -->
         <dependency>
             <groupId>cc.uncarbon.framework</groupId>
-            <artifactId>helio-core-tenant</artifactId>
+            <artifactId>helio-starter-jackson3</artifactId>
         </dependency>
 
-        <!-- 引用集成 mybatis-plus 启动包 -->
-        <!-- 用于行级租户 -->
+        <!-- Spring Boot Redis 启动包 -->
         <dependency>
-            <groupId>cc.uncarbon.framework</groupId>
-            <artifactId>helio-starter-db-mybatis-plus</artifactId>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-data-redis</artifactId>
         </dependency>
 
-        <!-- 引用集成 dynamic-datasource 启动包 -->
-        <!-- 用于数据源级租户 -->
+        <!-- redisson 启动包 -->
         <dependency>
-            <groupId>cc.uncarbon.framework</groupId>
-            <artifactId>helio-starter-db-dynamic-datasource</artifactId>
+            <groupId>org.redisson</groupId>
+            <artifactId>redisson-spring-boot-starter</artifactId>
         </dependency>
     </dependencies>
 </project>

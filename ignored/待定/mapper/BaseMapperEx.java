@@ -1,4 +1,4 @@
-package cc.uncarbon.framework.helio.mybatis.mapper;
+package cc.uncarbon.framework.helio.db.mapper;
 
 import cc.uncarbon.framework.helio.base.function.StreamFunction;
 import cn.hutool.core.bean.BeanUtil;

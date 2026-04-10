@@ -9,40 +9,38 @@
         <groupId>cc.uncarbon.framework</groupId>
         <artifactId>helio-starters-parent</artifactId>
         <version>${revision}</version>
-        <relativePath>../../pom.xml</relativePath>
+        <relativePath>../pom.xml</relativePath>
     </parent>
 
-    <artifactId>helio-starter-tenant</artifactId>
+    <artifactId>helio-core-db</artifactId>
     <name>${project.artifactId}</name>
     <description>
-        Helio 多租户启动包
+        Helio 数据库访问核心包
     </description>
 
     <dependencies>
-        <!-- 引用基础启动包 -->
+        <!-- 引用基础核心包 -->
         <dependency>
             <groupId>cc.uncarbon.framework</groupId>
-            <artifactId>helio-starter-base</artifactId>
+            <artifactId>helio-core-base</artifactId>
         </dependency>
 
-        <!-- 引用配套核心包 -->
+        <!-- mybatis-plus 注解包 -->
         <dependency>
-            <groupId>cc.uncarbon.framework</groupId>
-            <artifactId>helio-core-tenant</artifactId>
+            <groupId>com.baomidou</groupId>
+            <artifactId>mybatis-plus-annotation</artifactId>
         </dependency>
 
-        <!-- 引用集成 mybatis-plus 启动包 -->
-        <!-- 用于行级租户 -->
+        <!-- MySQL JDBC 驱动 -->
         <dependency>
-            <groupId>cc.uncarbon.framework</groupId>
-            <artifactId>helio-starter-db-mybatis-plus</artifactId>
+            <groupId>com.mysql</groupId>
+            <artifactId>mysql-connector-j</artifactId>
         </dependency>
 
-        <!-- 引用集成 dynamic-datasource 启动包 -->
-        <!-- 用于数据源级租户 -->
+        <!-- PostgreSQL JDBC 驱动 -->
         <dependency>
-            <groupId>cc.uncarbon.framework</groupId>
-            <artifactId>helio-starter-db-dynamic-datasource</artifactId>
+            <groupId>org.postgresql</groupId>
+            <artifactId>postgresql</artifactId>
         </dependency>
     </dependencies>
 </project>

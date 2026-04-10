@@ -25,17 +25,16 @@
     <modules>
         <module>helio-starter-bom</module>
         <module>helio-starter-dependencies</module>
-        <module>helio-core/helio-core-base</module>
-        <module>helio-core/helio-core-mybatis</module>
-        <module>helio-core/helio-core-redis</module>
-        <module>helio-core/helio-core-satoken</module>
-        <module>helio-core/helio-core-tenant</module>
-        <module>helio-starter/helio-starter-base</module>
-        <module>helio-starter/helio-starter-jackson</module>
-        <module>helio-starter/helio-starter-mybatis</module>
-        <module>helio-starter/helio-starter-redis</module>
-        <module>helio-starter/helio-starter-satoken</module>
+        <module>helio-core-base</module>
+        <module>helio-core-db</module>
+        <module>helio-core-tenant</module>
+        <module>helio-starter-base</module>
+        <module>helio-starter/helio-starter-db-dynamic-datasource</module>
         <module>helio-starter/helio-starter-tenant</module>
+        <module>helio-starter-db-mybatis-plus</module>
+        <module>helio-starter-jackson3</module>
+        <module>helio-starter-redis</module>
+        <module>helio-starter-satoken</module>
     </modules>
 
     <dependencyManagement>
