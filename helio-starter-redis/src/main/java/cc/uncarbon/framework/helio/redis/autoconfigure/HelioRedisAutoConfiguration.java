@@ -35,6 +35,9 @@ import java.util.TimeZone;
 @AutoConfiguration
 public class HelioRedisAutoConfiguration {
 
+    /**
+     * 首选 {@link RedisTemplate}，支持各类 K、V 类型
+     */
     @Bean
     @ConditionalOnMissingBean
     @ConditionalOnBean(value = {RedisConnectionFactory.class})

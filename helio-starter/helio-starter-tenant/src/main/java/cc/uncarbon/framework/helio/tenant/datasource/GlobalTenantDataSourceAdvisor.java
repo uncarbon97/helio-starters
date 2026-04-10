@@ -1,4 +1,4 @@
-package cc.uncarbon.framework.helio.tenant.tenantdatasource;
+package cc.uncarbon.framework.helio.tenant.datasource;
 
 import lombok.EqualsAndHashCode;
 import lombok.Getter;

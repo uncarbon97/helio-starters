@@ -3,6 +3,7 @@ package cc.uncarbon.framework.helio.satoken.autoconfigure;
 import cc.uncarbon.framework.helio.satoken.dao.SaTokenRedisDaoWithLocalCache;
 import cc.uncarbon.framework.helio.satoken.props.HelioSaTokenProperties;
 import cn.dev33.satoken.dao.SaTokenDao;
+import cn.dev33.satoken.dao.SaTokenDaoForRedisTemplate;
 import org.jspecify.annotations.NonNull;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
@@ -21,6 +22,9 @@ import java.util.Objects;
 @AutoConfiguration
 public class HelioSaTokenAutoConfiguration {
 
+    /**
+     * 带本地缓存的 {@link SaTokenDaoForRedisTemplate}
+     */
     @Conditional(value = OnLocalCacheDaoEnabled.class)
     @ConditionalOnMissingBean(value = SaTokenDao.class)
     @Primary

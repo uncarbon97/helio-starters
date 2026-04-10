@@ -5,6 +5,7 @@ import cn.dev33.satoken.dao.SaTokenDaoForRedisTemplate;
 import lombok.extern.slf4j.Slf4j;
 
 /**
+ * 带本地缓存的 {@link SaTokenDaoForRedisTemplate}
  * 在 SA-Token 读取时，本地缓存一定时长，减少对 Redis 的 IO
  * 在多实例部署时存在一定安全风险：用户登出时，A机器的缓存已清除，但B机器的缓存还认为有效
  * 所以请谨慎设置本地缓存有效时长

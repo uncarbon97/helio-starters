@@ -3,6 +3,11 @@ package cc.uncarbon.framework.helio.db.mybatisplus.props;
 import lombok.Data;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
+/**
+ * Helio 集成 mybatis-plus 配置属性类
+ *
+ * @author Uncarbon
+ */
 @ConfigurationProperties(prefix = "helio.db.mybatis-plus")
 @Data
 public class HelioMybatisPlusProperties {

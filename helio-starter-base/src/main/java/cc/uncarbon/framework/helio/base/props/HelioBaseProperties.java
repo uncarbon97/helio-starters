@@ -4,6 +4,11 @@ package cc.uncarbon.framework.helio.base.props;
 import lombok.Data;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
+/**
+ * Helio 基础配置属性类
+ *
+ * @author Uncarbon
+ */
 @ConfigurationProperties(prefix = "helio.base")
 @Data
 public class HelioBaseProperties {

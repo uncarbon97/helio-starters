@@ -4,16 +4,24 @@ import cc.uncarbon.framework.helio.base.enums.TenantIsolateLevelEnum;
 import cc.uncarbon.framework.helio.base.autoconfigure.HelioProperties;
 import cc.uncarbon.framework.crud.support.TenantSupport;
 import cc.uncarbon.framework.crud.support.impl.DefaultTenantSupport;
+import cc.uncarbon.framework.helio.tenant.enums.TenantStrategyEnum;
+import cc.uncarbon.framework.helio.tenant.line.DefaultTenantLineHandler;
 import cc.uncarbon.framework.helio.tenant.props.HelioTenantProperties;
 import cc.uncarbon.framework.tenant.support.TenantDataSourceSupport;
 import cc.uncarbon.framework.tenant.support.TenantLineSupport;
+import ch.qos.logback.classic.Logger;
 import com.baomidou.mybatisplus.extension.plugins.inner.TenantLineInnerInterceptor;
+import jakarta.annotation.PostConstruct;
+import lombok.extern.slf4j.Slf4j;
 import org.jspecify.annotations.NonNull;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingFilterBean;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.*;
 import org.springframework.core.type.AnnotatedTypeMetadata;
 
+import java.util.Collection;
 import java.util.Objects;
 
 /**
@@ -23,25 +31,38 @@ import java.util.Objects;
  */
 @EnableConfigurationProperties(value = {HelioTenantProperties.class})
 @AutoConfiguration
+@Slf4j
 public class HelioTenantAutoConfiguration {
 
+    private static final String LOG_PREFIX = "[Framework][多租户]";
 
+    /**
+     * 基于 mybatis-plus 的行级租户拦截器
+     */
     @Conditional(value = OnLineStrategy.class)
     @Bean
     public TenantLineInnerInterceptor tenantLineInnerInterceptor(HelioTenantProperties props) {
-        var subProp = props.getRedisDaoWithLocalCache();
-        return new SaTokenRedisDaoWithLocalCache(subProp.getDuration(), subProp.getCapacity());
+        Collection<String> ignoredTables = props.getIgnoredTables();
+        log.info(LOG_PREFIX + " 已应用行级租户 >> 以下数据表不参与租户隔离: {}", ignoredTables);
+        return new TenantLineInnerInterceptor(new DefaultTenantLineHandler(ignoredTables));
     }
 
     private static class OnLineStrategy implements Condition {
         @Override
         public boolean matches(ConditionContext context, @NonNull AnnotatedTypeMetadata metadata) {
             var props = Objects.requireNonNull(context.getBeanFactory()).getBean(HelioTenantProperties.class);
-            var subProp = props.getRedisDaoWithLocalCache();
-            return Boolean.TRUE.equals(subProp.getEnabled());
+            return props.getStrategy() == TenantStrategyEnum.LINE;
         }
     }
 
+
+    private static class OnDatasourceStrategy implements Condition {
+        @Override
+        public boolean matches(ConditionContext context, @NonNull AnnotatedTypeMetadata metadata) {
+            var props = Objects.requireNonNull(context.getBeanFactory()).getBean(HelioTenantProperties.class);
+            return props.getStrategy() == TenantStrategyEnum.DATASOURCE;
+        }
+    }
 //
 //    @Bean
 //    @Primary

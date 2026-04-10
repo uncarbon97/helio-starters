@@ -32,6 +32,9 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 @Slf4j
 public class HelioMybatisPlusAutoConfiguration {
 
+    /**
+     * mybatis-plus 拦截器
+     */
     @Bean
     @ConditionalOnMissingBean
     public MybatisPlusInterceptor mybatisPlusInterceptor(

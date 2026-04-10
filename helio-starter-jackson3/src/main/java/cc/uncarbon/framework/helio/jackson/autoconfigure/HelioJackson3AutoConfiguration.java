@@ -31,6 +31,9 @@ import java.util.TimeZone;
 @AutoConfiguration
 public class HelioJackson3AutoConfiguration {
 
+    /**
+     * 首选 {@link JsonMapper}
+     */
     @Bean
     public JsonMapper jsonMapper(HelioJacksonProperties props) {
         return JsonMapperFactory.enhacedJsonMapper(

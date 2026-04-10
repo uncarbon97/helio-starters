@@ -5,6 +5,11 @@ import lombok.Data;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.NestedConfigurationProperty;
 
+/**
+ * Helio 集成 SA-Token 配置属性类
+ *
+ * @author Uncarbon
+ */
 @ConfigurationProperties(prefix = "helio.satoken")
 @Data
 public class HelioSaTokenProperties {

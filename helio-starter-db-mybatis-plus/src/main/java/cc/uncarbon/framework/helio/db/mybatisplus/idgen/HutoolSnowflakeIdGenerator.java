@@ -10,7 +10,7 @@ import lombok.extern.slf4j.Slf4j;
 import java.util.Date;
 
 /**
- * 基于 hutool 的雪花ID生成器
+ * 基于 hutool 的雪花 ID 生成器
  *
  * @author Uncarbon
  */

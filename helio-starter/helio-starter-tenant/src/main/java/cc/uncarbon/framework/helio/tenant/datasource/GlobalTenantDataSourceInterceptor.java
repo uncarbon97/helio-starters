@@ -1,4 +1,4 @@
-package cc.uncarbon.framework.helio.tenant.tenantdatasource;
+package cc.uncarbon.framework.helio.tenant.datasource;
 
 import cc.uncarbon.framework.helio.base.constant.HelioConstant.CRUD;
 import cc.uncarbon.framework.helio.base.context.TenantContextHolder;
