@@ -12,10 +12,10 @@
         <relativePath>../pom.xml</relativePath>
     </parent>
 
-    <artifactId>helio-starter-db-mybatis-plus</artifactId>
+    <artifactId>helio-starter-tenant</artifactId>
     <name>${project.artifactId}</name>
     <description>
-        Helio 集成 mybatis-plus 启动包
+        Helio 多租户启动包
     </description>
 
     <dependencies>
@@ -28,27 +28,21 @@
         <!-- 引用配套核心包 -->
         <dependency>
             <groupId>cc.uncarbon.framework</groupId>
-            <artifactId>helio-core-db</artifactId>
+            <artifactId>helio-core-tenant</artifactId>
         </dependency>
 
-        <!-- 引用租户核心包 -->
+        <!-- 引用集成 mybatis-plus 启动包 -->
+        <!-- 用于行级租户 -->
         <dependency>
             <groupId>cc.uncarbon.framework</groupId>
-            <artifactId>helio-core-tenant</artifactId>
-            <!-- 只引用，不参与打包 -->
-            <scope>provided</scope>
+            <artifactId>helio-starter-db-mybatis-plus</artifactId>
         </dependency>
 
-        <!-- mybatis-plus 启动包 -->
+        <!-- 引用集成 dynamic-datasource 启动包 -->
+        <!-- 用于数据源级租户 -->
         <dependency>
-            <groupId>com.baomidou</groupId>
-            <artifactId>mybatis-plus-spring-boot4-starter</artifactId>
-        </dependency>
-
-        <!-- mybatis-plus ^3.5.9 需要另外追加 -->
-        <dependency>
-            <groupId>com.baomidou</groupId>
-            <artifactId>mybatis-plus-jsqlparser</artifactId>
+            <groupId>cc.uncarbon.framework</groupId>
+            <artifactId>helio-starter-db-dynamic-datasource</artifactId>
         </dependency>
     </dependencies>
 </project>

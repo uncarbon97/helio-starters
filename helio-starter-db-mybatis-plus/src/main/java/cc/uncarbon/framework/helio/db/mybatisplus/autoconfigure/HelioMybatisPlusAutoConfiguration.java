@@ -4,6 +4,7 @@ import cc.uncarbon.framework.helio.db.mybatisplus.idgen.HutoolSnowflakeIdGenerat
 import cc.uncarbon.framework.helio.db.mybatisplus.handler.MybatisPlusAutoFillColumnHandler;
 import cc.uncarbon.framework.helio.db.mybatisplus.props.HelioIdGenProperties;
 import cc.uncarbon.framework.helio.db.mybatisplus.props.HelioMybatisPlusProperties;
+import com.baomidou.mybatisplus.core.handlers.MetaObjectHandler;
 import com.baomidou.mybatisplus.core.incrementer.IdentifierGenerator;
 import com.baomidou.mybatisplus.extension.plugins.MybatisPlusInterceptor;
 import com.baomidou.mybatisplus.extension.plugins.handler.TenantLineHandler;
@@ -34,14 +35,13 @@ public class HelioMybatisPlusAutoConfiguration {
 
     /**
      * mybatis-plus 拦截器
+     *
+     * @param innerInterceptorProvider 所有注入到 Spring 容器中的 InnerInterceptor，其中包括行级租户的 TenantLineInnerInterceptor；也方便注入其他自定义的 InnerInterceptor
      */
     @Bean
     @ConditionalOnMissingBean
-    public MybatisPlusInterceptor mybatisPlusInterceptor(
-            HelioMybatisPlusProperties props,
-            // 所有注入到 Spring 容器中的 InnerInterceptor，其中包括行级租户的 TenantLineInnerInterceptor
-            // 也方便注入其他自定义的 InnerInterceptor
-            ObjectProvider<InnerInterceptor> innerInterceptorProvider) {
+    public MybatisPlusInterceptor mybatisPlusInterceptor(HelioMybatisPlusProperties props,
+                                                         ObjectProvider<InnerInterceptor> innerInterceptorProvider) {
         MybatisPlusInterceptor interceptor = new MybatisPlusInterceptor();
 
         /*
@@ -91,22 +91,8 @@ public class HelioMybatisPlusAutoConfiguration {
      */
     @Bean
     @ConditionalOnMissingBean
-    public MybatisPlusAutoFillColumnHandler mybatisPlusAutoFillColumnHandler() {
+    public MetaObjectHandler mybatisPlusAutoFillColumnHandler() {
         return new MybatisPlusAutoFillColumnHandler();
-    }
-
-    /**
-     * 默认租户支持类
-     */
-    @Bean
-    @ConditionalOnMissingBean
-    public TenantLineInnerInterceptor defaultTenantLineInnerInterceptor() {
-        return new TenantLineInnerInterceptor(new TenantLineHandler() {
-            @Override
-            public Expression getTenantId() {
-                return null;
-            }
-        });
     }
 
 }

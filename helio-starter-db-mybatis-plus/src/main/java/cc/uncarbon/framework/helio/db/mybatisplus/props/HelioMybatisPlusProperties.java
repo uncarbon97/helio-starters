@@ -1,5 +1,6 @@
 package cc.uncarbon.framework.helio.db.mybatisplus.props;
 
+import cc.uncarbon.framework.helio.base.constant.ConfigurationPropertiesPrefix;
 import lombok.Data;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
@@ -8,7 +9,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
  *
  * @author Uncarbon
  */
-@ConfigurationProperties(prefix = "helio.db.mybatis-plus")
+@ConfigurationProperties(prefix = ConfigurationPropertiesPrefix.DB_MYBATIS_PLUS)
 @Data
 public class HelioMybatisPlusProperties {
 

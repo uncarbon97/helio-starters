@@ -3,6 +3,7 @@ package cc.uncarbon.framework.helio.db.mybatisplus.handler;
 import cc.uncarbon.framework.helio.base.context.UserContextHolder;
 import cc.uncarbon.framework.helio.db.constant.EntityField;
 import cc.uncarbon.framework.helio.tenant.context.TenantContextHolder;
+import cn.hutool.core.util.ClassUtil;
 import com.baomidou.mybatisplus.core.handlers.MetaObjectHandler;
 import org.apache.ibatis.reflection.MetaObject;
 
@@ -16,11 +17,33 @@ import java.time.LocalDateTime;
  */
 public class MybatisPlusAutoFillColumnHandler implements MetaObjectHandler {
 
+    /**
+     * TenantContextHolder 的全限定名
+     */
+    private static final String TENANT_CONTEXT_HOLDER_FULLY_QUALIFIED_NAME =
+            "cc.uncarbon.framework.helio.tenant.context.TenantContextHolder";
+
+    /**
+     * 当前 ClassLoader 内，存在 TenantContextHolder
+     */
+    private boolean existsTenantContextHolder = false;
+
+    public MybatisPlusAutoFillColumnHandler() {
+        try {
+            Class.forName(TENANT_CONTEXT_HOLDER_FULLY_QUALIFIED_NAME);
+            this.existsTenantContextHolder = true;
+        } catch (ClassNotFoundException ignored) {
+        }
+    }
+
     @Override
     public void insertFill(MetaObject metaObject) {
-        this.strictInsertFill(metaObject, EntityField.TENANT_ID_FIELD, Long.class, TenantContextHolder.getTenantId());
         this.strictInsertFill(metaObject, EntityField.CREATED_AT_FIELD, LocalDateTime.class, LocalDateTime.now());
         this.strictInsertFill(metaObject, EntityField.CREATED_BY_FIELD, String.class, UserContextHolder.getUserName());
+
+        if (this.existsTenantContextHolder) {
+            this.strictInsertFill(metaObject, EntityField.TENANT_ID_FIELD, Long.class, TenantContextHolder.getTenantId());
+        }
     }
 
     @Override

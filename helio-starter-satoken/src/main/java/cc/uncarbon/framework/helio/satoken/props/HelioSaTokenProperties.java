@@ -1,5 +1,6 @@
 package cc.uncarbon.framework.helio.satoken.props;
 
+import cc.uncarbon.framework.helio.base.constant.ConfigurationPropertiesPrefix;
 import cc.uncarbon.framework.helio.satoken.dao.SaTokenRedisDaoWithLocalCache;
 import lombok.Data;
 import org.springframework.boot.context.properties.ConfigurationProperties;
@@ -10,7 +11,7 @@ import org.springframework.boot.context.properties.NestedConfigurationProperty;
  *
  * @author Uncarbon
  */
-@ConfigurationProperties(prefix = "helio.satoken")
+@ConfigurationProperties(prefix = ConfigurationPropertiesPrefix.SA_TOKEN)
 @Data
 public class HelioSaTokenProperties {
 

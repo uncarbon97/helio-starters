@@ -18,7 +18,6 @@ import lombok.experimental.SuperBuilder;
  */
 @EqualsAndHashCode(callSuper = true)
 @Accessors(chain = true)
-@SuperBuilder
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
