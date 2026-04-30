@@ -1,11 +1,13 @@
-package cc.uncarbon.framework.ratelimit.stratrgy;
+package cc.uncarbon.framework.helio.ratelimiter.stratrgy;
 
-import cc.uncarbon.framework.ratelimit.annotation.UseRateLimit;
-import cc.uncarbon.framework.helio.base.exception.RateLimitedException;
+import cc.uncarbon.framework.helio.ratelimiter.annotation.UseRateLimit;
+import cc.uncarbon.framework.helio.ratelimiter.exception.RateLimitedException;
 import org.aspectj.lang.JoinPoint;
 
 /**
  * 限流策略接口
+ *
+ * @author Uncarbon
  */
 public interface RateLimitStrategy {
 
@@ -19,8 +21,9 @@ public interface RateLimitStrategy {
 
     /**
      * 执行限流检查，根据不同维度判断是否已触达限流上限
+     *
      * @param annotation 注解实例
-     * @param point 切点
+     * @param point      切点
      */
     void performRateLimitCheck(UseRateLimit annotation, JoinPoint point);
 

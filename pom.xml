@@ -32,6 +32,7 @@
         <module>helio-starter-db-dynamic-datasource</module>
         <module>helio-starter-db-mybatis-plus</module>
         <module>helio-starter-jackson3</module>
+        <module>helio-starter-ratelimiter-redis</module>
         <module>helio-starter-redis</module>
         <module>helio-starter-satoken</module>
         <module>helio-starter-tenant</module>

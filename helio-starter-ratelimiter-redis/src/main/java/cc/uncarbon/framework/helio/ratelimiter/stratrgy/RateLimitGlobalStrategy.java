@@ -1,8 +1,7 @@
-package cc.uncarbon.framework.ratelimit.stratrgy.impl;
+package cc.uncarbon.framework.helio.ratelimiter.stratrgy;
 
-import cc.uncarbon.framework.ratelimit.annotation.UseRateLimit;
-import cc.uncarbon.framework.ratelimit.constant.RateLimitConstant;
-import cc.uncarbon.framework.ratelimit.stratrgy.RateLimitStrategy;
+import cc.uncarbon.framework.helio.ratelimiter.annotation.UseRateLimit;
+import cc.uncarbon.framework.helio.ratelimiter.constant.RateLimiterConstant;
 import cn.hutool.core.text.CharSequenceUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.JoinPoint;
@@ -10,12 +9,14 @@ import org.springframework.data.redis.core.RedisTemplate;
 
 /**
  * 无维度区分，全局限流策略
+ *
+ * @author Uncarbon
  */
 @Slf4j
-public class RateLimitGlobalStrategy extends SimpleRedisBasedRateLimitStrategy implements RateLimitStrategy {
+public class RateLimitGlobalStrategy extends BaseRateLimitRedisStrategy implements RateLimitStrategy {
 
     public RateLimitGlobalStrategy(RedisTemplate<String, Object> objectRedisTemplate) {
-        super(objectRedisTemplate, "RateLimitGlobalStrategy");
+        super(objectRedisTemplate, "[Redis限流器][全局维度]");
     }
 
     @Override
@@ -28,6 +29,6 @@ public class RateLimitGlobalStrategy extends SimpleRedisBasedRateLimitStrategy i
      */
     @Override
     protected String determineRedisKey(UseRateLimit annotation, JoinPoint point) {
-        return CharSequenceUtil.format("{}global:{}", RateLimitConstant.REDIS_KEY_PREFIX, determineMark(annotation, point));
+        return "%s:global:%s".formatted(RateLimiterConstant.REDIS_KEY_PREFIX, determineMark(annotation, point));
     }
 }

@@ -1,8 +1,7 @@
-package cc.uncarbon.framework.ratelimit.stratrgy.impl;
+package cc.uncarbon.framework.helio.ratelimiter.stratrgy;
 
-import cc.uncarbon.framework.ratelimit.annotation.UseRateLimit;
-import cc.uncarbon.framework.helio.base.exception.RateLimitStrategyException;
-import cc.uncarbon.framework.helio.base.exception.RateLimitedException;
+import cc.uncarbon.framework.helio.ratelimiter.annotation.UseRateLimit;
+import cc.uncarbon.framework.helio.ratelimiter.exception.RateLimitedException;
 import cn.hutool.core.text.CharSequenceUtil;
 import cn.hutool.core.text.StrPool;
 import lombok.RequiredArgsConstructor;
@@ -13,41 +12,43 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.script.RedisScript;
 
 import java.lang.reflect.Method;
-import java.util.Collections;
+import java.util.List;
 import java.util.function.Supplier;
 
 /**
  * 脚手架预置的简易限流策略基类
+ *
+ * @author Uncarbon
  */
 @RequiredArgsConstructor
 @Slf4j
-public abstract class SimpleRedisBasedRateLimitStrategy {
+public abstract class BaseRateLimitRedisStrategy {
 
     private final RedisTemplate<String, Object> objectRedisTemplate;
-    private final String realClassName;
+    private final String LOG_PREFIX;
 
     /**
      * 预置限流Lua脚本
      */
     private static final String LUA_SCRIPT = """
-        local key = KEYS[1]
-        local count = tonumber(ARGV[1])
-        local time = tonumber(ARGV[2])
-        local current = redis.call('get', key)
-
-        if current then
-            current = tonumber(current)
-            if current > count then
-                return current
+            local key = KEYS[1]
+            local count = tonumber(ARGV[1])
+            local time = tonumber(ARGV[2])
+            local current = redis.call('get', key)
+            
+            if current then
+                current = tonumber(current)
+                if current > count then
+                    return current
+                end
+                current = redis.call('incr', key)
+            else
+                current = 1
+                redis.call('set', key, current, 'EX', time)
             end
-            current = redis.call('incr', key)
-        else
-            current = 1
-            redis.call('set', key, current, 'EX', time)
-        end
-
-        return current
-        """;
+            
+            return current
+            """;
 
     /**
      * 预置限流Lua脚本的 RedisScript 类实例
@@ -56,22 +57,21 @@ public abstract class SimpleRedisBasedRateLimitStrategy {
 
 
     protected void performRateLimitCheck(UseRateLimit annotation, JoinPoint point,
-                                         Supplier<RateLimitedException> rateLimitedExceptionSupplier)
-            throws RateLimitStrategyException {
+                                         Supplier<RateLimitedException> rateLimitedExceptionSupplier) {
         int duration = annotation.duration();
         int max = annotation.max();
 
         String redisKey = determineRedisKey(annotation, point);
-        Long current = objectRedisTemplate.execute(REDIS_SCRIPT, Collections.singletonList(redisKey), max, duration);
+        Long current = objectRedisTemplate.execute(REDIS_SCRIPT, List.of(redisKey), max, duration);
         if (current == null) {
-            log.error("SimpleRedisBasedRateLimitStrategy.REDIS_SCRIPT executed but no result.");
-            throw new RateLimitStrategyException("SCRIPT executed but no result");
+            log.error("{} REDIS_SCRIPT executed but no result.", LOG_PREFIX);
+            throw new RuntimeException("SCRIPT executed but no result");
         }
         if (current > max) {
-            log.info("[UseRateLimit][{}] 键名 {} 已触达限流阈值 {}", realClassName, redisKey, max);
+            log.info("{} 键名 {} 已触达限流阈值 {}", LOG_PREFIX, redisKey, max);
             throw rateLimitedExceptionSupplier.get();
         }
-        log.info("[UseRateLimit][{}] 键名 {} 限流进度 {}/{}", realClassName, redisKey, current, max);
+        log.info("{} 键名 {} 限流进度 {}/{}", LOG_PREFIX, redisKey, current, max);
     }
 
     /**
@@ -86,7 +86,7 @@ public abstract class SimpleRedisBasedRateLimitStrategy {
         if (CharSequenceUtil.isNotEmpty(annotation.mark())) {
             return annotation.mark();
         }
-        // 使用Java方法的全限定名
+        // 使用 Java 方法的全限定名
         MethodSignature signature = (MethodSignature) point.getSignature();
         Method method = signature.getMethod();
         Class<?> targetClass = method.getDeclaringClass();

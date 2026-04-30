@@ -12,10 +12,10 @@
         <relativePath>../pom.xml</relativePath>
     </parent>
 
-    <artifactId>helio-starter-db-mybatis-plus</artifactId>
+    <artifactId>helio-starter-ratelimiter-redis</artifactId>
     <name>${project.artifactId}</name>
     <description>
-        Helio 集成 mybatis-plus 启动包
+        Helio 基于 Redis 的限流器启动包
     </description>
 
     <dependencies>
@@ -25,30 +25,39 @@
             <artifactId>helio-starter-base</artifactId>
         </dependency>
 
-        <!-- 引用配套核心包 -->
+        <!-- 暂无配套核心包 -->
+
+        <!-- 引用 Redis 启动包 -->
         <dependency>
             <groupId>cc.uncarbon.framework</groupId>
-            <artifactId>helio-core-db</artifactId>
+            <artifactId>helio-starter-redis</artifactId>
         </dependency>
 
-        <!-- 引用租户核心包 -->
+        <!-- 引入 AOP 框架 -->
         <dependency>
-            <groupId>cc.uncarbon.framework</groupId>
-            <artifactId>helio-core-tenant</artifactId>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-aop</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.aspectj</groupId>
+            <artifactId>aspectjweaver</artifactId>
+        </dependency>
+
+        <!-- 引入 Spring Web 框架 -->
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-web</artifactId>
             <!-- 只引用，非必要不参与打包 -->
             <scope>provided</scope>
         </dependency>
 
-        <!-- mybatis-plus 启动包 -->
+        <!-- 引入 Jakarta Servlet API 包 -->
         <dependency>
-            <groupId>com.baomidou</groupId>
-            <artifactId>mybatis-plus-spring-boot4-starter</artifactId>
-        </dependency>
-
-        <!-- mybatis-plus ^3.5.9 需要另外追加 -->
-        <dependency>
-            <groupId>com.baomidou</groupId>
-            <artifactId>mybatis-plus-jsqlparser</artifactId>
+            <groupId>jakarta.servlet</groupId>
+            <artifactId>jakarta.servlet-api</artifactId>
+            <!-- 只引用，非必要不参与打包 -->
+            <scope>provided</scope>
         </dependency>
     </dependencies>
 </project>

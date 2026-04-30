@@ -1,4 +1,0 @@
-cc.uncarbon.framework.ratelimit.aspect.UseRateLimitAspect
-cc.uncarbon.framework.ratelimit.stratrgy.impl.RateLimitGlobalStrategy
-cc.uncarbon.framework.ratelimit.stratrgy.impl.RateLimitByUserIdStrategy
-cc.uncarbon.framework.ratelimit.stratrgy.impl.RateLimitByClientIPStrategy

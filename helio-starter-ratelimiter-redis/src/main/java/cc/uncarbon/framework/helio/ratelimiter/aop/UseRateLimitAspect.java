@@ -1,7 +1,7 @@
-package cc.uncarbon.framework.ratelimit.aspect;
+package cc.uncarbon.framework.helio.ratelimiter.aop;
 
-import cc.uncarbon.framework.ratelimit.annotation.UseRateLimit;
-import cc.uncarbon.framework.ratelimit.stratrgy.RateLimitStrategy;
+import cc.uncarbon.framework.helio.ratelimiter.annotation.UseRateLimit;
+import cc.uncarbon.framework.helio.ratelimiter.stratrgy.RateLimitStrategy;
 import cn.hutool.core.util.ReflectUtil;
 import cn.hutool.extra.spring.SpringUtil;
 import lombok.RequiredArgsConstructor;
@@ -18,7 +18,6 @@ import org.springframework.beans.BeansException;
  * @author Uncarbon
  */
 @Aspect
-@RequiredArgsConstructor
 @Slf4j
 public class UseRateLimitAspect {
 
