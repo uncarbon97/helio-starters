@@ -9,7 +9,7 @@
         <artifactId>helio-starters</artifactId>
         <groupId>cc.uncarbon.framework</groupId>
         <version>2.5.0</version><!-- BATCH REPLACEMENT MARK -->
-        <relativePath>../../pom.xml</relativePath>
+        <relativePath>../pom.xml</relativePath>
     </parent>
 
     <artifactId>helio-starter-web</artifactId>

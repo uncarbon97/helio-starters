@@ -16,29 +16,29 @@
     <properties>
         <revision>4.0.0-SNAPSHOT</revision>
 
-        <!-- 以下用于 helio-*-base -->
-        <spring-boot.version>4.1.0-M2</spring-boot.version>
+        <!-- 以下用于 base -->
+        <spring-boot.version>4.1.0-RC1</spring-boot.version>
         <lombok.version>1.18.42</lombok.version>
         <slf4j.version>2.0.12</slf4j.version>
         <transmittable-thread-local.version>2.14.5</transmittable-thread-local.version>
         <hutool.version>5.8.40</hutool.version>
-        <!-- 以上用于 helio-*-base -->
+        <!-- 以上用于 base -->
 
-        <!-- 以下用于 helio-*-mybatis -->
+        <!-- 以下用于 db -->
         <mybatis-plus.version>3.5.16</mybatis-plus.version>
         <dynamic-datasource.version>4.5.0</dynamic-datasource.version>
         <mysql.version>9.3.0</mysql.version>
         <postgresql.version>42.7.7</postgresql.version>
-        <!-- 以上用于 helio-*-mybatis -->
+        <!-- 以上用于 db -->
 
-        <!-- 以下用于 helio-*-redis -->
+        <!-- 以下用于 redis -->
         <!-- https://mvnrepository.com/artifact/org.redisson/redisson-spring-boot-starter -->
-        <redisson.version>4.3.0</redisson.version>
-        <!-- 以上用于 helio-*-redis -->
+        <redisson.version>4.3.1</redisson.version>
+        <!-- 以上用于 redis -->
 
-        <!-- 以下用于 helio-*-satoken -->
+        <!-- 以下用于 satoken -->
         <sa-token.version>1.45.0</sa-token.version>
-        <!-- 以上用于 helio-*-satoken -->
+        <!-- 以上用于 satoken -->
 
         <!-- 以下两个 SpringDoc 依赖不完全配套，但能适配 Spring Boot 3.5.x -->
         <!-- https://central.sonatype.com/artifact/org.springdoc/springdoc-openapi-starter-common/版本号/dependencies -->
@@ -57,7 +57,7 @@
                 <scope>import</scope>
             </dependency>
 
-            <!-- 以下用于 helio-*-base -->
+            <!-- 以下用于 base -->
             <!-- lombok -->
             <dependency>
                 <groupId>org.projectlombok</groupId>
@@ -98,10 +98,10 @@
                 <artifactId>hutool-all</artifactId>
                 <version>${hutool.version}</version>
             </dependency>
-            <!-- 以上用于 helio-*-base -->
+            <!-- 以上用于 base -->
 
 
-            <!-- 以下用于 helio-*-mybatis -->
+            <!-- 以下用于 mybatis -->
             <!-- mybatis-plus 注解包 -->
             <dependency>
                 <groupId>com.baomidou</groupId>
@@ -143,9 +143,9 @@
                 <artifactId>postgresql</artifactId>
                 <version>${postgresql.version}</version>
             </dependency>
-            <!-- 以上用于 helio-*-mybatis -->
+            <!-- 以上用于 mybatis -->
 
-            <!-- 以下用于 helio-*-redis -->
+            <!-- 以下用于 redis -->
             <!-- redisson 启动包 -->
             <dependency>
                 <groupId>org.redisson</groupId>
@@ -162,9 +162,9 @@
                     </exclusion>
                 </exclusions>
             </dependency>
-            <!-- 以上用于 helio-*-redis -->
+            <!-- 以上用于 redis -->
 
-            <!-- 以下用于 helio-*-satoken -->
+            <!-- 以下用于 satoken -->
             <!-- SA-Token 启动包 -->
             <dependency>
                 <groupId>cn.dev33</groupId>
@@ -178,7 +178,7 @@
                 <artifactId>sa-token-redis-jackson</artifactId>
                 <version>${sa-token.version}</version>
             </dependency>
-            <!-- 以上用于 helio-*-satoken -->
+            <!-- 以上用于 satoken -->
 
             <!-- WEB dependencies -->
             <dependency>

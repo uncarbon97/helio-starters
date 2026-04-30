@@ -36,6 +36,8 @@
         <module>helio-starter-redis</module>
         <module>helio-starter-satoken</module>
         <module>helio-starter-tenant</module>
+        <module>helio-starter-web</module>
+        <module>helio-starter-web-security</module>
     </modules>
 
     <dependencyManagement>
