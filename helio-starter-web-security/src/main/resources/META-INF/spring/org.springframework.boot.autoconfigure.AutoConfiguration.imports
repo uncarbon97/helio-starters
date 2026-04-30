@@ -1,1 +1,1 @@
-cc.uncarbon.framework.helio.redis.autoconfigure.HelioRedisAutoConfiguration
+cc.uncarbon.framework.helio.websecurity.autoconfigure.HelioRedisAutoConfiguration
