@@ -16,4 +16,5 @@ public final class ConfigurationPropertiesPrefix {
     public static final String JACKSON = "helio.jackson";
     public static final String SA_TOKEN = "helio.satoken";
     public static final String TENANT = "helio.tenant";
+    public static final String WEB_SECURITY = "helio.web-security";
 }

@@ -25,6 +25,16 @@
             <artifactId>helio-starter-base</artifactId>
         </dependency>
 
-        <!-- 无配套核心包 -->
+        <!-- 引用配套核心包 -->
+        <dependency>
+            <groupId>cc.uncarbon.framework</groupId>
+            <artifactId>helio-core-web</artifactId>
+        </dependency>
+
+        <!-- 引用 Spring Web -->
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-web</artifactId>
+        </dependency>
     </dependencies>
 </project>

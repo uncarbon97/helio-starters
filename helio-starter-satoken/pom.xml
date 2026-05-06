@@ -27,13 +27,13 @@
 
         <!-- 无配套核心包 -->
 
-        <!-- SA-Token原生启动包 -->
+        <!-- SA-Token 原生启动包 -->
         <dependency>
             <groupId>cn.dev33</groupId>
             <artifactId>sa-token-spring-boot4-starter</artifactId>
         </dependency>
 
-        <!-- SA-Token基于Jackson读写Redis支持包 -->
+        <!-- SA-Token 基于 Jackson 读写 Redis 支持包 -->
         <dependency>
             <groupId>cn.dev33</groupId>
             <artifactId>sa-token-redis-jackson</artifactId>

@@ -20,7 +20,7 @@ public class XssFilter implements Filter {
 	/**
 	 * 不进行过滤的路由（直接放行）
 	 */
-	private final List<String> excludedRoutes;
+	private final List<String> ignoredUrls;
 
 	private static final AntPathMatcher ANT_PATH_MATCHER = new AntPathMatcher();
 
@@ -43,12 +43,12 @@ public class XssFilter implements Filter {
 	 * 该路由是否可以排除XSS过滤
 	 */
 	private boolean canExclude(HttpServletRequest request) {
-		if (CollUtil.isEmpty(excludedRoutes)) {
+		if (CollUtil.isEmpty(ignoredUrls)) {
 			return false;
 		}
 
 		String requestUri = request.getServletPath();
-		return excludedRoutes.stream().anyMatch(
+		return ignoredUrls.stream().anyMatch(
 				excludedRoute -> ANT_PATH_MATCHER.match(excludedRoute, requestUri)
 		);
 	}

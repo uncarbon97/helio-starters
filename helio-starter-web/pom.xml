@@ -20,6 +20,18 @@
     </properties>
 
     <dependencies>
+        <!-- 引用基础启动包 -->
+        <dependency>
+            <groupId>cc.uncarbon.framework</groupId>
+            <artifactId>helio-starter-base</artifactId>
+        </dependency>
+
+        <!-- 引用配套核心包 -->
+        <dependency>
+            <groupId>cc.uncarbon.framework</groupId>
+            <artifactId>helio-core-web</artifactId>
+        </dependency>
+
         <!-- 脚手架starter -->
         <dependency>
             <groupId>cc.uncarbon.framework</groupId>
