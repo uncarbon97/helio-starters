@@ -1,7 +1,1 @@
-cc.uncarbon.framework.helio.web.listener.LaunchEventListener
-cc.uncarbon.framework.helio.web.config.DefaultWebMvcAutoConfiguration
-cc.uncarbon.framework.helio.web.config.GlobalWebExceptionHandlerAutoConfiguration
-cc.uncarbon.framework.web.config.JacksonExtendAutoConfiguration
-cc.uncarbon.framework.helio.web.config.MessageConverterAutoConfiguration
-cc.uncarbon.framework.helio.websecurity.autoconfigure.XssAutoConfiguration
-cc.uncarbon.framework.helio.web.aspect.WebLoggingAspect
+cc.uncarbon.framework.helio.web.autoconfigure.HelioWebAutoConfiguration

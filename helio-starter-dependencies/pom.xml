@@ -165,6 +165,13 @@
             <!-- 以上用于 redis -->
 
             <!-- 以下用于 satoken -->
+            <!-- SA-Token 原生基础包 -->
+            <dependency>
+                <groupId>cn.dev33</groupId>
+                <artifactId>sa-token-core</artifactId>
+                <version>${sa-token.version}</version>
+            </dependency>
+
             <!-- SA-Token 原生启动包 -->
             <dependency>
                 <groupId>cn.dev33</groupId>

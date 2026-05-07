@@ -2,7 +2,7 @@ package cc.uncarbon.framework.helio.web.listener;
 
 import cn.hutool.core.text.CharSequenceUtil;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.boot.web.context.WebServerInitializedEvent;
+import org.springframework.boot.web.server.context.WebServerInitializedEvent;
 import org.springframework.context.event.EventListener;
 import org.springframework.core.annotation.Order;
 import org.springframework.core.env.Environment;
@@ -12,13 +12,13 @@ import java.net.InetAddress;
 import java.net.UnknownHostException;
 
 /**
- * 项目启动事件通知
+ * Web 服务器启动监听
  *
  * @author hanfeng
  * @author Uncarbon
- **/
+ */
 @Slf4j
-public class LaunchEventListener {
+public class WebServerLaunchedListener {
 
     @Async
     @Order
@@ -47,13 +47,13 @@ public class LaunchEventListener {
         System.out.println(
                 CharSequenceUtil.format(
                         """
-
+                                
                                 ----------------------------------------------------------
                                 \tApplication '{}' is running! Access URLs:
                                 \tLocal: \t\t{}://127.0.0.1:{}{}
                                 \tExternal: \t{}://{}:{}{}
                                 ----------------------------------------------------------
-
+                                
                                 """,
                         env.getProperty("spring.application.name"),
                         protocol,

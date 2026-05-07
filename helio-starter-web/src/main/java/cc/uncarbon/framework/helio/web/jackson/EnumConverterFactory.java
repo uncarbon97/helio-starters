@@ -1,7 +1,8 @@
-package cc.uncarbon.framework.helio.jackson;
+package cc.uncarbon.framework.helio.web.jackson;
 
 import cc.uncarbon.framework.helio.base.enums.BaseEnum;
 import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
 import org.springframework.core.convert.converter.Converter;
 import org.springframework.core.convert.converter.ConverterFactory;
 
@@ -13,14 +14,13 @@ import java.util.WeakHashMap;
  *
  * @author hanfeng
  */
+@SuppressWarnings("rawtypes")
 public class EnumConverterFactory implements ConverterFactory<String, BaseEnum> {
 
-    @SuppressWarnings("rawtypes")
     private final Map<Class, Converter> converterCache = new WeakHashMap<>();
 
-    @SuppressWarnings("rawtypes")
     @Override
-    public <T extends BaseEnum> Converter<String, T> getConverter(@NonNull Class<T> targetType) {
+    public <T extends BaseEnum> @Nullable Converter<String, T> getConverter(@NonNull Class<T> targetType) {
         return converterCache.computeIfAbsent(targetType,
                 k -> converterCache.put(k, new EnumConverter(k))
         );
