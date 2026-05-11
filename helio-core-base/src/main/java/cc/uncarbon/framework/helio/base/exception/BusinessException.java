@@ -1,6 +1,7 @@
 package cc.uncarbon.framework.helio.base.exception;
 
 import cn.hutool.core.text.CharSequenceUtil;
+import com.sun.source.tree.InstanceOfTree;
 import lombok.Getter;
 
 import java.io.Serializable;
@@ -14,9 +15,9 @@ import java.io.Serializable;
 public class BusinessException extends RuntimeException {
 
     /**
-     * 默认错误码：有错误
+     * 默认错误码
      */
-    public static final int DEFAULT_CODE_HAS_ERROR = 500;
+    public static final int DEFAULT_ERROR_CODE = 500;
 
     /**
      * 错误码，同时兼容整数与文本
@@ -31,7 +32,7 @@ public class BusinessException extends RuntimeException {
      */
     public BusinessException(String errorMsg) {
         super(errorMsg);
-        this.code = DEFAULT_CODE_HAS_ERROR;
+        this.code = DEFAULT_ERROR_CODE;
     }
 
     /**
@@ -86,5 +87,29 @@ public class BusinessException extends RuntimeException {
     @Override
     public synchronized Throwable fillInStackTrace() {
         return this;
+    }
+
+    /**
+     * @return 整数形式的错误码；如果实际不是整数类型，也会返回 null
+     */
+    public Integer getCodeAsInt() {
+        Serializable code = getCode();
+        if (code == null) return null;
+        if (code instanceof Integer codeAsInt) {
+            return codeAsInt;
+        }
+        return null;
+    }
+
+    /**
+     * @return 文本形式的错误码；如果实际不是整数类型，会尝试强行转换成文本
+     */
+    public String getCodeAsString() {
+        Serializable code = getCode();
+        if (code == null) return null;
+        if (code instanceof String codeAsString) {
+            return codeAsString;
+        }
+        return code.toString();
     }
 }

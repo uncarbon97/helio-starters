@@ -5,7 +5,7 @@ import lombok.Getter;
 
 /**
  * Web 全局异常处理国际化消息枚举
- * 枚举值name 同时视为 i18nCode
+ * 枚举值 name 同时视为 i18nCode
  *
  * @author Uncarbon
  */
@@ -23,7 +23,8 @@ public enum GlobalWebExceptionI18nMessageEnum {
     /**
      * 一般为最后兜底使用
      */
-    GLOBAL__INTERNAL_ERROR("请稍后再试"),;
+    GLOBAL__INTERNAL_ERROR("请稍后再试"),
+    ;
 
     private final String defaultValue;
 

@@ -1,8 +1,8 @@
 package cc.uncarbon.framework.helio.web.handler;
 
 import cc.uncarbon.framework.helio.base.exception.BusinessException;
+import cc.uncarbon.framework.helio.web.enums.GlobalWebExceptionI18nMessageEnum;
 import cc.uncarbon.framework.helio.web.model.response.ApiResult;
-import cc.uncarbon.framework.helio.web.props.HelioWebProperties;
 import cc.uncarbon.framework.helio.web.util.InvalidFieldUtil;
 import cn.dev33.satoken.exception.NotLoginException;
 import cn.dev33.satoken.exception.NotPermissionException;
@@ -44,43 +44,36 @@ public class GlobalWebExceptionHandler {
 
     protected static final MediaType MEDIA_TYPE_APPLICATION_JSON_UTF8 =
             new MediaType("application", "json", StandardCharsets.UTF_8);
-    protected static final String DUBBO_PACKAGE_PREFIX = "org.apache.dubbo";
     private static final String LOG_PREFIX = "[Web]";
-
-    private final HelioWebProperties props;
 
 
     /**
      * 主动抛出的业务异常
      */
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
-    @ExceptionHandler({BusinessException.class})
+    @ResponseStatus(value = HttpStatus.BAD_REQUEST)
+    @ExceptionHandler(value = {BusinessException.class})
     public ResponseEntity<ApiResult<Void>> handleBusinessException(BusinessException e, HttpServletRequest servletRequest) {
-        this.logError(e, servletRequest);
+        this.logException(e, servletRequest);
 
-        /*
-        @since 1.7.2，国际化支持；详见文档：进阶使用-国际化
-         */
-        String msg;
-        if (Boolean.TRUE.equals(props.getI18n().getEnabled()) && e.getCustomEnumField() != null) {
-            // 如果启用了国际化，并制定了枚举值，则按国际化翻译值显示
-            msg = I18nUtil.messageOf(e.getCustomEnumField(), e.getTemplateParams());
+        String msg = e.getMessage();
+        ApiResult<Void> ret;
+        Integer codeAsInt = e.getCodeAsInt();
+        if (codeAsInt != null) {
+            ret = ApiResult.fail(codeAsInt, msg);
         } else {
-            // 按已有值显示
-            msg = e.getMessage();
+            String codeAsString = e.getCodeAsString();
+            ret = ApiResult.fail(codeAsString, msg);
         }
-
-        ApiResult<Void> ret = ApiResult.fail(e.getCode(), msg);
         return createResponseEntity(HttpStatus.BAD_REQUEST, ret);
     }
 
     /**
      * 用户登录异常
      */
-    @ResponseStatus(HttpStatus.UNAUTHORIZED)
-    @ExceptionHandler({NotLoginException.class})
+    @ResponseStatus(value = HttpStatus.UNAUTHORIZED)
+    @ExceptionHandler(value = {NotLoginException.class})
     public ResponseEntity<ApiResult<Void>> handleNotLoginException(NotLoginException e, HttpServletRequest servletRequest) {
-        this.logError(e, servletRequest);
+        this.logException(e, servletRequest);
 
         GlobalWebExceptionI18nMessageEnum msgEnum = GlobalWebExceptionI18nMessageEnum.GLOBAL__NO_LOGIN;
         ApiResult<Void> ret = ApiResult.fail(HttpStatus.UNAUTHORIZED.value(), this.determineI18nMessage(msgEnum));
@@ -90,11 +83,11 @@ public class GlobalWebExceptionHandler {
     /**
      * 用户权限异常
      */
-    @ResponseStatus(HttpStatus.FORBIDDEN)
-    @ExceptionHandler({NotPermissionException.class})
+    @ResponseStatus(value = HttpStatus.FORBIDDEN)
+    @ExceptionHandler(value = {NotPermissionException.class})
     public ResponseEntity<ApiResult<Void>> handleNotPermissionException(NotPermissionException e,
                                                                         HttpServletRequest servletRequest) {
-        this.logError(e, servletRequest);
+        this.logException(e, servletRequest);
 
         GlobalWebExceptionI18nMessageEnum msgEnum = GlobalWebExceptionI18nMessageEnum.GLOBAL__PERMISSION_NOT_MATCH;
         ApiResult<Void> ret = ApiResult.fail(HttpStatus.FORBIDDEN.value(), this.determineI18nMessage(msgEnum));
@@ -104,10 +97,10 @@ public class GlobalWebExceptionHandler {
     /**
      * 用户角色异常
      */
-    @ResponseStatus(HttpStatus.FORBIDDEN)
-    @ExceptionHandler({NotRoleException.class})
+    @ResponseStatus(value = HttpStatus.FORBIDDEN)
+    @ExceptionHandler(value = {NotRoleException.class})
     public ResponseEntity<ApiResult<Void>> handleNotRoleException(NotRoleException e, HttpServletRequest servletRequest) {
-        this.logError(e, servletRequest);
+        this.logException(e, servletRequest);
 
         GlobalWebExceptionI18nMessageEnum msgEnum = GlobalWebExceptionI18nMessageEnum.GLOBAL__ROLE_NOT_MATCH;
         ApiResult<Void> ret = ApiResult.fail(HttpStatus.FORBIDDEN.value(), this.determineI18nMessage(msgEnum));
@@ -115,12 +108,12 @@ public class GlobalWebExceptionHandler {
     }
 
     /**
-     * 404 NOT FOUND
+     * 404 异常
      */
-    @ResponseStatus(HttpStatus.NOT_FOUND)
-    @ExceptionHandler({NoHandlerFoundException.class, NoResourceFoundException.class})
+    @ResponseStatus(value = HttpStatus.NOT_FOUND)
+    @ExceptionHandler(value = {NoHandlerFoundException.class, NoResourceFoundException.class})
     public ResponseEntity<ApiResult<Void>> handleNoHandlerFoundException(Exception e, HttpServletRequest servletRequest) {
-        this.logError(e, servletRequest);
+        this.logException(e, servletRequest);
 
         GlobalWebExceptionI18nMessageEnum msgEnum = GlobalWebExceptionI18nMessageEnum.GLOBAL__NOT_FOUND;
         ApiResult<Void> ret = ApiResult.fail(HttpStatus.NOT_FOUND.value(), this.determineI18nMessage(msgEnum));
@@ -138,11 +131,11 @@ public class GlobalWebExceptionHandler {
      * MethodArgumentTypeMismatchException
      * "@PathVariable" 注解收参类型为 Long，但传的是 String
      */
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
-    @ExceptionHandler({JsonParseException.class, HttpMessageNotReadableException.class,
+    @ResponseStatus(value = HttpStatus.BAD_REQUEST)
+    @ExceptionHandler(value = {JsonParseException.class, HttpMessageNotReadableException.class,
             IllegalArgumentException.class, MethodArgumentTypeMismatchException.class})
     public ResponseEntity<ApiResult<Void>> handleJsonParseException(Exception e, HttpServletRequest servletRequest) {
-        this.logError(e, servletRequest);
+        this.logException(e, servletRequest);
 
         GlobalWebExceptionI18nMessageEnum msgEnum = GlobalWebExceptionI18nMessageEnum.GLOBAL__UNACCEPTABLE_PARAMETERS;
         ApiResult<Void> ret = ApiResult.fail(HttpStatus.NOT_ACCEPTABLE.value(), this.determineI18nMessage(msgEnum));
@@ -153,11 +146,11 @@ public class GlobalWebExceptionHandler {
      * JSR303 表单参数校验失败，或入参格式转换失败
      * 需在 Controller 层使用@Valid注解
      */
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
-    @ExceptionHandler({MethodArgumentNotValidException.class, BindException.class})
+    @ResponseStatus(value = HttpStatus.BAD_REQUEST)
+    @ExceptionHandler(value = {MethodArgumentNotValidException.class, BindException.class})
     public ResponseEntity<ApiResult<InvalidFieldUtil.InvalidField>> handleBindException(BindException e,
                                                                                         HttpServletRequest servletRequest) {
-        this.logError(e, servletRequest);
+        this.logException(e, servletRequest);
 
         GlobalWebExceptionI18nMessageEnum msgEnum = GlobalWebExceptionI18nMessageEnum.GLOBAL__UNACCEPTABLE_PARAMETERS;
         ApiResult<InvalidFieldUtil.InvalidField> ret =
@@ -170,11 +163,11 @@ public class GlobalWebExceptionHandler {
      * HttpRequestMethodNotSupportedException 如：POST接口用了GET请求
      * HttpMediaTypeNotSupportedException 如：Content-type 应为 application/json 的，使用了 text/plain
      */
-    @ResponseStatus(HttpStatus.METHOD_NOT_ALLOWED)
-    @ExceptionHandler({HttpRequestMethodNotSupportedException.class, HttpMediaTypeNotSupportedException.class})
+    @ResponseStatus(value = HttpStatus.METHOD_NOT_ALLOWED)
+    @ExceptionHandler(value = {HttpRequestMethodNotSupportedException.class, HttpMediaTypeNotSupportedException.class})
     public ResponseEntity<ApiResult<Void>> handleServletException(ServletException e,
                                                                   HttpServletRequest servletRequest) {
-        this.logError(e, servletRequest);
+        this.logException(e, servletRequest);
 
         GlobalWebExceptionI18nMessageEnum msgEnum = GlobalWebExceptionI18nMessageEnum.GLOBAL__METHOD_NOT_ALLOWED;
         ApiResult<Void> ret = ApiResult.fail(HttpStatus.METHOD_NOT_ALLOWED.value(), this.determineI18nMessage(msgEnum));
@@ -182,24 +175,21 @@ public class GlobalWebExceptionHandler {
     }
 
     /**
-     * 兜底未归类异常
-     * 如ClientException(Dubbo RPC), RpcException(Dubbo RPC), SQLException, RuntimeException一类的都会掉到这里来, 并打印堆栈
+     * 兜底未归类异常，如：
+     * ClientException(Dubbo RPC)
+     * RpcException(Dubbo RPC)
+     * SQLException
+     * RuntimeException
+     * 一类的都会落到这里来，并打印堆栈
      */
-    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
-    @ExceptionHandler({Exception.class})
+    @ResponseStatus(value = HttpStatus.INTERNAL_SERVER_ERROR)
+    @ExceptionHandler(value = {Exception.class})
     public ResponseEntity<ApiResult<Void>> handleException(Exception e, HttpServletRequest servletRequest) {
         // 打印堆栈，方便溯源
-        this.logError(e, servletRequest, true);
-
-        int responseCode = HttpStatus.INTERNAL_SERVER_ERROR.value();
-
-        if (e.getClass().getName().startsWith(DUBBO_PACKAGE_PREFIX)) {
-            // Dubbo RPC异常
-            responseCode = HelioConstant.Dubbo.RPC_EXCEPTION_RESPONSE_CODE;
-        }
+        this.logException(e, servletRequest, true);
 
         GlobalWebExceptionI18nMessageEnum msgEnum = GlobalWebExceptionI18nMessageEnum.GLOBAL__INTERNAL_ERROR;
-        ApiResult<Void> ret = ApiResult.fail(responseCode, this.determineI18nMessage(msgEnum));
+        ApiResult<Void> ret = ApiResult.fail(HttpStatus.INTERNAL_SERVER_ERROR.value(), this.determineI18nMessage(msgEnum));
         return createResponseEntity(HttpStatus.INTERNAL_SERVER_ERROR, ret);
     }
 
@@ -209,17 +199,17 @@ public class GlobalWebExceptionHandler {
     ----------------------------------------------------------------
      */
 
-    protected void logError(Exception e, HttpServletRequest servletRequest) {
-        logError(e, servletRequest, false);
+    protected void logException(BusinessException e, HttpServletRequest servletRequest) {
+        log.error(LOG_PREFIX + "[业务异常] {} >> URI=[{}]", e.getMessage(), servletRequest.getRequestURI());
     }
 
-    protected void logError(Exception e, HttpServletRequest servletRequest, boolean printExceptionStack) {
-        if (e instanceof BusinessException be) {
-            log.error(LOG_PREFIX + "[业务异常] >> URI=[{}], 消息=[{}]  {}",
-                    servletRequest.getRequestURI(), e.getMessage(), printExceptionStack ? e : null);
-        }
+    protected void logException(Exception e, HttpServletRequest servletRequest) {
+        logException(e, servletRequest, false);
+    }
+
+    protected void logException(Exception e, HttpServletRequest servletRequest, boolean printExceptionStack) {
         log.error(LOG_PREFIX + "[非业务异常] >> 异常类=[{}], URI=[{}], 消息=[{}]  {}",
-                e.getClass().getName(), servletRequest.getRequestURI(), e.getMessage(), printExceptionStack ? e : null);
+                e.getClass().getName(), servletRequest.getRequestURI(), e.getMessage(), printExceptionStack ? e : "");
     }
 
     protected static <T> ResponseEntity<ApiResult<T>> createResponseEntity(HttpStatus httpStatus, ApiResult<T> body) {
@@ -233,9 +223,9 @@ public class GlobalWebExceptionHandler {
      * @return 消息文本
      */
     protected String determineI18nMessage(@NonNull GlobalWebExceptionI18nMessageEnum msgEnum) {
-        if (Boolean.TRUE.equals(props.getI18n().getEnabled())) {
-            return I18nUtil.messageOf(msgEnum.i18nCode(), msgEnum.getDefaultValue());
-        }
+//        if (Boolean.TRUE.equals(props.getI18n().getEnabled())) {
+//            return I18nUtil.messageOf(msgEnum.i18nCode(), msgEnum.getDefaultValue());
+//        }
         return msgEnum.getDefaultValue();
     }
 }
