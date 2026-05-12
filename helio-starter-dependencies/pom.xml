@@ -20,6 +20,7 @@
         <spring-boot.version>4.1.0-RC1</spring-boot.version>
         <lombok.version>1.18.42</lombok.version>
         <slf4j.version>2.0.12</slf4j.version>
+        <openapi3-annotations.version>2.2.27</openapi3-annotations.version>
         <transmittable-thread-local.version>2.14.5</transmittable-thread-local.version>
         <hutool.version>5.8.40</hutool.version>
         <!-- 以上用于 base -->
@@ -31,6 +32,10 @@
         <postgresql.version>42.7.7</postgresql.version>
         <!-- 以上用于 db -->
 
+        <!-- 以下用于 openapi3 -->
+        <nextdoc4j.version>1.3.1</nextdoc4j.version>
+        <!-- 以上用于 openapi3 -->
+
         <!-- 以下用于 redis -->
         <!-- https://mvnrepository.com/artifact/org.redisson/redisson-spring-boot-starter -->
         <redisson.version>4.3.1</redisson.version>
@@ -39,11 +44,6 @@
         <!-- 以下用于 satoken -->
         <sa-token.version>1.45.0</sa-token.version>
         <!-- 以上用于 satoken -->
-
-        <!-- 以下两个 SpringDoc 依赖不完全配套，但能适配 Spring Boot 3.5.x -->
-        <!-- https://central.sonatype.com/artifact/org.springdoc/springdoc-openapi-starter-common/版本号/dependencies -->
-        <springdoc-openapi-starter.version>2.7.0</springdoc-openapi-starter.version>
-        <springdoc-annotations.version>2.2.27</springdoc-annotations.version>
     </properties>
 
     <dependencyManagement>
@@ -72,11 +72,11 @@
                 <version>${slf4j.version}</version>
             </dependency>
 
-            <!-- SpringDoc 注解包 -->
+            <!-- OpenAPI 3 规范注解包 -->
             <dependency>
                 <groupId>io.swagger.core.v3</groupId>
                 <artifactId>swagger-annotations</artifactId>
-                <version>${springdoc-annotations.version}</version>
+                <version>${openapi3-annotations.version}</version>
             </dependency>
 
             <!-- 阿里 TTL -->
@@ -144,6 +144,31 @@
                 <version>${postgresql.version}</version>
             </dependency>
             <!-- 以上用于 db -->
+
+
+            <!-- 以下用于 openapi3 -->
+            <!-- Nextdoc4j 启动包 -->
+            <dependency>
+                <groupId>top.nextdoc4j</groupId>
+                <artifactId>nextdoc4j-springboot4-starter</artifactId>
+                <version>${nextdoc4j.version}</version>
+            </dependency>
+
+            <!-- Nextdoc4j 枚举展示插件 -->
+            <dependency>
+                <groupId>top.nextdoc4j</groupId>
+                <artifactId>nextdoc4j-plugin-enum-springboot4</artifactId>
+                <version>${nextdoc4j.version}</version>
+            </dependency>
+
+            <!-- Nextdoc4j 认证展示插件 -->
+            <dependency>
+                <groupId>top.nextdoc4j</groupId>
+                <artifactId>nextdoc4j-plugin-security-schemes-springboot4</artifactId>
+                <version>${nextdoc4j.version}</version>
+            </dependency>
+            <!-- 以上用于 openapi3 -->
+
 
             <!-- 以下用于 redis -->
             <!-- redisson 启动包 -->

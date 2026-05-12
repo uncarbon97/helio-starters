@@ -69,6 +69,12 @@
 
             <dependency>
                 <groupId>cc.uncarbon.framework</groupId>
+                <artifactId>helio-starter-openapi3</artifactId>
+                <version>${revision}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>cc.uncarbon.framework</groupId>
                 <artifactId>helio-starter-ratelimiter-redis</artifactId>
                 <version>${revision}</version>
             </dependency>

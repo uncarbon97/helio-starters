@@ -10,12 +10,14 @@ import lombok.experimental.UtilityClass;
 @UtilityClass
 public final class ConfigurationPropertiesPrefix {
 
-    public static final String BASE = "helio.base";
-    public static final String DB_IDGEN = "helio.db.idgen";
-    public static final String DB_MYBATIS_PLUS = "helio.db.mybatis-plus";
-    public static final String JACKSON = "helio.jackson";
-    public static final String SA_TOKEN = "helio.satoken";
-    public static final String TENANT = "helio.tenant";
-    public static final String WEB = "helio.web";
-    public static final String WEB_SECURITY = "helio.web-security";
+    public static final String FRAMEWORK_NAME = "helio";
+    public static final String BASE = FRAMEWORK_NAME + ".base";
+    public static final String DB_IDGEN = FRAMEWORK_NAME + ".db.idgen";
+    public static final String DB_MYBATIS_PLUS = FRAMEWORK_NAME + ".db.mybatis-plus";
+    public static final String JACKSON = FRAMEWORK_NAME + ".jackson";
+    public static final String OPENAPI = FRAMEWORK_NAME + ".openapi";
+    public static final String SA_TOKEN = FRAMEWORK_NAME + ".satoken";
+    public static final String TENANT = FRAMEWORK_NAME + ".tenant";
+    public static final String WEB = FRAMEWORK_NAME + ".web";
+    public static final String WEB_SECURITY = FRAMEWORK_NAME + ".web-security";
 }
