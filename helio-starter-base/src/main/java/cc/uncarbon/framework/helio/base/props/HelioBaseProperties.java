@@ -15,6 +15,11 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 public class HelioBaseProperties {
 
     /**
+     * 是否处于生产环境
+     */
+    private Boolean productionFlag;
+
+    /**
      * 数据存储时区，决定存储在 DB 中的时刻的时区
      * 例如："Asia/Shanghai"
      */
