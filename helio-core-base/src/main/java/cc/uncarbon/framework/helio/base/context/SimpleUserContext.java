@@ -14,7 +14,6 @@ import java.util.List;
  *
  * @author Uncarbon
  */
-@Schema(description = "简单用户上下文")
 @Accessors(chain = true)
 @AllArgsConstructor
 @NoArgsConstructor
@@ -26,10 +25,7 @@ public class SimpleUserContext implements UserContext {
     protected Long userId;
 
     @Schema(description = "用户账号")
-    protected String userName;
-
-    @Schema(description = "用户手机号")
-    protected String userPhoneNo;
+    protected String userPin;
 
     @Schema(description = "用户类型编码")
     protected String userTypeCode;
@@ -39,12 +35,12 @@ public class SimpleUserContext implements UserContext {
 
     @Schema(description = "用户角色编码集合", example = """
             ["Admin", "CEO"]""")
-    protected List<String> roleCodes;
+    protected Collection<String> roleCodes;
+
+    @Schema(description = "用户手机号")
+    protected String userPhoneNo;
 
     @Schema(description = "用户昵称")
     protected String userNickname;
-
-    @Schema(description = "客户端IP地址")
-    protected String clientIP;
 
 }

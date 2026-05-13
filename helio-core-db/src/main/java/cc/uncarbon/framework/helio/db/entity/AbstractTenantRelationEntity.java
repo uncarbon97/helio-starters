@@ -8,13 +8,13 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 
 /**
- * 通用实体类，含有【租户ID】
+ * 关联表实体类，含有【租户ID】
  *
  * @author Uncarbon
  */
 @EqualsAndHashCode(callSuper = true)
 @Data
-public abstract class AbstractTenantGenericEntity extends AbstractGenericEntity implements TenantEntity {
+public abstract class AbstractTenantRelationEntity extends AbstractRelationEntity implements TenantEntity {
 
     /**
      * 租户ID

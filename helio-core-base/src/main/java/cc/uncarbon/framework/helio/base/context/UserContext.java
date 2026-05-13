@@ -2,6 +2,11 @@ package cc.uncarbon.framework.helio.base.context;
 
 import java.util.Collection;
 
+/**
+ * 用户上下文
+ *
+ * @author Uncarbon
+ */
 public interface UserContext {
 
    String CAMEL_NAME = "userContext";
@@ -15,7 +20,7 @@ public interface UserContext {
    /**
     * 取得用户名
     */
-   String getUserName();
+   String getUserPin();
 
    /**
     * 取得用户类型编码

@@ -208,8 +208,13 @@ public class GlobalWebExceptionHandler {
     }
 
     protected void logException(Exception e, HttpServletRequest servletRequest, boolean printExceptionStack) {
-        log.error(LOG_PREFIX + "[非业务异常] >> 异常类=[{}], URI=[{}], 消息=[{}]  {}",
-                e.getClass().getName(), servletRequest.getRequestURI(), e.getMessage(), printExceptionStack ? e : "");
+        if (printExceptionStack) {
+            log.error(LOG_PREFIX + "[非业务异常] >> 异常类=[{}], URI=[{}], 消息=[{}]",
+                    e.getClass().getName(), servletRequest.getRequestURI(), e.getMessage(), e);
+            return;
+        }
+        log.error(LOG_PREFIX + "[非业务异常] >> 异常类=[{}], URI=[{}], 消息=[{}]",
+                e.getClass().getName(), servletRequest.getRequestURI(), e.getMessage());
     }
 
     protected static <T> ResponseEntity<ApiResult<T>> createResponseEntity(HttpStatus httpStatus, ApiResult<T> body) {

@@ -1,19 +1,20 @@
 package cc.uncarbon.framework.helio.db.entity;
 
 import cc.uncarbon.framework.helio.db.constant.EntityField;
-import com.baomidou.mybatisplus.annotation.*;
+import com.baomidou.mybatisplus.annotation.FieldFill;
+import com.baomidou.mybatisplus.annotation.TableField;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
 import java.time.LocalDateTime;
 
 /**
- * 通用实体类
+ * 关联表实体类
  *
  * @author Uncarbon
  */
 @Data
-public abstract class AbstractGenericEntity implements Entity, AuditingTimeEntity, AuditingUserEntity {
+public abstract class AbstractRelationEntity implements Entity, AuditingTimeEntity, AuditingUserEntity {
 
     /**
      * 创建时刻
@@ -30,17 +31,18 @@ public abstract class AbstractGenericEntity implements Entity, AuditingTimeEntit
     private String createdBy;
 
     /**
-     * 更新时刻
+     * 数据表中无该字段
      */
-    @Schema(description = "更新时刻")
-    @TableField(value = EntityField.UPDATED_AT_COLUMN, fill = FieldFill.UPDATE)
-    private LocalDateTime updatedAt;
+    @Override
+    public LocalDateTime getUpdatedAt() {
+        return null;
+    }
 
     /**
-     * 更新者
+     * 数据表中无该字段
      */
-    @Schema(description = "更新者")
-    @TableField(value = EntityField.UPDATED_BY_COLUMN, fill = FieldFill.UPDATE)
-    private String updatedBy;
-
+    @Override
+    public String getUpdatedBy() {
+        return null;
+    }
 }
