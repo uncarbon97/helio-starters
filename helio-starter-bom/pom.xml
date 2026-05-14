@@ -33,6 +33,12 @@
 
             <dependency>
                 <groupId>cc.uncarbon.framework</groupId>
+                <artifactId>helio-core-i18n</artifactId>
+                <version>${revision}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>cc.uncarbon.framework</groupId>
                 <artifactId>helio-core-tenant</artifactId>
                 <version>${revision}</version>
             </dependency>
@@ -58,6 +64,12 @@
             <dependency>
                 <groupId>cc.uncarbon.framework</groupId>
                 <artifactId>helio-starter-db-mybatis-plus</artifactId>
+                <version>${revision}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>cc.uncarbon.framework</groupId>
+                <artifactId>helio-starter-i18n</artifactId>
                 <version>${revision}</version>
             </dependency>
 

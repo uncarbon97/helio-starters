@@ -27,11 +27,13 @@
         <module>helio-starter-dependencies</module>
         <module>helio-core-base</module>
         <module>helio-core-db</module>
+        <module>helio-core-i18n</module>
         <module>helio-core-tenant</module>
         <module>helio-core-web</module>
         <module>helio-starter-base</module>
         <module>helio-starter-db-dynamic-datasource</module>
         <module>helio-starter-db-mybatis-plus</module>
+        <module>helio-starter-i18n</module>
         <module>helio-starter-jackson3</module>
         <module>helio-starter-openapi3</module>
         <module>helio-starter-ratelimiter-redis</module>

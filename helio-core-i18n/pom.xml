@@ -12,10 +12,10 @@
         <relativePath>../pom.xml</relativePath>
     </parent>
 
-    <artifactId>helio-core-web</artifactId>
+    <artifactId>helio-core-i18n</artifactId>
     <name>${project.artifactId}</name>
     <description>
-        Helio 增强 Web 核心包
+        Helio 集成国际化核心包
     </description>
 
     <dependencies>

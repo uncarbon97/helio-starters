@@ -7,7 +7,7 @@ import lombok.NoArgsConstructor;
 import lombok.experimental.Accessors;
 
 /**
- * 简单 IP 上下文
+ * 简单 Web 访问者上下文
  *
  * @author Uncarbon
  */
@@ -21,7 +21,7 @@ public class SimpleVisitorContext implements VisitorContext {
     @Schema(description = "IP 地址文本")
     protected String ip;
 
-    @Schema(description = "浏览器UA")
+    @Schema(description = "浏览器 UA")
     protected String userAgent;
 
     @Schema(description = "HTTP 请求方式，如：GET、POST、PUT 等")
