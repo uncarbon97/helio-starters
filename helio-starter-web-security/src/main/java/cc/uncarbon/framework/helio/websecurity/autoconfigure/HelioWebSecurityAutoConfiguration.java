@@ -3,7 +3,6 @@ package cc.uncarbon.framework.helio.websecurity.autoconfigure;
 import cc.uncarbon.framework.helio.websecurity.props.HelioWebSecurityProperties;
 import cc.uncarbon.framework.helio.websecurity.xss.XssFilter;
 import jakarta.servlet.DispatcherType;
-import lombok.RequiredArgsConstructor;
 import org.jspecify.annotations.NonNull;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
@@ -24,7 +23,6 @@ import java.util.Objects;
  * @author Uncarbon
  */
 @EnableConfigurationProperties(value = HelioWebSecurityProperties.class)
-@RequiredArgsConstructor
 @AutoConfiguration
 public class HelioWebSecurityAutoConfiguration {
 

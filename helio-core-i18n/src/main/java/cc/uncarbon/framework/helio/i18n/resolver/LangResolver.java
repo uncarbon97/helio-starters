@@ -6,11 +6,11 @@ import java.util.Locale;
 import java.util.Optional;
 
 /**
- * Locale 解析器，方便做多策略解析
+ * 多语言解析器
  *
  * @author Uncarbon
  */
-public interface LocaleResolver {
+public interface LangResolver {
 
     /**
      * 返回解析到的 Locale，未解析到返回 empty

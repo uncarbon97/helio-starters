@@ -10,6 +10,7 @@ import org.yaml.snakeyaml.Yaml;
 
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.nio.charset.Charset;
 import java.text.MessageFormat;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
@@ -31,7 +32,7 @@ import java.util.concurrent.ConcurrentHashMap;
 public class YamlMessageSource extends AbstractMessageSource {
 
     private final List<String> basenames;
-    private final String encoding;
+    private final Charset charset;
     private final ResourceLoader resourceLoader = new PathMatchingResourcePatternResolver();
 
     /** locale -> (key -> value) */
@@ -39,9 +40,9 @@ public class YamlMessageSource extends AbstractMessageSource {
     /** locale -> (key -> compiled MessageFormat) */
     private final Map<Locale, Map<String, MessageFormat>> formatCache = new ConcurrentHashMap<>();
 
-    public YamlMessageSource(List<String> basenames, String encoding) {
+    public YamlMessageSource(List<String> basenames, Charset charset) {
         this.basenames = basenames;
-        this.encoding = encoding;
+        this.charset = charset;
     }
 
     @Override
@@ -85,7 +86,7 @@ public class YamlMessageSource extends AbstractMessageSource {
                         if (!resource.exists()) continue;
 
                         try (var is = resource.getInputStream()) {
-                            Map<String, Object> raw = yaml.load(new InputStreamReader(is, encoding));
+                            Map<String, Object> raw = yaml.load(new InputStreamReader(is, charset));
                             if (raw != null) flatten("", raw, result);
                         }
                     } catch (IOException e) {

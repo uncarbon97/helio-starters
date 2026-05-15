@@ -20,4 +20,5 @@ public final class ConfigurationPropertiesPrefix {
     public static final String TENANT = FRAMEWORK_NAME + ".tenant";
     public static final String WEB = FRAMEWORK_NAME + ".web";
     public static final String WEB_SECURITY = FRAMEWORK_NAME + ".web-security";
+    public static final String I18N = FRAMEWORK_NAME + ".i18n";
 }

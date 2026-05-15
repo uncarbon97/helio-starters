@@ -1,14 +1,14 @@
 ## 多语言解析优先级
 ```
-1. QueryParamLocaleResolver  请求参数 ?lang=en_US（临时调试，不持久化）
+1. QueryParamLangResolver  请求参数 ?lang=en_US（临时调试，不持久化）
 
-2. HeaderLocaleResolver HTTP Accept-Language（自动匹配浏览器语言）
+2. HeaderLangResolver  从请求头获取
 ```
 
 ## 解析链
 ```
 @Component
-public class QueryParamLocaleResolver implements LocaleResolver {
+public class QueryParamLangResolver implements LangResolver {
     
     private final I18nProperties properties;
     
@@ -24,7 +24,7 @@ public class QueryParamLocaleResolver implements LocaleResolver {
 }
 
 @Component
-public class HeaderLocaleResolver implements LocaleResolver {
+public class HeaderLangResolver implements LangResolver {
     
     @Override
     public Optional<Locale> resolve(HttpServletRequest request) {
@@ -48,20 +48,20 @@ public class HeaderLocaleResolver implements LocaleResolver {
 ## 组合解析器
 ```
 @Component
-public class CompositeLocaleResolver {
+public class CompositeLangResolver {
     
-    private final List<LocaleResolver> resolvers;
+    private final List<LangResolver> resolvers;
     private final I18nProperties properties;
     
-    public CompositeLocaleResolver(List<LocaleResolver> resolvers, I18nProperties properties) {
+    public CompositeLangResolver(List<LangResolver> resolvers, I18nProperties properties) {
         this.resolvers = resolvers.stream()
-            .sorted(Comparator.comparingInt(LocaleResolver::getOrder))
+            .sorted(Comparator.comparingInt(LangResolver::getOrder))
             .toList();
         this.properties = properties;
     }
     
     public Locale resolve(HttpServletRequest request) {
-        for (LocaleResolver resolver : resolvers) {
+        for (LangResolver resolver : resolvers) {
             if (!isEnabled(resolver)) continue;
             try {
                 Optional<Locale> locale = resolver.resolve(request);
@@ -75,7 +75,7 @@ public class CompositeLocaleResolver {
         return properties.getDefaultLocale();
     }
     
-    private boolean isEnabled(LocaleResolver resolver) {
+    private boolean isEnabled(LangResolver resolver) {
         return properties.getResolver().getEnabledResolvers()
             .contains(resolver.getClass().getSimpleName());
     }
@@ -88,7 +88,7 @@ public class CompositeLocaleResolver {
 @Order(Ordered.HIGHEST_PRECEDENCE + 100)
 public class LocaleContextFilter extends OncePerRequestFilter {
     
-    private final CompositeLocaleResolver resolver;
+    private final CompositeLangResolver resolver;
     
     @Override
     protected void doFilterInternal(HttpServletRequest request, 

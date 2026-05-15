@@ -31,7 +31,6 @@ import java.util.TimeZone;
  *
  * @author Uncarbon
  */
-@RequiredArgsConstructor
 @AutoConfiguration
 public class HelioRedisAutoConfiguration {
 

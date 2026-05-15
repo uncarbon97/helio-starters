@@ -1,17 +1,17 @@
 package cc.uncarbon.framework.helio.db.mybatisplus.autoconfigure;
 
-import cc.uncarbon.framework.helio.db.mybatisplus.idgen.HutoolSnowflakeIdGenerator;
 import cc.uncarbon.framework.helio.db.mybatisplus.handler.MybatisPlusAutoFillColumnHandler;
+import cc.uncarbon.framework.helio.db.mybatisplus.idgen.HutoolSnowflakeIdGenerator;
 import cc.uncarbon.framework.helio.db.mybatisplus.props.HelioIdGenProperties;
 import cc.uncarbon.framework.helio.db.mybatisplus.props.HelioMybatisPlusProperties;
 import com.baomidou.mybatisplus.core.handlers.MetaObjectHandler;
 import com.baomidou.mybatisplus.core.incrementer.IdentifierGenerator;
 import com.baomidou.mybatisplus.extension.plugins.MybatisPlusInterceptor;
-import com.baomidou.mybatisplus.extension.plugins.handler.TenantLineHandler;
-import com.baomidou.mybatisplus.extension.plugins.inner.*;
-import lombok.RequiredArgsConstructor;
+import com.baomidou.mybatisplus.extension.plugins.inner.BlockAttackInnerInterceptor;
+import com.baomidou.mybatisplus.extension.plugins.inner.InnerInterceptor;
+import com.baomidou.mybatisplus.extension.plugins.inner.OptimisticLockerInnerInterceptor;
+import com.baomidou.mybatisplus.extension.plugins.inner.PaginationInnerInterceptor;
 import lombok.extern.slf4j.Slf4j;
-import net.sf.jsqlparser.expression.Expression;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
@@ -28,7 +28,6 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 @EnableTransactionManagement(
         proxyTargetClass = true
 )
-@RequiredArgsConstructor
 @AutoConfiguration
 @Slf4j
 public class HelioMybatisPlusAutoConfiguration {
