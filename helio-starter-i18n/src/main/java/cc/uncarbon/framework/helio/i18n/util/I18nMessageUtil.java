@@ -1,10 +1,13 @@
 package cc.uncarbon.framework.helio.i18n.util;
 
 import cc.uncarbon.framework.helio.base.enums.BaseEnum;
-import cc.uncarbon.framework.helio.base.enums.HelioBaseEnum;
+import cc.uncarbon.framework.helio.i18n.context.I18nContext;
+import cc.uncarbon.framework.helio.i18n.context.I18nContextHolder;
+import cc.uncarbon.framework.helio.i18n.context.LangInfo;
 import cn.hutool.core.text.CharSequenceUtil;
 import cn.hutool.core.text.StrPool;
 import cn.hutool.extra.spring.SpringUtil;
+import lombok.Getter;
 import lombok.experimental.UtilityClass;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.MessageSource;
@@ -14,14 +17,14 @@ import java.util.Locale;
 import java.util.function.Supplier;
 
 /**
- * 获取 i18n 资源
+ * 国际化消息翻译工具类
  *
  * @author Lion Li@RuoYi-Vue-Plus
  * @author Uncarbon
  */
 @UtilityClass
 @Slf4j
-public class I18nUtil {
+public class I18nMessageUtil {
 
     /**
      * Slf4j 风格的占位符
@@ -29,65 +32,63 @@ public class I18nUtil {
     private static final String SLF4J_STYLE_PLACEHOLDER = StrPool.DELIM_START + StrPool.DELIM_END;
 
     /**
-     * Spring 提供的 MessageSource
+     * Spring 提供的 {@link MessageSource} 实例
      */
+    @Getter
     private MessageSource messageSource = SpringUtil.getBean(MessageSource.class);
 
     /**
-     * Locale 实例对象提供者
+     * {@link Locale} 实例对象提供者
      */
-    private Supplier<Locale> localeSupplier = I18nUtil::getDefaultLocale;
+    private Supplier<Locale> localeSupplier = I18nMessageUtil::contextLocale;
 
 
     /**
-     * 取 Spring 提供的 {@link MessageSource} 实例
+     * 取 {@link Locale} 实例
+     * 优先从 {@link I18nContextHolder} 上下文获取，兜底取系统默认值
      */
-    public MessageSource getMessageSource() {
-        return messageSource;
+    public Locale contextLocale() {
+        return I18nContextHolder.getI18nContextOptional()
+                .map(I18nContext::getLangInfo)
+                .map(LangInfo::getLocale)
+                .orElseGet(Locale::getDefault);
     }
 
     /**
-     * 取默认 Locale
-     */
-    public Locale getDefaultLocale() {
-        return Locale.getDefault();
-    }
-
-    /**
-     * 取Locale实例对象
-     * 由localeSupplier产生返回值
+     * 取 {@link Locale} 实例对象
+     * 由 localeSupplier 产生返回值
      */
     public Locale determineLocale() {
         return localeSupplier.get();
     }
 
     /**
-     * 置Locale实例对象提供者
+     * 置 {@link Locale} 实例对象提供者
      */
     public synchronized void setLocaleSupplier(Supplier<Locale> localeSupplier) {
-        I18nUtil.localeSupplier = localeSupplier;
+        I18nMessageUtil.localeSupplier = localeSupplier;
     }
 
     /**
-     * 根据消息键和参数，获取国际化翻译值；默认使用当前JVM的默认locale
+     * 根据消息代码和参数，获取国际化消息翻译
      * 支持模板填充，如: Nickname '{}' is already exist, do you like '{}'?
      *
      * @param code           消息代码
      * @param templateParams 模板填充参数
-     * @return null or 国际化翻译值
+     * @return null or 国际化消息翻译
      */
     public String messageOf(String code, Object... templateParams) {
         return messageOf(determineLocale(), code, templateParams);
     }
 
     /**
-     * 根据消息键和参数，获取国际化翻译值
+     * 根据消息代码和参数，获取国际化消息翻译
      * 支持模板填充，如: Nickname '{}' is already exist, do you like '{}'?
      *
      * @param locale         locale
      * @param code           消息代码
      * @param templateParams 模板填充参数
-     * @return null or 国际化翻译值
+     * @return null or 国际化消息翻译
      */
     public String messageOf(Locale locale, String code, Object... templateParams) {
         if (code == null) {
@@ -107,33 +108,33 @@ public class I18nUtil {
 
             return msg;
         } catch (NoSuchMessageException nsme) {
-            // 未找到对应国际化翻译值
+            // 未找到对应国际化消息翻译
         }
         return null;
     }
 
     /**
-     * 根据消息键和参数，获取国际化翻译值；默认使用当前JVM的默认locale
+     * 根据消息代码和参数，获取国际化消息翻译
      * 支持模板填充，如: Nickname '{}' is already exist, do you like '{}'?
      *
      * @param code           消息代码
-     * @param defaultValue   未找到对应国际化翻译值的情况下，默认返回值
+     * @param defaultValue   未找到对应国际化消息翻译的情况下，默认返回值
      * @param templateParams 模板填充参数
-     * @return null or 国际化翻译值
+     * @return null or 国际化消息翻译
      */
     public String messageOf(String code, String defaultValue, Object... templateParams) {
         return messageOf(determineLocale(), code, defaultValue, templateParams);
     }
 
     /**
-     * 根据消息键和参数，获取国际化翻译值
+     * 根据消息代码和参数，获取国际化消息翻译
      * 支持模板填充，如: Nickname '{}' is already exist, do you like '{}'?
      *
      * @param locale         locale
      * @param code           消息代码
-     * @param defaultValue   未找到对应国际化翻译值的情况下，默认返回值
+     * @param defaultValue   未找到对应国际化消息翻译的情况下，默认返回值
      * @param templateParams 模板填充参数
-     * @return null or 国际化翻译值
+     * @return null or 国际化消息翻译
      */
     public String messageOf(Locale locale, String code, String defaultValue, Object... templateParams) {
         String msg = messageOf(locale, code, templateParams);
@@ -141,53 +142,53 @@ public class I18nUtil {
     }
 
     /**
-     * 根据枚举值和参数，获取国际化翻译值；默认使用当前JVM的默认locale
+     * 根据枚举项和参数，获取国际化消息翻译
      * 支持模板填充，如: Nickname '{}' has been existing, do you like '{}'?
      *
-     * @param enumField      枚举值
+     * @param enumItem       枚举项
      * @param templateParams 模板填充参数
-     * @return null or 国际化翻译值
+     * @return null or 国际化消息翻译
      */
-    public String messageOf(Enum<?> enumField, Object... templateParams) {
-        return messageOf(determineLocale(), enumField, templateParams);
+    public String messageOf(Enum<?> enumItem, Object... templateParams) {
+        return messageOf(determineLocale(), enumItem, templateParams);
     }
 
     /**
-     * 根据枚举值和参数，获取国际化翻译值
+     * 根据枚举项和参数，获取国际化消息翻译
      * 支持模板填充，如: Nickname '{}' has been existing, do you like '{}'?
      *
      * @param locale         locale
-     * @param enumField      枚举值
+     * @param enumItem       枚举项
      * @param templateParams 模板填充参数
-     * @return null or 国际化翻译值
+     * @return null or 国际化消息翻译
      */
-    public String messageOf(Locale locale, Enum<?> enumField, Object... templateParams) {
-        if (enumField == null) {
+    public String messageOf(Locale locale, Enum<?> enumItem, Object... templateParams) {
+        if (enumItem == null) {
             return null;
         }
 
         String i18nCode;
 
-        // 尝试以较长的 枚举类短名.枚举值name 为 code 尝试获取翻译值
-        i18nCode = String.format("%s.%s", enumField.getDeclaringClass().getSimpleName(), enumField.name());
+        // 尝试以较长的 枚举类短名.枚举项name 为 code 尝试获取翻译值
+        i18nCode = String.format("%s.%s", enumItem.getDeclaringClass().getSimpleName(), enumItem.name());
         String i18nMessage = messageOf(locale, i18nCode, templateParams);
         if (CharSequenceUtil.isNotEmpty(i18nMessage)) {
             return i18nMessage;
         }
 
-        // 尝试以 枚举值name 为 code 尝试获取翻译值
-        i18nCode = enumField.name();
+        // 尝试以 枚举项name 为 code 尝试获取翻译值
+        i18nCode = enumItem.name();
         i18nMessage = messageOf(locale, i18nCode, templateParams);
         if (CharSequenceUtil.isNotEmpty(i18nMessage)) {
             return i18nMessage;
         }
 
         // 以上都没找到，兜底：如果是 BaseEnum 的实现，直接返回 label 值
-        if (BaseEnum.class.isAssignableFrom(enumField.getDeclaringClass())) {
-            return ((BaseEnum<?>) enumField).getLabel();
+        if (BaseEnum.class.isAssignableFrom(enumItem.getDeclaringClass())) {
+            return ((BaseEnum<?>) enumItem).getLabel();
         }
 
-        // 最终兜底：返回枚举值 name
-        return enumField.name();
+        // 最终兜底：返回枚举项 name
+        return enumItem.name();
     }
 }

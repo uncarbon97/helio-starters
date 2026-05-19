@@ -6,7 +6,6 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.Accessors;
-import org.springframework.http.HttpStatus;
 
 import java.io.Serializable;
 
@@ -23,7 +22,7 @@ import java.io.Serializable;
 public class ApiResult<T> implements Serializable {
 
     // 成功时，默认返回的状态码与消息文本
-    protected static int DEFAULT_SUCCESS_CODE = HttpStatus.OK.value();
+    protected static int DEFAULT_SUCCESS_CODE = 200;
     protected static String DEFAULT_SUCCESS_MSG = "ok";
 
 

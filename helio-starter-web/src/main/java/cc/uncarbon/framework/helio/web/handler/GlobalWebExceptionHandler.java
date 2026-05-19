@@ -1,7 +1,7 @@
 package cc.uncarbon.framework.helio.web.handler;
 
 import cc.uncarbon.framework.helio.base.exception.BusinessException;
-import cc.uncarbon.framework.helio.web.enums.GlobalWebExceptionI18nMessageEnum;
+import cc.uncarbon.framework.helio.web.enums.GlobalWebExceptionFriendlyMessageEnum;
 import cc.uncarbon.framework.helio.web.model.response.ApiResult;
 import cc.uncarbon.framework.helio.web.util.InvalidFieldUtil;
 import cn.dev33.satoken.exception.NotLoginException;
@@ -75,7 +75,7 @@ public class GlobalWebExceptionHandler {
     public ResponseEntity<ApiResult<Void>> handleNotLoginException(NotLoginException e, HttpServletRequest servletRequest) {
         this.logException(e, servletRequest);
 
-        GlobalWebExceptionI18nMessageEnum msgEnum = GlobalWebExceptionI18nMessageEnum.GLOBAL__NO_LOGIN;
+        GlobalWebExceptionFriendlyMessageEnum msgEnum = GlobalWebExceptionFriendlyMessageEnum.NO_LOGIN;
         ApiResult<Void> ret = ApiResult.fail(HttpStatus.UNAUTHORIZED.value(), this.determineI18nMessage(msgEnum));
         return createResponseEntity(HttpStatus.UNAUTHORIZED, ret);
     }
@@ -89,7 +89,7 @@ public class GlobalWebExceptionHandler {
                                                                         HttpServletRequest servletRequest) {
         this.logException(e, servletRequest);
 
-        GlobalWebExceptionI18nMessageEnum msgEnum = GlobalWebExceptionI18nMessageEnum.GLOBAL__PERMISSION_NOT_MATCH;
+        GlobalWebExceptionFriendlyMessageEnum msgEnum = GlobalWebExceptionFriendlyMessageEnum.NO_PERMISSION;
         ApiResult<Void> ret = ApiResult.fail(HttpStatus.FORBIDDEN.value(), this.determineI18nMessage(msgEnum));
         return createResponseEntity(HttpStatus.FORBIDDEN, ret);
     }
@@ -102,7 +102,7 @@ public class GlobalWebExceptionHandler {
     public ResponseEntity<ApiResult<Void>> handleNotRoleException(NotRoleException e, HttpServletRequest servletRequest) {
         this.logException(e, servletRequest);
 
-        GlobalWebExceptionI18nMessageEnum msgEnum = GlobalWebExceptionI18nMessageEnum.GLOBAL__ROLE_NOT_MATCH;
+        GlobalWebExceptionFriendlyMessageEnum msgEnum = GlobalWebExceptionFriendlyMessageEnum.NO_ROLE;
         ApiResult<Void> ret = ApiResult.fail(HttpStatus.FORBIDDEN.value(), this.determineI18nMessage(msgEnum));
         return createResponseEntity(HttpStatus.FORBIDDEN, ret);
     }
@@ -115,7 +115,7 @@ public class GlobalWebExceptionHandler {
     public ResponseEntity<ApiResult<Void>> handleNoHandlerFoundException(Exception e, HttpServletRequest servletRequest) {
         this.logException(e, servletRequest);
 
-        GlobalWebExceptionI18nMessageEnum msgEnum = GlobalWebExceptionI18nMessageEnum.GLOBAL__NOT_FOUND;
+        GlobalWebExceptionFriendlyMessageEnum msgEnum = GlobalWebExceptionFriendlyMessageEnum.NOT_FOUND_404;
         ApiResult<Void> ret = ApiResult.fail(HttpStatus.NOT_FOUND.value(), this.determineI18nMessage(msgEnum));
         return createResponseEntity(HttpStatus.NOT_FOUND, ret);
     }
@@ -137,7 +137,7 @@ public class GlobalWebExceptionHandler {
     public ResponseEntity<ApiResult<Void>> handleJsonParseException(Exception e, HttpServletRequest servletRequest) {
         this.logException(e, servletRequest);
 
-        GlobalWebExceptionI18nMessageEnum msgEnum = GlobalWebExceptionI18nMessageEnum.GLOBAL__UNACCEPTABLE_PARAMETERS;
+        GlobalWebExceptionFriendlyMessageEnum msgEnum = GlobalWebExceptionFriendlyMessageEnum.NOT_ACCEPTABLE_INPUT;
         ApiResult<Void> ret = ApiResult.fail(HttpStatus.NOT_ACCEPTABLE.value(), this.determineI18nMessage(msgEnum));
         return createResponseEntity(HttpStatus.NOT_ACCEPTABLE, ret);
     }
@@ -152,7 +152,7 @@ public class GlobalWebExceptionHandler {
                                                                                         HttpServletRequest servletRequest) {
         this.logException(e, servletRequest);
 
-        GlobalWebExceptionI18nMessageEnum msgEnum = GlobalWebExceptionI18nMessageEnum.GLOBAL__UNACCEPTABLE_PARAMETERS;
+        GlobalWebExceptionFriendlyMessageEnum msgEnum = GlobalWebExceptionFriendlyMessageEnum.NOT_ACCEPTABLE_INPUT;
         ApiResult<InvalidFieldUtil.InvalidField> ret =
                 ApiResult.fail(HttpStatus.NOT_ACCEPTABLE.value(), this.determineI18nMessage(msgEnum), InvalidFieldUtil.getInvalidField(e.getBindingResult()));
         return createResponseEntity(HttpStatus.NOT_ACCEPTABLE, ret);
@@ -169,7 +169,7 @@ public class GlobalWebExceptionHandler {
                                                                   HttpServletRequest servletRequest) {
         this.logException(e, servletRequest);
 
-        GlobalWebExceptionI18nMessageEnum msgEnum = GlobalWebExceptionI18nMessageEnum.GLOBAL__METHOD_NOT_ALLOWED;
+        GlobalWebExceptionFriendlyMessageEnum msgEnum = GlobalWebExceptionFriendlyMessageEnum.METHOD_NOT_ALLOWED;
         ApiResult<Void> ret = ApiResult.fail(HttpStatus.METHOD_NOT_ALLOWED.value(), this.determineI18nMessage(msgEnum));
         return createResponseEntity(HttpStatus.METHOD_NOT_ALLOWED, ret);
     }
@@ -188,7 +188,7 @@ public class GlobalWebExceptionHandler {
         // 打印堆栈，方便溯源
         this.logException(e, servletRequest, true);
 
-        GlobalWebExceptionI18nMessageEnum msgEnum = GlobalWebExceptionI18nMessageEnum.GLOBAL__INTERNAL_ERROR;
+        GlobalWebExceptionFriendlyMessageEnum msgEnum = GlobalWebExceptionFriendlyMessageEnum.INTERNAL_SERVER_ERROR;
         ApiResult<Void> ret = ApiResult.fail(HttpStatus.INTERNAL_SERVER_ERROR.value(), this.determineI18nMessage(msgEnum));
         return createResponseEntity(HttpStatus.INTERNAL_SERVER_ERROR, ret);
     }
@@ -227,10 +227,10 @@ public class GlobalWebExceptionHandler {
      * @param msgEnum 全局异常处理国际化消息枚举
      * @return 消息文本
      */
-    protected String determineI18nMessage(@NonNull GlobalWebExceptionI18nMessageEnum msgEnum) {
+    protected String determineI18nMessage(@NonNull GlobalWebExceptionFriendlyMessageEnum msgEnum) {
 //        if (Boolean.TRUE.equals(props.getI18n().getEnabled())) {
 //            return I18nUtil.messageOf(msgEnum.i18nCode(), msgEnum.getDefaultValue());
 //        }
-        return msgEnum.getDefaultValue();
+        return msgEnum.getMessage();
     }
 }

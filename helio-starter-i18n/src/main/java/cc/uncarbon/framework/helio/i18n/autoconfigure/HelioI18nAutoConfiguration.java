@@ -1,14 +1,16 @@
 package cc.uncarbon.framework.helio.i18n.autoconfigure;
 
-import cc.uncarbon.framework.helio.i18n.constant.I18nConstant;
+import cc.uncarbon.framework.helio.i18n.constant.HelioI18nConstant;
 import cc.uncarbon.framework.helio.i18n.message.YamlMessageSource;
 import cc.uncarbon.framework.helio.i18n.props.HelioI18nProperties;
+import cc.uncarbon.framework.helio.i18n.resolver.CompositeLangResolver;
+import cc.uncarbon.framework.helio.i18n.resolver.CompositeTimezoneResolver;
 import cc.uncarbon.framework.helio.i18n.resolver.LangResolver;
 import cc.uncarbon.framework.helio.i18n.resolver.TimezoneResolver;
-import cc.uncarbon.framework.helio.i18n.resolver.lang.CompositeLangResolver;
+import cc.uncarbon.framework.helio.i18n.resolver.lang.DefaultCompositeLangResolver;
 import cc.uncarbon.framework.helio.i18n.resolver.lang.HeaderLangResolver;
 import cc.uncarbon.framework.helio.i18n.resolver.lang.QueryParamLangResolver;
-import cc.uncarbon.framework.helio.i18n.resolver.timezone.CompositeTimezoneResolver;
+import cc.uncarbon.framework.helio.i18n.resolver.timezone.DefaultCompositeTimezoneResolver;
 import cc.uncarbon.framework.helio.i18n.resolver.timezone.HeaderTimezoneResolver;
 import cc.uncarbon.framework.helio.i18n.resolver.timezone.QueryParamTimezoneResolver;
 import org.jspecify.annotations.NonNull;
@@ -38,8 +40,8 @@ public class HelioI18nAutoConfiguration {
 
     // -- 多语言
 
-    @Bean(value = I18nConstant.MESSAGE_SOURCE_SPRING_BEAN_NAME)
-    public MessageSource i18nMessageSource(HelioI18nProperties props) {
+    @Bean(name = HelioI18nConstant.MESSAGE_SOURCE_SPRING_BEAN_NAME)
+    public MessageSource messageSource(HelioI18nProperties props) {
         return new YamlMessageSource(props.getLang().getYamlBasenames(), StandardCharsets.UTF_8);
     }
 
@@ -57,9 +59,8 @@ public class HelioI18nAutoConfiguration {
 
     @Bean
     @ConditionalOnMissingBean
-    public CompositeLangResolver compositeLangResolver(HelioI18nProperties props,
-                                                       List<LangResolver> resolvers) {
-        return new CompositeLangResolver(props, resolvers);
+    public CompositeLangResolver compositeLangResolver(HelioI18nProperties props, List<LangResolver> resolvers) {
+        return new DefaultCompositeLangResolver(props, resolvers);
     }
 
     // -- 多时区
@@ -78,9 +79,8 @@ public class HelioI18nAutoConfiguration {
 
     @Bean
     @ConditionalOnMissingBean
-    public CompositeTimezoneResolver compositeTimezoneResolver(HelioI18nProperties props,
-                                                               List<TimezoneResolver> resolvers) {
-        return new CompositeTimezoneResolver(props, resolvers);
+    public CompositeTimezoneResolver compositeTimezoneResolver(HelioI18nProperties props, List<TimezoneResolver> resolvers) {
+        return new DefaultCompositeTimezoneResolver(props, resolvers);
     }
 
     protected static class OnI18nEnabled implements Condition {

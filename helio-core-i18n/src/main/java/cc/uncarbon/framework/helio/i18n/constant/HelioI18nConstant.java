@@ -4,9 +4,11 @@ import lombok.experimental.UtilityClass;
 
 /**
  * Helio 集成国际化常量类
+ *
+ * @author Uncarbon
  */
 @UtilityClass
-public class I18nConstant {
+public class HelioI18nConstant {
 
     public static final String LOG_PREFIX = "[i18n]";
 

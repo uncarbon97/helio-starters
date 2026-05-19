@@ -10,7 +10,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
  *
  * @author Uncarbon
  */
-@ConfigurationProperties(prefix = ConfigurationPropertiesPrefix.OPENAPI)
+@ConfigurationProperties(prefix = ConfigurationPropertiesPrefix.OPENAPI3)
 @Data
 public class HelioOpenApi3Properties {
 

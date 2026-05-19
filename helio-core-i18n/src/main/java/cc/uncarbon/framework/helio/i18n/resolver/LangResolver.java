@@ -1,8 +1,9 @@
 package cc.uncarbon.framework.helio.i18n.resolver;
 
+import cc.uncarbon.framework.helio.i18n.context.LangInfo;
 import jakarta.servlet.http.HttpServletRequest;
+import org.jspecify.annotations.NonNull;
 
-import java.util.Locale;
 import java.util.Optional;
 
 /**
@@ -13,9 +14,9 @@ import java.util.Optional;
 public interface LangResolver {
 
     /**
-     * 返回解析到的 Locale，未解析到返回 empty
+     * 返回解析到的 {@link LangInfo}，未解析到返回 empty
      */
-    Optional<Locale> resolve(HttpServletRequest request);
+    Optional<LangInfo> resolve(@NonNull HttpServletRequest servletRequest);
 
     /**
      * 优先级，数字越小越先执行

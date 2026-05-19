@@ -1,10 +1,14 @@
 package cc.uncarbon.framework.helio.i18n.resolver.lang;
 
+import cc.uncarbon.framework.helio.i18n.context.LangInfo;
 import cc.uncarbon.framework.helio.i18n.props.HelioI18nProperties;
 import cc.uncarbon.framework.helio.i18n.resolver.LangResolver;
-import cc.uncarbon.framework.helio.i18n.util.I18nParser;
+import cc.uncarbon.framework.helio.i18n.util.LocaleUtil;
+import cn.hutool.core.collection.CollUtil;
+import cn.hutool.core.text.CharSequenceUtil;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
+import org.jspecify.annotations.NonNull;
 
 import java.util.Locale;
 import java.util.Optional;
@@ -23,14 +27,30 @@ public class QueryParamLangResolver implements LangResolver {
 
 
     @Override
-    public Optional<Locale> resolve(HttpServletRequest request) {
-        String paramName = props.getLang().getResolver().getQueryParamName();
-        String value = request.getParameter(paramName);
-        return I18nParser.parseLocale(value);
+    public Optional<LangInfo> resolve(@NonNull HttpServletRequest servletRequest) {
+        final String paramName = props.getLang().getResolver().getQueryParamName();
+        String paramVal = CharSequenceUtil.cleanBlank(servletRequest.getParameter(paramName));
+        if (CharSequenceUtil.isEmpty(paramVal)) {
+            return Optional.empty();
+        }
+        Locale visitorLocale = LocaleUtil.toLocale(paramVal);
+        if (visitorLocale == null) {
+            return Optional.empty();
+        }
+
+        String languageTag = visitorLocale.toLanguageTag();
+        if (isSupported(languageTag)) {
+            return Optional.of(LangInfo.ofSimple(languageTag, visitorLocale));
+        }
+        return Optional.empty();
     }
 
     @Override
     public int getOrder() {
         return DEFAULT_ORDER;
+    }
+
+    public boolean isSupported(String languageTag) {
+        return CollUtil.contains(props.getLang().getSupportedLanguageTags(), languageTag);
     }
 }

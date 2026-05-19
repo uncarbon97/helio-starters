@@ -1,14 +1,12 @@
-helio.i18n:
+"helio.i18n":
   enabled: true
   # 多语言
   lang:
-    default-language-tag: zh_CN
+    default-language-tag: zh-CN
     supported-language-tags:
       # 只加载这里显式标注支持的语言
-      - zh_CN
-      - en_US
-    # 开发环境设置为0，实现热重载
-#    cache-duration: 0
+      - zh-CN
+      - en-US
     yaml-basenames:
       - classpath*:i18n/common
       - classpath*:i18n/error

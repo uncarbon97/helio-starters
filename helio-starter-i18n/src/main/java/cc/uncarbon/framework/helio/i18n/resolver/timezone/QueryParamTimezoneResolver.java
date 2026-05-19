@@ -1,14 +1,17 @@
 package cc.uncarbon.framework.helio.i18n.resolver.timezone;
 
+import cc.uncarbon.framework.helio.i18n.TimezoneUtil;
+import cc.uncarbon.framework.helio.i18n.context.TimezoneInfo;
 import cc.uncarbon.framework.helio.i18n.props.HelioI18nProperties;
 import cc.uncarbon.framework.helio.i18n.resolver.TimezoneResolver;
-import cc.uncarbon.framework.helio.i18n.util.I18nParser;
+import cn.hutool.core.text.CharSequenceUtil;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
+import org.jspecify.annotations.NonNull;
 import org.springframework.stereotype.Component;
 
+import java.time.ZoneId;
 import java.util.Optional;
-import java.util.TimeZone;
 
 /**
  * 从 URL 请求参数中解析时区，如「?timezone=America/New_York」
@@ -19,18 +22,29 @@ import java.util.TimeZone;
 @RequiredArgsConstructor
 public class QueryParamTimezoneResolver implements TimezoneResolver {
 
+    static final int DEFAULT_ORDER = 10;
+
     private final HelioI18nProperties props;
 
     @Override
-    public Optional<TimeZone> resolve(HttpServletRequest request) {
-        String paramName = props.getTimezone().getResolver().getQueryParamName();
-        String value = request.getParameter(paramName);
-        return I18nParser.parseTimeZone(value);
+    public Optional<TimezoneInfo> resolve(@NonNull HttpServletRequest servletRequest) {
+        final String paramName = props.getTimezone().getResolver().getQueryParamName();
+        String paramVal = CharSequenceUtil.cleanBlank(servletRequest.getParameter(paramName));
+        if (CharSequenceUtil.isEmpty(paramVal)) {
+            return Optional.empty();
+        }
+        try {
+            ZoneId visitorZone = ZoneId.of(paramVal);
+            ZoneId defaultZone = ZoneId.of(props.getTimezone().getDefaultTimezone());
+            int timezoneOffset = TimezoneUtil.getMinuteDiffBetweenZones(visitorZone, defaultZone);
+            return Optional.of(TimezoneInfo.ofSimple(paramVal, visitorZone, timezoneOffset));
+        } catch (Exception ignored) {}
+        return Optional.empty();
     }
 
     @Override
     public int getOrder() {
-        return 10;
+        return DEFAULT_ORDER;
     }
 
 }

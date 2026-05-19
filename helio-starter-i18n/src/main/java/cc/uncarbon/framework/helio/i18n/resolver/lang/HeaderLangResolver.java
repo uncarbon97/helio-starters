@@ -1,11 +1,13 @@
 package cc.uncarbon.framework.helio.i18n.resolver.lang;
 
+import cc.uncarbon.framework.helio.i18n.context.LangInfo;
 import cc.uncarbon.framework.helio.i18n.props.HelioI18nProperties;
 import cc.uncarbon.framework.helio.i18n.resolver.LangResolver;
-import cc.uncarbon.framework.helio.i18n.util.I18nParser;
+import cc.uncarbon.framework.helio.i18n.util.LocaleUtil;
 import cn.hutool.core.text.CharSequenceUtil;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
+import org.jspecify.annotations.NonNull;
 
 import java.util.List;
 import java.util.Locale;
@@ -31,18 +33,15 @@ public class HeaderLangResolver implements LangResolver {
 
 
     @Override
-    public Optional<Locale> resolve(HttpServletRequest request) {
-        // 1. 先取自定义请求头
-        String customHeader = request.getHeader(props.getLang().getResolver().getHeaderName());
-        if (CharSequenceUtil.isNotBlank(customHeader)) {
-            Optional<Locale> parsed = I18nParser.parseLocale(customHeader);
-            if (parsed.isPresent()) {
-                return parsed;
-            }
+    public Optional<LangInfo> resolve(@NonNull HttpServletRequest servletRequest) {
+        final String headerName = props.getLang().getResolver().getHeaderName();
+        String headerVal = CharSequenceUtil.cleanBlank(servletRequest.getHeader(headerName));
+        if (CharSequenceUtil.isEmpty(headerVal)) {
+            return Optional.empty();
         }
 
-        // 2. 再取标准 Accept-Language，按 q 值排序匹配 supportedLocales
-        String acceptLang = request.getHeader(HEADER_ACCEPT_LANGUAGE);
+        // 取标准 Accept-Language，按 q 值排序匹配 supportedLocales
+        String acceptLang = servletRequest.getHeader(HEADER_ACCEPT_LANGUAGE);
         if (CharSequenceUtil.isBlank(acceptLang)) {
             return Optional.empty();
         }
@@ -54,11 +53,12 @@ public class HeaderLangResolver implements LangResolver {
             return Optional.empty();
         }
 
-        List<Locale> supportedLocales = props.getLang().getSupportedLanguageTags();
+        List<Locale> supportedLocales = props.getLang().getSupportedLanguageTags().stream()
+                .map(LocaleUtil::toLocale).toList();
         for (LanguageRange range : ranges) {
             Locale matched = Locale.filter(List.of(range), supportedLocales).stream().findFirst().orElse(null);
             if (matched != null) {
-                return Optional.of(matched);
+                return Optional.of(LangInfo.ofSimple(matched.toLanguageTag(), matched));
             }
         }
         return Optional.empty();
