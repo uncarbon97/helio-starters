@@ -1,12 +1,15 @@
 package cc.uncarbon.framework.helio.web.handler;
 
 import cc.uncarbon.framework.helio.base.exception.BusinessException;
+import cc.uncarbon.framework.helio.i18n.props.HelioI18nProperties;
+import cc.uncarbon.framework.helio.i18n.util.I18nMessageUtil;
 import cc.uncarbon.framework.helio.web.enums.GlobalWebExceptionFriendlyMessageEnum;
 import cc.uncarbon.framework.helio.web.model.response.ApiResult;
 import cc.uncarbon.framework.helio.web.util.InvalidFieldUtil;
 import cn.dev33.satoken.exception.NotLoginException;
 import cn.dev33.satoken.exception.NotPermissionException;
 import cn.dev33.satoken.exception.NotRoleException;
+import jakarta.annotation.Resource;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.NonNull;
@@ -45,6 +48,9 @@ public class GlobalWebExceptionHandler {
     protected static final MediaType MEDIA_TYPE_APPLICATION_JSON_UTF8 =
             new MediaType("application", "json", StandardCharsets.UTF_8);
     private static final String LOG_PREFIX = "[Web]";
+
+    @Resource
+    private HelioI18nProperties i18nProperties;
 
 
     /**
@@ -228,9 +234,9 @@ public class GlobalWebExceptionHandler {
      * @return 消息文本
      */
     protected String determineI18nMessage(@NonNull GlobalWebExceptionFriendlyMessageEnum msgEnum) {
-//        if (Boolean.TRUE.equals(props.getI18n().getEnabled())) {
-//            return I18nUtil.messageOf(msgEnum.i18nCode(), msgEnum.getDefaultValue());
-//        }
+        if (i18nProperties != null && i18nProperties.getEnabled()) {
+            return I18nMessageUtil.messageOf(msgEnum.i18nCode(), msgEnum.getMessage());
+        }
         return msgEnum.getMessage();
     }
 }

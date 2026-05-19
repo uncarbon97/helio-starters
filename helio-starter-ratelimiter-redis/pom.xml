@@ -47,13 +47,5 @@
             <groupId>org.aspectj</groupId>
             <artifactId>aspectjweaver</artifactId>
         </dependency>
-
-        <!-- 引用 Spring Web 框架 -->
-        <dependency>
-            <groupId>org.springframework</groupId>
-            <artifactId>spring-web</artifactId>
-            <!-- 只引用，非必要不参与打包 -->
-            <scope>provided</scope>
-        </dependency>
     </dependencies>
 </project>

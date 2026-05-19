@@ -1,7 +1,7 @@
 package cc.uncarbon.framework.helio.web.context;
 
 /**
- * Web 访问者上下文
+ * 访客上下文
  * 与 {@link cc.uncarbon.framework.helio.base.context.UserContext} 的区别是：
  * 1. 保存了 IP 地址
  * 2. 记录了匿名访问时的访问者信息

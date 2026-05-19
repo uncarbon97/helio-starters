@@ -7,7 +7,7 @@ import lombok.NoArgsConstructor;
 import lombok.experimental.Accessors;
 
 /**
- * 简单 Web 访问者上下文
+ * 简单访客上下文
  *
  * @author Uncarbon
  */

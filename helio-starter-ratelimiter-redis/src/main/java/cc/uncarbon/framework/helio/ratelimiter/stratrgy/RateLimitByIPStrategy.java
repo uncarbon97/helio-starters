@@ -2,12 +2,11 @@ package cc.uncarbon.framework.helio.ratelimiter.stratrgy;
 
 import cc.uncarbon.framework.helio.ratelimiter.annotation.UseRateLimit;
 import cc.uncarbon.framework.helio.ratelimiter.constant.RateLimiterConstant;
-import cn.hutool.extra.servlet.JakartaServletUtil;
+import cc.uncarbon.framework.helio.web.context.VisitorContext;
+import cc.uncarbon.framework.helio.web.context.VisitorContextHolder;
 import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.JoinPoint;
 import org.springframework.data.redis.core.RedisTemplate;
-import org.springframework.web.context.request.RequestContextHolder;
-import org.springframework.web.context.request.ServletRequestAttributes;
 
 /**
  * 以 IP 为维度限流策略
@@ -39,11 +38,10 @@ public class RateLimitByIPStrategy extends BaseRateLimitRedisStrategy implements
      * @return IP 或 {@link RateLimiterConstant#UNKNOWN}
      */
     protected String resolveIP() {
-        if (RequestContextHolder.getRequestAttributes() instanceof ServletRequestAttributes requestAttributes) {
-            return JakartaServletUtil.getClientIP(requestAttributes.getRequest());
-        }
-        // 兜底
-        return RateLimiterConstant.UNKNOWN;
+        return VisitorContextHolder.getVisitorContextOptional()
+                .map(VisitorContext::getIp)
+                // 兜底
+                .orElse(RateLimiterConstant.UNKNOWN);
     }
 
 }
