@@ -1,6 +1,7 @@
 package cc.uncarbon.framework.helio.i18n.message;
 
-import io.micrometer.common.util.StringUtils;
+import cc.uncarbon.framework.helio.i18n.constant.HelioI18nConstant;
+import cc.uncarbon.framework.helio.i18n.props.HelioI18nProperties;
 import org.jspecify.annotations.NonNull;
 import org.springframework.context.support.AbstractMessageSource;
 import org.springframework.core.io.Resource;
@@ -18,30 +19,30 @@ import java.util.concurrent.ConcurrentHashMap;
 /**
  * 支持 YAML 格式的 MessageSource，支持嵌套 key
  *
- * messages.yml:
- *   user:
- *     error:
- *       notFound: "用户不存在"
- *       email:
- *         alreadyExists: "邮箱 {0} 已被注册"
- *
- * 等价于：
- *   user.error.notFound=用户不存在
- *   user.error.email.alreadyExists=邮箱 {0} 已被注册
+ * @author Uncarbon
  */
 public class YamlMessageSource extends AbstractMessageSource {
+
+    private static final List<String> YAML_EXTS = List.of(".yml", ".yaml");
 
     private final List<String> basenames;
     private final Charset charset;
     private final ResourceLoader resourceLoader = new PathMatchingResourcePatternResolver();
 
-    /** locale -> (key -> value) */
-    private final Map<Locale, Map<String, String>> cache = new ConcurrentHashMap<>();
-    /** locale -> (key -> compiled MessageFormat) */
+    /**
+     * locale -> (key -> value)
+     */
+    private final Map<Locale, Map<String, String>> messagesCache = new ConcurrentHashMap<>();
+    /**
+     * locale -> (key -> compiled MessageFormat)
+     */
     private final Map<Locale, Map<String, MessageFormat>> formatCache = new ConcurrentHashMap<>();
 
-    public YamlMessageSource(List<String> basenames, Charset charset) {
-        this.basenames = basenames;
+    public YamlMessageSource(HelioI18nProperties props, Charset charset) {
+        this.basenames = Optional.ofNullable(props)
+                .map(HelioI18nProperties::getLang)
+                .map(HelioI18nProperties.LangConfig::getYamlBasenames)
+                .orElse(Collections.emptyList());
         this.charset = charset;
     }
 
@@ -50,36 +51,50 @@ public class YamlMessageSource extends AbstractMessageSource {
         Map<String, MessageFormat> formats = formatCache.computeIfAbsent(locale, l -> new ConcurrentHashMap<>());
         return formats.computeIfAbsent(code, k -> {
             String pattern = resolveCodeWithoutArguments(k, locale);
-            return pattern == null ? null : new MessageFormat(pattern, locale);
+            return pattern != null ? new MessageFormat(pattern, locale) : null;
         });
     }
 
     @Override
     protected String resolveCodeWithoutArguments(@NonNull String code, @NonNull Locale locale) {
-        Map<String, String> messages = getMessagesForLocale(locale);
-        String value = messages.get(code);
-        if (value != null) return value;
-
-        // 降级：zh-CN -> zh -> default
-        for (Locale fallback : LocaleUtils.fallbackChain(locale)) {
-            value = getMessagesForLocale(fallback).get(code);
-            if (value != null) return value;
+        // exact locale (loadForLocale already merges default → language → specific)
+        String value = getMessagesForLocale(locale).get(code);
+        if (value != null) {
+            return value;
         }
+
+        // fallback: language-only locale
+        if (!locale.getCountry().isEmpty()) {
+            value = getMessagesForLocale(Locale.of(locale.getLanguage())).get(code);
+            if (value != null) {
+                return value;
+            }
+        }
+
+        // fallback: root (default messages)
+        if (!locale.getLanguage().isEmpty()) {
+            value = getMessagesForLocale(Locale.ROOT).get(code);
+            if (value != null) {
+                return value;
+            }
+        }
+
         return null;
     }
 
     private Map<String, String> getMessagesForLocale(Locale locale) {
-        return cache.computeIfAbsent(locale, this::loadForLocale);
+        return messagesCache.computeIfAbsent(locale, this::loadForLocale);
     }
 
     private Map<String, String> loadForLocale(Locale locale) {
         Map<String, String> result = new HashMap<>();
         Yaml yaml = new Yaml();
+        List<String> suffixes = localeSuffixes(locale);
 
         for (String basename : basenames) {
-            // 尝试加载 messages_zh_CN.yml, messages_zh.yml, messages.yml
-            for (String suffix : localeSuffixes(locale)) {
-                for (String ext : List.of(".yml", ".yaml")) {
+            // from generic to specific, so specific overwrites generic
+            for (String suffix : suffixes) {
+                for (String ext : YAML_EXTS) {
                     String path = basename + suffix + ext;
                     try {
                         Resource resource = resourceLoader.getResource(path);
@@ -87,31 +102,34 @@ public class YamlMessageSource extends AbstractMessageSource {
 
                         try (var is = resource.getInputStream()) {
                             Map<String, Object> raw = yaml.load(new InputStreamReader(is, charset));
-                            if (raw != null) flatten("", raw, result);
+                            if (raw != null) {
+                                flatten("", raw, result);
+                            }
                         }
                     } catch (IOException e) {
-                        logger.warn("Failed to load yaml message source: " + path, e);
+                        logger.warn(HelioI18nConstant.LOG_PREFIX + "Failed to load YAML message source: " + path, e);
                     }
                 }
             }
         }
-        return result;
+        return Collections.unmodifiableMap(result);
     }
 
-    /** [_zh_CN, _zh, ""] */
+    /**
+     * Generate locale suffixes from generic to specific, e.g. for zh-CN: ["", "_zh", "_zh-CN"]
+     */
     private List<String> localeSuffixes(Locale locale) {
         List<String> suffixes = new ArrayList<>();
-        if (StringUtils.isNotBlank(locale.getCountry())) {
-            suffixes.add("_" + locale.getLanguage() + "_" + locale.getCountry());
-        }
-        if (StringUtils.isNotBlank(locale.getLanguage())) {
+        suffixes.add("");
+        if (!locale.getLanguage().isEmpty()) {
             suffixes.add("_" + locale.getLanguage());
         }
-        suffixes.add(""); // 默认 messages.yml
+        if (!locale.getCountry().isEmpty()) {
+            suffixes.add("_" + locale.toLanguageTag());
+        }
         return suffixes;
     }
 
-    /** 递归展平嵌套 map */
     @SuppressWarnings("unchecked")
     private void flatten(String prefix, Map<String, Object> map, Map<String, String> result) {
         for (Map.Entry<String, Object> entry : map.entrySet()) {
@@ -125,9 +143,11 @@ public class YamlMessageSource extends AbstractMessageSource {
         }
     }
 
-    /** 清除缓存（用于热更新） */
+    /**
+     * Clear caches for hot reload
+     */
     public void clearCache() {
-        cache.clear();
+        messagesCache.clear();
         formatCache.clear();
     }
 }

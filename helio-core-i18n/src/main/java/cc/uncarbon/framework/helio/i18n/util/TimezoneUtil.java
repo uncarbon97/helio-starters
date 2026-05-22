@@ -1,4 +1,4 @@
-package cc.uncarbon.framework.helio.i18n;
+package cc.uncarbon.framework.helio.i18n.util;
 
 import lombok.experimental.UtilityClass;
 import org.jspecify.annotations.NonNull;

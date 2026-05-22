@@ -1,38 +1,121 @@
-# Compiled class file
+# ============================================================
+# Java 编译产物
+# ============================================================
 *.class
-
-# Log file
-*.log
-
-# BlueJ files
-*.ctxt
-
-# Mobile Tools for Java (J2ME)
-.mtj.tmp/
-
-# Package Files #
 *.jar
 *.war
 *.nar
 *.ear
+
+# JVM 崩溃日志
+hs_err_pid*
+replay_pid*
+
+# ============================================================
+# Maven 构建产物
+# ============================================================
+target/
+
+# Maven Flatten Plugin 产出
+.flattened-pom.xml
+
+# Maven Shade Plugin 产出
+dependency-reduced-pom.xml
+
+# ============================================================
+# 压缩包
+# ============================================================
 *.zip
 *.tar.gz
 *.rar
 
-# virtual machine crash logs, see http://www.java.com/en/download/help/error_hotspot.xml
-hs_err_pid*
+# ============================================================
+# 日志文件
+# ============================================================
+*.log
 
-# MacOS
+# ============================================================
+# 操作系统生成文件
+# ============================================================
+# macOS
 .DS_Store
 
-# IntelliJ IDEA
-.idea
-*.iws
+# Windows
+Thumbs.db
+Desktop.ini
+
+# ============================================================
+# IDE - IntelliJ IDEA
+# ============================================================
+.idea/
 *.iml
-*.ipr
 
-# VSCode
-.vscode
+# ============================================================
+# IDE - VS Code
+# ============================================================
+.vscode/
 
-# VSCode 不会自动忽略 **/target 目录
-target/
+# ============================================================
+# AI 编码助手
+# ============================================================
+
+# Claude Code
+.claude/
+
+# Cursor
+.cursor/
+
+# GitHub Copilot
+.copilot/
+
+# Windsurf (Codeium)
+.codeium/
+.windsurf/
+
+# Aider
+.aider*
+
+# Cline
+.cline/
+
+# Augment
+.augment/
+
+# Amazon Q Developer
+.amazonq/
+
+# PearAI
+.pearai/
+
+# Trae
+.trae/
+
+# Tabnine
+.tabnine/
+
+# Sourcegraph Cody
+.cody/
+
+# Devin
+.devin/
+
+# OpenAI Codex CLI
+.codex/
+
+# Warp
+.warp/
+
+# Jules
+.jules/
+
+# ============================================================
+# 其他
+# ============================================================
+# 环境变量文件（可能包含密钥、Token 等敏感信息）
+.env
+.env.*
+
+# Vim / Emacs 临时文件
+*.swp
+*.swo
+*~

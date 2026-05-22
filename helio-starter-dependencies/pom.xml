@@ -10,7 +10,7 @@
     <version>${revision}</version>
     <name>${project.artifactId}</name>
     <description>
-        统一管理 Helio 脚手架外部依赖的版本号
+        统一管理框架外部依赖的版本号
     </description>
 
     <properties>

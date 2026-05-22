@@ -42,7 +42,7 @@ public class HelioI18nAutoConfiguration {
 
     @Bean(name = HelioI18nConstant.MESSAGE_SOURCE_SPRING_BEAN_NAME)
     public MessageSource messageSource(HelioI18nProperties props) {
-        return new YamlMessageSource(props.getLang().getYamlBasenames(), StandardCharsets.UTF_8);
+        return new YamlMessageSource(props, StandardCharsets.UTF_8);
     }
 
     @Bean
