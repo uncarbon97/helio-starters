@@ -10,25 +10,25 @@ public interface PageQuery {
     /**
      * 取得分页查询参数
      */
-    PageParam getPagination();
+    PageParam getPageParam();
 
     /**
      * 捷径 - 取当前页码
      */
     default Integer getPageNum() {
-        if (getPagination() == null) {
+        if (getPageParam() == null) {
             return null;
         }
-        return getPagination().getPageNum();
+        return getPageParam().getPageNum();
     }
 
     /**
      * 捷径 - 取当前页大小
      */
     default Integer getPageSize() {
-        if (getPagination() == null) {
+        if (getPageParam() == null) {
             return null;
         }
-        return getPagination().getPageSize();
+        return getPageParam().getPageSize();
     }
 }
