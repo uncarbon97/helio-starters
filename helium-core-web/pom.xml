@@ -25,10 +25,16 @@
             <artifactId>helium-core-base</artifactId>
         </dependency>
 
-        <!-- 引入 Jakarta Servlet API 包 -->
+        <!-- 引入 Jakarta Servlet 契约 -->
         <dependency>
             <groupId>jakarta.servlet</groupId>
             <artifactId>jakarta.servlet-api</artifactId>
+        </dependency>
+
+        <!-- 引入 Jakarta Validation 契约 -->
+        <dependency>
+            <groupId>jakarta.validation</groupId>
+            <artifactId>jakarta.validation-api</artifactId>
         </dependency>
 
         <!-- 阿里 TTL-->

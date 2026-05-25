@@ -48,5 +48,13 @@
             <groupId>cn.hutool</groupId>
             <artifactId>hutool-core</artifactId>
         </dependency>
+
+        <!-- mybatis-plus 注解包 -->
+        <dependency>
+            <groupId>com.baomidou</groupId>
+            <artifactId>mybatis-plus-annotation</artifactId>
+            <!-- 只引用，非必要不参与打包 -->
+            <scope>provided</scope>
+        </dependency>
     </dependencies>
 </project>
