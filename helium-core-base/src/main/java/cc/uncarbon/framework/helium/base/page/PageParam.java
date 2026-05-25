@@ -47,6 +47,13 @@ public class PageParam implements Serializable {
     }
 
     /**
+     * 取得 pageSize 原始值
+     */
+    public Integer rawPageSize() {
+        return pageSize;
+    }
+
+    /**
      * 全局分页页码限制器
      */
     private static UnaryOperator<Integer> globalPageNumLimiter = null;
