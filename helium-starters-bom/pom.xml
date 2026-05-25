@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <packaging>pom</packaging>
+
+    <groupId>cc.uncarbon.framework</groupId>
+    <artifactId>helium-starters-bom</artifactId>
+    <version>${revision}</version>
+    <name>${project.artifactId}</name>
+    <description>
+        统一管理框架内部依赖的版本号
+    </description>
+
+    <properties>
+        <revision>4.0.0-SNAPSHOT</revision>
+    </properties>
+
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>cc.uncarbon.framework</groupId>
+                <artifactId>helium-core-base</artifactId>
+                <version>${revision}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>cc.uncarbon.framework</groupId>
+                <artifactId>helium-core-db</artifactId>
+                <version>${revision}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>cc.uncarbon.framework</groupId>
+                <artifactId>helium-core-i18n</artifactId>
+                <version>${revision}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>cc.uncarbon.framework</groupId>
+                <artifactId>helium-core-tenant</artifactId>
+                <version>${revision}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>cc.uncarbon.framework</groupId>
+                <artifactId>helium-core-web</artifactId>
+                <version>${revision}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>cc.uncarbon.framework</groupId>
+                <artifactId>helium-starter-base</artifactId>
+                <version>${revision}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>cc.uncarbon.framework</groupId>
+                <artifactId>helium-starter-db-dynamic-datasource</artifactId>
+                <version>${revision}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>cc.uncarbon.framework</groupId>
+                <artifactId>helium-starter-db-mybatis-plus</artifactId>
+                <version>${revision}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>cc.uncarbon.framework</groupId>
+                <artifactId>helium-starter-i18n</artifactId>
+                <version>${revision}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>cc.uncarbon.framework</groupId>
+                <artifactId>helium-starter-jackson3</artifactId>
+                <version>${revision}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>cc.uncarbon.framework</groupId>
+                <artifactId>helium-starter-openapi3</artifactId>
+                <version>${revision}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>cc.uncarbon.framework</groupId>
+                <artifactId>helium-starter-ratelimiter-redis</artifactId>
+                <version>${revision}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>cc.uncarbon.framework</groupId>
+                <artifactId>helium-starter-redis</artifactId>
+                <version>${revision}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>cc.uncarbon.framework</groupId>
+                <artifactId>helium-starter-satoken</artifactId>
+                <version>${revision}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>cc.uncarbon.framework</groupId>
+                <artifactId>helium-starter-tenant</artifactId>
+                <version>${revision}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>cc.uncarbon.framework</groupId>
+                <artifactId>helium-starter-web</artifactId>
+                <version>${revision}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>cc.uncarbon.framework</groupId>
+                <artifactId>helium-starter-web-security</artifactId>
+                <version>${revision}</version>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
+</project>

@@ -68,45 +68,29 @@ Desktop.ini
 # GitHub Copilot
 .copilot/
 
-# Windsurf (Codeium)
-.codeium/
+# Windsurf
 .windsurf/
-
-# Aider
-.aider*
-
-# Cline
-.cline/
-
-# Augment
-.augment/
-
-# Amazon Q Developer
-.amazonq/
-
-# PearAI
-.pearai/
-
-# Trae
-.trae/
-
-# Tabnine
-.tabnine/
-
-# Sourcegraph Cody
-.cody/
-
-# Devin
-.devin/
 
 # OpenAI Codex CLI
 .codex/
 
-# Warp
-.warp/
+# Gemini
+.gemini/
 
-# Jules
-.jules/
+# Trae
+.trae/
+
+# Qoder
+.qoder/
+
+# Cline
+.cline/
+
+# OpenCode
+.opencode/
+
+# KiroCode
+.kiro/
 
 # ============================================================
 # 其他

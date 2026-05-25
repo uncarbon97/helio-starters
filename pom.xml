@@ -6,12 +6,12 @@
     <packaging>pom</packaging>
 
     <groupId>cc.uncarbon.framework</groupId>
-    <artifactId>helio-starters-parent</artifactId>
+    <artifactId>helium-starters-parent</artifactId>
     <version>${revision}</version>
 
     <name>${project.artifactId}</name>
-    <description>Java project for Helio development framework</description>
-    <url>https://github.com/uncarbon97</url>
+    <description>Helium 快速开发平台脚手架通用基础能力</description>
+    <url>https://github.com/uncarbon-gh</url>
 
     <properties>
         <revision>4.0.0-SNAPSHOT</revision>
@@ -23,25 +23,25 @@
     </properties>
 
     <modules>
-        <module>helio-starter-bom</module>
-        <module>helio-starter-dependencies</module>
-        <module>helio-core-base</module>
-        <module>helio-core-db</module>
-        <module>helio-core-i18n</module>
-        <module>helio-core-tenant</module>
-        <module>helio-core-web</module>
-        <module>helio-starter-base</module>
-        <module>helio-starter-db-dynamic-datasource</module>
-        <module>helio-starter-db-mybatis-plus</module>
-        <module>helio-starter-i18n</module>
-        <module>helio-starter-jackson3</module>
-        <module>helio-starter-openapi3</module>
-        <module>helio-starter-ratelimiter-redis</module>
-        <module>helio-starter-redis</module>
-        <module>helio-starter-satoken</module>
-        <module>helio-starter-tenant</module>
-        <module>helio-starter-web</module>
-        <module>helio-starter-web-security</module>
+        <module>helium-starters-bom</module>
+        <module>helium-starters-dependencies</module>
+        <module>helium-core-base</module>
+        <module>helium-core-db</module>
+        <module>helium-core-i18n</module>
+        <module>helium-core-tenant</module>
+        <module>helium-core-web</module>
+        <module>helium-starter-base</module>
+        <module>helium-starter-db-dynamic-datasource</module>
+        <module>helium-starter-db-mybatis-plus</module>
+        <module>helium-starter-i18n</module>
+        <module>helium-starter-jackson3</module>
+        <module>helium-starter-openapi3</module>
+        <module>helium-starter-ratelimiter-redis</module>
+        <module>helium-starter-redis</module>
+        <module>helium-starter-satoken</module>
+        <module>helium-starter-tenant</module>
+        <module>helium-starter-web</module>
+        <module>helium-starter-web-security</module>
     </modules>
 
     <dependencyManagement>
@@ -49,7 +49,7 @@
             <!-- 内部依赖版本管理 -->
             <dependency>
                 <groupId>cc.uncarbon.framework</groupId>
-                <artifactId>helio-starter-bom</artifactId>
+                <artifactId>helium-starters-bom</artifactId>
                 <version>${revision}</version>
                 <type>pom</type>
                 <scope>import</scope>
@@ -58,7 +58,7 @@
             <!-- 外部依赖版本管理 -->
             <dependency>
                 <groupId>cc.uncarbon.framework</groupId>
-                <artifactId>helio-starter-dependencies</artifactId>
+                <artifactId>helium-starters-dependencies</artifactId>
                 <version>${revision}</version>
                 <type>pom</type>
                 <scope>import</scope>
@@ -110,14 +110,14 @@
     <!-- 仓库信息 -->
     <scm>
         <tag>2.x</tag>
-        <url>https://github.com/uncarbon97/helio-starters.git</url>
-        <connection>scm:git:https://github.com/uncarbon97/helio-starters.git</connection>
-        <developerConnection>scm:git:https://github.com/uncarbon97/helio-starters.git</developerConnection>
+        <url>https://github.com/uncarbon-gh/helium-starters.git</url>
+        <connection>scm:git:https://github.com/uncarbon-gh/helium-starters.git</connection>
+        <developerConnection>scm:git:https://github.com/uncarbon-gh/helium-starters.git</developerConnection>
     </scm>
 
     <profiles>
         <profile>
-            <id>push-helio-starters-to-maven-central</id>
+            <id>push-helium-starters-to-maven-central</id>
             <activation>
                 <activeByDefault>false</activeByDefault>
             </activation>
