@@ -189,6 +189,7 @@
             </dependency>
             <!-- 以上用于 redis -->
 
+
             <!-- 以下用于 satoken -->
             <!-- SA-Token 原生基础包 -->
             <dependency>
@@ -211,6 +212,7 @@
                 <version>${sa-token.version}</version>
             </dependency>
             <!-- 以上用于 satoken -->
+
 
             <!-- 以下用于 web -->
             <dependency>
