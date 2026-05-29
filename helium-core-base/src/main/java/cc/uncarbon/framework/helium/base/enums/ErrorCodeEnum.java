@@ -12,27 +12,19 @@ import java.util.Objects;
 /**
  * 标记一个类属于错误码枚举
  *
- * @param <T> 错误码类型
  * @author Uncarbon
  */
-public interface ErrorCodeEnum<T extends Serializable> extends Serializable {
+public interface ErrorCodeEnum extends Serializable {
 
     /**
-     * @return 返回错误码，通常由字母或者数字组成，并且在同一个枚举中值唯一
+     * @return 返回错误码
      */
-    T getErrorCode();
+    String getErrorCode();
 
     /**
-     * @return 返回错误原因描述，支持使用 {} 作为占位符
+     * @return 返回错误原因友好描述，支持使用 {} 作为变量填充符
      */
-    String getErrorDescription();
-
-    /**
-     * @return 返回错误原因描述的国际化文本，支持使用 {} 作为占位符
-     */
-    default String getErrorDescriptionI18n() {
-        return getErrorDescription();
-    }
+    String getErrorMsgFriendly();
 
     /**
      * 如果对象为null，则抛出 {@link BusinessException}
@@ -114,14 +106,7 @@ public interface ErrorCodeEnum<T extends Serializable> extends Serializable {
      * @param templateParams 填充枚举中 label 模板的参数
      */
     default void throw0(Object... templateParams) throws BusinessException {
-        T errorCode = getErrorCode();
-        if (errorCode instanceof Integer errorCodeAsInt) {
-            throw new BusinessException(errorCodeAsInt, getErrorDescriptionI18n(), templateParams);
-        }
-        if (errorCode instanceof String errorCodeAsString) {
-            throw new BusinessException(errorCodeAsString, getErrorDescriptionI18n(), templateParams);
-        }
-        throw new IllegalArgumentException("ErrorCode requires Integer or String");
+        throw new BusinessException(getErrorCode(), getErrorMsgFriendly(), templateParams);
     }
 
 }

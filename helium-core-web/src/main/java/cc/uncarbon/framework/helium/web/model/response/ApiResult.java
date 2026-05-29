@@ -1,7 +1,8 @@
 package cc.uncarbon.framework.helium.web.model.response;
 
-import cc.uncarbon.framework.helium.base.enums.BaseEnum;
+import cc.uncarbon.framework.helium.base.enums.FrameworkErrorCodeEnum;
 import io.swagger.v3.oas.annotations.media.Schema;
+import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -16,18 +17,17 @@ import java.io.Serializable;
  * @author Uncarbon
  */
 @Accessors(chain = true)
-@AllArgsConstructor
-@NoArgsConstructor
+@AllArgsConstructor(access = AccessLevel.PROTECTED)
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Data
 public class ApiResult<T> implements Serializable {
 
-    // 成功时，默认返回的状态码与消息文本
-    protected static int DEFAULT_SUCCESS_CODE = 200;
-    protected static String DEFAULT_SUCCESS_MSG = "ok";
 
+    @Schema(description = "是否成功")
+    private boolean success;
 
-    @Schema(description = "状态码")
-    private Serializable code;
+    @Schema(description = "错误码")
+    private String code;
 
     @Schema(description = "消息文本")
     private String msg;
@@ -37,70 +37,30 @@ public class ApiResult<T> implements Serializable {
 
 
     public static <T> ApiResult<T> success() {
-        return build(DEFAULT_SUCCESS_CODE, DEFAULT_SUCCESS_MSG, null);
+        final var ok = FrameworkErrorCodeEnum.OK;
+        return new ApiResult<>(true, ok.getErrorCode(), ok.getErrorMsgFriendly(), null);
     }
 
     public static <T> ApiResult<T> success(String msg) {
-        return build(DEFAULT_SUCCESS_CODE, msg, null);
+        final var ok = FrameworkErrorCodeEnum.OK;
+        return new ApiResult<>(true, ok.getErrorCode(), msg, null);
     }
 
     public static <T> ApiResult<T> success(T data) {
-        return build(DEFAULT_SUCCESS_CODE, DEFAULT_SUCCESS_MSG, data);
+        final var ok = FrameworkErrorCodeEnum.OK;
+        return new ApiResult<>(true, ok.getErrorCode(), ok.getErrorMsgFriendly(), data);
     }
 
     public static <T> ApiResult<T> success(String msg, T data) {
-        return build(DEFAULT_SUCCESS_CODE, msg, data);
-    }
-
-    public static <T> ApiResult<T> fail(Integer code, String msg) {
-        return build(code, msg, null);
-    }
-
-    public static <T> ApiResult<T> fail(Integer code, String msg, T data) {
-        return build(code, msg, data);
+        final var ok = FrameworkErrorCodeEnum.OK;
+        return new ApiResult<>(true, ok.getErrorCode(), msg, data);
     }
 
     public static <T> ApiResult<T> fail(String code, String msg) {
-        return build(code, msg, null);
+        return new ApiResult<>(false, code, msg, null);
     }
 
     public static <T> ApiResult<T> fail(String code, String msg, T data) {
-        return build(code, msg, data);
-    }
-
-    public static <T> ApiResult<T> build(BaseEnum<Integer> enumItem) {
-        return build(enumItem.getValue(), enumItem.getLabel(), null);
-    }
-
-    public static <T> ApiResult<T> build(BaseEnum<Integer> enumItem, T data) {
-        return build(enumItem.getValue(), enumItem.getLabel(), data);
-    }
-
-    public static <T> ApiResult<T> build(BaseEnum<String> enumItem, String... ignored) {
-        return build(enumItem.getValue(), enumItem.getLabel(), null);
-    }
-
-    public static <T> ApiResult<T> build(BaseEnum<String> enumItem, T data, String... ignored) {
-        return build(enumItem.getValue(), enumItem.getLabel(), data);
-    }
-
-    private static <T> ApiResult<T> build(Integer code, String msg, T data) {
-        ApiResult<T> ret = new ApiResult<>();
-        ret
-                .setCode(code)
-                .setMsg(msg)
-                .setData(data);
-
-        return ret;
-    }
-
-    private static <T> ApiResult<T> build(String code, String msg, T data) {
-        ApiResult<T> ret = new ApiResult<>();
-        ret
-                .setCode(code)
-                .setMsg(msg)
-                .setData(data);
-
-        return ret;
+        return new ApiResult<>(false, code, msg, data);
     }
 }

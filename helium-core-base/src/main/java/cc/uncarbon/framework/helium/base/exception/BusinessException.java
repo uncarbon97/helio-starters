@@ -1,10 +1,9 @@
 package cc.uncarbon.framework.helium.base.exception;
 
+import cc.uncarbon.framework.helium.base.enums.ErrorCodeEnum;
 import cn.hutool.core.text.CharSequenceUtil;
-import com.sun.source.tree.InstanceOfTree;
 import lombok.Getter;
-
-import java.io.Serializable;
+import org.jspecify.annotations.NonNull;
 
 /**
  * 业务异常类
@@ -15,25 +14,20 @@ import java.io.Serializable;
 public class BusinessException extends RuntimeException {
 
     /**
-     * 默认错误码
+     * 错误码
      */
-    public static final int DEFAULT_ERROR_CODE = 500;
+    private final String code;
 
     /**
-     * 错误码，同时兼容整数与文本
+     * 如果异常由 {@link ErrorCodeEnum} 创建，则携带原始枚举
      */
-    private final Serializable code;
-
+    private final ErrorCodeEnum errorCodeEnum;
 
     /**
-     * 仅错误信息
-     *
-     * @param errorMsg 错误信息
+     * 如果异常由 {@link ErrorCodeEnum} 创建，则携带原始变量填充
      */
-    public BusinessException(String errorMsg) {
-        super(errorMsg);
-        this.code = DEFAULT_ERROR_CODE;
-    }
+    private final Object[] templateParams;
+
 
     /**
      * 错误码 + 错误信息
@@ -41,44 +35,38 @@ public class BusinessException extends RuntimeException {
      * @param code     错误码
      * @param errorMsg 错误信息
      */
-    public BusinessException(int code, String errorMsg) {
+    public BusinessException(@NonNull String code, @NonNull String errorMsg) {
         super(errorMsg);
         this.code = code;
-    }
-
-    /**
-     * 错误码 + 错误信息
-     *
-     * @param code     错误码
-     * @param errorMsg 错误信息
-     */
-    public BusinessException(String code, String errorMsg) {
-        super(errorMsg);
-        this.code = code;
+        this.errorCodeEnum = null;
+        this.templateParams = null;
     }
 
     /**
      * 错误码 + 错误信息，支持字符串模板填充参数
      *
      * @param code             错误码
-     * @param errorMsgTemplate 错误信息模板，支持使用 {} 作为占位符
+     * @param errorMsgTemplate 错误信息模板，支持使用 {} 作为变量填充符
      * @param templateParams   填充错误信息模板的参数
      */
-    public BusinessException(int code, String errorMsgTemplate, Object... templateParams) {
+    public BusinessException(@NonNull String code, @NonNull String errorMsgTemplate, Object... templateParams) {
         super(CharSequenceUtil.format(errorMsgTemplate, templateParams));
         this.code = code;
+        this.errorCodeEnum = null;
+        this.templateParams = null;
     }
 
     /**
      * 错误码 + 错误信息，支持字符串模板填充参数
      *
-     * @param code             错误码
-     * @param errorMsgTemplate 错误信息模板，支持使用 {} 作为占位符
-     * @param templateParams   填充错误信息模板的参数
+     * @param errorCodeEnum  错误码枚举
+     * @param templateParams 填充错误信息模板的参数
      */
-    public BusinessException(String code, String errorMsgTemplate, Object... templateParams) {
-        super(CharSequenceUtil.format(errorMsgTemplate, templateParams));
-        this.code = code;
+    public BusinessException(@NonNull ErrorCodeEnum errorCodeEnum, Object... templateParams) {
+        super(CharSequenceUtil.format(errorCodeEnum.getErrorMsgFriendly(), templateParams));
+        this.code = errorCodeEnum.getErrorCode();
+        this.errorCodeEnum = errorCodeEnum;
+        this.templateParams = templateParams;
     }
 
     /**
@@ -87,29 +75,5 @@ public class BusinessException extends RuntimeException {
     @Override
     public synchronized Throwable fillInStackTrace() {
         return this;
-    }
-
-    /**
-     * @return 整数形式的错误码；如果实际不是整数类型，也会返回 null
-     */
-    public Integer getCodeAsInt() {
-        Serializable code = getCode();
-        if (code == null) return null;
-        if (code instanceof Integer codeAsInt) {
-            return codeAsInt;
-        }
-        return null;
-    }
-
-    /**
-     * @return 文本形式的错误码；如果实际不是整数类型，会尝试强行转换成文本
-     */
-    public String getCodeAsString() {
-        Serializable code = getCode();
-        if (code == null) return null;
-        if (code instanceof String codeAsString) {
-            return codeAsString;
-        }
-        return code.toString();
     }
 }
