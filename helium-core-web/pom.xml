@@ -31,12 +31,6 @@
             <artifactId>jakarta.servlet-api</artifactId>
         </dependency>
 
-        <!-- 引入 Jakarta Validation 契约 -->
-        <dependency>
-            <groupId>jakarta.validation</groupId>
-            <artifactId>jakarta.validation-api</artifactId>
-        </dependency>
-
         <!-- 阿里 TTL-->
         <dependency>
             <groupId>com.alibaba</groupId>

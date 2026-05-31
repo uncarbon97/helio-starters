@@ -56,5 +56,13 @@
             <!-- 只引用，非必要不参与打包 -->
             <scope>provided</scope>
         </dependency>
+
+        <!-- Jakarta Validation 注解包 -->
+        <dependency>
+            <groupId>jakarta.validation</groupId>
+            <artifactId>jakarta.validation-api</artifactId>
+            <!-- 只引用，非必要不参与打包 -->
+            <scope>provided</scope>
+        </dependency>
     </dependencies>
 </project>
