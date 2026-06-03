@@ -30,7 +30,7 @@ public interface UserContext {
    /**
     * 取得用户角色ID集合
     */
-   Collection<Long> getRolesIds();
+   Collection<Long> getRoleIds();
 
    /**
     * 取得用户角色编码集合

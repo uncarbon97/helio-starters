@@ -7,7 +7,6 @@ import lombok.NoArgsConstructor;
 import lombok.experimental.Accessors;
 
 import java.util.Collection;
-import java.util.List;
 
 /**
  * 简单用户上下文
@@ -31,7 +30,7 @@ public class SimpleUserContext implements UserContext {
     protected String userTypeCode;
 
     @Schema(description = "用户角色ID集合", example = "[1, 2, 3]")
-    protected Collection<Long> rolesIds;
+    protected Collection<Long> roleIds;
 
     @Schema(description = "用户角色编码集合", example = """
             ["Admin", "CEO"]""")
