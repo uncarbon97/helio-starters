@@ -169,7 +169,7 @@ public class I18nMessageUtil {
 
         String i18nCode;
 
-        // 尝试以较长的 枚举类短名.枚举项name 为 code 尝试获取翻译值
+        // 尝试以较长的 枚举短名.枚举项name 为 code 尝试获取翻译值
         i18nCode = String.format("%s.%s", enumItem.getDeclaringClass().getSimpleName(), enumItem.name());
         String i18nMessage = messageOf(locale, i18nCode, templateParams);
         if (CharSequenceUtil.isNotEmpty(i18nMessage)) {

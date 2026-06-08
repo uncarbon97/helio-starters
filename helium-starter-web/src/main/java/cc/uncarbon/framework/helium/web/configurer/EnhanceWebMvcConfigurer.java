@@ -36,7 +36,7 @@ public class EnhanceWebMvcConfigurer implements WebMvcConfigurer, WebBindingInit
     }
 
     /**
-     * 对于 GET 请求，将 int 值转换成枚举类
+     * 对于 GET 请求，将 int 值转换成枚举
      */
     @Override
     public void addFormatters(FormatterRegistry registry) {

@@ -46,9 +46,9 @@ public interface BaseEnum<T extends Serializable> extends Serializable {
     }
 
     /**
-     * 从指定的枚举类中查找想要的枚举,并返回一个{@link Optional},如果未找到,则返回一个{@link Optional#empty()}
+     * 从指定的枚举中查找想要的枚举,并返回一个{@link Optional},如果未找到,则返回一个{@link Optional#empty()}
      *
-     * @param type      实现了{@link BaseEnum}的枚举类
+     * @param type      实现了{@link BaseEnum}的枚举
      * @param predicate 判断逻辑
      * @param <T>       枚举类型
      * @return 查找到的结果

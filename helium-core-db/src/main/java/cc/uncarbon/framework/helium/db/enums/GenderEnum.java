@@ -7,7 +7,7 @@ import lombok.Getter;
 
 
 /**
- * 生理性别枚举类
+ * 生理性别枚举
  */
 @AllArgsConstructor
 @Getter
