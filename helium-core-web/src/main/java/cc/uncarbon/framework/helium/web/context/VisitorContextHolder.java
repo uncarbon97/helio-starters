@@ -1,6 +1,5 @@
 package cc.uncarbon.framework.helium.web.context;
 
-import com.alibaba.ttl.TransmittableThreadLocal;
 import lombok.experimental.UtilityClass;
 
 import java.util.Optional;
@@ -13,14 +12,10 @@ import java.util.Optional;
 @UtilityClass
 public class VisitorContextHolder {
 
-    private static final TransmittableThreadLocal<VisitorContext> THREAD_LOCAL_CONTEXT = new TransmittableThreadLocal<>();
+    private static final ScopedValue<VisitorContext> SCOPED = ScopedValue.newInstance();
 
-
-    /**
-     * 强制清空本线程的访客上下文，防止影响被线程池复用的其他线程，以及内存泄露
-     */
-    public void clear() {
-        setVisitorContext(null);
+    public ScopedValue<VisitorContext> scope() {
+        return SCOPED;
     }
 
     /**
@@ -28,28 +23,17 @@ public class VisitorContextHolder {
      *
      * @return null or 当前访客上下文
      */
-    public VisitorContext getVisitorContext() {
-        return THREAD_LOCAL_CONTEXT.get();
-    }
-
-    /**
-     * 获取当前访客上下文
-     */
-    public Optional<VisitorContext> getVisitorContextOptional() {
-        return Optional.ofNullable(THREAD_LOCAL_CONTEXT.get());
-    }
-
-    /**
-     * 设置当前访客上下文
-     *
-     * @param newContext 新上下文，传 null 则为清除
-     */
-    public void setVisitorContext(VisitorContext newContext) {
-        if (newContext == null) {
-            THREAD_LOCAL_CONTEXT.remove();
-            return;
+    public VisitorContext get() {
+        if (SCOPED.isBound()) {
+            return SCOPED.get();
         }
+        return null;
+    }
 
-        THREAD_LOCAL_CONTEXT.set(newContext);
+    /**
+     * 获取当前访客上下文的 {@link Optional} 形式
+     */
+    public Optional<VisitorContext> getOptional() {
+        return Optional.ofNullable(get());
     }
 }

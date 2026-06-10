@@ -5,7 +5,6 @@ import com.baomidou.mybatisplus.annotation.EnumValue;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
-
 /**
  * 生理性别枚举
  */
