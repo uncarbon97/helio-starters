@@ -50,12 +50,6 @@
             </exclusions>
         </dependency>
 
-        <!-- Spring 自动配置处理器 -->
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-configuration-processor</artifactId>
-        </dependency>
-
         <!-- Jackson 注解包 -->
         <dependency>
             <groupId>com.fasterxml.jackson.core</groupId>
