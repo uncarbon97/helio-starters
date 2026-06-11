@@ -2,7 +2,6 @@ package cc.uncarbon.framework.helium.tenant.aop;
 
 import cc.uncarbon.framework.helium.tenant.annotation.TenantIgnore;
 import cc.uncarbon.framework.helium.tenant.context.TenantContextHolder;
-import lombok.SneakyThrows;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
@@ -22,13 +21,18 @@ public class TenantIgnoreAspect {
      * @param joinPoint 切点
      * @return 返回结果
      */
-    @SneakyThrows
     @Around("@annotation(tenantIgnore)")
-    public Object around(ProceedingJoinPoint joinPoint, TenantIgnore tenantIgnore) {
+    public Object around(ProceedingJoinPoint joinPoint, TenantIgnore tenantIgnore) throws Throwable {
         boolean oldVal = TenantContextHolder.isIgnored();
         if (oldVal) {
             return joinPoint.proceed();
         }
-        return TenantContextHolder.callIgnored(joinPoint::proceed);
+        return TenantContextHolder.callIgnored(() -> {
+            try {
+                return joinPoint.proceed();
+            } catch (Throwable e) {
+                throw new RuntimeException(e);
+            }
+        });
     }
 }
