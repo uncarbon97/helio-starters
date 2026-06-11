@@ -1,7 +1,8 @@
 package cc.uncarbon.framework.helium.base.context;
 
-import com.alibaba.ttl.TransmittableThreadLocal;
 import lombok.experimental.UtilityClass;
+import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
 
 import java.util.Optional;
 
@@ -13,63 +14,49 @@ import java.util.Optional;
 @UtilityClass
 public class UserContextHolder {
 
-    private static final TransmittableThreadLocal<UserContext> THREAD_LOCAL_CONTEXT = new TransmittableThreadLocal<>();
+    private static final ScopedValue<UserContext> SCOPED = ScopedValue.newInstance();
 
+    @NonNull
+    public ScopedValue<UserContext> scoped() {
+        return SCOPED;
+    }
 
     /**
      * 获取当前用户上下文
      *
      * @return null or 当前用户上下文
      */
-    public UserContext getUserContext() {
-        return THREAD_LOCAL_CONTEXT.get();
-    }
-
-    /**
-     * 获取当前用户上下文
-     */
-    public Optional<UserContext> getUserContextOptional() {
-        return Optional.ofNullable(THREAD_LOCAL_CONTEXT.get());
-    }
-
-    /**
-     * 设置当前用户上下文
-     *
-     * @param newContext 新上下文，传 null 则为清除
-     */
-    public void setUserContext(UserContext newContext) {
-        if (newContext == null) {
-            THREAD_LOCAL_CONTEXT.remove();
-            return;
+    @Nullable
+    public UserContext get() {
+        if (SCOPED.isBound()) {
+            return SCOPED.get();
         }
-
-        THREAD_LOCAL_CONTEXT.set(newContext);
+        return null;
     }
 
     /**
-     * 强制清空本线程的用户上下文，防止影响被线程池复用的其他线程，以及内存泄露
+     * 获取当前用户上下文的 {@link Optional} 形式
      */
-    public void clear() {
-        setUserContext(null);
+    @NonNull
+    public Optional<UserContext> getOptional() {
+        return Optional.ofNullable(get());
     }
 
     /**
-     * 捷径API-取当前用户ID
-     *
-     * @return null or 当前用户ID
+     * 快速取当前用户ID
      */
+    @Nullable
     public Long getUserId() {
-        UserContext context = getUserContext();
+        UserContext context = get();
         return context == null ? null : context.getUserId();
     }
 
     /**
-     * 捷径API-取当前用户名
-     *
-     * @return null or 当前用户名
+     * 快速取当前用户名
      */
-    public String getUserName() {
-        UserContext context = getUserContext();
+    @Nullable
+    public String getUserPin() {
+        UserContext context = get();
         return context == null ? null : context.getUserPin();
     }
 

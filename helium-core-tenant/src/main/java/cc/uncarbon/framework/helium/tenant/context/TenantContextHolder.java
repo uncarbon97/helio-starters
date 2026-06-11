@@ -1,9 +1,11 @@
 package cc.uncarbon.framework.helium.tenant.context;
 
-import com.alibaba.ttl.TransmittableThreadLocal;
 import lombok.experimental.UtilityClass;
+import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
 
 import java.util.Optional;
+import java.util.concurrent.Callable;
 
 /**
  * 租户上下文持有者类
@@ -13,93 +15,81 @@ import java.util.Optional;
 @UtilityClass
 public class TenantContextHolder {
 
-    private static final TransmittableThreadLocal<TenantContext> THREAD_LOCAL_CONTEXT = new TransmittableThreadLocal<>();
-    private static final TransmittableThreadLocal<Boolean> THREAD_LOCAL_IGNORED = new TransmittableThreadLocal<>();
+    private static final ScopedValue<TenantContext> SCOPED = ScopedValue.newInstance();
+    private static final ScopedValue<Boolean> IGNORED = ScopedValue.newInstance();
 
-
-    /**
-     * 强制清空本线程的租户上下文，防止影响被线程池复用的其他线程，以及内存泄露
-     */
-    public void clear() {
-        setTenantContext(null);
-        setIgnored(false);
-    }
-
-    /**
-     * 获取当前租户上下文
-     *
-     * @return null or 当前租户上下文
-     */
-    public TenantContext getTenantContext() {
-        return THREAD_LOCAL_CONTEXT.get();
+    @NonNull
+    public ScopedValue<TenantContext> scoped() {
+        return SCOPED;
     }
 
     /**
      * 获取当前租户上下文
      */
-    public Optional<TenantContext> getTenantContextOptional() {
-        return Optional.ofNullable(THREAD_LOCAL_CONTEXT.get());
-    }
-
-    /**
-     * 设置当前租户上下文
-     *
-     * @param newContext 新上下文，传 null 则为清除
-     */
-    public void setTenantContext(TenantContext newContext) {
-        if (newContext == null) {
-            THREAD_LOCAL_CONTEXT.remove();
-            return;
+    @Nullable
+    public TenantContext get() {
+        if (SCOPED.isBound()) {
+            return SCOPED.get();
         }
-
-        THREAD_LOCAL_CONTEXT.set(newContext);
+        return null;
     }
 
     /**
-     * 设置是否忽略租户
-     *
-     * @param ignored 是否忽略租户
+     * 获取当前租户上下文的 {@link Optional} 形式
      */
-    public void setIgnored(boolean ignored) {
-        THREAD_LOCAL_IGNORED.set(ignored);
+    @NonNull
+    public Optional<TenantContext> getOptional() {
+        return Optional.ofNullable(get());
     }
 
     /**
-     * 是否忽略租户
-     *
-     * @return 是否忽略租户
+     * 快速取当前租户ID
      */
-    public boolean isIgnored() {
-        return Boolean.TRUE.equals(THREAD_LOCAL_IGNORED.get());
-    }
-
-    /**
-     * 捷径API-取当前租户ID
-     *
-     * @return null or 当前租户ID
-     */
+    @Nullable
     public Long getTenantId() {
-        TenantContext context = getTenantContext();
+        TenantContext context = get();
         return context == null ? null : context.getTenantId();
     }
 
     /**
-     * 捷径API-取当前租户名称
-     *
-     * @return null or 当前租户名称
+     * 快速取当前租户名称
      */
+    @Nullable
     public String getTenantName() {
-        TenantContext context = getTenantContext();
+        TenantContext context = get();
         return context == null ? null : context.getTenantName();
     }
 
     /**
-     * 捷径API-取当前租户编码
-     *
-     * @return null or 当前租户编码
+     * 快速取当前租户编码
      */
+    @Nullable
     public String getTenantCode() {
-        TenantContext context = getTenantContext();
+        TenantContext context = get();
         return context == null ? null : context.getTenantCode();
+    }
+
+    /**
+     * 是否忽略租户
+     */
+    public boolean isIgnored() {
+        if (IGNORED.isBound()) {
+            return IGNORED.get();
+        }
+        return false;
+    }
+
+    /**
+     * 在该作用域内忽略租户隔离，结束自动恢复
+     */
+    public void runIgnored(Runnable op) {
+        ScopedValue.where(IGNORED, Boolean.TRUE).run(op);
+    }
+
+    /**
+     * 在该作用域内忽略租户隔离，结束自动恢复
+     */
+    public <T> T callIgnored(Callable<T> op) throws Exception {
+        return ScopedValue.where(IGNORED, Boolean.TRUE).call(op::call);
     }
 }

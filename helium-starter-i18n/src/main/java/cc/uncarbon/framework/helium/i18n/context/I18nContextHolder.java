@@ -1,7 +1,8 @@
 package cc.uncarbon.framework.helium.i18n.context;
 
-import com.alibaba.ttl.TransmittableThreadLocal;
 import lombok.experimental.UtilityClass;
+import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
 
 import java.util.Optional;
 
@@ -13,43 +14,29 @@ import java.util.Optional;
 @UtilityClass
 public class I18nContextHolder {
 
-    private static final TransmittableThreadLocal<I18nContext> THREAD_LOCAL_CONTEXT = new TransmittableThreadLocal<>();
+    private static final ScopedValue<I18nContext> SCOPED = ScopedValue.newInstance();
 
-
-    /**
-     * 强制清空本线程的国际化上下文，防止影响被线程池复用的其他线程，以及内存泄露
-     */
-    public void clear() {
-        setI18nContext(null);
-    }
-
-    /**
-     * 获取当前国际化上下文
-     *
-     * @return null or 当前国际化上下文
-     */
-    public I18nContext getI18nContext() {
-        return THREAD_LOCAL_CONTEXT.get();
+    @NonNull
+    public ScopedValue<I18nContext> scoped() {
+        return SCOPED;
     }
 
     /**
      * 获取当前国际化上下文
      */
-    public Optional<I18nContext> getI18nContextOptional() {
-        return Optional.ofNullable(THREAD_LOCAL_CONTEXT.get());
-    }
-
-    /**
-     * 设置当前国际化上下文
-     *
-     * @param newContext 新上下文，传 null 则为清除
-     */
-    public void setI18nContext(I18nContext newContext) {
-        if (newContext == null) {
-            THREAD_LOCAL_CONTEXT.remove();
-            return;
+    @Nullable
+    public I18nContext get() {
+        if (SCOPED.isBound()) {
+            return SCOPED.get();
         }
+        return null;
+    }
 
-        THREAD_LOCAL_CONTEXT.set(newContext);
+    /**
+     * 获取当前国际化上下文的 {@link Optional} 形式
+     */
+    @NonNull
+    public Optional<I18nContext> getOptional() {
+        return Optional.ofNullable(get());
     }
 }

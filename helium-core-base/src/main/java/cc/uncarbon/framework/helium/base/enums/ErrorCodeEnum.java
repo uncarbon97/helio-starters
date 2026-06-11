@@ -17,9 +17,16 @@ import java.util.Objects;
 public interface ErrorCodeEnum extends Serializable {
 
     /**
+     * 如果具体实例是枚举，默认返回枚举的 name()；非枚举实现类需自行覆写本方法
+     *
      * @return 返回错误码
      */
-    String getErrorCode();
+    default String getErrorCode() {
+        if (this instanceof Enum<?> e) {
+            return e.name();
+        }
+        throw new UnsupportedOperationException("Non-enum implementations must override getErrorCode()");
+    }
 
     /**
      * @return 返回错误原因友好描述，支持使用 {} 作为变量填充符

@@ -3,7 +3,6 @@ package cc.uncarbon.framework.helium.db.mybatisplus.handler;
 import cc.uncarbon.framework.helium.base.context.UserContextHolder;
 import cc.uncarbon.framework.helium.db.constant.EntityField;
 import cc.uncarbon.framework.helium.tenant.context.TenantContextHolder;
-import cn.hutool.core.util.ClassUtil;
 import com.baomidou.mybatisplus.core.handlers.MetaObjectHandler;
 import org.apache.ibatis.reflection.MetaObject;
 
@@ -39,7 +38,7 @@ public class MybatisPlusAutoFillColumnHandler implements MetaObjectHandler {
     @Override
     public void insertFill(MetaObject metaObject) {
         this.strictInsertFill(metaObject, EntityField.CREATED_AT_FIELD, LocalDateTime.class, LocalDateTime.now());
-        this.strictInsertFill(metaObject, EntityField.CREATED_BY_FIELD, String.class, UserContextHolder.getUserName());
+        this.strictInsertFill(metaObject, EntityField.CREATED_BY_FIELD, String.class, UserContextHolder.getUserPin());
 
         if (this.existsTenantContextHolder) {
             this.strictInsertFill(metaObject, EntityField.TENANT_ID_FIELD, Long.class, TenantContextHolder.getTenantId());
@@ -49,7 +48,7 @@ public class MybatisPlusAutoFillColumnHandler implements MetaObjectHandler {
     @Override
     public void updateFill(MetaObject metaObject) {
         this.strictUpdateFill(metaObject, EntityField.UPDATED_AT_FIELD, LocalDateTime.class, LocalDateTime.now());
-        this.strictUpdateFill(metaObject, EntityField.UPDATED_BY_FIELD, String.class, UserContextHolder.getUserName());
+        this.strictUpdateFill(metaObject, EntityField.UPDATED_BY_FIELD, String.class, UserContextHolder.getUserPin());
     }
 
 }

@@ -10,7 +10,7 @@ import java.util.function.Supplier;
 /**
  * 租户数据源助手类
  *
- * @author Charles7c
+ * @author Charles7c@continew
  * @author Uncarbon
  */
 public interface DynamicDataSourceHelper {

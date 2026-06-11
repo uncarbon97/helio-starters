@@ -21,7 +21,6 @@
         <lombok.version>1.18.46</lombok.version>
         <slf4j.version>2.0.12</slf4j.version>
         <openapi3-annotations.version>2.2.27</openapi3-annotations.version>
-        <transmittable-thread-local.version>2.14.5</transmittable-thread-local.version>
         <hutool.version>5.8.40</hutool.version>
         <!-- 以上用于 base -->
 
@@ -77,13 +76,6 @@
                 <groupId>io.swagger.core.v3</groupId>
                 <artifactId>swagger-annotations</artifactId>
                 <version>${openapi3-annotations.version}</version>
-            </dependency>
-
-            <!-- 阿里 TTL -->
-            <dependency>
-                <groupId>com.alibaba</groupId>
-                <artifactId>transmittable-thread-local</artifactId>
-                <version>${transmittable-thread-local.version}</version>
             </dependency>
 
             <!-- hutool -->

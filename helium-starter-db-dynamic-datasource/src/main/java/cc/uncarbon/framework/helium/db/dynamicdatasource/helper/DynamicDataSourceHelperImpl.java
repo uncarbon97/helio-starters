@@ -16,7 +16,7 @@ import java.util.function.Supplier;
 /**
  * 租户数据源助手类
  *
- * @author Charles7c
+ * @author Charles7c@continew
  * @author Uncarbon
  */
 @RequiredArgsConstructor
@@ -39,7 +39,7 @@ public class DynamicDataSourceHelperImpl implements DynamicDataSourceHelper {
     public boolean switchToDataSource(String alias) {
         if (hasDataSource(alias)) {
             DynamicDataSourceContextHolder.push(alias);
-            log.info(LOG_PREFIX + " 切换至数据源【{}】", alias);
+            log.info(LOG_PREFIX + " 切换至数据源: {}", alias);
             return true;
         }
         return false;
@@ -69,7 +69,7 @@ public class DynamicDataSourceHelperImpl implements DynamicDataSourceHelper {
         dataSourceProperty.setPoolName(alias);
         DataSource dataSource = dataSourceCreator.createDataSource(dataSourceProperty);
         if (dataSource != null) {
-            log.info(LOG_PREFIX + " 注册了数据源【{}】", alias);
+            log.info(LOG_PREFIX + " 注册了数据源: {}", alias);
         }
         return dataSource;
     }
