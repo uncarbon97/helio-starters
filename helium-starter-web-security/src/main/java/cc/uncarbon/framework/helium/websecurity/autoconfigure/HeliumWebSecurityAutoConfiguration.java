@@ -35,7 +35,7 @@ public class HeliumWebSecurityAutoConfiguration {
     public FilterRegistrationBean<XssFilter> xssFilterRegistration(HeliumWebSecurityProperties props) {
         FilterRegistrationBean<XssFilter> registration = new FilterRegistrationBean<>();
         registration.setDispatcherTypes(DispatcherType.REQUEST);
-        registration.setFilter(new XssFilter(props.getAntiXss().getIgnoredUrls()));
+        registration.setFilter(new XssFilter(props.getAntiXss().getIgnoredPaths()));
         registration.addUrlPatterns("/*");
         registration.setName("xssFilter");
         registration.setOrder(ServletFilterOrder.XSS_FILTER);

@@ -28,7 +28,7 @@ public class HeliumWebSecurityProperties {
         /**
          * 不进行过滤的路由（直接放行）
          */
-        private List<String> ignoredUrls;
+        private List<String> ignoredPaths;
 
     }
 
