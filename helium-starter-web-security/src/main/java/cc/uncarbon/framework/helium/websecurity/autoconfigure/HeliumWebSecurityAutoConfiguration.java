@@ -1,5 +1,6 @@
 package cc.uncarbon.framework.helium.websecurity.autoconfigure;
 
+import cc.uncarbon.framework.helium.base.constant.ServletFilterOrder;
 import cc.uncarbon.framework.helium.websecurity.props.HeliumWebSecurityProperties;
 import cc.uncarbon.framework.helium.websecurity.xss.XssFilter;
 import jakarta.servlet.DispatcherType;
@@ -12,7 +13,6 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Condition;
 import org.springframework.context.annotation.ConditionContext;
 import org.springframework.context.annotation.Conditional;
-import org.springframework.core.Ordered;
 import org.springframework.core.type.AnnotatedTypeMetadata;
 
 import java.util.Objects;
@@ -38,7 +38,7 @@ public class HeliumWebSecurityAutoConfiguration {
         registration.setFilter(new XssFilter(props.getAntiXss().getIgnoredUrls()));
         registration.addUrlPatterns("/*");
         registration.setName("xssFilter");
-        registration.setOrder(Ordered.LOWEST_PRECEDENCE);
+        registration.setOrder(ServletFilterOrder.XSS_FILTER);
         return registration;
     }
 
