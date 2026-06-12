@@ -25,7 +25,7 @@ public class VisitorContextHolder {
      * 获取当前访客上下文
      */
     @Nullable
-    public VisitorContext get() {
+    public VisitorContext getContext() {
         if (SCOPED.isBound()) {
             return SCOPED.get();
         }
@@ -36,7 +36,7 @@ public class VisitorContextHolder {
      * 获取当前访客上下文的 {@link Optional} 形式
      */
     @NonNull
-    public Optional<VisitorContext> getOptional() {
-        return Optional.ofNullable(get());
+    public Optional<VisitorContext> getContextOptional() {
+        return Optional.ofNullable(getContext());
     }
 }

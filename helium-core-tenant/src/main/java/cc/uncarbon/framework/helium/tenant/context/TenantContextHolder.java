@@ -27,7 +27,7 @@ public class TenantContextHolder {
      * 获取当前租户上下文
      */
     @Nullable
-    public TenantContext get() {
+    public TenantContext getContext() {
         if (SCOPED.isBound()) {
             return SCOPED.get();
         }
@@ -38,8 +38,8 @@ public class TenantContextHolder {
      * 获取当前租户上下文的 {@link Optional} 形式
      */
     @NonNull
-    public Optional<TenantContext> getOptional() {
-        return Optional.ofNullable(get());
+    public Optional<TenantContext> getContextOptional() {
+        return Optional.ofNullable(getContext());
     }
 
     /**
@@ -47,7 +47,7 @@ public class TenantContextHolder {
      */
     @Nullable
     public Long getTenantId() {
-        TenantContext context = get();
+        TenantContext context = getContext();
         return context == null ? null : context.getTenantId();
     }
 
@@ -56,7 +56,7 @@ public class TenantContextHolder {
      */
     @Nullable
     public String getTenantName() {
-        TenantContext context = get();
+        TenantContext context = getContext();
         return context == null ? null : context.getTenantName();
     }
 
@@ -65,7 +65,7 @@ public class TenantContextHolder {
      */
     @Nullable
     public String getTenantCode() {
-        TenantContext context = get();
+        TenantContext context = getContext();
         return context == null ? null : context.getTenantCode();
     }
 

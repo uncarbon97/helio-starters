@@ -48,7 +48,7 @@ public class I18nMessageUtil {
      * 优先从 {@link I18nContextHolder} 上下文获取，兜底取系统默认值
      */
     public Locale contextLocale() {
-        return I18nContextHolder.getOptional()
+        return I18nContextHolder.getContextOptional()
                 .map(I18nContext::getLangInfo)
                 .map(LangInfo::getLocale)
                 .orElseGet(Locale::getDefault);

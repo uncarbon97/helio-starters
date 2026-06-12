@@ -27,7 +27,7 @@ public class UserContextHolder {
      * @return null or 当前用户上下文
      */
     @Nullable
-    public UserContext get() {
+    public UserContext getContext() {
         if (SCOPED.isBound()) {
             return SCOPED.get();
         }
@@ -38,8 +38,8 @@ public class UserContextHolder {
      * 获取当前用户上下文的 {@link Optional} 形式
      */
     @NonNull
-    public Optional<UserContext> getOptional() {
-        return Optional.ofNullable(get());
+    public Optional<UserContext> getContextOptional() {
+        return Optional.ofNullable(getContext());
     }
 
     /**
@@ -47,7 +47,7 @@ public class UserContextHolder {
      */
     @Nullable
     public Long getUserId() {
-        UserContext context = get();
+        UserContext context = getContext();
         return context == null ? null : context.getUserId();
     }
 
@@ -56,7 +56,7 @@ public class UserContextHolder {
      */
     @Nullable
     public String getUserPin() {
-        UserContext context = get();
+        UserContext context = getContext();
         return context == null ? null : context.getUserPin();
     }
 

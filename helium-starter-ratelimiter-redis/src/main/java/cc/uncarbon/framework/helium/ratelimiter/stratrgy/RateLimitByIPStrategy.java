@@ -38,7 +38,7 @@ public class RateLimitByIPStrategy extends BaseRateLimitRedisStrategy implements
      * @return IP 或 {@link RateLimiterConstant#UNKNOWN}
      */
     protected String resolveIP() {
-        return VisitorContextHolder.getOptional()
+        return VisitorContextHolder.getContextOptional()
                 .map(VisitorContext::getIp)
                 // 兜底
                 .orElse(RateLimiterConstant.UNKNOWN);

@@ -25,7 +25,7 @@ public class I18nContextHolder {
      * 获取当前国际化上下文
      */
     @Nullable
-    public I18nContext get() {
+    public I18nContext getContext() {
         if (SCOPED.isBound()) {
             return SCOPED.get();
         }
@@ -36,7 +36,7 @@ public class I18nContextHolder {
      * 获取当前国际化上下文的 {@link Optional} 形式
      */
     @NonNull
-    public Optional<I18nContext> getOptional() {
-        return Optional.ofNullable(get());
+    public Optional<I18nContext> getContextOptional() {
+        return Optional.ofNullable(getContext());
     }
 }
