@@ -1,4 +1,4 @@
-package cc.uncarbon.framework.helium.base.enums;
+package cc.uncarbon.framework.helium.base.errorcode;
 
 import cc.uncarbon.framework.helium.base.exception.BusinessException;
 import cn.hutool.core.collection.CollUtil;

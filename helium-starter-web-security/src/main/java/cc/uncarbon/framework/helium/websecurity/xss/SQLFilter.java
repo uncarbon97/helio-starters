@@ -1,6 +1,6 @@
 package cc.uncarbon.framework.helium.websecurity.xss;
 
-import cc.uncarbon.framework.helium.base.enums.FrameworkErrorCodeEnum;
+import cc.uncarbon.framework.helium.base.errorcode.BuiltinErrorCodeEnum;
 import cc.uncarbon.framework.helium.base.exception.BusinessException;
 import cn.hutool.core.text.CharSequenceUtil;
 import org.springframework.util.StringUtils;
@@ -39,7 +39,7 @@ public final class SQLFilter {
         // 判断是否包含非法字符
         for (String keyword : keywords) {
             if (str.contains(keyword)) {
-                throw new BusinessException(FrameworkErrorCodeEnum.Z00400, "Contains illegal character");
+                throw new BusinessException(BuiltinErrorCodeEnum.Z00400, "Contains illegal character");
             }
         }
 

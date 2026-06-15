@@ -92,4 +92,18 @@ public class TenantContextHolder {
     public <T> T callIgnored(Callable<T> op) throws Exception {
         return ScopedValue.where(IGNORED, Boolean.TRUE).call(op::call);
     }
+
+    /**
+     * 在该作用域内切换租户上下文，结束自动恢复
+     */
+    public void runWithContext(TenantContext context, Runnable op) {
+        ScopedValue.where(SCOPED, context).run(op);
+    }
+
+    /**
+     * 在该作用域内切换租户上下文，结束自动恢复
+     */
+    public <T> T callWithContext(TenantContext context, Callable<T> op) throws Exception {
+        return ScopedValue.where(SCOPED, context).call(op::call);
+    }
 }

@@ -1,4 +1,4 @@
-package cc.uncarbon.framework.helium.base.enums;
+package cc.uncarbon.framework.helium.base.errorcode;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -6,22 +6,19 @@ import lombok.Getter;
 
 /**
  * 框架内置错误码枚举类
+ * 错误码格式 [A][BB][CCC]
+ * [A] 固定为 Z，表示框架内置错误
+ * [BB] 固定为 00
+ * [CCC] 按具体错误区分
  */
 @AllArgsConstructor
 @Getter
-public enum FrameworkErrorCodeEnum implements ErrorCodeEnum {
+public enum BuiltinErrorCodeEnum implements ErrorCodeEnum {
 
     /**
      * 操作成功
      */
     OK("OK", "ok"),
-
-    /*
-    错误码格式 [A][BB][CCC]
-    [A] 固定为 Z，表示框架内置错误
-    [BB] 固定为 00
-    [CCC] 按具体错误区分
-     */
 
     // ref HTTP_BAD_REQUEST
     Z00400("Z00400", "{}"),

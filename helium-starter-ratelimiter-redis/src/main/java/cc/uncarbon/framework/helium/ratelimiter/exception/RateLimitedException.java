@@ -1,6 +1,6 @@
 package cc.uncarbon.framework.helium.ratelimiter.exception;
 
-import cc.uncarbon.framework.helium.base.enums.FrameworkErrorCodeEnum;
+import cc.uncarbon.framework.helium.base.errorcode.BuiltinErrorCodeEnum;
 import cc.uncarbon.framework.helium.base.exception.BusinessException;
 
 /**
@@ -11,11 +11,11 @@ import cc.uncarbon.framework.helium.base.exception.BusinessException;
 public class RateLimitedException extends BusinessException {
 
     public RateLimitedException() {
-        super(FrameworkErrorCodeEnum.Z00429);
+        super(BuiltinErrorCodeEnum.Z00429);
     }
 
     public RateLimitedException(String errorMsg) {
-        super(FrameworkErrorCodeEnum.Z00429.getErrorCode(), errorMsg);
+        super(BuiltinErrorCodeEnum.Z00429.getErrorCode(), errorMsg);
     }
 
     public RateLimitedException(String code, String errorMsg) {

@@ -1,6 +1,6 @@
 package cc.uncarbon.framework.helium.base.exception;
 
-import cc.uncarbon.framework.helium.base.enums.ErrorCodeEnum;
+import cc.uncarbon.framework.helium.base.errorcode.ErrorCodeEnum;
 import cn.hutool.core.text.CharSequenceUtil;
 import lombok.Getter;
 import org.jspecify.annotations.NonNull;

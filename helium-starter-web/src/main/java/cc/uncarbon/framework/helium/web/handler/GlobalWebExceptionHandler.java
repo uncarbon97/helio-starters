@@ -1,7 +1,7 @@
 package cc.uncarbon.framework.helium.web.handler;
 
-import cc.uncarbon.framework.helium.base.enums.ErrorCodeEnum;
-import cc.uncarbon.framework.helium.base.enums.FrameworkErrorCodeEnum;
+import cc.uncarbon.framework.helium.base.errorcode.ErrorCodeEnum;
+import cc.uncarbon.framework.helium.base.errorcode.BuiltinErrorCodeEnum;
 import cc.uncarbon.framework.helium.base.exception.BusinessException;
 import cc.uncarbon.framework.helium.i18n.props.HeliumI18nProperties;
 import cc.uncarbon.framework.helium.i18n.util.I18nMessageUtil;
@@ -85,7 +85,7 @@ public class GlobalWebExceptionHandler {
     public ResponseEntity<ApiResult<Void>> handleNotLoginException(NotLoginException e, HttpServletRequest servletRequest) {
         this.logException(e, servletRequest);
 
-        final var codeEnum = FrameworkErrorCodeEnum.Z00401;
+        final var codeEnum = BuiltinErrorCodeEnum.Z00401;
         ApiResult<Void> ret = ApiResult.fail(codeEnum.getErrorCode(), determineI18nMessage(codeEnum));
         return createResponseEntity(HttpStatus.UNAUTHORIZED, ret);
     }
@@ -97,7 +97,7 @@ public class GlobalWebExceptionHandler {
     public ResponseEntity<ApiResult<Void>> handleNotRoleException(NotRoleException e, HttpServletRequest servletRequest) {
         this.logException(e, servletRequest);
 
-        final var codeEnum = FrameworkErrorCodeEnum.Z00402;
+        final var codeEnum = BuiltinErrorCodeEnum.Z00402;
         ApiResult<Void> ret = ApiResult.fail(codeEnum.getErrorCode(), determineI18nMessage(codeEnum));
         return createResponseEntity(HttpStatus.FORBIDDEN, ret);
     }
@@ -110,7 +110,7 @@ public class GlobalWebExceptionHandler {
                                                                         HttpServletRequest servletRequest) {
         this.logException(e, servletRequest);
 
-        final var codeEnum = FrameworkErrorCodeEnum.Z00403;
+        final var codeEnum = BuiltinErrorCodeEnum.Z00403;
         ApiResult<Void> ret = ApiResult.fail(codeEnum.getErrorCode(), determineI18nMessage(codeEnum));
         return createResponseEntity(HttpStatus.FORBIDDEN, ret);
     }
@@ -122,7 +122,7 @@ public class GlobalWebExceptionHandler {
     public ResponseEntity<ApiResult<Void>> handleNoHandlerFoundException(Exception e, HttpServletRequest servletRequest) {
         this.logException(e, servletRequest);
 
-        final var codeEnum = FrameworkErrorCodeEnum.Z00404;
+        final var codeEnum = BuiltinErrorCodeEnum.Z00404;
         ApiResult<Void> ret = ApiResult.fail(codeEnum.getErrorCode(), determineI18nMessage(codeEnum));
         return createResponseEntity(HttpStatus.NOT_FOUND, ret);
     }
@@ -137,7 +137,7 @@ public class GlobalWebExceptionHandler {
                                                                   HttpServletRequest servletRequest) {
         this.logException(e, servletRequest);
 
-        final var codeEnum = FrameworkErrorCodeEnum.Z00405;
+        final var codeEnum = BuiltinErrorCodeEnum.Z00405;
         ApiResult<Void> ret = ApiResult.fail(codeEnum.getErrorCode(), determineI18nMessage(codeEnum));
         return createResponseEntity(HttpStatus.METHOD_NOT_ALLOWED, ret);
     }
@@ -158,7 +158,7 @@ public class GlobalWebExceptionHandler {
     public ResponseEntity<ApiResult<Void>> handleJsonParseException(Exception e, HttpServletRequest servletRequest) {
         this.logException(e, servletRequest);
 
-        final var codeEnum = FrameworkErrorCodeEnum.Z00406;
+        final var codeEnum = BuiltinErrorCodeEnum.Z00406;
         ApiResult<Void> ret = ApiResult.fail(codeEnum.getErrorCode(), determineI18nMessage(codeEnum));
         return createResponseEntity(HttpStatus.NOT_ACCEPTABLE, ret);
     }
@@ -172,7 +172,7 @@ public class GlobalWebExceptionHandler {
                                                                                         HttpServletRequest servletRequest) {
         this.logException(e, servletRequest);
 
-        final var codeEnum = FrameworkErrorCodeEnum.Z00406;
+        final var codeEnum = BuiltinErrorCodeEnum.Z00406;
         ApiResult<InvalidFieldUtil.InvalidField> ret = ApiResult.fail(
                 codeEnum.getErrorCode(), determineI18nMessage(codeEnum),
                 InvalidFieldUtil.getInvalidField(e.getBindingResult()));
@@ -192,7 +192,7 @@ public class GlobalWebExceptionHandler {
         // 打印堆栈，方便溯源
         this.logException(e, servletRequest, true);
 
-        final var codeEnum = FrameworkErrorCodeEnum.Z00500;
+        final var codeEnum = BuiltinErrorCodeEnum.Z00500;
         ApiResult<Void> ret = ApiResult.fail(codeEnum.getErrorCode(), determineI18nMessage(codeEnum));
         return createResponseEntity(HttpStatus.INTERNAL_SERVER_ERROR, ret);
     }

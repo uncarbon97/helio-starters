@@ -1,6 +1,6 @@
 package cc.uncarbon.framework.helium.web.model.response;
 
-import cc.uncarbon.framework.helium.base.enums.FrameworkErrorCodeEnum;
+import cc.uncarbon.framework.helium.base.errorcode.BuiltinErrorCodeEnum;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -37,22 +37,22 @@ public class ApiResult<T> implements Serializable {
 
 
     public static <T> ApiResult<T> success() {
-        final var ok = FrameworkErrorCodeEnum.OK;
+        final var ok = BuiltinErrorCodeEnum.OK;
         return new ApiResult<>(true, ok.getErrorCode(), ok.getErrorMsgFriendly(), null);
     }
 
     public static <T> ApiResult<T> success(String msg) {
-        final var ok = FrameworkErrorCodeEnum.OK;
+        final var ok = BuiltinErrorCodeEnum.OK;
         return new ApiResult<>(true, ok.getErrorCode(), msg, null);
     }
 
     public static <T> ApiResult<T> success(T data) {
-        final var ok = FrameworkErrorCodeEnum.OK;
+        final var ok = BuiltinErrorCodeEnum.OK;
         return new ApiResult<>(true, ok.getErrorCode(), ok.getErrorMsgFriendly(), data);
     }
 
     public static <T> ApiResult<T> success(String msg, T data) {
-        final var ok = FrameworkErrorCodeEnum.OK;
+        final var ok = BuiltinErrorCodeEnum.OK;
         return new ApiResult<>(true, ok.getErrorCode(), msg, data);
     }
 
