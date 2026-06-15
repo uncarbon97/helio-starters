@@ -1,6 +1,6 @@
 package cc.uncarbon.framework.helium.web.handler;
 
-import cc.uncarbon.framework.helium.base.errorcode.ErrorCodeEnum;
+import cc.uncarbon.framework.helium.base.errorcode.StructuredErrorCode;
 import cc.uncarbon.framework.helium.base.errorcode.BuiltinErrorCodeEnum;
 import cc.uncarbon.framework.helium.base.exception.BusinessException;
 import cc.uncarbon.framework.helium.i18n.props.HeliumI18nProperties;
@@ -70,8 +70,8 @@ public class GlobalWebExceptionHandler {
         this.logException(e, servletRequest);
 
         ApiResult<Void> ret;
-        if (e.getErrorCodeEnum() != null) {
-            ret = ApiResult.fail(e.getCode(), determineI18nMessage(e.getErrorCodeEnum()));
+        if (e.getErrorCode() != null) {
+            ret = ApiResult.fail(e.getCode(), determineI18nMessage(e.getErrorCode()));
         } else {
             ret = ApiResult.fail(e.getCode(), e.getMessage());
         }
@@ -228,13 +228,13 @@ public class GlobalWebExceptionHandler {
     /**
      * 取国际化翻译值或默认消息，取决于是否实际启用了国际化功能
      *
-     * @param errorCodeEnum 错误码枚举
+     * @param errorCode 错误码
      * @return 消息文本
      */
-    protected String determineI18nMessage(@NonNull ErrorCodeEnum errorCodeEnum, Object... templateParams) {
+    protected String determineI18nMessage(@NonNull StructuredErrorCode errorCode, Object... templateParams) {
         if (I18N_ENABLED) {
-            return I18nMessageUtil.messageOf(errorCodeEnum.getErrorCode(), errorCodeEnum.getErrorMsgFriendly(), templateParams);
+            return I18nMessageUtil.messageOf(errorCode.getErrorCode(), errorCode.getErrorMsgFriendly(), templateParams);
         }
-        return CharSequenceUtil.format(errorCodeEnum.getErrorMsgFriendly(), templateParams);
+        return CharSequenceUtil.format(errorCode.getErrorMsgFriendly(), templateParams);
     }
 }

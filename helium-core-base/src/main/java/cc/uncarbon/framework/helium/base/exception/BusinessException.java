@@ -1,6 +1,6 @@
 package cc.uncarbon.framework.helium.base.exception;
 
-import cc.uncarbon.framework.helium.base.errorcode.ErrorCodeEnum;
+import cc.uncarbon.framework.helium.base.errorcode.StructuredErrorCode;
 import cn.hutool.core.text.CharSequenceUtil;
 import lombok.Getter;
 import org.jspecify.annotations.NonNull;
@@ -19,12 +19,12 @@ public class BusinessException extends RuntimeException {
     private final String code;
 
     /**
-     * 如果异常由 {@link ErrorCodeEnum} 创建，则携带原始枚举
+     * 如果异常由 {@link StructuredErrorCode} 创建，则携带原始对象
      */
-    private final ErrorCodeEnum errorCodeEnum;
+    private final StructuredErrorCode errorCode;
 
     /**
-     * 如果异常由 {@link ErrorCodeEnum} 创建，则携带原始变量填充
+     * 如果异常由 {@link StructuredErrorCode} 创建，则携带原始变量填充
      */
     private final Object[] templateParams;
 
@@ -38,7 +38,7 @@ public class BusinessException extends RuntimeException {
     public BusinessException(@NonNull String code, @NonNull String errorMsg) {
         super(errorMsg);
         this.code = code;
-        this.errorCodeEnum = null;
+        this.errorCode = null;
         this.templateParams = null;
     }
 
@@ -52,20 +52,20 @@ public class BusinessException extends RuntimeException {
     public BusinessException(@NonNull String code, @NonNull String errorMsgTemplate, Object... templateParams) {
         super(CharSequenceUtil.format(errorMsgTemplate, templateParams));
         this.code = code;
-        this.errorCodeEnum = null;
+        this.errorCode = null;
         this.templateParams = null;
     }
 
     /**
      * 错误码 + 错误信息，支持字符串模板填充参数
      *
-     * @param errorCodeEnum  错误码枚举
+     * @param errorCode      错误码
      * @param templateParams 填充错误信息模板的参数
      */
-    public BusinessException(@NonNull ErrorCodeEnum errorCodeEnum, Object... templateParams) {
-        super(CharSequenceUtil.format(errorCodeEnum.getErrorMsgFriendly(), templateParams));
-        this.code = errorCodeEnum.getErrorCode();
-        this.errorCodeEnum = errorCodeEnum;
+    public BusinessException(@NonNull StructuredErrorCode errorCode, Object... templateParams) {
+        super(CharSequenceUtil.format(errorCode.getErrorMsgFriendly(), templateParams));
+        this.code = errorCode.getErrorCode();
+        this.errorCode = errorCode;
         this.templateParams = templateParams;
     }
 

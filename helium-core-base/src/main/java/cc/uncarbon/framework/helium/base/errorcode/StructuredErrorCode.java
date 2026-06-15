@@ -10,11 +10,16 @@ import java.util.Collection;
 import java.util.Objects;
 
 /**
- * 标记一个类属于错误码枚举
+ * 标记一个类属于「结构化错误码」
+ * 一般使用枚举实现
+ * 错误码格式 [A][BB][CCC]
+ * [A] 表示错误大类
+ * [BB] 表示业务域
+ * [CCC] 具体错误代号
  *
  * @author Uncarbon
  */
-public interface ErrorCodeEnum extends Serializable {
+public interface StructuredErrorCode extends Serializable {
 
     /**
      * 如果具体实例是枚举，默认返回枚举的 name()；非枚举实现类需自行覆写本方法

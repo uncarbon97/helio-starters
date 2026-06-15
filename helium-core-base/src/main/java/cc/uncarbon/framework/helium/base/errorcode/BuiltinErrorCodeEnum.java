@@ -5,15 +5,14 @@ import lombok.Getter;
 
 
 /**
- * 框架内置错误码枚举类
- * 错误码格式 [A][BB][CCC]
- * [A] 固定为 Z，表示框架内置错误
+ * 框架内置结构化错误码
+ * [A] 固定为 Z
  * [BB] 固定为 00
- * [CCC] 按具体错误区分
+ * [CCC] 具体错误代号
  */
 @AllArgsConstructor
 @Getter
-public enum BuiltinErrorCodeEnum implements ErrorCodeEnum {
+public enum BuiltinErrorCodeEnum implements StructuredErrorCode {
 
     /**
      * 操作成功
@@ -37,7 +36,8 @@ public enum BuiltinErrorCodeEnum implements ErrorCodeEnum {
     Z00429("Z00429", "操作频率不要太快，稍微休息一下吧"),
     Z00500("Z00500", "服务器繁忙，请稍后再试"),
 
-    ;private final String errorCode;
+    ;
+    private final String errorCode;
     private final String errorMsgFriendly;
 
 }
