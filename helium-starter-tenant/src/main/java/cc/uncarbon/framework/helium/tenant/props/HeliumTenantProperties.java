@@ -2,6 +2,7 @@ package cc.uncarbon.framework.helium.tenant.props;
 
 import cc.uncarbon.framework.helium.base.constant.ConfigurationPropertiesPrefix;
 import cc.uncarbon.framework.helium.tenant.enums.TenantStrategyEnum;
+import cn.hutool.core.collection.CollUtil;
 import lombok.Data;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
@@ -26,4 +27,21 @@ public class HeliumTenantProperties {
      */
     private Collection<String> ignoredTables;
 
+    public TenantStrategyEnum getStrategy() {
+        if (strategy == null) {
+            return TenantStrategyEnum.NONE;
+        }
+        return strategy;
+    }
+
+    public boolean doesTenantEnabled() {
+        return getStrategy() != TenantStrategyEnum.NONE;
+    }
+
+    public boolean canIgnoreTable(String tableName) {
+        if (!doesTenantEnabled()) {
+            return true;
+        }
+        return CollUtil.contains(ignoredTables, tableName);
+    }
 }
