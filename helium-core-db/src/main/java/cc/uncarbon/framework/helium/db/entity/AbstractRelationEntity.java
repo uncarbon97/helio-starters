@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.annotation.FieldFill;
 import com.baomidou.mybatisplus.annotation.TableField;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
+import lombok.experimental.Accessors;
 
 import java.time.LocalDateTime;
 
@@ -13,6 +14,7 @@ import java.time.LocalDateTime;
  *
  * @author Uncarbon
  */
+@Accessors(chain = true)
 @Data
 public abstract class AbstractRelationEntity implements Entity, AuditingTimeEntity, AuditingUserEntity {
 

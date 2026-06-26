@@ -4,6 +4,7 @@ import cc.uncarbon.framework.helium.db.constant.EntityField;
 import com.baomidou.mybatisplus.annotation.*;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
+import lombok.experimental.Accessors;
 
 import java.time.LocalDateTime;
 
@@ -12,6 +13,7 @@ import java.time.LocalDateTime;
  *
  * @author Uncarbon
  */
+@Accessors(chain = true)
 @Data
 public abstract class AbstractGenericEntity implements Entity, AuditingTimeEntity, AuditingUserEntity {
 

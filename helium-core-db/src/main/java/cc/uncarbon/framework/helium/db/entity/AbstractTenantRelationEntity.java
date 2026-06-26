@@ -6,6 +6,7 @@ import com.baomidou.mybatisplus.annotation.TableField;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import lombok.experimental.Accessors;
 
 /**
  * 关联表实体类，含有【租户ID】
@@ -13,6 +14,7 @@ import lombok.EqualsAndHashCode;
  * @author Uncarbon
  */
 @EqualsAndHashCode(callSuper = true)
+@Accessors(chain = true)
 @Data
 public abstract class AbstractTenantRelationEntity extends AbstractRelationEntity implements TenantEntity {
 
