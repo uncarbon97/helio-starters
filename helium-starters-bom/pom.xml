@@ -27,6 +27,12 @@
 
             <dependency>
                 <groupId>cc.uncarbon.framework</groupId>
+                <artifactId>helium-core-bizlog</artifactId>
+                <version>${revision}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>cc.uncarbon.framework</groupId>
                 <artifactId>helium-core-db</artifactId>
                 <version>${revision}</version>
             </dependency>
@@ -52,6 +58,12 @@
             <dependency>
                 <groupId>cc.uncarbon.framework</groupId>
                 <artifactId>helium-starter-base</artifactId>
+                <version>${revision}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>cc.uncarbon.framework</groupId>
+                <artifactId>helium-starter-bizlog</artifactId>
                 <version>${revision}</version>
             </dependency>
 

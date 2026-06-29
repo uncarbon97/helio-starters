@@ -24,6 +24,10 @@
         <hutool.version>5.8.40</hutool.version>
         <!-- 以上用于 base -->
 
+        <!-- 以下用于 bizlog -->
+        <java-object-diff.version>0.95</java-object-diff.version>
+        <!-- 以上用于 bizlog -->
+
         <!-- 以下用于 db -->
         <mybatis-plus.version>3.5.16</mybatis-plus.version>
         <dynamic-datasource.version>4.5.0</dynamic-datasource.version>
@@ -91,6 +95,16 @@
                 <version>${hutool.version}</version>
             </dependency>
             <!-- 以上用于 base -->
+
+
+            <!-- 以下用于 bizlog -->
+            <!-- Diff 差异提取库 -->
+            <dependency>
+                <groupId>de.danielbechler</groupId>
+                <artifactId>java-object-diff</artifactId>
+                <version>${java-object-diff.version}</version>
+            </dependency>
+            <!-- 以上用于 bizlog -->
 
 
             <!-- 以下用于 db -->
