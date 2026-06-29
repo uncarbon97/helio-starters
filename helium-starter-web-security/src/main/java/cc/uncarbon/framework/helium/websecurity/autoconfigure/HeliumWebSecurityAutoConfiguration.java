@@ -1,6 +1,6 @@
 package cc.uncarbon.framework.helium.websecurity.autoconfigure;
 
-import cc.uncarbon.framework.helium.base.constant.ServletFilterOrder;
+import cc.uncarbon.framework.helium.web.constant.ServletFilterOrder;
 import cc.uncarbon.framework.helium.websecurity.props.HeliumWebSecurityProperties;
 import cc.uncarbon.framework.helium.websecurity.xss.XssFilter;
 import jakarta.servlet.DispatcherType;

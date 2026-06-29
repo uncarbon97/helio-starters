@@ -1,4 +1,4 @@
-package cc.uncarbon.framework.helium.base.constant;
+package cc.uncarbon.framework.helium.web.constant;
 
 import lombok.experimental.UtilityClass;
 
