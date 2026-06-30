@@ -9,6 +9,7 @@ import cc.uncarbon.framework.helium.bizlog.service.IFunctionService;
 import cc.uncarbon.framework.helium.bizlog.support.diff.DiffTextFormatter;
 import de.danielbechler.diff.node.DiffNode;
 import de.danielbechler.diff.selector.ElementSelector;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
@@ -68,12 +69,12 @@ public class DefaultDiffItemsToLogContentService implements IDiffItemsToLogConte
     /**
      * 针对单个差异节点生成字段级文案，并追加到结果中。
      *
-     * @param sourceObject   旧对象
-     * @param targetObject   新对象
-     * @param stringBuilder  文案构建器
-     * @param node           差异节点
-     * @param annotation     类级 {@link DiffLogAllFields}（可能为空）
-     * @param set            已处理节点集合（防重复）
+     * @param sourceObject  旧对象
+     * @param targetObject  新对象
+     * @param stringBuilder 文案构建器
+     * @param node          差异节点
+     * @param annotation    类级 {@link DiffLogAllFields}（可能为空）
+     * @param set           已处理节点集合（防重复）
      */
     private void generateAllFieldLog(Object sourceObject, Object targetObject, StringBuilder stringBuilder, DiffNode node,
                                      DiffLogAllFields annotation, Set<DiffNode> set) {
@@ -85,17 +86,17 @@ public class DefaultDiffItemsToLogContentService implements IDiffItemsToLogConte
             memorandum(node, set);
             return;
         }
-        DiffLogField diffLogFieldAnnotation = node.getFieldAnnotation(DiffLogField.class);
-        if (annotation == null && diffLogFieldAnnotation == null) {
+        DiffLogField diffLogField = node.getFieldAnnotation(DiffLogField.class);
+        if (annotation == null && diffLogField == null) {
             return;
         }
-        String filedLogName = getFieldLogName(node, diffLogFieldAnnotation, annotation != null);
+        String filedLogName = getFieldLogName(node, diffLogField, annotation != null);
         if (ObjectUtils.isEmpty(filedLogName)) {
             return;
         }
         // 是否是容器类型的字段
         boolean valueIsContainer = valueIsContainer(node, sourceObject, targetObject);
-        String functionName = diffLogFieldAnnotation != null ? diffLogFieldAnnotation.function() : "";
+        String functionName = diffLogField != null ? diffLogField.function() : "";
         String logContent = valueIsContainer
                 ? getCollectionDiffLogContent(filedLogName, node, sourceObject, targetObject, functionName)
                 : getDiffLogContent(filedLogName, node, sourceObject, targetObject, functionName);
@@ -126,18 +127,36 @@ public class DefaultDiffItemsToLogContentService implements IDiffItemsToLogConte
     /**
      * 取字段在日志中显示的名称，含父级字段路径拼接。
      *
-     * @param node                  差异节点
-     * @param diffLogFieldAnnotation 字段注解（可能为空）
-     * @param isField               是否启用属性名映射
+     * @param node         差异节点
+     * @param diffLogField 字段注解（可能为空）
+     * @param isField      是否启用属性名映射
      * @return 字段显示名
      */
-    private String getFieldLogName(DiffNode node, DiffLogField diffLogFieldAnnotation, boolean isField) {
-        String filedLogName = diffLogFieldAnnotation != null ? diffLogFieldAnnotation.name() : node.getPropertyName();
+    private String getFieldLogName(DiffNode node, DiffLogField diffLogField, boolean isField) {
+        String filedLogName = getCurrentFieldLogName(node, diffLogField);
         if (node.getParentNode() != null) {
             //获取对象的定语：比如：创建人的ID
             filedLogName = getParentFieldName(node, isField) + filedLogName;
         }
         return filedLogName;
+    }
+
+    /**
+     * 取当前字段显示名：优先使用 {@link DiffLogField#name()}，其次使用 {@link Schema#description()}，最后使用属性名。
+     *
+     * @param node         差异节点
+     * @param diffLogField 字段注解（可能为空）
+     * @return 当前字段显示名
+     */
+    private String getCurrentFieldLogName(DiffNode node, DiffLogField diffLogField) {
+        if (diffLogField != null) {
+            return diffLogField.name();
+        }
+        Schema schemaAnnotation = node.getFieldAnnotation(Schema.class);
+        if (schemaAnnotation != null && !ObjectUtils.isEmpty(schemaAnnotation.description())) {
+            return schemaAnnotation.description();
+        }
+        return node.getPropertyName();
     }
 
     /**
@@ -179,9 +198,7 @@ public class DefaultDiffItemsToLogContentService implements IDiffItemsToLogConte
                 parent = parent.getParentNode();
                 continue;
             }
-            fieldNamePrefix = diffLogFieldAnnotation != null
-                    ? diffLogFieldAnnotation.name().concat(props.getOfWord()).concat(fieldNamePrefix)
-                    : parent.getPropertyName().concat(props.getOfWord()).concat(fieldNamePrefix);
+            fieldNamePrefix = getCurrentFieldLogName(parent, diffLogFieldAnnotation).concat(props.getOfWord()).concat(fieldNamePrefix);
             parent = parent.getParentNode();
         }
         return fieldNamePrefix;
@@ -252,7 +269,7 @@ public class DefaultDiffItemsToLogContentService implements IDiffItemsToLogConte
     /**
      * 集合差集：返回 {@code minuend} 中存在而 {@code subTractor} 中不存在的元素。
      *
-     * @param minuend   被减集合
+     * @param minuend    被减集合
      * @param subTractor 减数集合
      * @return 差集
      */
@@ -282,8 +299,8 @@ public class DefaultDiffItemsToLogContentService implements IDiffItemsToLogConte
     /**
      * 对字段值应用转换函数；未配置函数时直接取字符串形式。
      *
-     * @param canonicalGet  字段值
-     * @param functionName  值转换函数名
+     * @param canonicalGet 字段值
+     * @param functionName 值转换函数名
      * @return 转换后的文案
      */
     private String getFunctionValue(Object canonicalGet, String functionName) {
