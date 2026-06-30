@@ -7,7 +7,7 @@ import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 
 /**
- * Helium 基础自动配置类
+ * Helium 基础自动装配类
  *
  * @author Uncarbon
  */

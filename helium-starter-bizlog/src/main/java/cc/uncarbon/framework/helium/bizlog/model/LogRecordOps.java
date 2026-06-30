@@ -1,18 +1,19 @@
-package cc.uncarbon.framework.helium.bizlog.beans;
+package cc.uncarbon.framework.helium.bizlog.model;
 
+import cc.uncarbon.framework.helium.bizlog.annotation.LogRecord;
 import lombok.Builder;
 import lombok.Data;
 
 /**
- * {@code @LogRecord} 注解解析后的操作对象
+ * {@link LogRecord} 注解解析后的操作对象
  * <p>
  * 注解各属性的 POJO 形态，后续模板渲染统一从此对象取字段。
  *
  * @author muzhantong@mzt-biz-log
  * @author Uncarbon
  */
-@Data
 @Builder
+@Data
 public class LogRecordOps {
     /**
      * 成功日志模板

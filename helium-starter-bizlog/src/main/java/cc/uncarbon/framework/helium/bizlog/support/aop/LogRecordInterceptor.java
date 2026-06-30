@@ -1,17 +1,19 @@
 package cc.uncarbon.framework.helium.bizlog.support.aop;
 
-import cc.uncarbon.framework.helium.bizlog.beans.CodeVariableType;
-import cc.uncarbon.framework.helium.bizlog.beans.LogRecord;
-import cc.uncarbon.framework.helium.bizlog.beans.LogRecordOps;
-import cc.uncarbon.framework.helium.bizlog.beans.MethodExecuteResult;
+import cc.uncarbon.framework.helium.bizlog.annotation.LogRecord;
+import cc.uncarbon.framework.helium.bizlog.model.LogRecordModel;
+import cc.uncarbon.framework.helium.bizlog.model.LogRecordOps;
+import cc.uncarbon.framework.helium.bizlog.model.MethodExecuteResult;
 import cc.uncarbon.framework.helium.bizlog.context.LogRecordContext;
 import cc.uncarbon.framework.helium.bizlog.service.IFunctionService;
 import cc.uncarbon.framework.helium.bizlog.service.ILogRecordPerformanceMonitor;
-import cc.uncarbon.framework.helium.bizlog.service.ILogRecordService;
+import cc.uncarbon.framework.helium.bizlog.service.ILogRecordDataService;
 import cc.uncarbon.framework.helium.bizlog.service.IOperatorGetService;
 import cc.uncarbon.framework.helium.bizlog.service.impl.DiffParseFunction;
 import cc.uncarbon.framework.helium.bizlog.support.parse.LogFunctionParser;
 import cc.uncarbon.framework.helium.bizlog.support.parse.LogRecordValueParser;
+import lombok.Setter;
+import lombok.experimental.Accessors;
 import lombok.extern.slf4j.Slf4j;
 import org.aopalliance.intercept.MethodInterceptor;
 import org.aopalliance.intercept.MethodInvocation;
@@ -19,6 +21,7 @@ import org.springframework.aop.framework.AopProxyUtils;
 import org.springframework.aop.support.AopUtils;
 import org.springframework.beans.factory.SmartInitializingSingleton;
 import org.springframework.util.CollectionUtils;
+import org.springframework.util.ObjectUtils;
 import org.springframework.util.StopWatch;
 import org.springframework.util.StringUtils;
 
@@ -30,27 +33,34 @@ import java.util.*;
 /**
  * 业务日志 AOP 拦截器
  * <p>
- * 拦截标注了 {@code @LogRecord} 的方法，依次完成：
+ * 拦截标注了 {@link LogRecord} 的方法，依次完成：
  * 解析注解、执行前置自定义函数、执行目标方法、按成功/失败模板渲染日志文案、落库，
  * 并在拦截入口绑定 {@link LogRecordContext} 日志上下文作用域（支持虚拟线程传递）。
  *
  * @author mzt@mzt-biz-log
  * @author Uncarbon
  */
+@Accessors(chain = true)
 @Slf4j
-public class LogRecordInterceptor extends LogRecordValueParser implements MethodInterceptor, Serializable, SmartInitializingSingleton {
+public class LogRecordInterceptor extends LogRecordValueParser
+        implements MethodInterceptor, Serializable, SmartInitializingSingleton {
 
-    private LogRecordOperationSource logRecordOperationSource;
+    private static final String LOG_PREFIX = "[LogRecordInterceptor]";
 
     private String tenantId;
 
-    private ILogRecordService bizLogService;
+    @Setter
+    private boolean joinTransaction;
 
+    @Setter
+    private LogRecordOperationSource logRecordOperationSource;
+    @Setter
+    private ILogRecordDataService dataService;
+    @Setter
     private IOperatorGetService operatorGetService;
-
+    @Setter
     private ILogRecordPerformanceMonitor logRecordPerformanceMonitor;
 
-    private boolean joinTransaction;
 
     /**
      * 拦截方法入口。
@@ -115,7 +125,7 @@ public class LogRecordInterceptor extends LogRecordValueParser implements Method
             List<String> spElTemplates = getBeforeExecuteFunctionTemplate(operations);
             functionNameAndReturnMap = processBeforeExecuteFunctionTemplate(spElTemplates, targetClass, method, args);
         } catch (Exception e) {
-            log.error("log record parse before function exception", e);
+            log.error(LOG_PREFIX + "log record parse before function exception", e);
         } finally {
             stopWatch.stop();
         }
@@ -135,7 +145,7 @@ public class LogRecordInterceptor extends LogRecordValueParser implements Method
                 recordExecute(methodExecuteResult, functionNameAndReturnMap, operations);
             }
         } catch (Exception t) {
-            log.error("log record parse exception", t);
+            log.error(LOG_PREFIX + "log record parse exception", t);
             throw t;
         } finally {
             LogRecordContext.clear();
@@ -143,7 +153,7 @@ public class LogRecordInterceptor extends LogRecordValueParser implements Method
             try {
                 logRecordPerformanceMonitor.print(stopWatch);
             } catch (Exception e) {
-                log.error("execute exception", e);
+                log.error(LOG_PREFIX + "execute exception", e);
             }
         }
 
@@ -174,16 +184,16 @@ public class LogRecordInterceptor extends LogRecordValueParser implements Method
     /**
      * 逐个操作执行日志记录：跳过未命中条件或不满足成功条件的操作，按结果走成功或失败模板。
      *
-     * @param methodExecuteResult         方法执行结果
-     * @param functionNameAndReturnMap    前置函数返回值缓存
-     * @param operations                  日志操作集合
+     * @param methodExecuteResult      方法执行结果
+     * @param functionNameAndReturnMap 前置函数返回值缓存
+     * @param operations               日志操作集合
      */
     private void recordExecute(MethodExecuteResult methodExecuteResult, Map<String, String> functionNameAndReturnMap,
                                Collection<LogRecordOps> operations) {
         for (LogRecordOps operation : operations) {
             try {
-                if (StringUtils.isEmpty(operation.getSuccessLogTemplate())
-                        && StringUtils.isEmpty(operation.getFailLogTemplate())) {
+                if (ObjectUtils.isEmpty(operation.getSuccessLogTemplate())
+                        && ObjectUtils.isEmpty(operation.getFailLogTemplate())) {
                     continue;
                 }
                 if (exitsCondition(methodExecuteResult, functionNameAndReturnMap, operation)) continue;
@@ -193,7 +203,7 @@ public class LogRecordInterceptor extends LogRecordValueParser implements Method
                     successRecordExecute(methodExecuteResult, functionNameAndReturnMap, operation);
                 }
             } catch (Exception t) {
-                log.error("log record execute exception", t);
+                log.error(LOG_PREFIX + "log record execute exception", t);
                 if (joinTransaction) throw t;
             }
         }
@@ -209,9 +219,9 @@ public class LogRecordInterceptor extends LogRecordValueParser implements Method
     private void successRecordExecute(MethodExecuteResult methodExecuteResult, Map<String, String> functionNameAndReturnMap,
                                       LogRecordOps operation) {
         // 若存在 isSuccess 条件模版，解析出成功/失败的模版
-        String action = "";
+        String action;
         boolean flag = true;
-        if (!StringUtils.isEmpty(operation.getIsSuccess())) {
+        if (!ObjectUtils.isEmpty(operation.getIsSuccess())) {
             String condition = singleProcessTemplate(methodExecuteResult, operation.getIsSuccess(), functionNameAndReturnMap);
             if (StringUtils.endsWithIgnoreCase(condition, "true")) {
                 action = operation.getSuccessLogTemplate();
@@ -222,7 +232,7 @@ public class LogRecordInterceptor extends LogRecordValueParser implements Method
         } else {
             action = operation.getSuccessLogTemplate();
         }
-        if (StringUtils.isEmpty(action)) {
+        if (ObjectUtils.isEmpty(action)) {
             // 没有日志内容则忽略
             return;
         }
@@ -241,7 +251,7 @@ public class LogRecordInterceptor extends LogRecordValueParser implements Method
      */
     private void failRecordExecute(MethodExecuteResult methodExecuteResult, Map<String, String> functionNameAndReturnMap,
                                    LogRecordOps operation) {
-        if (StringUtils.isEmpty(operation.getFailLogTemplate())) return;
+        if (ObjectUtils.isEmpty(operation.getFailLogTemplate())) return;
 
         String action = operation.getFailLogTemplate();
         List<String> spElTemplates = getSpElTemplates(operation, action);
@@ -263,9 +273,9 @@ public class LogRecordInterceptor extends LogRecordValueParser implements Method
      */
     private boolean exitsCondition(MethodExecuteResult methodExecuteResult,
                                    Map<String, String> functionNameAndReturnMap, LogRecordOps operation) {
-        if (!StringUtils.isEmpty(operation.getCondition())) {
+        if (!ObjectUtils.isEmpty(operation.getCondition())) {
             String condition = singleProcessTemplate(methodExecuteResult, operation.getCondition(), functionNameAndReturnMap);
-            if (StringUtils.endsWithIgnoreCase(condition, "false")) return true;
+            return StringUtils.endsWithIgnoreCase(condition, "false");
         }
         return false;
     }
@@ -273,20 +283,20 @@ public class LogRecordInterceptor extends LogRecordValueParser implements Method
     /**
      * 渲染并落库一条业务日志。
      *
-     * @param method                 目标方法
-     * @param flag                   是否为失败日志
-     * @param operation              当前日志操作
-     * @param operatorIdFromService  由操作人服务解析到的操作人ID
-     * @param action                 待渲染的文案模板
-     * @param expressionValues       模板变量解析结果
+     * @param method                目标方法
+     * @param flag                  是否为失败日志
+     * @param operation             当前日志操作
+     * @param operatorIdFromService 由操作人服务解析到的操作人ID
+     * @param action                待渲染的文案模板
+     * @param expressionValues      模板变量解析结果
      */
     private void saveLog(Method method, boolean flag, LogRecordOps operation, String operatorIdFromService,
                          String action, Map<String, String> expressionValues) {
-        if (StringUtils.isEmpty(expressionValues.get(action)) ||
+        if (ObjectUtils.isEmpty(expressionValues.get(action)) ||
                 (!diffSameWhetherSaveLog && action.contains("#") && Objects.equals(action, expressionValues.get(action)))) {
             return;
         }
-        LogRecord logRecord = LogRecord.builder()
+        LogRecordModel model = LogRecordModel.builder()
                 .tenant(tenantId)
                 .type(expressionValues.get(operation.getType()))
                 .bizNo(expressionValues.get(operation.getBizNo()))
@@ -298,8 +308,7 @@ public class LogRecordInterceptor extends LogRecordValueParser implements Method
                 .fail(flag)
                 .createTime(new Date())
                 .build();
-
-        bizLogService.record(logRecord);
+        dataService.record(model);
     }
 
     /**
@@ -308,10 +317,10 @@ public class LogRecordInterceptor extends LogRecordValueParser implements Method
      * @param method 目标方法
      * @return 代码定位信息
      */
-    private Map<CodeVariableType, Object> getCodeVariable(Method method) {
-        Map<CodeVariableType, Object> map = new HashMap<>();
-        map.put(CodeVariableType.ClassName, method.getDeclaringClass());
-        map.put(CodeVariableType.MethodName, method.getName());
+    private Map<LogRecordModel.CodeVariableType, Object> getCodeVariable(Method method) {
+        Map<LogRecordModel.CodeVariableType, Object> map = new HashMap<>();
+        map.put(LogRecordModel.CodeVariableType.ClassName, method.getDeclaringClass());
+        map.put(LogRecordModel.CodeVariableType.MethodName, method.getName());
         return map;
     }
 
@@ -335,13 +344,13 @@ public class LogRecordInterceptor extends LogRecordValueParser implements Method
     /**
      * 取最终操作人ID：优先使用操作人服务解析结果，否则取模板解析结果。
      *
-     * @param operation              当前日志操作
-     * @param operatorIdFromService  由操作人服务解析到的操作人ID
-     * @param expressionValues       模板变量解析结果
+     * @param operation             当前日志操作
+     * @param operatorIdFromService 由操作人服务解析到的操作人ID
+     * @param expressionValues      模板变量解析结果
      * @return 最终操作人ID
      */
     private String getRealOperatorId(LogRecordOps operation, String operatorIdFromService, Map<String, String> expressionValues) {
-        return !StringUtils.isEmpty(operatorIdFromService) ? operatorIdFromService : expressionValues.get(operation.getOperatorId());
+        return !ObjectUtils.isEmpty(operatorIdFromService) ? operatorIdFromService : expressionValues.get(operation.getOperatorId());
     }
 
     /**
@@ -354,10 +363,10 @@ public class LogRecordInterceptor extends LogRecordValueParser implements Method
     private String getOperatorIdFromServiceAndPutTemplate(LogRecordOps operation, List<String> spElTemplates) {
 
         String realOperatorId = "";
-        if (StringUtils.isEmpty(operation.getOperatorId())) {
-            realOperatorId = operatorGetService.getUser().getOperatorId();
-            if (StringUtils.isEmpty(realOperatorId)) {
-                throw new IllegalArgumentException("[LogRecord] operator is null");
+        if (ObjectUtils.isEmpty(operation.getOperatorId())) {
+            realOperatorId = operatorGetService.getOperator().getOperatorId();
+            if (ObjectUtils.isEmpty(realOperatorId)) {
+                throw new IllegalArgumentException("operator can not be empty");
             }
         } else {
             spElTemplates.add(operation.getOperatorId());
@@ -375,50 +384,14 @@ public class LogRecordInterceptor extends LogRecordValueParser implements Method
         return AopProxyUtils.ultimateTargetClass(target);
     }
 
-
-    /**
-     * 注入日志操作注解解析器。
-     *
-     * @param logRecordOperationSource 注解解析器
-     */
-    public void setLogRecordOperationSource(LogRecordOperationSource logRecordOperationSource) {
-        this.logRecordOperationSource = logRecordOperationSource;
-    }
-
     /**
      * 注入租户标识。
      *
      * @param tenant 租户标识
      */
-    public void setTenant(String tenant) {
+    public LogRecordInterceptor setTenant(String tenant) {
         this.tenantId = tenant;
-    }
-
-    /**
-     * 注入日志落库服务。
-     *
-     * @param bizLogService 日志落库服务
-     */
-    public void setLogRecordService(ILogRecordService bizLogService) {
-        this.bizLogService = bizLogService;
-    }
-
-    /**
-     * 注入性能监控器。
-     *
-     * @param logRecordPerformanceMonitor 性能监控器
-     */
-    public void setLogRecordPerformanceMonitor(ILogRecordPerformanceMonitor logRecordPerformanceMonitor) {
-        this.logRecordPerformanceMonitor = logRecordPerformanceMonitor;
-    }
-
-    /**
-     * 设置是否跟随业务事务（日志异常时是否回滚业务事务）。
-     *
-     * @param joinTransaction 是否加入业务事务
-     */
-    public void setJoinTransaction(boolean joinTransaction) {
-        this.joinTransaction = joinTransaction;
+        return this;
     }
 
     /**
@@ -426,8 +399,9 @@ public class LogRecordInterceptor extends LogRecordValueParser implements Method
      *
      * @param diffLog 是否落相同 diff
      */
-    public void setDiffSameWhetherSaveLog(boolean diffLog) {
+    public LogRecordInterceptor setDiffSameWhetherSaveLog(boolean diffLog) {
         this.diffSameWhetherSaveLog = diffLog;
+        return this;
     }
 
     /**
@@ -435,7 +409,7 @@ public class LogRecordInterceptor extends LogRecordValueParser implements Method
      */
     @Override
     public void afterSingletonsInstantiated() {
-        bizLogService = beanFactory.getBean(ILogRecordService.class);
+        dataService = beanFactory.getBean(ILogRecordDataService.class);
         operatorGetService = beanFactory.getBean(IOperatorGetService.class);
         this.setLogFunctionParser(new LogFunctionParser(beanFactory.getBean(IFunctionService.class)));
         this.setDiffParseFunction(beanFactory.getBean(DiffParseFunction.class));

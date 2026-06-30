@@ -1,8 +1,8 @@
 package cc.uncarbon.framework.helium.bizlog.service.impl;
 
 import cc.uncarbon.framework.helium.bizlog.context.LogRecordContext;
-import cc.uncarbon.framework.helium.bizlog.diff.IDiffItemsToLogContentService;
-import cc.uncarbon.framework.helium.bizlog.diff.ArrayDiffer;
+import cc.uncarbon.framework.helium.bizlog.service.IDiffItemsToLogContentService;
+import cc.uncarbon.framework.helium.bizlog.support.diff.ArrayDiffer;
 import de.danielbechler.diff.ObjectDifferBuilder;
 import de.danielbechler.diff.comparison.ComparisonService;
 import de.danielbechler.diff.node.DiffNode;

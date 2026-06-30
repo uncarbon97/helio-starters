@@ -1,5 +1,8 @@
 package cc.uncarbon.framework.helium.bizlog.context;
 
+import cc.uncarbon.framework.helium.bizlog.annotation.LogRecord;
+import lombok.experimental.UtilityClass;
+
 import java.util.ArrayDeque;
 import java.util.Deque;
 import java.util.HashMap;
@@ -10,35 +13,30 @@ import java.util.concurrent.Callable;
  * 业务日志记录上下文
  * <p>
  * 基于 {@link ScopedValue} 实现，替代原 {@link InheritableThreadLocal} 方案，
- * 支持在虚拟线程（Virtual Thread）及结构化并发场景下正确传递上下文；
- * 实现范式参考 {@code UserContextHolder}、{@code TenantContextHolder}。
+ * 支持在虚拟线程及结构化并发场景下正确传递上下文
  * <p>
  * 上下文包含两部分：
  * <ul>
- *   <li>方法级变量栈 {@code variableMapStack}：每个 {@code @LogRecord} 方法进入时压入一帧，方法结束时弹出，互不污染；</li>
+ *   <li>方法级变量栈 {@code variableMapStack}：每个 {@link LogRecord} 方法进入时压入一帧，方法结束时弹出，互不污染；</li>
  *   <li>全局变量 {@code globalVariableMap}：在当前顶层作用域内跨方法共享。</li>
  * </ul>
  * 作用域由 {@code LogRecordInterceptor} 在拦截入口通过 {@link #callWithContextThrowing} 绑定，
  * 退出时由 {@link ScopedValue} 自动解绑，无需手动 {@code remove()}，亦不会在线程池残留。
  * <p>
  * 说明：{@link ScopedValue} 绑定的是固定的 {@link ContextState} 实例，
- * 对内部集合的 push/pop/put 属于同一线程内的同步操作（拦截器与业务代码同线程执行，
- * 且日志解析不在方法执行期间派生并发任务），因此不存在并发写竞争；
+ * 对内部集合的 push/pop/put 属于同一线程内的同步操作（拦截器与业务代码同线程执行，且日志解析不在方法执行期间派生并发任务），因此不存在并发写竞争；
  * 在绑定作用域内由业务代码派生的虚拟线程可自动继承绑定，从而读取上下文。
  *
  * @author muzhantong@mzt-biz-log
  * @author Uncarbon
  */
+@UtilityClass
 public class LogRecordContext {
 
     /**
      * 当前作用域绑定的上下文状态，替代原 {@link InheritableThreadLocal}，支持虚拟线程传递。
      */
     private static final ScopedValue<ContextState> SCOPED = ScopedValue.newInstance();
-
-    private LogRecordContext() {
-        throw new IllegalStateException("Utility class");
-    }
 
     /**
      * 在新的日志上下文作用域中执行无返回值操作，结束自动解绑。

@@ -12,6 +12,7 @@ public final class ConfigurationPropertiesPrefix {
 
     public static final String FRAMEWORK_NAME = "helium";
     public static final String BASE = FRAMEWORK_NAME + ".base";
+    public static final String BIZLOG = FRAMEWORK_NAME + ".bizlog";
     public static final String DB_IDGEN = FRAMEWORK_NAME + ".db.idgen";
     public static final String DB_MYBATIS_PLUS = FRAMEWORK_NAME + ".db.mybatis-plus";
     public static final String I18N = FRAMEWORK_NAME + ".i18n";

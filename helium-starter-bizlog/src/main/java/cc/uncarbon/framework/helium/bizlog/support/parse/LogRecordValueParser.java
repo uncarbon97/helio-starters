@@ -1,7 +1,9 @@
 package cc.uncarbon.framework.helium.bizlog.support.parse;
 
-import cc.uncarbon.framework.helium.bizlog.beans.MethodExecuteResult;
+import cc.uncarbon.framework.helium.bizlog.model.MethodExecuteResult;
 import cc.uncarbon.framework.helium.bizlog.service.impl.DiffParseFunction;
+import lombok.Setter;
+import org.jspecify.annotations.NonNull;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.BeanFactoryAware;
@@ -17,22 +19,25 @@ import java.util.regex.Pattern;
  * 日志模板解析器
  * <p>
  * 解析需要存储的日志文案中的 SpEL 表达式与自定义函数占位符 {@code {函数名{SpEL}}}，
- * 同时支持 diff 函数 {@code _DIFF} 的渲染，是 {@code LogRecordInterceptor} 的解析基类。
+ * 同时支持 diff 函数 {@code _DIFF} 的渲染
  *
  * @author mzt@mzt-biz-log
  * @author Uncarbon
  */
 public class LogRecordValueParser implements BeanFactoryAware {
 
-    /** 匹配 {@code {函数名{表达式}}} 占位符的正则 */
+    /**
+     * 匹配 {@code {函数名{表达式}}} 占位符的正则
+     */
     private static final Pattern pattern = Pattern.compile("\\{\\s*(\\w*)\\s*\\{(.*?)}}");
     public static final String COMMA = ",";
     private final LogRecordExpressionEvaluator expressionEvaluator = new LogRecordExpressionEvaluator();
     protected BeanFactory beanFactory;
     protected boolean diffSameWhetherSaveLog;
 
+    @Setter
     private LogFunctionParser logFunctionParser;
-
+    @Setter
     private DiffParseFunction diffParseFunction;
 
     /**
@@ -55,8 +60,8 @@ public class LogRecordValueParser implements BeanFactoryAware {
     /**
      * 解析单个模板并返回其渲染结果。
      *
-     * @param methodExecuteResult           方法执行结果
-     * @param templates                     单个模板文本
+     * @param methodExecuteResult            方法执行结果
+     * @param templates                      单个模板文本
      * @param beforeFunctionNameAndReturnMap 前置函数返回值缓存
      * @return 模板渲染后的文案
      */
@@ -71,8 +76,8 @@ public class LogRecordValueParser implements BeanFactoryAware {
     /**
      * 批量解析模板，逐个渲染 SpEL 与自定义函数占位符，并处理 diff 相同时是否保留原模板。
      *
-     * @param templates                     模板集合
-     * @param methodExecuteResult           方法执行结果
+     * @param templates                      模板集合
+     * @param methodExecuteResult            方法执行结果
      * @param beforeFunctionNameAndReturnMap 前置函数返回值缓存
      * @return 模板到渲染结果的映射
      */
@@ -86,7 +91,7 @@ public class LogRecordValueParser implements BeanFactoryAware {
         for (String expressionTemplate : templates) {
             if (expressionTemplate.contains("{")) {
                 Matcher matcher = pattern.matcher(expressionTemplate);
-                StringBuffer parsedStr = new StringBuffer();
+                StringBuilder parsedStr = new StringBuilder();
                 AnnotatedElementKey annotatedElementKey = new AnnotatedElementKey(methodExecuteResult.getMethod(), methodExecuteResult.getTargetClass());
                 boolean sameDiff = false;
                 while (matcher.find()) {
@@ -114,26 +119,23 @@ public class LogRecordValueParser implements BeanFactoryAware {
     /**
      * 判断 diff 结果是否需要记录：配置「全部记录」时恒为真；否则 diff 无变化时不记录。
      *
-     * @param sameDiff                  diff 是否无变化
-     * @param diffSameWhetherSaveLog    是否不校验文案、全部记录
+     * @param sameDiff               diff 是否无变化
+     * @param diffSameWhetherSaveLog 是否不校验文案、全部记录
      * @return 是否记录
      */
     private boolean recordSameDiff(boolean sameDiff, boolean diffSameWhetherSaveLog) {
-        if(diffSameWhetherSaveLog == true) {
+        if (diffSameWhetherSaveLog) {
             return true;
         }
-        if(!diffSameWhetherSaveLog && sameDiff) {
-            return false;
-        }
-        return true;
+        return !sameDiff;
     }
 
     /**
      * 解析 diff 函数占位符：按参数个数（1 或 2）调用单参/双参 diff。
      *
-     * @param evaluationContext     求值上下文
-     * @param annotatedElementKey   方法键
-     * @param expression            占位符内层表达式
+     * @param evaluationContext   求值上下文
+     * @param annotatedElementKey 方法键
+     * @param expression          占位符内层表达式
      * @return diff 文案
      */
     private String getDiffFunctionValue(EvaluationContext evaluationContext, AnnotatedElementKey annotatedElementKey, String expression) {
@@ -165,10 +167,10 @@ public class LogRecordValueParser implements BeanFactoryAware {
     /**
      * 解析并执行模板中的前置函数（在业务方法执行前调用），缓存其返回值。
      *
-     * @param templates    前置函数模板集合
-     * @param targetClass  目标类
-     * @param method       目标方法
-     * @param args         方法参数
+     * @param templates   前置函数模板集合
+     * @param targetClass 目标类
+     * @param method      目标方法
+     * @param args        方法参数
      * @return 函数调用 key 到返回值的映射
      */
     public Map<String, String> processBeforeExecuteFunctionTemplate(Collection<String> templates, Class<?> targetClass, Method method, Object[] args) {
@@ -205,25 +207,7 @@ public class LogRecordValueParser implements BeanFactoryAware {
      * @throws BeansException 异常
      */
     @Override
-    public void setBeanFactory(BeanFactory beanFactory) throws BeansException {
+    public void setBeanFactory(@NonNull BeanFactory beanFactory) throws BeansException {
         this.beanFactory = beanFactory;
-    }
-
-    /**
-     * 注入自定义函数解析器。
-     *
-     * @param logFunctionParser 函数解析器
-     */
-    public void setLogFunctionParser(LogFunctionParser logFunctionParser) {
-        this.logFunctionParser = logFunctionParser;
-    }
-
-    /**
-     * 注入 diff 解析函数。
-     *
-     * @param diffParseFunction diff 解析函数
-     */
-    public void setDiffParseFunction(DiffParseFunction diffParseFunction) {
-        this.diffParseFunction = diffParseFunction;
     }
 }

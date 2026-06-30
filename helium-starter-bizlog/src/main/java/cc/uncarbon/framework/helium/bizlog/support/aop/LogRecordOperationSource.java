@@ -2,7 +2,7 @@ package cc.uncarbon.framework.helium.bizlog.support.aop;
 
 import cc.uncarbon.framework.helium.bizlog.annotation.LogRecord;
 import cc.uncarbon.framework.helium.bizlog.annotation.LogRecords;
-import cc.uncarbon.framework.helium.bizlog.beans.LogRecordOps;
+import cc.uncarbon.framework.helium.bizlog.model.LogRecordOps;
 import org.springframework.core.BridgeMethodResolver;
 import org.springframework.core.annotation.AnnotatedElementUtils;
 import org.springframework.util.ClassUtils;
@@ -23,6 +23,7 @@ import java.util.*;
  * @author Uncarbon
  */
 public class LogRecordOperationSource {
+
     /**
      * 接口等价方法缓存：声明类所实现接口上的等价方法。
      */
@@ -51,7 +52,8 @@ public class LogRecordOperationSource {
         Collection<LogRecordOps> logRecordsOps = parseLogRecordsAnnotations(specificMethod);
         Collection<LogRecordOps> abstractLogRecordOps = parseLogRecordAnnotations(getInterfaceMethodIfPossible(method));
         Collection<LogRecordOps> abstractLogRecordsOps = parseLogRecordsAnnotations(getInterfaceMethodIfPossible(method));
-        HashSet<LogRecordOps> result = new HashSet<>();
+        HashSet<LogRecordOps> result = new HashSet<>(logRecordOps.size() + logRecordsOps.size()
+                + abstractLogRecordOps.size() + abstractLogRecordsOps.size());
         result.addAll(logRecordOps);
         result.addAll(abstractLogRecordOps);
         result.addAll(logRecordsOps);

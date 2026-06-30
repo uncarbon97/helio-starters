@@ -1,5 +1,8 @@
 package cc.uncarbon.framework.helium.bizlog.support.aop;
 
+import cc.uncarbon.framework.helium.bizlog.annotation.LogRecord;
+import lombok.Setter;
+import org.jspecify.annotations.NonNull;
 import org.springframework.aop.support.StaticMethodMatcherPointcut;
 import org.springframework.util.CollectionUtils;
 
@@ -9,14 +12,14 @@ import java.lang.reflect.Method;
 /**
  * 业务日志切点
  * <p>
- * 匹配标注了 {@code @LogRecord}（含接口、父类继承）的方法。
+ * 匹配标注了 {@link LogRecord}（含接口、父类继承）的方法。
  *
  * @author mzt@mzt-biz-log
  * @author Uncarbon
  */
 public class LogRecordPointcut extends StaticMethodMatcherPointcut implements Serializable {
 
-
+    @Setter
     private LogRecordOperationSource logRecordOperationSource;
 
     /**
@@ -27,16 +30,7 @@ public class LogRecordPointcut extends StaticMethodMatcherPointcut implements Se
      * @return 命中返回 {@code true}
      */
     @Override
-    public boolean matches(Method method, Class<?> targetClass) {
+    public boolean matches(@NonNull Method method, @NonNull Class<?> targetClass) {
         return !CollectionUtils.isEmpty(logRecordOperationSource.computeLogRecordOperations(method, targetClass));
-    }
-
-    /**
-     * 注入注解解析器。
-     *
-     * @param logRecordOperationSource 注解解析器
-     */
-    void setLogRecordOperationSource(LogRecordOperationSource logRecordOperationSource) {
-        this.logRecordOperationSource = logRecordOperationSource;
     }
 }

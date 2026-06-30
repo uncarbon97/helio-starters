@@ -1,6 +1,7 @@
 package cc.uncarbon.framework.helium.bizlog.service.impl;
 
 import cc.uncarbon.framework.helium.bizlog.service.IParseFunction;
+import cn.hutool.core.text.CharSequenceUtil;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 
@@ -18,8 +19,8 @@ import java.util.Map;
  * @author muzhantong@mzt-biz-log
  * @author Uncarbon
  */
-
 public class ParseFunctionFactory {
+
     private Map<String, IParseFunction> allFunctionMap;
 
     /**
@@ -33,10 +34,9 @@ public class ParseFunctionFactory {
         }
         allFunctionMap = new HashMap<>();
         for (IParseFunction parseFunction : parseFunctions) {
-            if (StringUtils.isEmpty(parseFunction.functionName())) {
-                continue;
+            if (StringUtils.hasText(parseFunction.functionName())) {
+                allFunctionMap.put(parseFunction.functionName(), parseFunction);
             }
-            allFunctionMap.put(parseFunction.functionName(), parseFunction);
         }
     }
 

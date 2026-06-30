@@ -1,4 +1,4 @@
-package cc.uncarbon.framework.helium.bizlog.diff;
+package cc.uncarbon.framework.helium.bizlog.service;
 
 import de.danielbechler.diff.node.DiffNode;
 

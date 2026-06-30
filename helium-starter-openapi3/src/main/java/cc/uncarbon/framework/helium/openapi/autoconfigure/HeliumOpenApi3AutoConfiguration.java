@@ -14,7 +14,7 @@ import org.springframework.core.type.AnnotatedTypeMetadata;
 import java.util.Objects;
 
 /**
- * Helium 集成 OpenAPI 3 自动配置类
+ * Helium 集成 OpenAPI 3 自动装配类
  *
  * @author Uncarbon
  */

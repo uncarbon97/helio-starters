@@ -1,23 +1,25 @@
-package cc.uncarbon.framework.helium.bizlog.diff;
+package cc.uncarbon.framework.helium.bizlog.service.impl;
 
-import cc.uncarbon.framework.helium.bizlog.annotation.DIffLogIgnore;
+import cc.uncarbon.framework.helium.bizlog.annotation.DiffLogIgnore;
 import cc.uncarbon.framework.helium.bizlog.annotation.DiffLogAllFields;
 import cc.uncarbon.framework.helium.bizlog.annotation.DiffLogField;
-import cc.uncarbon.framework.helium.bizlog.props.LogRecordProperties;
+import cc.uncarbon.framework.helium.bizlog.props.HeliumBizLogProperties;
+import cc.uncarbon.framework.helium.bizlog.service.IDiffItemsToLogContentService;
 import cc.uncarbon.framework.helium.bizlog.service.IFunctionService;
 import de.danielbechler.diff.node.DiffNode;
 import de.danielbechler.diff.selector.ElementSelector;
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
+import org.jspecify.annotations.NonNull;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.BeanFactoryAware;
 import org.springframework.beans.factory.SmartInitializingSingleton;
-import org.springframework.lang.NonNull;
 import org.springframework.util.CollectionUtils;
+import org.springframework.util.ObjectUtils;
 import org.springframework.util.ReflectionUtils;
-import org.springframework.util.StringUtils;
 
 import java.lang.reflect.Field;
 import java.util.*;
@@ -25,29 +27,21 @@ import java.util.*;
 /**
  * 差异节点转文案默认实现
  * <p>
- * 遍历 {@link DiffNode} 差异树，按字段配置（{@link DiffLogField} / {@link DiffLogAllFields} / {@link DIffLogIgnore}）
+ * 遍历 {@link DiffNode} 差异树，按字段配置（{@link DiffLogField} / {@link DiffLogAllFields} / {@link DiffLogIgnore}）
  * 生成形如「字段名从【旧值】修改为【新值】」的日志文案，支持嵌套对象与集合。
  *
  * @author muzhantong@mzt-biz-log
  * @author Uncarbon
  */
-@Slf4j
 @Setter
 @Getter
+@RequiredArgsConstructor
+@Slf4j
 public class DefaultDiffItemsToLogContentService implements IDiffItemsToLogContentService, BeanFactoryAware, SmartInitializingSingleton {
 
+    private final HeliumBizLogProperties props;
     private IFunctionService functionService;
-    private final LogRecordProperties logRecordProperties;
     private BeanFactory beanFactory;
-
-    /**
-     * 注入日志配置。
-     *
-     * @param logRecordProperties 日志配置
-     */
-    public DefaultDiffItemsToLogContentService(LogRecordProperties logRecordProperties) {
-        this.logRecordProperties = logRecordProperties;
-    }
 
     /**
      * 将差异节点转为日志文案；无变化时返回空串。
@@ -65,9 +59,9 @@ public class DefaultDiffItemsToLogContentService implements IDiffItemsToLogConte
         DiffLogAllFields annotation = sourceObject.getClass().getAnnotation(DiffLogAllFields.class);
         StringBuilder stringBuilder = new StringBuilder();
         Set<DiffNode> set = new HashSet<>();
-        diffNode.visit((node, visit) -> generateAllFieldLog(sourceObject, targetObject, stringBuilder, node, annotation, set));
+        diffNode.visit((node, _) -> generateAllFieldLog(sourceObject, targetObject, stringBuilder, node, annotation, set));
         set.clear();
-        return stringBuilder.toString().replaceAll(logRecordProperties.getFieldSeparator().concat("$"), "");
+        return stringBuilder.toString().replaceAll(props.getFieldSeparator().concat("$"), "");
     }
 
     /**
@@ -85,7 +79,7 @@ public class DefaultDiffItemsToLogContentService implements IDiffItemsToLogConte
         if (node.isRootNode() || node.getValueTypeInfo() != null || set.contains(node)) {
             return;
         }
-        DIffLogIgnore logIgnore = node.getFieldAnnotation(DIffLogIgnore.class);
+        DiffLogIgnore logIgnore = node.getFieldAnnotation(DiffLogIgnore.class);
         if (logIgnore != null) {
             memorandum(node, set);
             return;
@@ -95,7 +89,7 @@ public class DefaultDiffItemsToLogContentService implements IDiffItemsToLogConte
             return;
         }
         String filedLogName = getFieldLogName(node, diffLogFieldAnnotation, annotation != null);
-        if (StringUtils.isEmpty(filedLogName)) {
+        if (ObjectUtils.isEmpty(filedLogName)) {
             return;
         }
         // 是否是容器类型的字段
@@ -104,8 +98,8 @@ public class DefaultDiffItemsToLogContentService implements IDiffItemsToLogConte
         String logContent = valueIsContainer
                 ? getCollectionDiffLogContent(filedLogName, node, sourceObject, targetObject, functionName)
                 : getDiffLogContent(filedLogName, node, sourceObject, targetObject, functionName);
-        if (!StringUtils.isEmpty(logContent)) {
-            stringBuilder.append(logContent).append(logRecordProperties.getFieldSeparator());
+        if (!ObjectUtils.isEmpty(logContent)) {
+            stringBuilder.append(logContent).append(props.getFieldSeparator());
         }
         memorandum(node, set);
     }
@@ -185,8 +179,8 @@ public class DefaultDiffItemsToLogContentService implements IDiffItemsToLogConte
                 continue;
             }
             fieldNamePrefix = diffLogFieldAnnotation != null
-                    ? diffLogFieldAnnotation.name().concat(logRecordProperties.getOfWord()).concat(fieldNamePrefix)
-                    : parent.getPropertyName().concat(logRecordProperties.getOfWord()).concat(fieldNamePrefix);
+                    ? diffLogFieldAnnotation.name().concat(props.getOfWord()).concat(fieldNamePrefix)
+                    : parent.getPropertyName().concat(props.getOfWord()).concat(fieldNamePrefix);
             parent = parent.getParentNode();
         }
         return fieldNamePrefix;
@@ -210,7 +204,7 @@ public class DefaultDiffItemsToLogContentService implements IDiffItemsToLogConte
         Collection<Object> delItemList = listSubtract(sourceList, targetList);
         String listAddContent = listToContent(functionName, addItemList);
         String listDelContent = listToContent(functionName, delItemList);
-        return logRecordProperties.formatList(filedLogName, listAddContent, listDelContent);
+        return props.formatList(filedLogName, listAddContent, listDelContent);
     }
 
     /**
@@ -224,17 +218,18 @@ public class DefaultDiffItemsToLogContentService implements IDiffItemsToLogConte
      * @return 字段差异文案
      */
     public String getDiffLogContent(String filedLogName, DiffNode node, Object sourceObject, Object targetObject, String functionName) {
-        switch (node.getState()) {
-            case ADDED:
-                return logRecordProperties.formatAdd(filedLogName, getFunctionValue(getFieldValue(node, targetObject), functionName));
-            case CHANGED:
-                return logRecordProperties.formatUpdate(filedLogName, getFunctionValue(getFieldValue(node, sourceObject), functionName), getFunctionValue(getFieldValue(node, targetObject), functionName));
-            case REMOVED:
-                return logRecordProperties.formatDeleted(filedLogName, getFunctionValue(getFieldValue(node, sourceObject), functionName));
-            default:
+        return switch (node.getState()) {
+            case ADDED ->
+                    props.formatAdd(filedLogName, getFunctionValue(getFieldValue(node, targetObject), functionName));
+            case CHANGED ->
+                    props.formatUpdate(filedLogName, getFunctionValue(getFieldValue(node, sourceObject), functionName), getFunctionValue(getFieldValue(node, targetObject), functionName));
+            case REMOVED ->
+                    props.formatDeleted(filedLogName, getFunctionValue(getFieldValue(node, sourceObject), functionName));
+            default -> {
                 log.warn("diff log not support");
-                return "";
-        }
+                yield "";
+            }
+        };
     }
 
     /**
@@ -277,10 +272,10 @@ public class DefaultDiffItemsToLogContentService implements IDiffItemsToLogConte
         StringBuilder listAddContent = new StringBuilder();
         if (!CollectionUtils.isEmpty(addItemList)) {
             for (Object item : addItemList) {
-                listAddContent.append(getFunctionValue(item, functionName)).append(logRecordProperties.getListItemSeparator());
+                listAddContent.append(getFunctionValue(item, functionName)).append(props.getListItemSeparator());
             }
         }
-        return listAddContent.toString().replaceAll(logRecordProperties.getListItemSeparator() + "$", "");
+        return listAddContent.toString().replaceAll(props.getListItemSeparator() + "$", "");
     }
 
     /**
@@ -291,7 +286,7 @@ public class DefaultDiffItemsToLogContentService implements IDiffItemsToLogConte
      * @return 转换后的文案
      */
     private String getFunctionValue(Object canonicalGet, String functionName) {
-        if (StringUtils.isEmpty(functionName)) {
+        if (ObjectUtils.isEmpty(functionName)) {
             return canonicalGet.toString();
         }
         return functionService.apply(functionName, canonicalGet.toString());

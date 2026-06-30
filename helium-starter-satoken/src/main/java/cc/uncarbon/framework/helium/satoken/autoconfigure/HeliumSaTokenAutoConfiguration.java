@@ -14,7 +14,7 @@ import org.springframework.core.type.AnnotatedTypeMetadata;
 import java.util.Objects;
 
 /**
- * Helium 集成 SA-Token 自动配置类
+ * Helium 集成 SA-Token 自动装配类
  *
  * @author Uncarbon
  */

@@ -3,7 +3,7 @@ package cc.uncarbon.framework.helium.bizlog.service;
 /**
  * 自定义函数调用入口
  * <p>
- * 根据函数名查找对应的 {@code IParseFunction} 并执行，是模板中 {@code {函数名{...}}} 占位符的执行中枢。
+ * 根据函数名查找对应的 {@link IParseFunction} 并执行，是模板中 {@code {函数名{...}}} 占位符的执行中枢。
  *
  * @author mzt@mzt-biz-log
  * @author Uncarbon
@@ -11,7 +11,7 @@ package cc.uncarbon.framework.helium.bizlog.service;
 public interface IFunctionService {
 
     /**
-     * 按函数名执行自定义函数。
+     * 按函数名执行自定义函数。未注册的函数直接返回入参字符串形式
      *
      * @param functionName 函数名
      * @param value        SpEL 求值后的入参

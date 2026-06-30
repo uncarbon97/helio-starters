@@ -11,7 +11,7 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.context.annotation.*;
 
 /**
- * Helium 多租户自动配置类
+ * Helium 多租户自动装配类
  *
  * @author Uncarbon
  */

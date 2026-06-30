@@ -12,11 +12,19 @@ import org.springframework.util.StopWatch;
  */
 public interface ILogRecordPerformanceMonitor {
 
-    /** 性能监控任务名前缀 */
+    /**
+     * 性能监控任务名前缀
+     */
     String MONITOR_NAME = "log-record-performance";
-    /** 前置执行阶段任务名 */
+
+    /**
+     * 前置执行阶段任务名
+     */
     String MONITOR_TASK_BEFORE_EXECUTE = "before-execute";
-    /** 后置执行阶段任务名 */
+
+    /**
+     * 后置执行阶段任务名
+     */
     String MONITOR_TASK_AFTER_EXECUTE = "after-execute";
 
     /**

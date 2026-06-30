@@ -29,7 +29,7 @@ import java.util.List;
 import java.util.Objects;
 
 /**
- * Helium 集成国际化自动配置类
+ * Helium 集成国际化自动装配类
  *
  * @author Uncarbon
  */

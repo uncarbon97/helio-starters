@@ -68,6 +68,6 @@ public class LogRecordExpressionEvaluator extends CachedExpressionEvaluator {
      */
     private Method getTargetMethod(Class<?> targetClass, Method method) {
         AnnotatedElementKey methodKey = new AnnotatedElementKey(method, targetClass);
-        return targetMethodCache.computeIfAbsent(methodKey, k -> AopUtils.getMostSpecificMethod(method, targetClass));
+        return targetMethodCache.computeIfAbsent(methodKey, _ -> AopUtils.getMostSpecificMethod(method, targetClass));
     }
 }

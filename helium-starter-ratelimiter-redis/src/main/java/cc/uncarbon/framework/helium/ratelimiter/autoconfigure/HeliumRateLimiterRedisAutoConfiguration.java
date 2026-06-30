@@ -12,7 +12,7 @@ import org.springframework.context.annotation.Import;
 import org.springframework.data.redis.core.RedisTemplate;
 
 /**
- * Helium 基于 Redis 的限流器自动配置类
+ * Helium 基于 Redis 的限流器自动装配类
  *
  * @author Uncarbon
  */

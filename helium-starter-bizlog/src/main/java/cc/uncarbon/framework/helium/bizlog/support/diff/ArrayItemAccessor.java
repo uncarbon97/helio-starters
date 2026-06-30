@@ -1,4 +1,4 @@
-package cc.uncarbon.framework.helium.bizlog.diff;
+package cc.uncarbon.framework.helium.bizlog.support.diff;
 
 import de.danielbechler.diff.access.Accessor;
 import de.danielbechler.diff.access.TypeAwareAccessor;
@@ -86,7 +86,7 @@ public class ArrayItemAccessor implements TypeAwareAccessor, Accessor {
      */
     @Override
     public Object get(final Object target) {
-        final Collection targetCollection = objectAsCollection(target);
+        final Collection<Object> targetCollection = objectAsCollection(target);
         if (targetCollection == null) {
             return null;
         }

@@ -21,12 +21,12 @@ public class LogRecordEvaluationContext extends MethodBasedEvaluationContext {
     /**
      * 构造 SpEL 求值上下文。
      *
-     * @param rootObject               根对象
-     * @param method                   目标方法
-     * @param arguments                方法参数
+     * @param rootObject              根对象
+     * @param method                  目标方法
+     * @param arguments               方法参数
      * @param parameterNameDiscoverer 参数名发现器
-     * @param ret                      方法返回值，注入为 {@code _ret}
-     * @param errorMsg                 异常消息，注入为 {@code _errorMsg}
+     * @param ret                     方法返回值，注入为 {@code _ret}
+     * @param errorMsg                异常消息，注入为 {@code _errorMsg}
      */
     public LogRecordEvaluationContext(Object rootObject, Method method, Object[] arguments,
                                       ParameterNameDiscoverer parameterNameDiscoverer, Object ret, String errorMsg) {

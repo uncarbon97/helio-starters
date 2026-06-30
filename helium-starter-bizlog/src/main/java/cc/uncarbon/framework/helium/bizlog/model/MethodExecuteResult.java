@@ -1,4 +1,4 @@
-package cc.uncarbon.framework.helium.bizlog.beans;
+package cc.uncarbon.framework.helium.bizlog.model;
 
 import lombok.Getter;
 import lombok.Setter;

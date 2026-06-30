@@ -1,9 +1,11 @@
 package cc.uncarbon.framework.helium.bizlog.service;
 
+import cc.uncarbon.framework.helium.bizlog.annotation.LogRecord;
+
 /**
  * 自定义解析函数
  * <p>
- * 实现该接口并注册为 Spring Bean，即可在 {@code @LogRecord} 模板中以 {@code {函数名{SpEL}}} 形式调用。
+ * 实现该接口并注册为 Spring Bean，即可在 {@link LogRecord} 模板中以 {@code {函数名{SpEL}}} 形式调用。
  *
  * @author mzt@mzt-biz-log
  * @author Uncarbon

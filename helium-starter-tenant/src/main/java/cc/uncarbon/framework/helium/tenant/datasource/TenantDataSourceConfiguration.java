@@ -15,7 +15,7 @@ import java.util.Objects;
 import java.util.Optional;
 
 /**
- * 数据源级多租户自动配置类
+ * 数据源级多租户自动装配类
  * 基于 AOP 实现
  * <a href="https://blog.csdn.net/w57685321/article/details/106823660">参考文章</a>
  *

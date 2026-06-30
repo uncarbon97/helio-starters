@@ -21,7 +21,7 @@ import java.util.Locale;
 import java.util.TimeZone;
 
 /**
- * Helium 集成 Jackson 3.x 自动配置类
+ * Helium 集成 Jackson 3.x 自动装配类
  *
  * @author hanfeng
  * @author Uncarbon

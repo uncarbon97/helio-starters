@@ -1,8 +1,10 @@
 package cc.uncarbon.framework.helium.bizlog.props;
 
+import cc.uncarbon.framework.helium.base.constant.ConfigurationPropertiesPrefix;
+import cn.hutool.core.text.CharSequenceUtil;
 import lombok.Data;
 import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.util.StringUtils;
+import org.springframework.core.Ordered;
 
 /**
  * 业务日志配置项
@@ -12,9 +14,29 @@ import org.springframework.util.StringUtils;
  * @author muzhantong@mzt-biz-log
  * @author Uncarbon
  */
-@ConfigurationProperties(prefix = "mzt.log.record")
+@ConfigurationProperties(prefix = ConfigurationPropertiesPrefix.BIZLOG)
 @Data
-public class LogRecordProperties {
+public class HeliumBizLogProperties {
+
+    /**
+     * 是否启用
+     */
+    private Boolean enabled;
+
+    /**
+     * 租户标识，写入日志记录的 tenant 字段。
+     */
+    private String tenant = "";
+
+    /**
+     * 记录日志与业务方法是否使用同一事务；true 时日志异常会回滚业务事务。默认独立。
+     */
+    private boolean joinTransaction = false;
+
+    /**
+     * 日志切面 advisor 的执行顺序，默认最低优先级。
+     */
+    private int order = Ordered.LOWEST_PRECEDENCE;
 
     /**
      * 字段名称的替换变量
@@ -173,13 +195,13 @@ public class LogRecordProperties {
      * @return 格式化后的文案
      */
     public String formatList(String fieldName, String addContent, String delContent) {
-        if (!StringUtils.isEmpty(addContent) && StringUtils.isEmpty(delContent)) {
+        if (CharSequenceUtil.isNotEmpty(addContent) && CharSequenceUtil.isEmpty(delContent)) {
             return addTemplateForList.replace(FIELD_PLACEHOLDER, fieldName).replace(LIST_ADD_VALUE_PLACEHOLDER, addContent);
         }
-        if (StringUtils.isEmpty(addContent) && !StringUtils.isEmpty(delContent)) {
+        if (CharSequenceUtil.isEmpty(addContent) && CharSequenceUtil.isNotEmpty(delContent)) {
             return deleteTemplateForList.replace(FIELD_PLACEHOLDER, fieldName).replace(LIST_DEL_VALUE_PLACEHOLDER, delContent);
         }
-        if (!StringUtils.isEmpty(addContent) && !StringUtils.isEmpty(delContent)) {
+        if (CharSequenceUtil.isNotEmpty(addContent) && CharSequenceUtil.isNotEmpty(delContent)) {
             return updateTemplateForList.replace(FIELD_PLACEHOLDER, fieldName)
                     .replace(LIST_ADD_VALUE_PLACEHOLDER, addContent)
                     .replace(LIST_DEL_VALUE_PLACEHOLDER, delContent);

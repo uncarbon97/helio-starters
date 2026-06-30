@@ -27,7 +27,7 @@ import java.util.TimeZone;
 
 
 /**
- * Helium 集成 Redis 自动配置类
+ * Helium 集成 Redis 自动装配类
  *
  * @author Uncarbon
  */

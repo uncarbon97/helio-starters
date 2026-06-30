@@ -12,7 +12,7 @@ import java.util.Collection;
 import java.util.Objects;
 
 /**
- * 基于行级多租户自动配置类
+ * 基于行级多租户自动装配类
  *
  * @author Uncarbon
  */

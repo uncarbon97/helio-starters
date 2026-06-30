@@ -37,7 +37,7 @@ import org.springframework.web.servlet.resource.NoResourceFoundException;
 import java.nio.charset.StandardCharsets;
 
 /**
- * Web 全局异常处理自动配置类
+ * Web 全局异常处理自动装配类
  *
  * @author Uncarbon
  */

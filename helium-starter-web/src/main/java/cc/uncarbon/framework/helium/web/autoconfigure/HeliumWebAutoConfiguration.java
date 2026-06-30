@@ -14,7 +14,7 @@ import jakarta.validation.Validator;
 import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
 
 /**
- * Helium 增强 Web 自动配置类
+ * Helium 增强 Web 自动装配类
  *
  * @author Uncarbon
  */

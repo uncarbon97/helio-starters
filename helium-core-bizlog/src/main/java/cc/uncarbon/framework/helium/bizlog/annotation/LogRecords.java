@@ -5,7 +5,7 @@ import java.lang.annotation.*;
 /**
  * {@link LogRecord} 的容器注解
  * <p>
- * 用于在同一方法上声明多个 {@link LogRecord}（配合 {@link Repeatable} 机制）。
+ * 用于在同一方法上声明多个 {@link LogRecord}
  *
  * @author wulang@mzt-biz-log
  * @author Uncarbon

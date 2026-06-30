@@ -20,7 +20,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 /**
- * Helium Mybatis-Plus 自动配置类
+ * Helium Mybatis-Plus 自动装配类
  *
  * @author Uncarbon
  */

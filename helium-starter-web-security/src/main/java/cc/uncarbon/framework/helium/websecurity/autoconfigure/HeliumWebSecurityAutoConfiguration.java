@@ -18,7 +18,7 @@ import org.springframework.core.type.AnnotatedTypeMetadata;
 import java.util.Objects;
 
 /**
- * Helium Web 网络安全自动配置类
+ * Helium Web 网络安全自动装配类
  *
  * @author Uncarbon
  */

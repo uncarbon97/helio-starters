@@ -12,7 +12,7 @@ import org.springframework.context.annotation.Bean;
 import java.util.List;
 
 /**
- * Helium 集成 dynamic-datasource 自动配置类
+ * Helium 集成 dynamic-datasource 自动装配类
  *
  * @author Uncarbon
  */

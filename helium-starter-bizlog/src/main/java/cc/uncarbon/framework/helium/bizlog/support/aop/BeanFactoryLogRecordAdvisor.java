@@ -1,5 +1,6 @@
 package cc.uncarbon.framework.helium.bizlog.support.aop;
 
+import org.jspecify.annotations.NonNull;
 import org.springframework.aop.Pointcut;
 import org.springframework.aop.support.AbstractBeanFactoryPointcutAdvisor;
 
@@ -21,6 +22,7 @@ public class BeanFactoryLogRecordAdvisor extends AbstractBeanFactoryPointcutAdvi
      *
      * @return 业务日志切点
      */
+    @NonNull
     @Override
     public Pointcut getPointcut() {
         return pointcut;
@@ -29,9 +31,9 @@ public class BeanFactoryLogRecordAdvisor extends AbstractBeanFactoryPointcutAdvi
     /**
      * 注入注解解析器（透传给切点）。
      *
-     * @param logRecordOperationSource 注解解析器
+     * @param operationSource 注解解析器
      */
-    public void setLogRecordOperationSource(LogRecordOperationSource logRecordOperationSource) {
-        pointcut.setLogRecordOperationSource(logRecordOperationSource);
+    public void setLogRecordOperationSource(LogRecordOperationSource operationSource) {
+        pointcut.setLogRecordOperationSource(operationSource);
     }
 }

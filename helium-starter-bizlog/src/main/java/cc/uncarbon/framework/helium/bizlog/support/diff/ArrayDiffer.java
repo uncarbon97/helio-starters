@@ -1,5 +1,6 @@
-package cc.uncarbon.framework.helium.bizlog.diff;
+package cc.uncarbon.framework.helium.bizlog.support.diff;
 
+import cc.uncarbon.framework.helium.bizlog.service.impl.DiffParseFunction;
 import de.danielbechler.diff.access.Accessor;
 import de.danielbechler.diff.access.Instances;
 import de.danielbechler.diff.comparison.ComparisonStrategy;
@@ -17,7 +18,7 @@ import java.util.*;
  * 数组差异比较器
  * <p>
  * 为 {@code java-object-diff} 补充对数组类型的逐元素差异比较能力，
- * 由 {@code DiffParseFunction} 注册到差异引擎。
+ * 由 {@link DiffParseFunction} 注册到差异引擎。
  *
  * @author wulang@mzt-biz-log
  * @author Uncarbon

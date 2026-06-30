@@ -2,7 +2,8 @@ package cc.uncarbon.framework.helium.bizlog.support.parse;
 
 import cc.uncarbon.framework.helium.bizlog.service.IFunctionService;
 import lombok.AllArgsConstructor;
-import org.springframework.util.StringUtils;
+import lombok.Setter;
+import org.springframework.util.ObjectUtils;
 
 import java.util.Map;
 
@@ -17,6 +18,7 @@ import java.util.Map;
 @AllArgsConstructor
 public class LogFunctionParser {
 
+    @Setter
     private IFunctionService functionService;
 
 
@@ -30,7 +32,7 @@ public class LogFunctionParser {
      * @return 函数返回的文案
      */
     public String getFunctionReturnValue(Map<String, String> beforeFunctionNameAndReturnMap, Object value, String expression, String functionName) {
-        if (StringUtils.isEmpty(functionName)) {
+        if (ObjectUtils.isEmpty(functionName)) {
             return value == null ? "" : value.toString();
         }
         String functionReturnValue;
@@ -55,17 +57,6 @@ public class LogFunctionParser {
     public String getFunctionCallInstanceKey(String functionName, String paramExpression) {
         return functionName + paramExpression;
     }
-
-
-    /**
-     * 注入函数服务。
-     *
-     * @param functionService 函数服务
-     */
-    public void setFunctionService(IFunctionService functionService) {
-        this.functionService = functionService;
-    }
-
 
     /**
      * 判断函数是否前置执行。
