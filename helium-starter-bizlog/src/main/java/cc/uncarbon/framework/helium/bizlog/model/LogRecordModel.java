@@ -29,20 +29,21 @@ public class LogRecordModel {
      * 主键 id
      */
     private Serializable id;
-    /**
-     * 租户
-     */
-    private String tenant;
 
     /**
-     * 保存的操作日志的主模块，比如：订单、商品
+     * 命名空间
      */
-    private String type;
+    private String namespace;
 
     /**
-     * 日志的副模块，比如创建订单、修改商品
+     * 主模块，比如：订单、商品
      */
-    private String subType;
+    private String mainModule;
+
+    /**
+     * 副模块，比如：创建订单、修改商品
+     */
+    private String subModule;
 
     /**
      * 日志绑定的业务标识
@@ -90,9 +91,13 @@ public class LogRecordModel {
      * @author Uncarbon
      */
     public enum CodeVariableType {
-        /** 打印日志的类 */
+        /**
+         * 打印日志的类
+         */
         ClassName,
-        /** 打印日志的方法 */
+        /**
+         * 打印日志的方法
+         */
         MethodName,
         ;
     }

@@ -6,6 +6,7 @@ import cc.uncarbon.framework.helium.bizlog.annotation.DiffLogField;
 import cc.uncarbon.framework.helium.bizlog.props.HeliumBizLogProperties;
 import cc.uncarbon.framework.helium.bizlog.service.IDiffItemsToLogContentService;
 import cc.uncarbon.framework.helium.bizlog.service.IFunctionService;
+import cc.uncarbon.framework.helium.bizlog.support.diff.DiffTextFormatter;
 import de.danielbechler.diff.node.DiffNode;
 import de.danielbechler.diff.selector.ElementSelector;
 import lombok.Getter;
@@ -204,7 +205,7 @@ public class DefaultDiffItemsToLogContentService implements IDiffItemsToLogConte
         Collection<Object> delItemList = listSubtract(sourceList, targetList);
         String listAddContent = listToContent(functionName, addItemList);
         String listDelContent = listToContent(functionName, delItemList);
-        return props.formatList(filedLogName, listAddContent, listDelContent);
+        return DiffTextFormatter.formatList(props, filedLogName, listAddContent, listDelContent);
     }
 
     /**
@@ -220,11 +221,11 @@ public class DefaultDiffItemsToLogContentService implements IDiffItemsToLogConte
     public String getDiffLogContent(String filedLogName, DiffNode node, Object sourceObject, Object targetObject, String functionName) {
         return switch (node.getState()) {
             case ADDED ->
-                    props.formatAdd(filedLogName, getFunctionValue(getFieldValue(node, targetObject), functionName));
+                    DiffTextFormatter.formatAdd(props, filedLogName, getFunctionValue(getFieldValue(node, targetObject), functionName));
             case CHANGED ->
-                    props.formatUpdate(filedLogName, getFunctionValue(getFieldValue(node, sourceObject), functionName), getFunctionValue(getFieldValue(node, targetObject), functionName));
+                    DiffTextFormatter.formatUpdate(props, filedLogName, getFunctionValue(getFieldValue(node, sourceObject), functionName), getFunctionValue(getFieldValue(node, targetObject), functionName));
             case REMOVED ->
-                    props.formatDeleted(filedLogName, getFunctionValue(getFieldValue(node, sourceObject), functionName));
+                    DiffTextFormatter.formatDeleted(props, filedLogName, getFunctionValue(getFieldValue(node, sourceObject), functionName));
             default -> {
                 log.warn("diff log not support");
                 yield "";

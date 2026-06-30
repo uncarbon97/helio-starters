@@ -1,5 +1,6 @@
 package cc.uncarbon.framework.helium.bizlog.support.aop;
 
+import cc.uncarbon.framework.helium.bizlog.annotation.LogRecord;
 import org.jspecify.annotations.NonNull;
 import org.springframework.aop.Pointcut;
 import org.springframework.aop.support.AbstractBeanFactoryPointcutAdvisor;
@@ -7,8 +8,7 @@ import org.springframework.aop.support.AbstractBeanFactoryPointcutAdvisor;
 /**
  * 业务日志切面
  * <p>
- * 组合 {@link LogRecordPointcut}（匹配 {@code @LogRecord} 方法）与日志拦截器，
- * 供 Spring 据此为命中 Bean 创建代理。
+ * 组合 {@link LogRecordPointcut}（匹配 {@link LogRecord} 方法）与日志拦截器
  *
  * @author mzt@mzt-biz-log
  * @author Uncarbon

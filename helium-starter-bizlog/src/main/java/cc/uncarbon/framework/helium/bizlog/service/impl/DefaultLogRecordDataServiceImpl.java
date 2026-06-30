@@ -27,7 +27,7 @@ public class DefaultLogRecordDataServiceImpl implements ILogRecordDataService {
      * 默认实现返回空列表
      */
     @Override
-    public List<LogRecordModel> queryLog(String bizNo, String type) {
+    public List<LogRecordModel> queryLog(String bizNo, String mainModule) {
         return List.of();
     }
 
@@ -35,7 +35,7 @@ public class DefaultLogRecordDataServiceImpl implements ILogRecordDataService {
      * 默认实现返回空列表
      */
     @Override
-    public List<LogRecordModel> queryLogByBizNo(String bizNo, String type, String subType) {
+    public List<LogRecordModel> queryLogByBizNo(String bizNo, String mainModule, String subModule) {
         return List.of();
     }
 }

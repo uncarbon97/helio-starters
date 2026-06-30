@@ -23,21 +23,21 @@ public interface ILogRecordDataService {
     void record(LogRecordModel model);
 
     /**
-     * 按业务标识 + 类型查询日志（返回最多 100 条）。
+     * 按业务标识 + 主模块查询日志（返回最多 100 条）。
      *
-     * @param type  操作日志类型
-     * @param bizNo 操作日志的业务标识，比如：订单号
+     * @param mainModule 主模块，比如：订单、商品
+     * @param bizNo      操作日志的业务标识，比如：订单号
      * @return 操作日志列表
      */
-    List<LogRecordModel> queryLog(String bizNo, String type);
+    List<LogRecordModel> queryLog(String bizNo, String mainModule);
 
     /**
-     * 按业务标识 + 类型 + 子类型查询日志（返回最多 100 条）。
+     * 按业务标识 + 主模块 + 副模块查询日志（返回最多 100 条）。
      *
-     * @param type    操作日志类型
-     * @param subType 操作日志子类型
-     * @param bizNo   操作日志的业务标识，比如：订单号
+     * @param mainModule 主模块，比如：订单、商品
+     * @param subModule  副模块，比如：创建订单、修改商品
+     * @param bizNo      操作日志的业务标识，比如：订单号
      * @return 操作日志列表
      */
-    List<LogRecordModel> queryLogByBizNo(String bizNo, String type, String subType);
+    List<LogRecordModel> queryLogByBizNo(String bizNo, String mainModule, String subModule);
 }

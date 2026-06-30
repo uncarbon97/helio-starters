@@ -47,7 +47,7 @@ public class LogRecordInterceptor extends LogRecordValueParser
 
     private static final String LOG_PREFIX = "[LogRecordInterceptor]";
 
-    private String tenantId;
+    private String namespace;
 
     @Setter
     private boolean joinTransaction;
@@ -297,11 +297,11 @@ public class LogRecordInterceptor extends LogRecordValueParser
             return;
         }
         LogRecordModel model = LogRecordModel.builder()
-                .tenant(tenantId)
-                .type(expressionValues.get(operation.getType()))
-                .bizNo(expressionValues.get(operation.getBizNo()))
+                .namespace(namespace)
+                .mainModule(expressionValues.get(operation.getMainModule()))
+                .subModule(expressionValues.get(operation.getSubModule()))
                 .operator(getRealOperatorId(operation, operatorIdFromService, expressionValues))
-                .subType(expressionValues.get(operation.getSubType()))
+                .bizNo(expressionValues.get(operation.getBizNo()))
                 .extra(expressionValues.get(operation.getExtra()))
                 .codeVariable(getCodeVariable(method))
                 .action(expressionValues.get(action))
@@ -325,7 +325,7 @@ public class LogRecordInterceptor extends LogRecordValueParser
     }
 
     /**
-     * 汇总需要解析的 SpEL 模板：固定解析 type/bizNo/subType/extra，再附加传入的文案模板。
+     * 汇总需要解析的 SpEL 模板：固定解析 mainModule/bizNo/subModule/extra，再附加传入的文案模板。
      *
      * @param operation 当前日志操作
      * @param actions   文案模板（成功或失败）
@@ -333,9 +333,9 @@ public class LogRecordInterceptor extends LogRecordValueParser
      */
     private List<String> getSpElTemplates(LogRecordOps operation, String... actions) {
         List<String> spElTemplates = new ArrayList<>();
-        spElTemplates.add(operation.getType());
+        spElTemplates.add(operation.getMainModule());
         spElTemplates.add(operation.getBizNo());
-        spElTemplates.add(operation.getSubType());
+        spElTemplates.add(operation.getSubModule());
         spElTemplates.add(operation.getExtra());
         spElTemplates.addAll(Arrays.asList(actions));
         return spElTemplates;
@@ -385,12 +385,12 @@ public class LogRecordInterceptor extends LogRecordValueParser
     }
 
     /**
-     * 注入租户标识。
+     * 注入命名空间标识。
      *
-     * @param tenant 租户标识
+     * @param namespace 命名空间标识
      */
-    public LogRecordInterceptor setTenant(String tenant) {
-        this.tenantId = tenant;
+    public LogRecordInterceptor setNamespace(String namespace) {
+        this.namespace = namespace;
         return this;
     }
 

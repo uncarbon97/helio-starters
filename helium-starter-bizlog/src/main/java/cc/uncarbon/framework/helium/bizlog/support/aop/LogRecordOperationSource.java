@@ -130,26 +130,25 @@ public class LogRecordOperationSource {
     /**
      * 将单个 {@link LogRecord} 注解映射为 {@link LogRecordOps}，并校验配置。
      *
-     * @param ae              被注解元素
-     * @param recordAnnotation 注解
+     * @param ae         被注解元素
+     * @param annotation 注解
      * @return 日志操作对象
      */
-    private LogRecordOps parseLogRecordAnnotation(AnnotatedElement ae, LogRecord recordAnnotation) {
+    private LogRecordOps parseLogRecordAnnotation(AnnotatedElement ae, LogRecord annotation) {
         LogRecordOps recordOps = LogRecordOps.builder()
-                .successLogTemplate(recordAnnotation.success())
-                .failLogTemplate(recordAnnotation.fail())
-                .type(recordAnnotation.type())
-                .bizNo(recordAnnotation.bizNo())
-                .operatorId(recordAnnotation.operator())
-                .subType(recordAnnotation.subType())
-                .extra(recordAnnotation.extra())
-                .condition(recordAnnotation.condition())
-                .isSuccess(recordAnnotation.successCondition())
+                .successLogTemplate(annotation.success())
+                .failLogTemplate(annotation.fail())
+                .mainModule(annotation.mainModule())
+                .subModule(annotation.subModule())
+                .operatorId(annotation.operator())
+                .bizNo(annotation.bizNo())
+                .extra(annotation.extra())
+                .condition(annotation.condition())
+                .isSuccess(annotation.successCondition())
                 .build();
         validateLogRecordOperation(ae, recordOps);
         return recordOps;
     }
-
 
     /**
      * 校验注解配置：成功模板与失败模板至少配置其一。
@@ -159,7 +158,7 @@ public class LogRecordOperationSource {
      */
     private void validateLogRecordOperation(AnnotatedElement ae, LogRecordOps recordOps) {
         if (!StringUtils.hasText(recordOps.getSuccessLogTemplate()) && !StringUtils.hasText(recordOps.getFailLogTemplate())) {
-            throw new IllegalStateException("Invalid logRecord annotation configuration on '" +
+            throw new IllegalStateException("Invalid annotation on '" +
                     ae.toString() + "'. 'one of successTemplate and failLogTemplate' attribute must be set.");
         }
     }

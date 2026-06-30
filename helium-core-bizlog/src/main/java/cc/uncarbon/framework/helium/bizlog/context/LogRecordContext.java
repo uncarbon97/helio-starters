@@ -209,7 +209,7 @@ public class LogRecordContext {
     /**
      * 压入一个新的空栈帧。
      * <p>
-     * 日志使用方一般无需调用此方法；由 {@code LogRecordInterceptor} 在进入每个 {@code @LogRecord} 方法时调用，
+     * 日志使用方一般无需调用此方法；由 {@code LogRecordInterceptor} 在进入每个 {@link LogRecord} 方法时调用，
      * 方法执行完毕后在 {@code finally} 中调用 {@link #clear()} 弹出对应栈帧。
      */
     public static void putEmptySpan() {

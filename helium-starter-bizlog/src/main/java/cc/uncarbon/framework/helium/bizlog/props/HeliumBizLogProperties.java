@@ -1,7 +1,7 @@
 package cc.uncarbon.framework.helium.bizlog.props;
 
 import cc.uncarbon.framework.helium.base.constant.ConfigurationPropertiesPrefix;
-import cn.hutool.core.text.CharSequenceUtil;
+import cc.uncarbon.framework.helium.bizlog.support.diff.DiffTextFormatter;
 import lombok.Data;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.core.Ordered;
@@ -24,9 +24,9 @@ public class HeliumBizLogProperties {
     private Boolean enabled;
 
     /**
-     * 租户标识，写入日志记录的 tenant 字段。
+     * 命名空间
      */
-    private String tenant = "";
+    private String namespace = "";
 
     /**
      * 记录日志与业务方法是否使用同一事务；true 时日志异常会回滚业务事务。默认独立。
@@ -39,50 +39,29 @@ public class HeliumBizLogProperties {
     private int order = Ordered.LOWEST_PRECEDENCE;
 
     /**
-     * 字段名称的替换变量
-     */
-    private final String FIELD_PLACEHOLDER = "__fieldName";
-    /**
-     * 更新前的值的替换变量
-     */
-    private final String SOURCE_VALUE_PLACEHOLDER = "__sourceValue";
-    /**
-     * 更新后的值的替换变量
-     */
-    private final String TARGET_VALUE_PLACEHOLDER = "__targetValue";
-    /**
-     * 列表添加项的值的替换变量
-     */
-    private final String LIST_ADD_VALUE_PLACEHOLDER = "__addValues";
-    /**
-     * 列表删除项的值的替换变量
-     */
-    private final String LIST_DEL_VALUE_PLACEHOLDER = "__delValues";
-
-    /**
      * 字段从空改为有值的时候的日志内容模板
      */
-    private String addTemplate = "【" + FIELD_PLACEHOLDER + "】从【空】修改为【" + TARGET_VALUE_PLACEHOLDER + "】";
+    private String addTemplate = "【" + DiffTextFormatter.FIELD_PLACEHOLDER + "】从【空】修改为【" + DiffTextFormatter.TARGET_VALUE_PLACEHOLDER + "】";
     /**
      * 列表修改后只有添加项的时候的日志内容模板
      */
-    private String addTemplateForList = "【" + FIELD_PLACEHOLDER + "】添加了【" + LIST_ADD_VALUE_PLACEHOLDER + "】";
+    private String addTemplateForList = "【" + DiffTextFormatter.FIELD_PLACEHOLDER + "】添加了【" + DiffTextFormatter.LIST_ADD_VALUE_PLACEHOLDER + "】";
     /**
      * 列表修改后只有删除项的时候的日志内容模板
      */
-    private String deleteTemplateForList = "【" + FIELD_PLACEHOLDER + "】删除了【" + LIST_DEL_VALUE_PLACEHOLDER + "】";
+    private String deleteTemplateForList = "【" + DiffTextFormatter.FIELD_PLACEHOLDER + "】删除了【" + DiffTextFormatter.LIST_DEL_VALUE_PLACEHOLDER + "】";
     /**
      * 列表修改后既有删除项又有添加项的时候的日志内容模板
      */
-    private String updateTemplateForList = "【" + FIELD_PLACEHOLDER + "】添加了【" + LIST_ADD_VALUE_PLACEHOLDER + "】删除了【" + LIST_DEL_VALUE_PLACEHOLDER + "】";
+    private String updateTemplateForList = "【" + DiffTextFormatter.FIELD_PLACEHOLDER + "】添加了【" + DiffTextFormatter.LIST_ADD_VALUE_PLACEHOLDER + "】删除了【" + DiffTextFormatter.LIST_DEL_VALUE_PLACEHOLDER + "】";
     /**
      * 字段更新后的日志内容模板
      */
-    private String updateTemplate = "【" + FIELD_PLACEHOLDER + "】从【" + SOURCE_VALUE_PLACEHOLDER + "】修改为【" + TARGET_VALUE_PLACEHOLDER + "】";
+    private String updateTemplate = "【" + DiffTextFormatter.FIELD_PLACEHOLDER + "】从【" + DiffTextFormatter.SOURCE_VALUE_PLACEHOLDER + "】修改为【" + DiffTextFormatter.TARGET_VALUE_PLACEHOLDER + "】";
     /**
      * 字段值被设置为 null 后的日志内容模板
      */
-    private String deleteTemplate = "删除了【" + FIELD_PLACEHOLDER + "】：【" + SOURCE_VALUE_PLACEHOLDER + "】";
+    private String deleteTemplate = "删除了【" + DiffTextFormatter.FIELD_PLACEHOLDER + "】：【" + DiffTextFormatter.SOURCE_VALUE_PLACEHOLDER + "】";
     /**
      * 多个字段的日志内容拼接一起的时候的分隔符
      */
@@ -143,70 +122,11 @@ public class HeliumBizLogProperties {
      * @param template 待校验模板
      */
     private void validatePlaceHolder(String template) {
-        if (!template.contains(FIELD_PLACEHOLDER) && !template.contains(SOURCE_VALUE_PLACEHOLDER) && !template.contains(TARGET_VALUE_PLACEHOLDER)) {
+        if (!template.contains(DiffTextFormatter.FIELD_PLACEHOLDER)
+                && !template.contains(DiffTextFormatter.SOURCE_VALUE_PLACEHOLDER)
+                && !template.contains(DiffTextFormatter.TARGET_VALUE_PLACEHOLDER)) {
             throw new IllegalArgumentException("请检查 logRecord template, 模板需要配置 {{#fieldName}},{{#sourceValue}},{{#targetValue}} 三个变量中的任何一个");
         }
-    }
-
-    /**
-     * 按新增模板格式化文案。
-     *
-     * @param fieldName   字段名
-     * @param targetValue 目标值
-     * @return 格式化后的文案
-     */
-    public String formatAdd(String fieldName, Object targetValue) {
-        return addTemplate.replace(FIELD_PLACEHOLDER, fieldName)
-                .replace(TARGET_VALUE_PLACEHOLDER, String.valueOf(targetValue));
-    }
-
-    /**
-     * 按更新模板格式化文案。
-     *
-     * @param fieldName   字段名
-     * @param sourceValue 源值
-     * @param targetValue 目标值
-     * @return 格式化后的文案
-     */
-    public String formatUpdate(String fieldName, Object sourceValue, Object targetValue) {
-        return updateTemplate.replace(FIELD_PLACEHOLDER, fieldName)
-                .replace(SOURCE_VALUE_PLACEHOLDER, String.valueOf(sourceValue))
-                .replace(TARGET_VALUE_PLACEHOLDER, String.valueOf(targetValue));
-    }
-
-    /**
-     * 按删除模板格式化文案。
-     *
-     * @param fieldName   字段名
-     * @param sourceValue 源值
-     * @return 格式化后的文案
-     */
-    public String formatDeleted(String fieldName, Object sourceValue) {
-        return deleteTemplate.replace(FIELD_PLACEHOLDER, fieldName)
-                .replace(SOURCE_VALUE_PLACEHOLDER, String.valueOf(sourceValue));
-    }
-
-    /**
-     * 按列表模板格式化文案，根据添加/删除内容的有无选择对应模板。
-     *
-     * @param fieldName  字段名
-     * @param addContent 添加项文案
-     * @param delContent 删除项文案
-     * @return 格式化后的文案
-     */
-    public String formatList(String fieldName, String addContent, String delContent) {
-        if (CharSequenceUtil.isNotEmpty(addContent) && CharSequenceUtil.isEmpty(delContent)) {
-            return addTemplateForList.replace(FIELD_PLACEHOLDER, fieldName).replace(LIST_ADD_VALUE_PLACEHOLDER, addContent);
-        }
-        if (CharSequenceUtil.isEmpty(addContent) && CharSequenceUtil.isNotEmpty(delContent)) {
-            return deleteTemplateForList.replace(FIELD_PLACEHOLDER, fieldName).replace(LIST_DEL_VALUE_PLACEHOLDER, delContent);
-        }
-        if (CharSequenceUtil.isNotEmpty(addContent) && CharSequenceUtil.isNotEmpty(delContent)) {
-            return updateTemplateForList.replace(FIELD_PLACEHOLDER, fieldName)
-                    .replace(LIST_ADD_VALUE_PLACEHOLDER, addContent)
-                    .replace(LIST_DEL_VALUE_PLACEHOLDER, delContent);
-        }
-        return "";
     }
 
 }

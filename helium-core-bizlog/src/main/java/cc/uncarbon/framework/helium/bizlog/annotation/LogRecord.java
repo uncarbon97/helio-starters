@@ -5,8 +5,7 @@ import java.lang.annotation.*;
 /**
  * 业务日志记录注解
  * <p>
- * 标注在方法或类上，通过 AOP 拦截自动生成业务操作日志；
- * 支持 {@link Repeatable}，同一方法可声明多个以对应不同模板与条件。
+ * 标注在方法或类上，通过 AOP 拦截自动生成业务操作日志
  *
  * @author muzhantong@mzt-biz-log
  * @author Uncarbon
@@ -17,6 +16,7 @@ import java.lang.annotation.*;
 @Inherited
 @Documented
 public @interface LogRecord {
+
     /**
      * @return 方法执行成功后的日志模版
      */
@@ -28,19 +28,19 @@ public @interface LogRecord {
     String fail() default "";
 
     /**
+     * @return 主模块，比如：订单、商品
+     */
+    String mainModule();
+
+    /**
+     * @return 副模块，比如：创建订单、修改商品
+     */
+    String subModule() default "";
+
+    /**
      * @return 日志的操作人（支持 SpEL，留空则走操作人服务解析）
      */
     String operator() default "";
-
-    /**
-     * @return 操作日志的类型，比如：订单类型、商品类型
-     */
-    String type();
-
-    /**
-     * @return 日志的子类型，比如订单的C端日志，和订单的B端日志，type都是订单类型，但是子类型不一样
-     */
-    String subType() default "";
 
     /**
      * @return 日志绑定的业务标识

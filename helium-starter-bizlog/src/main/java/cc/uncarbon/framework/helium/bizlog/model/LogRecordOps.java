@@ -24,21 +24,21 @@ public class LogRecordOps {
      */
     private String failLogTemplate;
     /**
+     * 主模块，比如：订单、商品
+     */
+    private String mainModule;
+    /**
+     * 副模块，比如：创建订单、修改商品
+     */
+    private String subModule;
+    /**
      * 操作人（SpEL，留空则走操作人服务）
      */
     private String operatorId;
     /**
-     * 业务类型
-     */
-    private String type;
-    /**
      * 业务标识
      */
     private String bizNo;
-    /**
-     * 业务子类型
-     */
-    private String subType;
     /**
      * 额外信息
      */

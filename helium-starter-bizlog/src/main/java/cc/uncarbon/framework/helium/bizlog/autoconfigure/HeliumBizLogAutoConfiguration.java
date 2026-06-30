@@ -99,7 +99,7 @@ public class HeliumBizLogAutoConfiguration {
     public LogRecordInterceptor interceptor(HeliumBizLogProperties props) {
         return new LogRecordInterceptor()
                 .setLogRecordOperationSource(logRecordOperationSource())
-                .setTenant(props.getTenant())
+                .setNamespace(props.getNamespace())
                 .setJoinTransaction(props.isJoinTransaction())
                 .setDiffSameWhetherSaveLog(props.getDiffLog())
                 .setLogRecordPerformanceMonitor(logRecordPerformanceMonitor());
