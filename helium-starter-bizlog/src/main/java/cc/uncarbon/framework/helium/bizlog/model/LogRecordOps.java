@@ -24,13 +24,13 @@ public class LogRecordOps {
      */
     private String failLogTemplate;
     /**
-     * 主模块，比如：订单、商品
+     * 业务类型，比如：订单、商品
      */
-    private String mainModule;
+    private String bizType;
     /**
-     * 副模块，比如：创建订单、修改商品
+     * 行为，比如：创建订单、修改商品
      */
-    private String subModule;
+    private String behavior;
     /**
      * 操作人（SpEL，留空则走操作人服务）
      */
@@ -51,4 +51,8 @@ public class LogRecordOps {
      * 自定义成功判定条件
      */
     private String isSuccess;
+    /**
+     * 命名空间（注解声明，留空回退全局配置）
+     */
+    private String namespace;
 }

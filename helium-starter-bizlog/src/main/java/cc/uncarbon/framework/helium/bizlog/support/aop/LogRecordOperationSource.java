@@ -5,10 +5,12 @@ import cc.uncarbon.framework.helium.bizlog.annotation.LogRecords;
 import cc.uncarbon.framework.helium.bizlog.model.LogRecordOps;
 import org.springframework.core.BridgeMethodResolver;
 import org.springframework.core.annotation.AnnotatedElementUtils;
+import org.springframework.core.annotation.AnnotationUtils;
 import org.springframework.util.ClassUtils;
 import org.springframework.util.ConcurrentReferenceHashMap;
 import org.springframework.util.StringUtils;
 
+import java.lang.annotation.Annotation;
 import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
@@ -111,20 +113,91 @@ public class LogRecordOperationSource {
     }
 
     /**
-     * 解析元素上的所有 {@link LogRecord} 注解。
+     * 解析元素上的所有 {@link LogRecord} 注解，同时支持**组合注解**。
+     * <p>
+     * 遍历元素上直接出现的注解：
+     * <ul>
+     *   <li>直接标注 {@link LogRecord} —— 按其自身属性解析；</li>
+     *   <li>被 {@link LogRecord} 元标注的自定义注解（如 {@code @SysOperateLog}）—— 以内嵌
+     *       {@link LogRecord} 为基线，用组合注解上<b>同名且显式赋值</b>的属性覆盖，
+     *       从而实现「基于 {@code @LogRecord} 扩展、preset 部分属性、其余照常填」的效果，
+     *       无需用户书写 {@code @AliasFor}。</li>
+     * </ul>
+     * 容器注解 {@link LogRecords} 由 {@link #parseLogRecordsAnnotations} 单独处理，此处不重复。
      *
      * @param ae 被注解元素
      * @return 日志操作集合
      */
     private Collection<LogRecordOps> parseLogRecordAnnotations(AnnotatedElement ae) {
-        Collection<LogRecord> logRecordAnnotationAnnotations = AnnotatedElementUtils.findAllMergedAnnotations(ae, LogRecord.class);
         Collection<LogRecordOps> ret = new ArrayList<>();
-        if (!logRecordAnnotationAnnotations.isEmpty()) {
-            for (LogRecord recordAnnotation : logRecordAnnotationAnnotations) {
-                ret.add(parseLogRecordAnnotation(ae, recordAnnotation));
+        for (Annotation ann : ae.getAnnotations()) {
+            Class<? extends Annotation> type = ann.annotationType();
+            if (type == LogRecord.class) {
+                ret.add(parseLogRecordAnnotation(ae, (LogRecord) ann));
+            } else if (type != LogRecords.class) {
+                // 组合注解：注解类型本身是否被 @LogRecord 元标注
+                LogRecord embedded = AnnotatedElementUtils.findMergedAnnotation(type, LogRecord.class);
+                if (embedded != null) {
+                    ret.add(parseComposedLogRecord(ae, ann, embedded));
+                }
             }
         }
         return ret;
+    }
+
+    /**
+     * 将组合注解解析为 {@link LogRecordOps}。
+     * <p>
+     * 以组合注解类型上内嵌的 {@link LogRecord} 作为基线，逐个属性用组合注解<b>同名</b>属性覆盖；
+     * 仅当组合注解显式赋值（与组合注解自身默认值不同）时才覆盖，否则保留内嵌值。
+     *
+     * @param ae       被注解元素（用于校验报错定位）
+     * @param wrapper  组合注解实例
+     * @param embedded 组合注解类型上内嵌的 {@link LogRecord}
+     * @return 日志操作对象
+     */
+    private LogRecordOps parseComposedLogRecord(AnnotatedElement ae, Annotation wrapper, LogRecord embedded) {
+        LogRecordOps recordOps = LogRecordOps.builder()
+                .namespace(resolveAttr(wrapper, "namespace", embedded.namespace()))
+                .bizType(resolveAttr(wrapper, "bizType", embedded.bizType()))
+                .bizNo(resolveAttr(wrapper, "bizNo", embedded.bizNo()))
+                .successLogTemplate(resolveAttr(wrapper, "success", embedded.success()))
+                .failLogTemplate(resolveAttr(wrapper, "fail", embedded.fail()))
+                .behavior(resolveAttr(wrapper, "behavior", embedded.behavior()))
+                .operatorId(resolveAttr(wrapper, "operator", embedded.operator()))
+                .extra(resolveAttr(wrapper, "extra", embedded.extra()))
+                .condition(resolveAttr(wrapper, "condition", embedded.condition()))
+                .isSuccess(resolveAttr(wrapper, "successCondition", embedded.successCondition()))
+                .build();
+        validateLogRecordOperation(ae, recordOps);
+        return recordOps;
+    }
+
+    /**
+     * 读取组合注解上的同名属性：若组合注解声明了该 {@code String} 属性且<b>显式赋值</b>（与组合注解自身默认值不同），
+     * 则用组合注解的值；否则回退到内嵌 {@link LogRecord} 的值。
+     *
+     * @param wrapper     组合注解实例
+     * @param attrName    属性名（与 {@link LogRecord} 的属性同名）
+     * @param embeddedVal 内嵌 {@link LogRecord} 的属性值（回退值）
+     * @return 最终生效的属性值
+     */
+    private String resolveAttr(Annotation wrapper, String attrName, String embeddedVal) {
+        try {
+            Method m = wrapper.annotationType().getDeclaredMethod(attrName);
+            if (m.getReturnType() == String.class) {
+                Object val = m.invoke(wrapper);
+                Object dft = AnnotationUtils.getDefaultValue(wrapper, attrName);
+                if (!Objects.equals(val, dft)) {
+                    return (String) val;
+                }
+            }
+        } catch (NoSuchMethodException ignored) {
+            // 组合注解未声明该属性，回退到内嵌值
+        } catch (ReflectiveOperationException e) {
+            // 反射调用失败，保守回退到内嵌值
+        }
+        return embeddedVal;
     }
 
     /**
@@ -136,10 +209,11 @@ public class LogRecordOperationSource {
      */
     private LogRecordOps parseLogRecordAnnotation(AnnotatedElement ae, LogRecord annotation) {
         LogRecordOps recordOps = LogRecordOps.builder()
+                .namespace(annotation.namespace())
                 .successLogTemplate(annotation.success())
                 .failLogTemplate(annotation.fail())
-                .mainModule(annotation.mainModule())
-                .subModule(annotation.subModule())
+                .bizType(annotation.bizType())
+                .behavior(annotation.behavior())
                 .operatorId(annotation.operator())
                 .bizNo(annotation.bizNo())
                 .extra(annotation.extra())

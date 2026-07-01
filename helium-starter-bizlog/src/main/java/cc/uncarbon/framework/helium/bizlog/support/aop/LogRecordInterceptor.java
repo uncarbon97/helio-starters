@@ -297,9 +297,9 @@ public class LogRecordInterceptor extends LogRecordValueParser
             return;
         }
         LogRecordModel model = LogRecordModel.builder()
-                .namespace(namespace)
-                .mainModule(expressionValues.get(operation.getMainModule()))
-                .subModule(expressionValues.get(operation.getSubModule()))
+                .namespace(StringUtils.hasText(operation.getNamespace()) ? operation.getNamespace() : namespace)
+                .bizType(expressionValues.get(operation.getBizType()))
+                .behavior(expressionValues.get(operation.getBehavior()))
                 .operator(getRealOperatorId(operation, operatorIdFromService, expressionValues))
                 .bizNo(expressionValues.get(operation.getBizNo()))
                 .extra(expressionValues.get(operation.getExtra()))
@@ -325,7 +325,7 @@ public class LogRecordInterceptor extends LogRecordValueParser
     }
 
     /**
-     * 汇总需要解析的 SpEL 模板：固定解析 mainModule/bizNo/subModule/extra，再附加传入的文案模板。
+     * 汇总需要解析的 SpEL 模板：固定解析 bizType/bizNo/behavior/extra，再附加传入的文案模板。
      *
      * @param operation 当前日志操作
      * @param actions   文案模板（成功或失败）
@@ -333,9 +333,9 @@ public class LogRecordInterceptor extends LogRecordValueParser
      */
     private List<String> getSpElTemplates(LogRecordOps operation, String... actions) {
         List<String> spElTemplates = new ArrayList<>();
-        spElTemplates.add(operation.getMainModule());
+        spElTemplates.add(operation.getBizType());
         spElTemplates.add(operation.getBizNo());
-        spElTemplates.add(operation.getSubModule());
+        spElTemplates.add(operation.getBehavior());
         spElTemplates.add(operation.getExtra());
         spElTemplates.addAll(Arrays.asList(actions));
         return spElTemplates;

@@ -36,14 +36,14 @@ public class LogRecordModel {
     private String namespace;
 
     /**
-     * 主模块，比如：订单、商品
+     * 业务类型，比如：订单、商品
      */
-    private String mainModule;
+    private String bizType;
 
     /**
-     * 副模块，比如：创建订单、修改商品
+     * 行为，比如：创建订单、修改商品
      */
-    private String subModule;
+    private String behavior;
 
     /**
      * 日志绑定的业务标识
