@@ -11,7 +11,7 @@ import java.util.Map;
  * 日志模板 SpEL 求值上下文
  * <p>
  * 继承 {@link MethodBasedEvaluationContext}，在方法参数基础上注入：
- * 当前栈帧变量、全局变量（不覆盖同名方法级变量）、方法返回值 {@code _ret}、异常消息 {@code _errorMsg}。
+ * 当前栈帧变量、共享变量（不覆盖同名方法级变量）、方法返回值 {@code _ret}、异常消息 {@code _errorMsg}。
  *
  * @author mzt@mzt-biz-log
  * @author Uncarbon
@@ -32,13 +32,13 @@ public class LogRecordEvaluationContext extends MethodBasedEvaluationContext {
                                       ParameterNameDiscoverer parameterNameDiscoverer, Object ret, String errorMsg) {
         super(rootObject, method, arguments, parameterNameDiscoverer);
         Map<String, Object> variables = LogRecordContext.getVariables();
-        Map<String, Object> globalVariable = LogRecordContext.getGlobalVariableMap();
+        Map<String, Object> sharedVariable = LogRecordContext.getSharedVariableMap();
         if (variables != null) {
             setVariables(variables);
         }
-        if (globalVariable != null && !globalVariable.isEmpty()) {
-            for (Map.Entry<String, Object> entry : globalVariable.entrySet()) {
-                // 方法级变量优先，全局变量不覆盖同名方法级变量
+        if (sharedVariable != null && !sharedVariable.isEmpty()) {
+            for (Map.Entry<String, Object> entry : sharedVariable.entrySet()) {
+                // 方法级变量优先，共享变量不覆盖同名方法级变量
                 if (lookupVariable(entry.getKey()) == null) {
                     setVariable(entry.getKey(), entry.getValue());
                 }

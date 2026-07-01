@@ -18,7 +18,7 @@ import java.util.concurrent.Callable;
  * 上下文包含两部分：
  * <ul>
  *   <li>方法级变量栈 {@code variableMapStack}：每个 {@link LogRecord} 方法进入时压入一帧，方法结束时弹出，互不污染；</li>
- *   <li>全局变量 {@code globalVariableMap}：在当前顶层作用域内跨方法共享。</li>
+ *   <li>共享变量 {@code sharedVariableMap}：在当前顶层作用域内跨方法共享。</li>
  * </ul>
  * 作用域由 {@code LogRecordInterceptor} 在拦截入口通过 {@link #callWithContextThrowing} 绑定，
  * 退出时由 {@link ScopedValue} 自动解绑，无需手动 {@code remove()}，亦不会在线程池残留。
@@ -116,16 +116,16 @@ public class LogRecordContext {
     }
 
     /**
-     * 写入全局变量；若当前未绑定作用域则忽略。
+     * 写入共享变量；若当前未绑定作用域则忽略。
      *
      * @param name  变量名
      * @param value 变量值
      */
-    public static void putGlobalVariable(String name, Object value) {
+    public static void putSharedVariable(String name, Object value) {
         if (!isBound()) {
             return;
         }
-        currentState().globalVariableMap.put(name, value);
+        currentState().sharedVariableMap.put(name, value);
     }
 
     /**
@@ -143,12 +143,12 @@ public class LogRecordContext {
     }
 
     /**
-     * 先查方法级变量，未命中再查全局变量。
+     * 先查方法级变量，未命中再查共享变量。
      *
      * @param key 变量名
      * @return 变量值，未绑定或不存在时返回 {@code null}
      */
-    public static Object getMethodOrGlobal(String key) {
+    public static Object getMethodOrShared(String key) {
         if (!isBound()) {
             return null;
         }
@@ -157,9 +157,9 @@ public class LogRecordContext {
         if (variableMap != null && !variableMap.isEmpty() && (result = variableMap.get(key)) != null) {
             return result;
         }
-        Map<String, Object> globalMap = currentState().globalVariableMap;
-        if (!globalMap.isEmpty()) {
-            return globalMap.get(key);
+        Map<String, Object> sharedMap = currentState().sharedVariableMap;
+        if (!sharedMap.isEmpty()) {
+            return sharedMap.get(key);
         }
         return result;
     }
@@ -177,12 +177,12 @@ public class LogRecordContext {
     }
 
     /**
-     * 获取全局变量表。
+     * 获取共享变量表。
      *
-     * @return 全局变量表；未绑定时返回 {@code null}
+     * @return 共享变量表；未绑定时返回 {@code null}
      */
-    public static Map<String, Object> getGlobalVariableMap() {
-        return isBound() ? currentState().globalVariableMap : null;
+    public static Map<String, Object> getSharedVariableMap() {
+        return isBound() ? currentState().sharedVariableMap : null;
     }
 
     /**
@@ -198,11 +198,11 @@ public class LogRecordContext {
     }
 
     /**
-     * 清空全局变量；未绑定时忽略。
+     * 清空共享变量；未绑定时忽略。
      */
-    public static void clearGlobal() {
+    public static void clearShared() {
         if (isBound()) {
-            currentState().globalVariableMap.clear();
+            currentState().sharedVariableMap.clear();
         }
     }
 
@@ -229,7 +229,7 @@ public class LogRecordContext {
     }
 
     /**
-     * 上下文内部状态：方法级变量栈 + 全局变量表。
+     * 上下文内部状态：方法级变量栈 + 共享变量表。
      * <p>
      * 字段引用为 final，内部集合可变，由 {@link ScopedValue} 绑定，作用域内单线程同步读写。
      */
@@ -237,7 +237,7 @@ public class LogRecordContext {
 
         private final Deque<Map<String, Object>> variableMapStack = new ArrayDeque<>();
 
-        private final Map<String, Object> globalVariableMap = new HashMap<>();
+        private final Map<String, Object> sharedVariableMap = new HashMap<>();
     }
 
     /**

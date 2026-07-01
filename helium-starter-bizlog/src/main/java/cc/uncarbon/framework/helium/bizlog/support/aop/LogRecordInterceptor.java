@@ -79,7 +79,7 @@ public class LogRecordInterceptor extends LogRecordValueParser
      * 拦截主流程：穿透代理对象、绑定日志上下文作用域，并委托 {@link #doExecute} 执行。
      * <p>
      * 顶层调用通过 {@link LogRecordContext#callWithContextThrowing} 绑定全新作用域，
-     * 嵌套调用复用外层已绑定的作用域，保证方法级 span 栈与全局变量语义正确。
+     * 嵌套调用复用外层已绑定的作用域，保证方法级 span 栈与共享变量语义正确。
      *
      * @param invoker 方法调用上下文
      * @param target  目标对象

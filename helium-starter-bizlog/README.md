@@ -17,4 +17,4 @@
   - `success`指定默认值为空文本
 - 内嵌`CodeVariableType`至`LogRecordModel`
 - 在使用`DiffLogAllFields`注解时，如果字段上没有`@DiffLogField`注解，使用字段上的`@Schema`注解的`description`属性
-- 原有`LogRecordContext`是基于ThreadLocal的，重构为支持虚拟线程传递的上下文
+- 原有`LogRecordContext`是基于ThreadLocal的，重构为支持虚拟线程传递的上下文；并将`global`更名为`shared`

@@ -100,7 +100,7 @@ public class DiffParseFunction {
      * @return 差异文案
      */
     public String diff(Object newObj) {
-        Object oldObj = LogRecordContext.getMethodOrGlobal(OLD_OBJECT);
+        Object oldObj = LogRecordContext.getMethodOrShared(OLD_OBJECT);
         return diff(oldObj, newObj);
     }
 
