@@ -1,6 +1,6 @@
-package cc.uncarbon.framework.helium.i18n.resolver;
+package cc.uncarbon.framework.helium.i18n.resolver.timezone;
 
-import cc.uncarbon.framework.helium.i18n.context.TimezoneInfo;
+import cc.uncarbon.framework.helium.i18n.context.timezone.TimezoneInfo;
 import jakarta.servlet.http.HttpServletRequest;
 import org.jspecify.annotations.NonNull;
 

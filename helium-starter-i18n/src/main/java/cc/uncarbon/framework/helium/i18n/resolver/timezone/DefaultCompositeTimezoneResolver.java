@@ -1,10 +1,9 @@
 package cc.uncarbon.framework.helium.i18n.resolver.timezone;
 
 import cc.uncarbon.framework.helium.i18n.constant.HeliumI18nConstant;
-import cc.uncarbon.framework.helium.i18n.context.TimezoneInfo;
+import cc.uncarbon.framework.helium.i18n.context.timezone.TimezoneInfo;
 import cc.uncarbon.framework.helium.i18n.props.HeliumI18nProperties;
-import cc.uncarbon.framework.helium.i18n.resolver.CompositeTimezoneResolver;
-import cc.uncarbon.framework.helium.i18n.resolver.TimezoneResolver;
+import cn.hutool.core.collection.CollUtil;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 
@@ -39,7 +38,11 @@ public class DefaultCompositeTimezoneResolver implements CompositeTimezoneResolv
             try {
                 Optional<TimezoneInfo> tzInfoOp = resolver.resolve(servletRequest);
                 if (tzInfoOp.isPresent()) {
-                    return tzInfoOp.get();
+                    TimezoneInfo tzInfo = tzInfoOp.get();
+                    // 若显式配置了 supported-timezones，则校验；未配置则接受任意合法 ZoneId
+                    if (isSupported(tzInfo.getZoneIdTag())) {
+                        return tzInfo;
+                    }
                 }
             } catch (Exception e) {
                 log.warn(LOG_PREFIX + "resolve failed", e);
@@ -48,5 +51,10 @@ public class DefaultCompositeTimezoneResolver implements CompositeTimezoneResolv
         // 兜底返回默认时区
         String defaultTimezone = props.getTimezone().getDefaultTimezone();
         return TimezoneInfo.ofSimple(defaultTimezone, ZoneId.of(defaultTimezone), 0);
+    }
+
+    private boolean isSupported(String zoneIdTag) {
+        List<String> supported = props.getTimezone().getSupportedTimezones();
+        return CollUtil.isEmpty(supported) || supported.contains(zoneIdTag);
     }
 }

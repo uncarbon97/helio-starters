@@ -1,14 +1,14 @@
 package cc.uncarbon.framework.helium.i18n.resolver.timezone;
 
-import cc.uncarbon.framework.helium.i18n.util.TimezoneUtil;
-import cc.uncarbon.framework.helium.i18n.context.TimezoneInfo;
+import cc.uncarbon.framework.helium.i18n.constant.HeliumI18nConstant;
+import cc.uncarbon.framework.helium.i18n.context.timezone.TimezoneInfo;
 import cc.uncarbon.framework.helium.i18n.props.HeliumI18nProperties;
-import cc.uncarbon.framework.helium.i18n.resolver.TimezoneResolver;
+import cc.uncarbon.framework.helium.i18n.util.TimezoneUtil;
 import cn.hutool.core.text.CharSequenceUtil;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.jspecify.annotations.NonNull;
-import org.springframework.stereotype.Component;
 
 import java.time.ZoneId;
 import java.util.Optional;
@@ -18,9 +18,11 @@ import java.util.Optional;
  *
  * @author Uncarbon
  */
-@Component
 @RequiredArgsConstructor
+@Slf4j
 public class QueryParamTimezoneResolver implements TimezoneResolver {
+
+    private static final String LOG_PREFIX = HeliumI18nConstant.LOG_PREFIX + "[QueryParamTimezoneResolver]";
 
     static final int DEFAULT_ORDER = 10;
 
@@ -38,7 +40,9 @@ public class QueryParamTimezoneResolver implements TimezoneResolver {
             ZoneId defaultZone = ZoneId.of(props.getTimezone().getDefaultTimezone());
             int timezoneOffset = TimezoneUtil.getMinuteDiffBetweenZones(visitorZone, defaultZone);
             return Optional.of(TimezoneInfo.ofSimple(paramVal, visitorZone, timezoneOffset));
-        } catch (Exception ignored) {}
+        } catch (Exception e) {
+            log.warn(LOG_PREFIX + " resolve failed, paramVal={}", paramVal, e);
+        }
         return Optional.empty();
     }
 

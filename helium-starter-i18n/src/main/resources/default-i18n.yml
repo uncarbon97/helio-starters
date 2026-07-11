@@ -3,6 +3,8 @@
   # 多语言
   lang:
     default-language-tag: zh-CN
+    # 兜底语言标签，请求语言/语言前缀都未命中翻译时回退到此语言；留空则回退到 ROOT
+    fallback-language-tag: zh-CN
     supported-language-tags:
       # 只加载这里显式标注支持的语言
       - zh-CN
@@ -21,8 +23,36 @@
   timezone:
     # IANA时区ID，Asia/Shanghai、America/New_York、Europe/London
     default-timezone: Asia/Shanghai
+    # 显式标注支持的时区，留空则不校验、接受任意合法 ZoneId
+    # supported-timezones:
+    #   - Asia/Shanghai
+    #   - America/New_York
+    #   - Europe/London
     resolver:
       # 用于 QueryParamTimezoneResolver，从 URL 请求参数中读取时区，如「?timezone=America/New_York」
       query-param-name: "timezone"
       # 用于 HeaderTimezoneResolver，从 HTTP 请求头中中读取时区，如「X-i18n-Timezone=America/New_York」
       header-name: "X-i18n-Timezone"
+  currency:
+    # 默认币种
+    default-currency: CNY
+    # 币种定义；keys() 同时即支持的币种集，无需再单独维护 supported-currencies
+    definitions:
+      CNY:
+        scale: 2
+        symbol: "¥"
+        display-name: 人民币
+      USD:
+        scale: 2
+        symbol: "$"
+        display-name: 美元
+      # 加密货币等非 ISO 4217 币种，scale 按需给定（如 USDT 6、BTC 8）
+      USDT:
+        scale: 6
+        symbol: "₮"
+        display-name: 泰达币
+    resolver:
+      # 用于 QueryParamCurrencyResolver，从 URL 请求参数中读取币种，如「?currency=USDT」
+      query-param-name: "currency"
+      # 用于 HeaderCurrencyResolver，从 HTTP 请求头中读取币种，如「X-i18n-Currency=USDT」
+      header-name: "X-i18n-Currency"

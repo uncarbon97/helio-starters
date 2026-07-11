@@ -3,7 +3,7 @@ package cc.uncarbon.framework.helium.i18n.util;
 import cc.uncarbon.framework.helium.base.enums.BaseEnum;
 import cc.uncarbon.framework.helium.i18n.context.I18nContext;
 import cc.uncarbon.framework.helium.i18n.context.I18nContextHolder;
-import cc.uncarbon.framework.helium.i18n.context.LangInfo;
+import cc.uncarbon.framework.helium.i18n.context.lang.LangInfo;
 import cn.hutool.core.text.CharSequenceUtil;
 import cn.hutool.core.text.StrPool;
 import cn.hutool.extra.spring.SpringUtil;

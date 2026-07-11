@@ -1,8 +1,7 @@
 package cc.uncarbon.framework.helium.i18n.resolver.lang;
 
-import cc.uncarbon.framework.helium.i18n.context.LangInfo;
+import cc.uncarbon.framework.helium.i18n.context.lang.LangInfo;
 import cc.uncarbon.framework.helium.i18n.props.HeliumI18nProperties;
-import cc.uncarbon.framework.helium.i18n.resolver.LangResolver;
 import cc.uncarbon.framework.helium.i18n.util.LocaleUtil;
 import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.text.CharSequenceUtil;
@@ -50,7 +49,7 @@ public class QueryParamLangResolver implements LangResolver {
         return DEFAULT_ORDER;
     }
 
-    public boolean isSupported(String languageTag) {
+    private boolean isSupported(String languageTag) {
         return CollUtil.contains(props.getLang().getSupportedLanguageTags(), languageTag);
     }
 }

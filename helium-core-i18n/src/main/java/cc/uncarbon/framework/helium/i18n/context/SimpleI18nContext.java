@@ -1,5 +1,8 @@
 package cc.uncarbon.framework.helium.i18n.context;
 
+import cc.uncarbon.framework.helium.i18n.context.currency.CurrencyInfo;
+import cc.uncarbon.framework.helium.i18n.context.lang.LangInfo;
+import cc.uncarbon.framework.helium.i18n.context.timezone.TimezoneInfo;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -23,5 +26,8 @@ public class SimpleI18nContext implements I18nContext {
 
     @Schema(description = "多时区信息")
     protected TimezoneInfo timezoneInfo;
+
+    @Schema(description = "多币种信息")
+    protected CurrencyInfo currencyInfo;
 
 }

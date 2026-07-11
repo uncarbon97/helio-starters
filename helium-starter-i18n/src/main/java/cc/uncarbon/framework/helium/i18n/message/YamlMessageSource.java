@@ -27,6 +27,7 @@ public class YamlMessageSource extends AbstractMessageSource {
 
     private final List<String> basenames;
     private final Charset charset;
+    private final Locale fallbackLocale;
     private final ResourceLoader resourceLoader = new PathMatchingResourcePatternResolver();
 
     /**
@@ -44,6 +45,12 @@ public class YamlMessageSource extends AbstractMessageSource {
                 .map(HeliumI18nProperties.LangConfig::getYamlBasenames)
                 .orElse(Collections.emptyList());
         this.charset = charset;
+        String fallbackTag = Optional.ofNullable(props)
+                .map(HeliumI18nProperties::getLang)
+                .map(HeliumI18nProperties.LangConfig::getFallbackLanguageTag)
+                .filter(tag -> tag != null && !tag.isBlank())
+                .orElse(null);
+        this.fallbackLocale = fallbackTag != null ? Locale.forLanguageTag(fallbackTag) : null;
     }
 
     @Override
@@ -66,6 +73,14 @@ public class YamlMessageSource extends AbstractMessageSource {
         // fallback: language-only locale
         if (!locale.getCountry().isEmpty()) {
             value = getMessagesForLocale(Locale.of(locale.getLanguage())).get(code);
+            if (value != null) {
+                return value;
+            }
+        }
+
+        // fallback: configured fallback language tag
+        if (fallbackLocale != null && !fallbackLocale.equals(locale)) {
+            value = getMessagesForLocale(fallbackLocale).get(code);
             if (value != null) {
                 return value;
             }
