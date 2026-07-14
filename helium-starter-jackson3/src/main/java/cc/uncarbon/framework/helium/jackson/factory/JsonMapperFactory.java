@@ -38,6 +38,7 @@ public class JsonMapperFactory {
             builder.addModule(new BigintAsStringModule());
         }
         builder.changeDefaultPropertyInclusion(incl -> incl.withValueInclusion(JsonInclude.Include.ALWAYS))
+                // 通过 SPI 机制扫 classpath*:META-INF/services/tools.jackson.databind.Module
                 .findAndAddModules();
         return builder.build();
     }

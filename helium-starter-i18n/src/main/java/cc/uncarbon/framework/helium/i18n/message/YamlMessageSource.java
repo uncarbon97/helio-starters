@@ -48,7 +48,7 @@ public class YamlMessageSource extends AbstractMessageSource {
         String fallbackTag = Optional.ofNullable(props)
                 .map(HeliumI18nProperties::getLang)
                 .map(HeliumI18nProperties.LangConfig::getFallbackLanguageTag)
-                .filter(tag -> tag != null && !tag.isBlank())
+                .filter(tag -> !tag.isBlank())
                 .orElse(null);
         this.fallbackLocale = fallbackTag != null ? Locale.forLanguageTag(fallbackTag) : null;
     }
@@ -89,11 +89,8 @@ public class YamlMessageSource extends AbstractMessageSource {
         // fallback: root (default messages)
         if (!locale.getLanguage().isEmpty()) {
             value = getMessagesForLocale(Locale.ROOT).get(code);
-            if (value != null) {
-                return value;
-            }
+            return value;
         }
-
         return null;
     }
 

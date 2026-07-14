@@ -6,6 +6,7 @@ import cc.uncarbon.framework.helium.bizlog.support.diff.ArrayDiffer;
 import de.danielbechler.diff.ObjectDifferBuilder;
 import de.danielbechler.diff.comparison.ComparisonService;
 import de.danielbechler.diff.node.DiffNode;
+import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.aop.support.AopUtils;
 
@@ -37,22 +38,17 @@ public class DiffParseFunction {
      */
     public static final String OLD_OBJECT = "_oldObj";
 
+    /**
+     * -- SETTER --
+     *  注入差异节点转文案服务。
+     */
+    @Setter
     private IDiffItemsToLogContentService diffItemsToLogContentService;
 
     /**
      * 需强制使用 {@code equals} 比较的类型集合（如 BigDecimal 等不宜反射逐字段比较的类型）
      */
     private final Set<Class<?>> comparisonSet = new HashSet<>();
-
-    /**
-     * 取函数名。
-     *
-     * @return 函数名 {@code _DIFF}
-     */
-    //@Override
-    public String functionName() {
-        return diffFunctionName;
-    }
 
     /**
      * 比较两个对象并生成差异文案。
@@ -105,15 +101,6 @@ public class DiffParseFunction {
     }
 
     /**
-     * 注入差异节点转文案服务。
-     *
-     * @param diffItemsToLogContentService 差异节点转文案服务
-     */
-    public void setDiffItemsToLogContentService(IDiffItemsToLogContentService diffItemsToLogContentService) {
-        this.diffItemsToLogContentService = diffItemsToLogContentService;
-    }
-
-    /**
      * 批量登记使用 {@code equals} 比较的类型（按全限定类名）。
      *
      * @param classList 类全限定名集合
@@ -136,7 +123,7 @@ public class DiffParseFunction {
      *
      * @param clazz 类型
      */
-    public void addUseEqualsClass(Class clazz) {
+    public void addUseEqualsClass(Class<?> clazz) {
         comparisonSet.add(clazz);
     }
 }
