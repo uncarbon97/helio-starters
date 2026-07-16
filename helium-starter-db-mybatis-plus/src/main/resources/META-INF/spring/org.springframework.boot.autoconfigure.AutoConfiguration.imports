@@ -1,2 +1,1 @@
-cc.uncarbon.framework.crud.config.HeliumMybatisPlusAutoConfiguration
-cc.uncarbon.framework.crud.config.HeliumDynamicDataSourceAutoConfiguration
+cc.uncarbon.framework.helium.db.mybatisplus.autoconfigure.HeliumMybatisPlusAutoConfiguration
