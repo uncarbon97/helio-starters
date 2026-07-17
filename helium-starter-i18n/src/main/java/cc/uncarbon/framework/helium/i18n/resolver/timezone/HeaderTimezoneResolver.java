@@ -3,7 +3,6 @@ package cc.uncarbon.framework.helium.i18n.resolver.timezone;
 import cc.uncarbon.framework.helium.i18n.constant.HeliumI18nConstant;
 import cc.uncarbon.framework.helium.i18n.context.timezone.TimezoneInfo;
 import cc.uncarbon.framework.helium.i18n.props.HeliumI18nProperties;
-import cc.uncarbon.framework.helium.i18n.util.TimezoneUtil;
 import cn.hutool.core.text.CharSequenceUtil;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
@@ -37,9 +36,7 @@ public class HeaderTimezoneResolver implements TimezoneResolver {
         }
         try {
             ZoneId visitorZone = ZoneId.of(headerVal);
-            ZoneId defaultZone = ZoneId.of(props.getTimezone().getDefaultTimezone());
-            int timezoneOffset = TimezoneUtil.getMinuteDiffBetweenZones(visitorZone, defaultZone);
-            return Optional.of(TimezoneInfo.ofSimple(headerVal, visitorZone, timezoneOffset));
+            return Optional.of(TimezoneInfo.ofSimple(headerVal, visitorZone));
         } catch (Exception e) {
             log.warn(LOG_PREFIX + " resolve failed, headerVal={}", headerVal, e);
         }

@@ -7,10 +7,12 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 import lombok.experimental.Accessors;
 
-import java.time.LocalDateTime;
+import java.time.Instant;
 
 /**
  * 关联表实体类
+ *
+ * <p>审计时刻使用 {@link Instant}（绝对时刻）
  *
  * @author Uncarbon
  */
@@ -23,7 +25,7 @@ public abstract class AbstractRelationEntity implements Entity, AuditingTimeEnti
      */
     @Schema(description = "创建时刻")
     @TableField(value = EntityField.CREATED_AT_COLUMN, fill = FieldFill.INSERT)
-    private LocalDateTime createdAt;
+    private Instant createdAt;
 
     /**
      * 创建者
@@ -36,7 +38,7 @@ public abstract class AbstractRelationEntity implements Entity, AuditingTimeEnti
      * 数据表中无该字段
      */
     @Override
-    public LocalDateTime getUpdatedAt() {
+    public Instant getUpdatedAt() {
         return null;
     }
 

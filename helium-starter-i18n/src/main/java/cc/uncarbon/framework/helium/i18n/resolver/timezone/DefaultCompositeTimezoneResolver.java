@@ -45,16 +45,16 @@ public class DefaultCompositeTimezoneResolver implements CompositeTimezoneResolv
                     }
                 }
             } catch (Exception e) {
-                log.warn(LOG_PREFIX + "resolve failed", e);
+                log.warn(LOG_PREFIX + "resolve failed, {}", e.getMessage());
             }
         }
         // 兜底返回默认时区
-        String defaultTimezone = props.getTimezone().getDefaultTimezone();
-        return TimezoneInfo.ofSimple(defaultTimezone, ZoneId.of(defaultTimezone), 0);
+        String def = props.getTimezone().getOsTimezone();
+        return TimezoneInfo.ofSimple(def, ZoneId.of(def));
     }
 
     private boolean isSupported(String zoneIdTag) {
-        List<String> supported = props.getTimezone().getSupportedTimezones();
+        List<String> supported = props.getTimezone().getSupportedDisplayTimezones();
         return CollUtil.isEmpty(supported) || supported.contains(zoneIdTag);
     }
 }

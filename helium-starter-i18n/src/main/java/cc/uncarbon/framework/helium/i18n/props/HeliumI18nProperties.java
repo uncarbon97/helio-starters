@@ -72,14 +72,19 @@ public class HeliumI18nProperties {
     public static class TimezoneConfig {
 
         /**
-         * 指定默认时区
+         * 系统时区
          */
-        private String defaultTimezone;
+        private String osTimezone;
 
         /**
-         * 显式标注支持的时区，留空则不校验、接受任意合法 ZoneId
+         * 数据时区
          */
-        private List<String> supportedTimezones;
+        private String dbTimezone;
+
+        /**
+         * 显式标注支持的显示时区，留空则不校验、接受任意合法 ZoneId
+         */
+        private List<String> supportedDisplayTimezones;
 
         /**
          * 多时区解析器子配置属性

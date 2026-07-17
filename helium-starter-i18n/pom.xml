@@ -31,7 +31,7 @@
             <artifactId>helium-core-i18n</artifactId>
         </dependency>
 
-        <!-- 引用 Jackson3 启动包，仅供可选的 Jackson 模块（时区/币种）编译使用，不参与传递打包 -->
+        <!-- 引用 Jackson 启动包，仅供编译使用，不参与传递打包 -->
         <dependency>
             <groupId>cc.uncarbon.framework</groupId>
             <artifactId>helium-starter-jackson3</artifactId>

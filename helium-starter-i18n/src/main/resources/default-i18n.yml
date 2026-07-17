@@ -21,10 +21,13 @@
       # 用于 HeaderLangResolver，从 HTTP 请求头中中读取语言，如「X-i18n-Lang=en_US」
       header-name: "X-i18n-Lang"
   timezone:
-    # IANA时区ID，Asia/Shanghai、America/New_York、Europe/London
-    default-timezone: Asia/Shanghai
-    # 显式标注支持的时区，留空则不校验、接受任意合法 ZoneId
-    # supported-timezones:
+    # 这里使用 IANA 标准时区 ID，如：Asia/Shanghai、America/New_York、Europe/London
+    # 系统时区
+    os-timezone: Asia/Shanghai
+    # 数据时区
+    db-timezone: Asia/Shanghai
+    # 显式标注支持的显示时区，留空则不校验、接受任意合法 ZoneId
+    # supported-display-timezones:
     #   - Asia/Shanghai
     #   - America/New_York
     #   - Europe/London

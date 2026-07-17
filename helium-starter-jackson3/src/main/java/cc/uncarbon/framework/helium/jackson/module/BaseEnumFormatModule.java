@@ -38,7 +38,7 @@ public class BaseEnumFormatModule extends SimpleModule {
             gen.writePOJO(value);
             if (baseEnumConfig.showLabel()) {
                 TokenStreamContext writeContext = gen.streamWriteContext();
-                // 如果是普通对象字段，另外输出 Label 字段
+                // 如果是普通对象字段，另外输出 xxxLabel 字段
                 if (!writeContext.inArray()) {
                     gen.writeStringProperty(writeContext.currentName() + "Label", value.getLabel());
                 }

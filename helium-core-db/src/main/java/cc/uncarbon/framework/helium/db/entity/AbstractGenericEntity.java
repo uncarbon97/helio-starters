@@ -6,10 +6,12 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 import lombok.experimental.Accessors;
 
-import java.time.LocalDateTime;
+import java.time.Instant;
 
 /**
  * 通用实体类
+ *
+ * <p>审计时刻使用 {@link Instant}（绝对时刻）
  *
  * @author Uncarbon
  */
@@ -22,7 +24,7 @@ public abstract class AbstractGenericEntity implements Entity, AuditingTimeEntit
      */
     @Schema(description = "创建时刻")
     @TableField(value = EntityField.CREATED_AT_COLUMN, fill = FieldFill.INSERT)
-    private LocalDateTime createdAt;
+    private Instant createdAt;
 
     /**
      * 创建者
@@ -36,7 +38,7 @@ public abstract class AbstractGenericEntity implements Entity, AuditingTimeEntit
      */
     @Schema(description = "更新时刻")
     @TableField(value = EntityField.UPDATED_AT_COLUMN, fill = FieldFill.UPDATE)
-    private LocalDateTime updatedAt;
+    private Instant updatedAt;
 
     /**
      * 更新者

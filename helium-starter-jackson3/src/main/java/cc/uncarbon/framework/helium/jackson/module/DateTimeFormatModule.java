@@ -16,7 +16,7 @@ import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 
 /**
- * 序列化规则模块：日期时间文本格式化输出
+ * 仅处理视为纯本地语义的 {@link LocalDateTime}/{@link LocalDate}/{@link LocalTime}
  *
  * @author Uncarbon
  **/
@@ -28,9 +28,10 @@ public class DateTimeFormatModule extends SimpleModule {
 
     /**
      * 可分别指定时间格式
+     *
      * @param dateTimeFormatter 日期+时间格式
-     * @param dateFormatter 仅日期格式
-     * @param timeFormatter 仅时间格式
+     * @param dateFormatter     仅日期格式
+     * @param timeFormatter     仅时间格式
      */
     public DateTimeFormatModule(DateTimeFormatter dateTimeFormatter, DateTimeFormatter dateFormatter,
                                 DateTimeFormatter timeFormatter) {
