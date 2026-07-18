@@ -20,19 +20,19 @@ import java.time.Instant;
 public class MybatisPlusAutoFillColumnHandler implements MetaObjectHandler {
 
     /**
-     * TenantContextHolder 的全限定名
+     * {@link TenantContextHolder} 的全限定名
      */
-    private static final String TENANT_CONTEXT_HOLDER_FULLY_QUALIFIED_NAME =
+    private static final String TENANT_CONTEXT_HOLDER_FQDN =
             "cc.uncarbon.framework.helium.tenant.context.TenantContextHolder";
 
     /**
-     * 当前 ClassLoader 内，存在 TenantContextHolder
+     * 当前 ClassLoader 内，存在 {@link TenantContextHolder}
      */
     private boolean existsTenantContextHolder = false;
 
     public MybatisPlusAutoFillColumnHandler() {
         try {
-            Class.forName(TENANT_CONTEXT_HOLDER_FULLY_QUALIFIED_NAME);
+            Class.forName(TENANT_CONTEXT_HOLDER_FQDN);
             this.existsTenantContextHolder = true;
         } catch (ClassNotFoundException ignored) {
         }
@@ -53,5 +53,4 @@ public class MybatisPlusAutoFillColumnHandler implements MetaObjectHandler {
         this.strictUpdateFill(metaObject, EntityField.UPDATED_AT_FIELD, Instant.class, Instant.now());
         this.strictUpdateFill(metaObject, EntityField.UPDATED_BY_FIELD, String.class, UserContextHolder.getUserPin());
     }
-
 }
