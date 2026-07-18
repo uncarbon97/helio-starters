@@ -20,9 +20,9 @@ import java.time.format.DateTimeFormatter;
  *
  * @author Uncarbon
  **/
-public class DateTimeFormatModule extends SimpleModule {
+public class LocalDateTimeFormatModule extends SimpleModule {
 
-    public DateTimeFormatModule() {
+    public LocalDateTimeFormatModule() {
         this(DatePattern.NORM_DATETIME_FORMATTER, DatePattern.NORM_DATE_FORMATTER, DatePattern.NORM_TIME_FORMATTER);
     }
 
@@ -33,9 +33,9 @@ public class DateTimeFormatModule extends SimpleModule {
      * @param dateFormatter     仅日期格式
      * @param timeFormatter     仅时间格式
      */
-    public DateTimeFormatModule(DateTimeFormatter dateTimeFormatter, DateTimeFormatter dateFormatter,
-                                DateTimeFormatter timeFormatter) {
-        super(DateTimeFormatModule.class.getSimpleName(), Version.unknownVersion());
+    public LocalDateTimeFormatModule(DateTimeFormatter dateTimeFormatter, DateTimeFormatter dateFormatter,
+                                     DateTimeFormatter timeFormatter) {
+        super(LocalDateTimeFormatModule.class.getSimpleName(), Version.unknownVersion());
         this.addSerializer(LocalDateTime.class, new LocalDateTimeSerializer(dateTimeFormatter));
         this.addSerializer(LocalDate.class, new LocalDateSerializer(dateFormatter));
         this.addSerializer(LocalTime.class, new LocalTimeSerializer(timeFormatter));

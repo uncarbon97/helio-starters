@@ -2,7 +2,8 @@ package cc.uncarbon.framework.helium.jackson.factory;
 
 import cc.uncarbon.framework.helium.jackson.module.BaseEnumFormatModule;
 import cc.uncarbon.framework.helium.jackson.module.BigintAsStringModule;
-import cc.uncarbon.framework.helium.jackson.module.DateTimeFormatModule;
+import cc.uncarbon.framework.helium.jackson.module.LocalDateTimeFormatModule;
+import cc.uncarbon.framework.helium.jackson.module.InstantNoMillisFormatModule;
 import cc.uncarbon.framework.helium.jackson.props.BaseEnumConfig;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.experimental.UtilityClass;
@@ -31,7 +32,8 @@ public class JsonMapperFactory {
                 .enable(JsonReadFeature.ALLOW_BACKSLASH_ESCAPING_ANY_CHARACTER)
                 .enable(JsonReadFeature.ALLOW_SINGLE_QUOTES)
                 .enable(SerializationFeature.ORDER_MAP_ENTRIES_BY_KEYS)
-                .addModule(new DateTimeFormatModule())
+                .addModule(new LocalDateTimeFormatModule())
+                .addModule(new InstantNoMillisFormatModule())
                 .addModule(new BaseEnumFormatModule(baseEnumConfig));
 
         if (useBigintAsString) {

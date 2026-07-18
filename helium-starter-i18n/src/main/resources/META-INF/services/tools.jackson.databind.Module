@@ -1,1 +1,1 @@
-cc.uncarbon.framework.helium.i18n.jackson.HeliumTimezoneJacksonModule
+cc.uncarbon.framework.helium.i18n.jackson.InstantTimezoneAwareModule
