@@ -33,24 +33,28 @@ public class MybatisPlusAutoFillColumnHandler implements MetaObjectHandler {
     public MybatisPlusAutoFillColumnHandler() {
         try {
             Class.forName(TENANT_CONTEXT_HOLDER_FQDN);
-            this.existsTenantContextHolder = true;
+            existsTenantContextHolder = true;
         } catch (ClassNotFoundException ignored) {
         }
     }
 
     @Override
     public void insertFill(MetaObject metaObject) {
-        this.strictInsertFill(metaObject, EntityField.CREATED_AT_FIELD, Instant.class, Instant.now());
-        this.strictInsertFill(metaObject, EntityField.CREATED_BY_FIELD, String.class, UserContextHolder.getUserPin());
+        strictInsertFill(metaObject, EntityField.CREATED_AT_FIELD, Instant.class, Instant.now());
+        strictInsertFill(metaObject, EntityField.CREATED_BY_FIELD, String.class, UserContextHolder.getUserPin());
 
-        if (this.existsTenantContextHolder) {
-            this.strictInsertFill(metaObject, EntityField.TENANT_ID_FIELD, Long.class, TenantContextHolder.getTenantId());
+        if (existsTenantContextHolder) {
+            strictInsertFill(metaObject, EntityField.TENANT_ID_FIELD, Long.class, TenantContextHolder.getTenantId());
         }
     }
 
     @Override
     public void updateFill(MetaObject metaObject) {
-        this.strictUpdateFill(metaObject, EntityField.UPDATED_AT_FIELD, Instant.class, Instant.now());
-        this.strictUpdateFill(metaObject, EntityField.UPDATED_BY_FIELD, String.class, UserContextHolder.getUserPin());
+        // 避免严格填充策略下，实体类字段非空时不更新
+        metaObject.setValue(EntityField.UPDATED_AT_FIELD, Instant.now());
+        String updatedBy = UserContextHolder.getUserPin();
+        if (updatedBy != null) {
+            metaObject.setValue(EntityField.UPDATED_BY_FIELD, updatedBy);
+        }
     }
 }
