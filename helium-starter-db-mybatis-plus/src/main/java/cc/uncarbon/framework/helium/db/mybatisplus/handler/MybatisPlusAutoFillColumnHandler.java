@@ -9,7 +9,7 @@ import org.apache.ibatis.reflection.MetaObject;
 import java.time.Instant;
 
 /**
- * 字段自动填充，摘自Mybatis-Plus官方例程
+ * 字段自动填充，摘自mybatis-plus官方例程
  *
  * <p>审计时刻使用 {@link Instant}（绝对时刻，UTC），DB 列约定为 {@code TIMESTAMP}，
  * 由 MyBatis 内建 {@code InstantTypeHandler} 完成与 TIMESTAMP 的换算。

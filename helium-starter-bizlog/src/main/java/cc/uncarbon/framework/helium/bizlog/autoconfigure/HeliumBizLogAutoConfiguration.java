@@ -1,8 +1,7 @@
 package cc.uncarbon.framework.helium.bizlog.autoconfigure;
 
+import cc.uncarbon.framework.helium.base.condition.HeliumConditions;
 import cc.uncarbon.framework.helium.bizlog.annotation.LogRecord;
-import cc.uncarbon.framework.helium.bizlog.service.impl.DefaultDiffItemsToLogContentService;
-import cc.uncarbon.framework.helium.bizlog.service.IDiffItemsToLogContentService;
 import cc.uncarbon.framework.helium.bizlog.props.HeliumBizLogProperties;
 import cc.uncarbon.framework.helium.bizlog.service.*;
 import cc.uncarbon.framework.helium.bizlog.service.impl.*;
@@ -15,7 +14,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
-import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.*;
 import org.springframework.core.type.AnnotatedTypeMetadata;
 import org.springframework.util.StringUtils;
@@ -23,7 +21,6 @@ import org.springframework.util.StringUtils;
 import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Objects;
 
 /**
  * Helium 业务日志自动装配类
@@ -32,7 +29,6 @@ import java.util.Objects;
  * @author Uncarbon
  */
 @Conditional(value = HeliumBizLogAutoConfiguration.OnBizLogEnabled.class)
-@EnableConfigurationProperties(value = {HeliumBizLogProperties.class})
 @AutoConfiguration
 @Slf4j
 public class HeliumBizLogAutoConfiguration {
@@ -200,7 +196,7 @@ public class HeliumBizLogAutoConfiguration {
     static class OnBizLogEnabled implements Condition {
         @Override
         public boolean matches(ConditionContext context, @NonNull AnnotatedTypeMetadata metadata) {
-            var props = Objects.requireNonNull(context.getBeanFactory()).getBean(HeliumBizLogProperties.class);
+            var props = HeliumConditions.bind(context.getEnvironment(), HeliumBizLogProperties.class);
             return Boolean.TRUE.equals(props.getEnabled());
         }
     }

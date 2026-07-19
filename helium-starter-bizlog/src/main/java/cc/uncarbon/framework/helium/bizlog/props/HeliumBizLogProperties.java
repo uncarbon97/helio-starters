@@ -7,9 +7,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.core.Ordered;
 
 /**
- * 业务日志配置项
- * <p>
- * 对应前缀 {@code mzt.log.record}，主要配置 diff 差异文案模板与分隔符。
+ * Helium 集成业务日志配置属性类
  *
  * @author muzhantong@mzt-biz-log
  * @author Uncarbon

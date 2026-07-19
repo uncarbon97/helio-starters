@@ -21,7 +21,7 @@ import java.util.TimeZone;
  * @author Uncarbon
  */
 @EnableConfigurationProperties(value = {HeliumJacksonProperties.class})
-@AutoConfigureBefore({JacksonAutoConfiguration.class})
+@AutoConfigureBefore(value = {JacksonAutoConfiguration.class})
 @AutoConfiguration
 public class HeliumJackson3AutoConfiguration {
 

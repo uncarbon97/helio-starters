@@ -1,27 +1,15 @@
 package cc.uncarbon.framework.helium.i18n.autoconfigure;
 
+import cc.uncarbon.framework.helium.base.condition.HeliumConditions;
 import cc.uncarbon.framework.helium.i18n.constant.HeliumI18nConstant;
 import cc.uncarbon.framework.helium.i18n.message.YamlMessageSource;
 import cc.uncarbon.framework.helium.i18n.props.HeliumI18nProperties;
-import cc.uncarbon.framework.helium.i18n.resolver.currency.CompositeCurrencyResolver;
-import cc.uncarbon.framework.helium.i18n.resolver.lang.CompositeLangResolver;
-import cc.uncarbon.framework.helium.i18n.resolver.timezone.CompositeTimezoneResolver;
-import cc.uncarbon.framework.helium.i18n.resolver.currency.CurrencyResolver;
-import cc.uncarbon.framework.helium.i18n.resolver.lang.LangResolver;
-import cc.uncarbon.framework.helium.i18n.resolver.timezone.TimezoneResolver;
-import cc.uncarbon.framework.helium.i18n.resolver.currency.DefaultCompositeCurrencyResolver;
-import cc.uncarbon.framework.helium.i18n.resolver.currency.HeaderCurrencyResolver;
-import cc.uncarbon.framework.helium.i18n.resolver.currency.QueryParamCurrencyResolver;
-import cc.uncarbon.framework.helium.i18n.resolver.lang.DefaultCompositeLangResolver;
-import cc.uncarbon.framework.helium.i18n.resolver.lang.HeaderLangResolver;
-import cc.uncarbon.framework.helium.i18n.resolver.lang.QueryParamLangResolver;
-import cc.uncarbon.framework.helium.i18n.resolver.timezone.DefaultCompositeTimezoneResolver;
-import cc.uncarbon.framework.helium.i18n.resolver.timezone.HeaderTimezoneResolver;
-import cc.uncarbon.framework.helium.i18n.resolver.timezone.QueryParamTimezoneResolver;
+import cc.uncarbon.framework.helium.i18n.resolver.currency.*;
+import cc.uncarbon.framework.helium.i18n.resolver.lang.*;
+import cc.uncarbon.framework.helium.i18n.resolver.timezone.*;
 import org.jspecify.annotations.NonNull;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
-import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.MessageSource;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Condition;
@@ -31,7 +19,6 @@ import org.springframework.core.type.AnnotatedTypeMetadata;
 
 import java.nio.charset.StandardCharsets;
 import java.util.List;
-import java.util.Objects;
 
 /**
  * Helium 集成国际化自动装配类
@@ -39,7 +26,6 @@ import java.util.Objects;
  * @author Uncarbon
  */
 @Conditional(value = HeliumI18nAutoConfiguration.OnI18nEnabled.class)
-@EnableConfigurationProperties(HeliumI18nProperties.class)
 @AutoConfiguration
 public class HeliumI18nAutoConfiguration {
 
@@ -108,10 +94,10 @@ public class HeliumI18nAutoConfiguration {
         return new DefaultCompositeCurrencyResolver(props, resolvers);
     }
 
-    protected static class OnI18nEnabled implements Condition {
+    static class OnI18nEnabled implements Condition {
         @Override
         public boolean matches(ConditionContext context, @NonNull AnnotatedTypeMetadata metadata) {
-            var props = Objects.requireNonNull(context.getBeanFactory()).getBean(HeliumI18nProperties.class);
+            var props = HeliumConditions.bind(context.getEnvironment(), HeliumI18nProperties.class);
             return Boolean.TRUE.equals(props.getEnabled());
         }
     }

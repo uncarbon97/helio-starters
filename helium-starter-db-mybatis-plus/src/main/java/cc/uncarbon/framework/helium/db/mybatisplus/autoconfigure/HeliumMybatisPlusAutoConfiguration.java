@@ -20,14 +20,12 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 /**
- * Helium Mybatis-Plus 自动装配类
+ * Helium 集成 mybatis-plus 自动装配类
  *
  * @author Uncarbon
  */
 @EnableConfigurationProperties(value = {HeliumMybatisPlusProperties.class, HeliumIdGenProperties.class})
-@EnableTransactionManagement(
-        proxyTargetClass = true
-)
+@EnableTransactionManagement(proxyTargetClass = true)
 @AutoConfiguration
 @Slf4j
 public class HeliumMybatisPlusAutoConfiguration {
