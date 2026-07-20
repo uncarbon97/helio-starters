@@ -10,6 +10,7 @@ import cc.uncarbon.framework.helium.i18n.resolver.timezone.*;
 import org.jspecify.annotations.NonNull;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.MessageSource;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Condition;
@@ -26,6 +27,7 @@ import java.util.List;
  * @author Uncarbon
  */
 @Conditional(value = HeliumI18nAutoConfiguration.OnI18nEnabled.class)
+@EnableConfigurationProperties(value = HeliumI18nProperties.class)
 @AutoConfiguration
 public class HeliumI18nAutoConfiguration {
 

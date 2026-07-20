@@ -12,8 +12,6 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.context.annotation.*;
 import org.springframework.core.type.AnnotatedTypeMetadata;
 
-import java.util.Objects;
-
 /**
  * Helium 集成 SA-Token 自动装配类
  *
@@ -27,7 +25,7 @@ public class HeliumSaTokenAutoConfiguration {
      * 带本地缓存的 {@link SaTokenDaoForRedisTemplate}
      */
     @Conditional(value = OnLocalCacheDaoEnabled.class)
-    @ConditionalOnMissingBean(value = SaTokenDao.class)
+    @ConditionalOnMissingBean
     @Primary
     @Bean
     public SaTokenDao saTokenLocalCacheDao(HeliumSaTokenProperties props) {

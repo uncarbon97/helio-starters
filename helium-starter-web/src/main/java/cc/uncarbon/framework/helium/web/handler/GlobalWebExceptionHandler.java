@@ -1,7 +1,7 @@
 package cc.uncarbon.framework.helium.web.handler;
 
-import cc.uncarbon.framework.helium.base.errorcode.StructuredErrorCode;
 import cc.uncarbon.framework.helium.base.errorcode.BuiltinErrorCodeEnum;
+import cc.uncarbon.framework.helium.base.errorcode.StructuredErrorCode;
 import cc.uncarbon.framework.helium.base.exception.BusinessException;
 import cc.uncarbon.framework.helium.i18n.props.HeliumI18nProperties;
 import cc.uncarbon.framework.helium.i18n.util.I18nMessageUtil;
@@ -37,7 +37,7 @@ import org.springframework.web.servlet.resource.NoResourceFoundException;
 import java.nio.charset.StandardCharsets;
 
 /**
- * Web 全局异常处理自动装配类
+ * Web 全局异常处理
  *
  * @author Uncarbon
  */

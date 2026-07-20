@@ -14,6 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.*;
 import org.springframework.core.type.AnnotatedTypeMetadata;
 import org.springframework.util.StringUtils;
@@ -29,6 +30,7 @@ import java.util.List;
  * @author Uncarbon
  */
 @Conditional(value = HeliumBizLogAutoConfiguration.OnBizLogEnabled.class)
+@EnableConfigurationProperties(value = HeliumBizLogProperties.class)
 @AutoConfiguration
 @Slf4j
 public class HeliumBizLogAutoConfiguration {
@@ -129,7 +131,7 @@ public class HeliumBizLogAutoConfiguration {
      * @return 默认函数服务
      */
     @Bean
-    @ConditionalOnMissingBean(IFunctionService.class)
+    @ConditionalOnMissingBean
     public IFunctionService functionService(ParseFunctionFactory parseFunctionFactory) {
         return new DefaultFunctionServiceImpl(parseFunctionFactory);
     }
@@ -140,7 +142,7 @@ public class HeliumBizLogAutoConfiguration {
      * @return 默认解析函数
      */
     @Bean
-    @ConditionalOnMissingBean(IParseFunction.class)
+    @ConditionalOnMissingBean(value = IParseFunction.class)
     public DefaultParseFunction parseFunction() {
         return new DefaultParseFunction();
     }
@@ -151,7 +153,7 @@ public class HeliumBizLogAutoConfiguration {
      * @return 默认性能监控器
      */
     @Bean
-    @ConditionalOnMissingBean(ILogRecordPerformanceMonitor.class)
+    @ConditionalOnMissingBean
     public ILogRecordPerformanceMonitor logRecordPerformanceMonitor() {
         return new DefaultLogRecordPerformanceMonitor();
     }
@@ -163,7 +165,7 @@ public class HeliumBizLogAutoConfiguration {
      * @return 默认差异转文案服务
      */
     @Bean
-    @ConditionalOnMissingBean(IDiffItemsToLogContentService.class)
+    @ConditionalOnMissingBean
     @Role(BeanDefinition.ROLE_APPLICATION)
     public IDiffItemsToLogContentService diffItemsToLogContentService(HeliumBizLogProperties heliumBizLogProperties) {
         return new DefaultDiffItemsToLogContentService(heliumBizLogProperties);
@@ -175,7 +177,7 @@ public class HeliumBizLogAutoConfiguration {
      * @return 默认操作人服务
      */
     @Bean
-    @ConditionalOnMissingBean(IOperatorGetService.class)
+    @ConditionalOnMissingBean
     @Role(BeanDefinition.ROLE_APPLICATION)
     public IOperatorGetService operatorGetService() {
         return new DefaultOperatorGetServiceImpl();
@@ -187,7 +189,7 @@ public class HeliumBizLogAutoConfiguration {
      * @return 默认日志落库服务
      */
     @Bean
-    @ConditionalOnMissingBean(ILogRecordDataService.class)
+    @ConditionalOnMissingBean
     @Role(BeanDefinition.ROLE_APPLICATION)
     public ILogRecordDataService recordDataService() {
         return new DefaultLogRecordDataServiceImpl();

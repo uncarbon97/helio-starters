@@ -7,7 +7,6 @@ import cc.uncarbon.framework.helium.websecurity.xss.XssFilter;
 import jakarta.servlet.DispatcherType;
 import org.jspecify.annotations.NonNull;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
@@ -15,8 +14,6 @@ import org.springframework.context.annotation.Condition;
 import org.springframework.context.annotation.ConditionContext;
 import org.springframework.context.annotation.Conditional;
 import org.springframework.core.type.AnnotatedTypeMetadata;
-
-import java.util.Objects;
 
 /**
  * Helium Web 网络安全自动装配类
@@ -32,7 +29,6 @@ public class HeliumWebSecurityAutoConfiguration {
      */
     @Bean
     @Conditional(value = OnAntiXssEnabled.class)
-    @ConditionalOnMissingBean
     public FilterRegistrationBean<XssFilter> xssFilterRegistration(HeliumWebSecurityProperties props) {
         FilterRegistrationBean<XssFilter> registration = new FilterRegistrationBean<>();
         registration.setDispatcherTypes(DispatcherType.REQUEST);

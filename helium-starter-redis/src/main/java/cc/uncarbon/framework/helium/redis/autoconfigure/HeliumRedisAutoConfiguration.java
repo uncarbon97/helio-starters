@@ -1,24 +1,23 @@
 package cc.uncarbon.framework.helium.redis.autoconfigure;
 
 import cc.uncarbon.framework.helium.jackson.factory.JsonMapperFactory;
-import cc.uncarbon.framework.helium.jackson.module.BigintOriginModule;
 import cc.uncarbon.framework.helium.jackson.props.BaseEnumConfig;
 import cc.uncarbon.framework.helium.redis.lock.RedisDistributedLock;
 import cc.uncarbon.framework.helium.redis.lock.RedisDistributedLockTemplate;
 import cc.uncarbon.framework.helium.redis.lock.impl.RedisDistributedLockImpl;
 import cc.uncarbon.framework.helium.redis.lock.impl.RedisDistributedLockTemplateImpl;
-import lombok.RequiredArgsConstructor;
 import org.redisson.api.RedissonClient;
+import org.redisson.spring.starter.RedissonAutoConfigurationV4;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
+import org.springframework.boot.autoconfigure.AutoConfigureBefore;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.boot.data.redis.autoconfigure.DataRedisAutoConfiguration;
 import org.springframework.cache.interceptor.KeyGenerator;
 import org.springframework.context.annotation.Bean;
 import org.springframework.data.redis.connection.RedisConnectionFactory;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.serializer.GenericJacksonJsonRedisSerializer;
 import org.springframework.data.redis.serializer.StringRedisSerializer;
-import tools.jackson.databind.ObjectMapper;
 import tools.jackson.databind.json.JsonMapper;
 
 import java.time.ZoneId;
@@ -31,6 +30,7 @@ import java.util.TimeZone;
  *
  * @author Uncarbon
  */
+@AutoConfigureBefore(value = {DataRedisAutoConfiguration.class, RedissonAutoConfigurationV4.class})
 @AutoConfiguration
 public class HeliumRedisAutoConfiguration {
 
@@ -38,8 +38,6 @@ public class HeliumRedisAutoConfiguration {
      * 首选 {@link RedisTemplate}，支持各类 K、V 类型
      */
     @Bean
-    @ConditionalOnMissingBean
-    @ConditionalOnBean(value = {RedisConnectionFactory.class})
     public RedisTemplate<?, ?> redisTemplate(final RedisConnectionFactory factory) {
         RedisTemplate<?, ?> redisTemplate = new RedisTemplate<>();
         redisTemplate.setConnectionFactory(factory);
@@ -63,7 +61,6 @@ public class HeliumRedisAutoConfiguration {
         // 键值序列化
         redisTemplate.setValueSerializer(valueSerializer);
         redisTemplate.setHashValueSerializer(valueSerializer);
-
         return redisTemplate;
     }
 
@@ -92,7 +89,6 @@ public class HeliumRedisAutoConfiguration {
      */
     @Bean
     @ConditionalOnMissingBean
-    @ConditionalOnBean(value = RedissonClient.class)
     public RedisDistributedLock redisDistributedLock(final RedissonClient redissonClient) {
         return new RedisDistributedLockImpl(redissonClient);
     }
@@ -102,7 +98,6 @@ public class HeliumRedisAutoConfiguration {
      */
     @Bean
     @ConditionalOnMissingBean
-    @ConditionalOnBean(value = RedisDistributedLock.class)
     public RedisDistributedLockTemplate redisDistributedLockTemplate(final RedisDistributedLock redisDistributedLock) {
         return new RedisDistributedLockTemplateImpl(redisDistributedLock);
     }
