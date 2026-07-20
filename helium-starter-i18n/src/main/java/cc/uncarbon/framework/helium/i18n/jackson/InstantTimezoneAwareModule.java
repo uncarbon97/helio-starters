@@ -19,7 +19,7 @@ public class InstantTimezoneAwareModule extends InstantNoMillisFormatModule {
     }
 
     @Override
-    protected @NonNull ZoneId resolveDisplayZone() {
+    public @NonNull ZoneId resolveDisplayZone() {
         return I18nContextHolder.getContextOptional()
                 .map(I18nContext::getTimezoneInfo)
                 .map(TimezoneInfo::getZoneId)

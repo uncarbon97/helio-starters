@@ -1,13 +1,14 @@
 package cc.uncarbon.framework.helium.base.constant;
 
+import lombok.experimental.UtilityClass;
+
 /**
  * 预设权限常量
  *
  * @author Uncarbon
  */
+@UtilityClass
 public final class PermissionPattern {
-    private PermissionPattern() {
-    }
 
     public static final String READ = "read";
     public static final String CREATE = "create";

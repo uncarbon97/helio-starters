@@ -3,6 +3,7 @@ package cc.uncarbon.framework.helium.i18n.resolver.timezone;
 import cc.uncarbon.framework.helium.i18n.constant.HeliumI18nConstant;
 import cc.uncarbon.framework.helium.i18n.context.timezone.TimezoneInfo;
 import cc.uncarbon.framework.helium.i18n.props.HeliumI18nProperties;
+import cc.uncarbon.framework.helium.jackson.module.InstantNoMillisFormatModule;
 import cn.hutool.core.collection.CollUtil;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
@@ -48,9 +49,9 @@ public class DefaultCompositeTimezoneResolver implements CompositeTimezoneResolv
                 log.warn(LOG_PREFIX + "resolve failed, {}", e.getMessage());
             }
         }
-        // 兜底返回默认时区
-        String def = props.getTimezone().getOsTimezone();
-        return TimezoneInfo.ofSimple(def, ZoneId.of(def));
+        // 兜底返回系统时区
+        ZoneId osZone = InstantNoMillisFormatModule.OS_ZONE;
+        return TimezoneInfo.ofSimple(osZone.getId(), osZone);
     }
 
     private boolean isSupported(String zoneIdTag) {

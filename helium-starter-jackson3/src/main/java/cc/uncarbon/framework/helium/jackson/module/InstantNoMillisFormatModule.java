@@ -29,9 +29,9 @@ import java.time.format.DateTimeParseException;
  **/
 public class InstantNoMillisFormatModule extends SimpleModule {
 
-    protected static final ZoneId OS_ZONE = ZoneId.systemDefault();
+    public static final ZoneId OS_ZONE = ZoneId.systemDefault();
 
-    protected DateTimeFormatter formatter = Jackson3Constant.UTC_WITH_XXX_OFFSET_FORMATTER;
+    public DateTimeFormatter formatter = Jackson3Constant.UTC_WITH_XXX_OFFSET_FORMATTER;
 
     public InstantNoMillisFormatModule() {
         super(InstantNoMillisFormatModule.class.getSimpleName(), Version.unknownVersion());
@@ -77,8 +77,7 @@ public class InstantNoMillisFormatModule extends SimpleModule {
         }
     }
 
-    @NonNull
-    protected ZoneId resolveDisplayZone() {
+    public @NonNull ZoneId resolveDisplayZone() {
         return OS_ZONE;
     }
 }

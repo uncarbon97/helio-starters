@@ -1,16 +1,16 @@
-package cc.uncarbon.framework.helium.base.util;
+package cc.uncarbon.framework.helium.base.stream;
+
+import lombok.experimental.UtilityClass;
 
 import java.util.function.BinaryOperator;
 
 /**
- * Stream 流工具
+ * Stream 流函数
  *
  * @author Uncarbon
  */
+@UtilityClass
 public final class StreamFunction {
-
-    private StreamFunction() {
-    }
 
     /**
      * 用于 stream-collect-toMap 遇到相同 key 时，保留现有 value
