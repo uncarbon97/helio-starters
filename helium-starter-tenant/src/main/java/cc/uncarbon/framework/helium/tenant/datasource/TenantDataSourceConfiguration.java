@@ -1,5 +1,6 @@
 package cc.uncarbon.framework.helium.tenant.datasource;
 
+import cc.uncarbon.framework.helium.base.condition.HeliumConditions;
 import cc.uncarbon.framework.helium.db.dynamicdatasource.helper.DynamicDataSourceHelper;
 import cc.uncarbon.framework.helium.db.model.DataSourceSetting;
 import cc.uncarbon.framework.helium.tenant.enums.TenantStrategyEnum;
@@ -58,7 +59,7 @@ public class TenantDataSourceConfiguration {
     protected static final class OnDatasourceStrategy implements Condition {
         @Override
         public boolean matches(ConditionContext context, @NonNull AnnotatedTypeMetadata metadata) {
-            var props = Objects.requireNonNull(context.getBeanFactory()).getBean(HeliumTenantProperties.class);
+            var props = HeliumConditions.bind(context.getEnvironment(), HeliumTenantProperties.class);
             return props.getStrategy() == TenantStrategyEnum.DATASOURCE;
         }
     }

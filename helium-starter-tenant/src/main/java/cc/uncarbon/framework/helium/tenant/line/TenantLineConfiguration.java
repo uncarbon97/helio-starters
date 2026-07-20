@@ -1,5 +1,6 @@
 package cc.uncarbon.framework.helium.tenant.line;
 
+import cc.uncarbon.framework.helium.base.condition.HeliumConditions;
 import cc.uncarbon.framework.helium.tenant.enums.TenantStrategyEnum;
 import cc.uncarbon.framework.helium.tenant.props.HeliumTenantProperties;
 import com.baomidou.mybatisplus.extension.plugins.inner.TenantLineInnerInterceptor;
@@ -35,7 +36,7 @@ public class TenantLineConfiguration {
     protected static class OnLineStrategy implements Condition {
         @Override
         public boolean matches(ConditionContext context, @NonNull AnnotatedTypeMetadata metadata) {
-            var props = Objects.requireNonNull(context.getBeanFactory()).getBean(HeliumTenantProperties.class);
+            var props = HeliumConditions.bind(context.getEnvironment(), HeliumTenantProperties.class);
             return props.getStrategy() == TenantStrategyEnum.LINE;
         }
     }

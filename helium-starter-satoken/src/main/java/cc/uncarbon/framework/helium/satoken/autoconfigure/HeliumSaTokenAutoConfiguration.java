@@ -1,5 +1,6 @@
 package cc.uncarbon.framework.helium.satoken.autoconfigure;
 
+import cc.uncarbon.framework.helium.base.condition.HeliumConditions;
 import cc.uncarbon.framework.helium.satoken.dao.SaTokenRedisDaoWithLocalCache;
 import cc.uncarbon.framework.helium.satoken.props.HeliumSaTokenProperties;
 import cn.dev33.satoken.dao.SaTokenDao;
@@ -37,9 +38,9 @@ public class HeliumSaTokenAutoConfiguration {
     private static class OnLocalCacheDaoEnabled implements Condition {
         @Override
         public boolean matches(ConditionContext context, @NonNull AnnotatedTypeMetadata metadata) {
-            var props = Objects.requireNonNull(context.getBeanFactory()).getBean(HeliumSaTokenProperties.class);
-            var subProp = props.getRedisDaoWithLocalCache();
-            return Boolean.TRUE.equals(subProp.getEnabled());
+            var props = HeliumConditions.bind(context.getEnvironment(), HeliumSaTokenProperties.class);
+            var sub = props.getRedisDaoWithLocalCache();
+            return sub != null && Boolean.TRUE.equals(sub.getEnabled());
         }
     }
 

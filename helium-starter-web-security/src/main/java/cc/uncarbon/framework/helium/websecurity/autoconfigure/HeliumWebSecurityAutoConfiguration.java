@@ -1,5 +1,6 @@
 package cc.uncarbon.framework.helium.websecurity.autoconfigure;
 
+import cc.uncarbon.framework.helium.base.condition.HeliumConditions;
 import cc.uncarbon.framework.helium.web.constant.ServletFilterOrder;
 import cc.uncarbon.framework.helium.websecurity.props.HeliumWebSecurityProperties;
 import cc.uncarbon.framework.helium.websecurity.xss.XssFilter;
@@ -45,9 +46,9 @@ public class HeliumWebSecurityAutoConfiguration {
     private static class OnAntiXssEnabled implements Condition {
         @Override
         public boolean matches(ConditionContext context, @NonNull AnnotatedTypeMetadata metadata) {
-            var props = Objects.requireNonNull(context.getBeanFactory()).getBean(HeliumWebSecurityProperties.class);
-            var subProp = props.getAntiXss();
-            return Boolean.TRUE.equals(subProp.getEnabled());
+            var props = HeliumConditions.bind(context.getEnvironment(), HeliumWebSecurityProperties.class);
+            var sub = props.getAntiXss();
+            return sub != null && Boolean.TRUE.equals(sub.getEnabled());
         }
     }
 }
