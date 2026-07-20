@@ -24,21 +24,21 @@ public class HeliumI18nProperties {
     /**
      * 多语言
      */
-    private LangConfig lang;
+    private Lang lang;
 
     /**
      * 多时区
      */
-    private TimezoneConfig timezone;
+    private Timezone timezone;
 
     /**
      * 多币种
      */
-    private CurrencyConfig currency;
+    private Currency currency;
 
 
     @Data
-    public static class LangConfig {
+    public static class Lang {
 
         /**
          * 指定默认语言
@@ -69,12 +69,7 @@ public class HeliumI18nProperties {
     }
 
     @Data
-    public static class TimezoneConfig {
-
-        /**
-         * 系统时区
-         */
-        private String osTimezone;
+    public static class Timezone {
 
         /**
          * 数据时区
@@ -124,7 +119,7 @@ public class HeliumI18nProperties {
     }
 
     @Data
-    public static class CurrencyConfig {
+    public static class Currency {
 
         /**
          * 指定默认币种

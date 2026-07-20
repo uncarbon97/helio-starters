@@ -42,12 +42,12 @@ public class YamlMessageSource extends AbstractMessageSource {
     public YamlMessageSource(HeliumI18nProperties props, Charset charset) {
         this.basenames = Optional.ofNullable(props)
                 .map(HeliumI18nProperties::getLang)
-                .map(HeliumI18nProperties.LangConfig::getYamlBasenames)
+                .map(HeliumI18nProperties.Lang::getYamlBasenames)
                 .orElse(Collections.emptyList());
         this.charset = charset;
         String fallbackTag = Optional.ofNullable(props)
                 .map(HeliumI18nProperties::getLang)
-                .map(HeliumI18nProperties.LangConfig::getFallbackLanguageTag)
+                .map(HeliumI18nProperties.Lang::getFallbackLanguageTag)
                 .filter(tag -> !tag.isBlank())
                 .orElse(null);
         this.fallbackLocale = fallbackTag != null ? Locale.forLanguageTag(fallbackTag) : null;
