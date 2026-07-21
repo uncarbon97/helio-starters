@@ -1,16 +1,19 @@
 package cc.uncarbon.framework.helium.web.autoconfigure;
 
-import cc.uncarbon.framework.helium.web.configurer.EnhanceWebMvcConfigurer;
-import cc.uncarbon.framework.helium.web.handler.GlobalWebExceptionHandler;
-import cc.uncarbon.framework.helium.web.listener.WebServerLaunchedListener;
+import cc.uncarbon.framework.helium.base.errorcode.ErrorMessageFormatter;
 import cc.uncarbon.framework.helium.web.props.HeliumWebProperties;
+import cc.uncarbon.framework.helium.web.support.DefaultErrorMessageFormatter;
+import cc.uncarbon.framework.helium.web.support.EnhanceWebMvcConfigurer;
+import cc.uncarbon.framework.helium.web.support.GlobalWebExceptionHandler;
+import cc.uncarbon.framework.helium.web.support.WebServerLaunchedListener;
+import jakarta.validation.Validator;
 import org.hibernate.validator.BaseHibernateValidatorConfiguration;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.MessageSource;
-import org.springframework.context.annotation.*;
-import jakarta.validation.Validator;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Import;
 import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
 
 /**
@@ -22,6 +25,12 @@ import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
 @EnableConfigurationProperties(value = HeliumWebProperties.class)
 @AutoConfiguration
 public class HeliumWebAutoConfiguration {
+
+    @Bean
+    @ConditionalOnMissingBean(value = ErrorMessageFormatter.class)
+    public ErrorMessageFormatter errorMessageFormatter() {
+        return new DefaultErrorMessageFormatter();
+    }
 
     /**
      * Validator 失败立即返回模式配置

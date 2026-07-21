@@ -1,7 +1,9 @@
 package cc.uncarbon.framework.helium.i18n.autoconfigure;
 
 import cc.uncarbon.framework.helium.base.condition.HeliumConditions;
+import cc.uncarbon.framework.helium.base.errorcode.ErrorMessageFormatter;
 import cc.uncarbon.framework.helium.i18n.constant.HeliumI18nConstant;
+import cc.uncarbon.framework.helium.i18n.message.I18nAwareErrorMessageFormatter;
 import cc.uncarbon.framework.helium.i18n.message.YamlMessageSource;
 import cc.uncarbon.framework.helium.i18n.props.HeliumI18nProperties;
 import cc.uncarbon.framework.helium.i18n.resolver.currency.*;
@@ -9,6 +11,7 @@ import cc.uncarbon.framework.helium.i18n.resolver.lang.*;
 import cc.uncarbon.framework.helium.i18n.resolver.timezone.*;
 import org.jspecify.annotations.NonNull;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
+import org.springframework.boot.autoconfigure.AutoConfigureBefore;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.MessageSource;
@@ -23,13 +26,22 @@ import java.util.List;
 
 /**
  * Helium 集成国际化自动装配类
+ * 先于 web 自动装配，优先注册 {@link I18nAwareErrorMessageFormatter}
  *
  * @author Uncarbon
  */
 @Conditional(value = HeliumI18nAutoConfiguration.OnI18nEnabled.class)
 @EnableConfigurationProperties(value = HeliumI18nProperties.class)
+@AutoConfigureBefore(name = "cc.uncarbon.framework.helium.web.autoconfigure.HeliumWebAutoConfiguration")
 @AutoConfiguration
 public class HeliumI18nAutoConfiguration {
+
+    // -- 错误消息格式化
+
+    @Bean
+    public ErrorMessageFormatter errorMessageFormatter() {
+        return new I18nAwareErrorMessageFormatter();
+    }
 
     // -- 多语言
 

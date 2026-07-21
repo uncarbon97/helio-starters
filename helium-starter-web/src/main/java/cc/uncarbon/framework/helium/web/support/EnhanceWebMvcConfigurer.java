@@ -1,4 +1,4 @@
-package cc.uncarbon.framework.helium.web.configurer;
+package cc.uncarbon.framework.helium.web.support;
 
 import cc.uncarbon.framework.helium.web.jackson.EnumConverterFactory;
 import lombok.RequiredArgsConstructor;
@@ -49,10 +49,6 @@ public class EnhanceWebMvcConfigurer implements WebMvcConfigurer, WebBindingInit
      */
     @Override
     public void configureMessageConverters(HttpMessageConverters.@NonNull ServerBuilder builder) {
-        builder.configureMessageConvertersList(list -> list.removeIf(
-                item -> item instanceof StringHttpMessageConverter
-                        || item instanceof AbstractJacksonHttpMessageConverter)
-        );
         builder.addCustomConverter(new StringHttpMessageConverter(StandardCharsets.UTF_8));
         builder.addCustomConverter(new ByteArrayHttpMessageConverter());
         builder.addCustomConverter(new ResourceHttpMessageConverter());

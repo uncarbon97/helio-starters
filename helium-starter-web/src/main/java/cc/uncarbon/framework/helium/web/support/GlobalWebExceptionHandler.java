@@ -1,23 +1,20 @@
-package cc.uncarbon.framework.helium.web.handler;
+package cc.uncarbon.framework.helium.web.support;
 
 import cc.uncarbon.framework.helium.base.errorcode.BuiltinErrorCodeEnum;
+import cc.uncarbon.framework.helium.base.errorcode.ErrorMessageFormatter;
 import cc.uncarbon.framework.helium.base.errorcode.StructuredErrorCode;
 import cc.uncarbon.framework.helium.base.exception.BusinessException;
-import cc.uncarbon.framework.helium.i18n.props.HeliumI18nProperties;
-import cc.uncarbon.framework.helium.i18n.util.I18nMessageUtil;
 import cc.uncarbon.framework.helium.web.model.response.ApiResult;
+import cc.uncarbon.framework.helium.web.props.HeliumWebProperties;
 import cc.uncarbon.framework.helium.web.util.InvalidFieldUtil;
 import cn.dev33.satoken.exception.NotLoginException;
 import cn.dev33.satoken.exception.NotPermissionException;
 import cn.dev33.satoken.exception.NotRoleException;
-import cn.hutool.core.text.CharSequenceUtil;
-import jakarta.annotation.PostConstruct;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.json.JsonParseException;
 import org.springframework.http.HttpStatus;
@@ -41,33 +38,26 @@ import java.nio.charset.StandardCharsets;
  *
  * @author Uncarbon
  */
-@ConditionalOnMissingBean
+@ConditionalOnMissingBean(name = GlobalWebExceptionHandler.BEAN_NAME)
 @RequiredArgsConstructor
-@ControllerAdvice
+@ControllerAdvice(name = GlobalWebExceptionHandler.BEAN_NAME)
 @Slf4j
 public class GlobalWebExceptionHandler {
 
+    public static final String BEAN_NAME = "globalWebExceptionHandler";
     protected static final MediaType MEDIA_TYPE_APPLICATION_JSON_UTF8 =
             new MediaType("application", "json", StandardCharsets.UTF_8);
     private static final String LOG_PREFIX = "[Web]";
 
-    private final ObjectProvider<HeliumI18nProperties> i18nPropsProvider;
-    private static boolean I18N_ENABLED = false;
-
-    @PostConstruct
-    public void postConstruct() {
-        HeliumI18nProperties props = i18nPropsProvider.getIfAvailable();
-        if (props != null) {
-            I18N_ENABLED = props.getEnabled();
-        }
-    }
+    private final ErrorMessageFormatter errorMessageFormatter;
+    private final HeliumWebProperties props;
 
     /**
      * 主动抛出的业务异常
      */
     @ExceptionHandler(value = {BusinessException.class})
     public ResponseEntity<ApiResult<Void>> handleBusinessException(BusinessException e, HttpServletRequest servletRequest) {
-        this.logException(e, servletRequest);
+        logBusinessException(e, servletRequest);
 
         ApiResult<Void> ret;
         if (e.getErrorCode() != null) {
@@ -83,7 +73,7 @@ public class GlobalWebExceptionHandler {
      */
     @ExceptionHandler(value = {NotLoginException.class})
     public ResponseEntity<ApiResult<Void>> handleNotLoginException(NotLoginException e, HttpServletRequest servletRequest) {
-        this.logException(e, servletRequest);
+        logExpectedException(e, servletRequest);
 
         final var codeEnum = BuiltinErrorCodeEnum.Z00401;
         ApiResult<Void> ret = ApiResult.fail(codeEnum.getErrorCode(), determineI18nMessage(codeEnum));
@@ -95,7 +85,7 @@ public class GlobalWebExceptionHandler {
      */
     @ExceptionHandler(value = {NotRoleException.class})
     public ResponseEntity<ApiResult<Void>> handleNotRoleException(NotRoleException e, HttpServletRequest servletRequest) {
-        this.logException(e, servletRequest);
+        logExpectedException(e, servletRequest);
 
         final var codeEnum = BuiltinErrorCodeEnum.Z00402;
         ApiResult<Void> ret = ApiResult.fail(codeEnum.getErrorCode(), determineI18nMessage(codeEnum));
@@ -108,7 +98,7 @@ public class GlobalWebExceptionHandler {
     @ExceptionHandler(value = {NotPermissionException.class})
     public ResponseEntity<ApiResult<Void>> handleNotPermissionException(NotPermissionException e,
                                                                         HttpServletRequest servletRequest) {
-        this.logException(e, servletRequest);
+        logExpectedException(e, servletRequest);
 
         final var codeEnum = BuiltinErrorCodeEnum.Z00403;
         ApiResult<Void> ret = ApiResult.fail(codeEnum.getErrorCode(), determineI18nMessage(codeEnum));
@@ -120,7 +110,7 @@ public class GlobalWebExceptionHandler {
      */
     @ExceptionHandler(value = {NoHandlerFoundException.class, NoResourceFoundException.class})
     public ResponseEntity<ApiResult<Void>> handleNoHandlerFoundException(Exception e, HttpServletRequest servletRequest) {
-        this.logException(e, servletRequest);
+        logExpectedException(e, servletRequest);
 
         final var codeEnum = BuiltinErrorCodeEnum.Z00404;
         ApiResult<Void> ret = ApiResult.fail(codeEnum.getErrorCode(), determineI18nMessage(codeEnum));
@@ -135,7 +125,7 @@ public class GlobalWebExceptionHandler {
     @ExceptionHandler(value = {HttpRequestMethodNotSupportedException.class, HttpMediaTypeNotSupportedException.class})
     public ResponseEntity<ApiResult<Void>> handleServletException(ServletException e,
                                                                   HttpServletRequest servletRequest) {
-        this.logException(e, servletRequest);
+        logExpectedException(e, servletRequest);
 
         final var codeEnum = BuiltinErrorCodeEnum.Z00405;
         ApiResult<Void> ret = ApiResult.fail(codeEnum.getErrorCode(), determineI18nMessage(codeEnum));
@@ -156,7 +146,7 @@ public class GlobalWebExceptionHandler {
     @ExceptionHandler(value = {JsonParseException.class, HttpMessageNotReadableException.class,
             IllegalArgumentException.class, MethodArgumentTypeMismatchException.class})
     public ResponseEntity<ApiResult<Void>> handleJsonParseException(Exception e, HttpServletRequest servletRequest) {
-        this.logException(e, servletRequest);
+        logExpectedException(e, servletRequest);
 
         final var codeEnum = BuiltinErrorCodeEnum.Z00406;
         ApiResult<Void> ret = ApiResult.fail(codeEnum.getErrorCode(), determineI18nMessage(codeEnum));
@@ -170,7 +160,7 @@ public class GlobalWebExceptionHandler {
     @ExceptionHandler(value = {MethodArgumentNotValidException.class, BindException.class})
     public ResponseEntity<ApiResult<InvalidFieldUtil.InvalidField>> handleBindException(BindException e,
                                                                                         HttpServletRequest servletRequest) {
-        this.logException(e, servletRequest);
+        logExpectedException(e, servletRequest);
 
         final var codeEnum = BuiltinErrorCodeEnum.Z00406;
         ApiResult<InvalidFieldUtil.InvalidField> ret = ApiResult.fail(
@@ -190,7 +180,7 @@ public class GlobalWebExceptionHandler {
     @ExceptionHandler(value = {Exception.class})
     public ResponseEntity<ApiResult<Void>> handleException(Exception e, HttpServletRequest servletRequest) {
         // 打印堆栈，方便溯源
-        this.logException(e, servletRequest, true);
+        logUnexpectedException(e, servletRequest, true);
 
         final var codeEnum = BuiltinErrorCodeEnum.Z00500;
         ApiResult<Void> ret = ApiResult.fail(codeEnum.getErrorCode(), determineI18nMessage(codeEnum));
@@ -203,21 +193,25 @@ public class GlobalWebExceptionHandler {
     ----------------------------------------------------------------
      */
 
-    protected void logException(BusinessException e, HttpServletRequest servletRequest) {
-        log.error(LOG_PREFIX + "[业务异常] {} >> URI=[{}]", e.getMessage(), servletRequest.getRequestURI());
+    protected void logBusinessException(BusinessException e, HttpServletRequest servletRequest) {
+        if (props.isLogBusinessException()) {
+            log.error(LOG_PREFIX + "[业务异常] {} >> URI=[{}]", e.getMessage(), servletRequest.getRequestURI());
+        }
     }
 
-    protected void logException(Exception e, HttpServletRequest servletRequest) {
-        logException(e, servletRequest, false);
+    protected void logExpectedException(Exception e, HttpServletRequest servletRequest) {
+        if (props.isLogExpectedException()) {
+            logUnexpectedException(e, servletRequest, false);
+        }
     }
 
-    protected void logException(Exception e, HttpServletRequest servletRequest, boolean printExceptionStack) {
+    protected void logUnexpectedException(Exception e, HttpServletRequest servletRequest, boolean printExceptionStack) {
         if (printExceptionStack) {
-            log.error(LOG_PREFIX + "[非业务异常] >> 异常类=[{}], URI=[{}], 消息=[{}]",
+            log.error(LOG_PREFIX + "异常类[{}] >> URI=[{}], 消息=[{}]",
                     e.getClass().getName(), servletRequest.getRequestURI(), e.getMessage(), e);
             return;
         }
-        log.error(LOG_PREFIX + "[非业务异常] >> 异常类=[{}], URI=[{}], 消息=[{}]",
+        log.error(LOG_PREFIX + "异常类[{}] >> URI=[{}], 消息=[{}]",
                 e.getClass().getName(), servletRequest.getRequestURI(), e.getMessage());
     }
 
@@ -226,15 +220,12 @@ public class GlobalWebExceptionHandler {
     }
 
     /**
-     * 取国际化翻译值或默认消息，取决于是否实际启用了国际化功能
+     * 取国际化翻译值或默认消息，取决于实际注入的 {@link ErrorMessageFormatter} 实现
      *
      * @param errorCode 错误码
      * @return 消息文本
      */
     protected String determineI18nMessage(@NonNull StructuredErrorCode errorCode, Object... templateParams) {
-        if (I18N_ENABLED) {
-            return I18nMessageUtil.messageOf(errorCode.getErrorCode(), errorCode.getErrorMsgFriendly(), templateParams);
-        }
-        return CharSequenceUtil.format(errorCode.getErrorMsgFriendly(), templateParams);
+        return errorMessageFormatter.format(errorCode, templateParams);
     }
 }
