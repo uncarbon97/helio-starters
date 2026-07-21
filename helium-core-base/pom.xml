@@ -31,19 +31,19 @@
             <artifactId>slf4j-api</artifactId>
         </dependency>
 
-        <!-- SpringDoc 注解包 -->
+        <!-- OpenAPI 3 规范注解契约 -->
         <dependency>
             <groupId>io.swagger.core.v3</groupId>
-            <artifactId>swagger-annotations</artifactId>
+            <artifactId>swagger-annotations-jakarta</artifactId>
         </dependency>
 
-        <!-- jspecify 注解包 -->
+        <!-- jspecify 契约 -->
         <dependency>
             <groupId>org.jspecify</groupId>
             <artifactId>jspecify</artifactId>
         </dependency>
 
-        <!-- Jakarta Validation 注解包 -->
+        <!-- Jakarta Validation 契约 -->
         <dependency>
             <groupId>jakarta.validation</groupId>
             <artifactId>jakarta.validation-api</artifactId>

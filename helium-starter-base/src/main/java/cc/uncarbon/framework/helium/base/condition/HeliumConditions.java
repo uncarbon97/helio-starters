@@ -24,7 +24,7 @@ public final class HeliumConditions {
      * 从 Environment 绑定出指定配置属性对象；未配置时返回反射创建的默认实例（字段为 null/默认值）。
      *
      * @param env       Spring 环境
-     * @param propsType 标注了 {@code @ConfigurationProperties} 的属性配置类
+     * @param propsType 标注了 {@link ConfigurationProperties} 的属性配置类
      * @param <T>       属性类型
      * @return 绑定结果；未配置则返回默认实例
      */

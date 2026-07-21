@@ -3,6 +3,7 @@ package cc.uncarbon.framework.helium.openapi.autoconfigure;
 import cc.uncarbon.framework.helium.base.condition.HeliumConditions;
 import cc.uncarbon.framework.helium.openapi.nextdoc4j.BaseEnumResolver;
 import cc.uncarbon.framework.helium.openapi.props.HeliumOpenApi3Properties;
+import io.swagger.v3.oas.models.OpenAPI;
 import org.jspecify.annotations.NonNull;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
@@ -20,6 +21,11 @@ import org.springframework.core.type.AnnotatedTypeMetadata;
 @EnableConfigurationProperties(value = {HeliumOpenApi3Properties.class})
 @AutoConfiguration
 public class HeliumOpenApi3AutoConfiguration {
+
+    @Bean
+    public OpenAPI openAPI() {
+        return new OpenAPI();
+    }
 
     @Conditional(value = OnNextdoc4jEnabled.class)
     @Bean

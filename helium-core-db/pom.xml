@@ -25,7 +25,7 @@
             <artifactId>helium-core-base</artifactId>
         </dependency>
 
-        <!-- mybatis-plus 注解包 -->
+        <!-- mybatis-plus 注解契约 -->
         <dependency>
             <groupId>com.baomidou</groupId>
             <artifactId>mybatis-plus-annotation</artifactId>

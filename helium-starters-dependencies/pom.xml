@@ -20,7 +20,7 @@
         <spring-boot.version>4.1.0</spring-boot.version>
         <lombok.version>1.18.46</lombok.version>
         <slf4j.version>2.0.12</slf4j.version>
-        <openapi3-annotations.version>2.2.27</openapi3-annotations.version>
+        <swagger.version>2.2.51</swagger.version>
         <hutool.version>5.8.40</hutool.version>
         <!-- 以上用于 base -->
 
@@ -36,7 +36,7 @@
         <!-- 以上用于 db -->
 
         <!-- 以下用于 openapi3 -->
-        <nextdoc4j.version>1.3.1</nextdoc4j.version>
+        <nextdoc4j.version>1.3.2</nextdoc4j.version>
         <!-- 以上用于 openapi3 -->
 
         <!-- 以下用于 redis -->
@@ -60,6 +60,7 @@
                 <scope>import</scope>
             </dependency>
 
+
             <!-- 以下用于 base -->
             <!-- lombok -->
             <dependency>
@@ -75,11 +76,11 @@
                 <version>${slf4j.version}</version>
             </dependency>
 
-            <!-- OpenAPI 3 规范注解包 -->
+            <!-- OpenAPI 3 规范注解契约 -->
             <dependency>
                 <groupId>io.swagger.core.v3</groupId>
-                <artifactId>swagger-annotations</artifactId>
-                <version>${openapi3-annotations.version}</version>
+                <artifactId>swagger-annotations-jakarta</artifactId>
+                <version>${swagger.version}</version>
             </dependency>
 
             <!-- hutool -->
@@ -108,7 +109,7 @@
 
 
             <!-- 以下用于 db -->
-            <!-- mybatis-plus 注解包 -->
+            <!-- mybatis-plus 注解契约 -->
             <dependency>
                 <groupId>com.baomidou</groupId>
                 <artifactId>mybatis-plus-annotation</artifactId>
@@ -153,6 +154,15 @@
 
 
             <!-- 以下用于 openapi3 -->
+            <!-- Nextdoc4j BOM -->
+            <dependency>
+                <groupId>top.nextdoc4j</groupId>
+                <artifactId>nextdoc4j-bom-springboot4</artifactId>
+                <version>${nextdoc4j.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+
             <!-- Nextdoc4j 启动包 -->
             <dependency>
                 <groupId>top.nextdoc4j</groupId>

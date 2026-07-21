@@ -50,13 +50,13 @@
             </exclusions>
         </dependency>
 
-        <!-- Jackson 注解包 -->
+        <!-- Jackson 注解契约 -->
         <dependency>
             <groupId>com.fasterxml.jackson.core</groupId>
             <artifactId>jackson-annotations</artifactId>
         </dependency>
 
-        <!-- jakarta.validation 注解包 -->
+        <!-- jakarta.validation 契约 -->
         <dependency>
             <groupId>jakarta.validation</groupId>
             <artifactId>jakarta.validation-api</artifactId>
