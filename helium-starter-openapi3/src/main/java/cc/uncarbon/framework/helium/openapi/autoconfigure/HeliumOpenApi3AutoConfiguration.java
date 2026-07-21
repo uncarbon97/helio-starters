@@ -6,6 +6,7 @@ import cc.uncarbon.framework.helium.openapi.props.HeliumOpenApi3Properties;
 import io.swagger.v3.oas.models.OpenAPI;
 import org.jspecify.annotations.NonNull;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Condition;
@@ -22,7 +23,11 @@ import org.springframework.core.type.AnnotatedTypeMetadata;
 @AutoConfiguration
 public class HeliumOpenApi3AutoConfiguration {
 
+    /**
+     * 如果工程层自定义了 OpenAPI 相关的 Bean，则不创建空 Bean
+     */
     @Bean
+    @ConditionalOnMissingBean
     public OpenAPI openAPI() {
         return new OpenAPI();
     }
