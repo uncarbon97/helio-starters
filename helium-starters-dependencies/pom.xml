@@ -17,6 +17,7 @@
         <revision>4.0.0-SNAPSHOT</revision>
 
         <!-- 以下用于 base -->
+        <!-- Redisson 的 redisson-spring-data-* 依赖，要支持 Spring Boot 版本 -->
         <spring-boot.version>4.1.0</spring-boot.version>
         <lombok.version>1.18.46</lombok.version>
         <slf4j.version>2.0.12</slf4j.version>
@@ -41,7 +42,7 @@
 
         <!-- 以下用于 redis -->
         <!-- https://mvnrepository.com/artifact/org.redisson/redisson-spring-boot-starter -->
-        <redisson.version>4.3.1</redisson.version>
+        <redisson.version>4.6.1</redisson.version>
         <!-- 以上用于 redis -->
 
         <!-- 以下用于 satoken -->
@@ -196,10 +197,6 @@
                     <exclusion>
                         <groupId>org.springframework.boot</groupId>
                         <artifactId>spring-boot-starter-actuator</artifactId>
-                    </exclusion>
-                    <exclusion>
-                        <groupId>org.apache.maven.plugins</groupId>
-                        <artifactId>maven-site-plugin</artifactId>
                     </exclusion>
                 </exclusions>
             </dependency>

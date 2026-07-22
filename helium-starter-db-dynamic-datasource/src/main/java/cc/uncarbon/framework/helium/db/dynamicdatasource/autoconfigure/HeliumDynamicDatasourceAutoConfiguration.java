@@ -4,27 +4,20 @@ import cc.uncarbon.framework.helium.db.dynamicdatasource.helper.DynamicDataSourc
 import cc.uncarbon.framework.helium.db.dynamicdatasource.helper.DynamicDataSourceHelperImpl;
 import com.baomidou.dynamic.datasource.DynamicRoutingDataSource;
 import com.baomidou.dynamic.datasource.creator.hikaricp.HikariDataSourceCreator;
-import com.baomidou.dynamic.datasource.provider.DynamicDataSourceProvider;
+import com.baomidou.dynamic.datasource.spring.boot.autoconfigure.DynamicDataSourceAutoConfiguration;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
+import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
-
-import java.util.List;
 
 /**
  * Helium 集成 dynamic-datasource 自动装配类
  *
  * @author Uncarbon
  */
+@AutoConfigureAfter(value = {DynamicDataSourceAutoConfiguration.class})
 @AutoConfiguration
 public class HeliumDynamicDatasourceAutoConfiguration {
-
-
-    @Bean
-    @ConditionalOnMissingBean
-    public DynamicRoutingDataSource dynamicRoutingDataSource(DynamicDataSourceProvider ymlDynamicDataSourceProvider) {
-        return new DynamicRoutingDataSource(List.of(ymlDynamicDataSourceProvider));
-    }
 
     @Bean
     @ConditionalOnMissingBean
