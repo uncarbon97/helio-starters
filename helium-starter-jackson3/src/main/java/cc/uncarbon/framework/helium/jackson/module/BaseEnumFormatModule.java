@@ -5,7 +5,6 @@ import cc.uncarbon.framework.helium.jackson.props.BaseEnumConfig;
 import cn.hutool.core.text.CharSequenceUtil;
 import tools.jackson.core.*;
 import tools.jackson.databind.*;
-import tools.jackson.databind.deser.Deserializers;
 import tools.jackson.databind.deser.std.StdScalarDeserializer;
 import tools.jackson.databind.module.SimpleDeserializers;
 import tools.jackson.databind.module.SimpleModule;
@@ -35,7 +34,7 @@ public class BaseEnumFormatModule extends SimpleModule {
 
         @Override
         public void serialize(BaseEnum value, JsonGenerator gen, SerializationContext provider) throws JacksonException {
-            gen.writePOJO(value);
+            gen.writePOJO(value.getValue());
             if (baseEnumConfig.showLabel()) {
                 TokenStreamContext writeContext = gen.streamWriteContext();
                 // 如果是普通对象字段，另外输出 xxxLabel 字段
