@@ -25,22 +25,34 @@
             <artifactId>helium-starter-base</artifactId>
         </dependency>
 
+        <!-- 引用 SpringDoc 启动包 -->
+        <dependency>
+            <groupId>org.springdoc</groupId>
+            <artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
+        </dependency>
+
         <!-- 引用 Nextdoc4j 启动包 -->
         <dependency>
             <groupId>top.nextdoc4j</groupId>
-            <artifactId>nextdoc4j-springboot4-starter</artifactId>
+            <artifactId>nextdoc4j-spring-boot-starter</artifactId>
         </dependency>
 
         <!-- 引用 Nextdoc4j 枚举展示插件 -->
         <dependency>
             <groupId>top.nextdoc4j</groupId>
-            <artifactId>nextdoc4j-plugin-enum-springboot4</artifactId>
+            <artifactId>nextdoc4j-plugin-enum</artifactId>
         </dependency>
 
         <!-- 引用 Nextdoc4j 认证展示插件 -->
         <dependency>
             <groupId>top.nextdoc4j</groupId>
-            <artifactId>nextdoc4j-plugin-security-schemes-springboot4</artifactId>
+            <artifactId>nextdoc4j-plugin-security-schemes</artifactId>
+        </dependency>
+
+        <!-- 引用 Nextdoc4j Sa-Token 权限码插件 -->
+        <dependency>
+            <groupId>top.nextdoc4j</groupId>
+            <artifactId>nextdoc4j-plugin-security-satoken</artifactId>
         </dependency>
     </dependencies>
 </project>

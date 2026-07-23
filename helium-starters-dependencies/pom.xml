@@ -17,11 +17,11 @@
         <revision>4.0.0-SNAPSHOT</revision>
 
         <!-- 以下用于 base -->
-        <!-- Redisson 的 redisson-spring-data-* 依赖，要支持 Spring Boot 版本 -->
         <spring-boot.version>4.1.0</spring-boot.version>
         <lombok.version>1.18.46</lombok.version>
         <slf4j.version>2.0.12</slf4j.version>
-        <swagger.version>2.2.51</swagger.version>
+        <!-- 要对应 SpringDoc 版本 -->
+        <swagger.version>2.2.47</swagger.version>
         <hutool.version>5.8.40</hutool.version>
         <!-- 以上用于 base -->
 
@@ -37,11 +37,13 @@
         <!-- 以上用于 db -->
 
         <!-- 以下用于 openapi3 -->
-        <nextdoc4j.version>1.3.2</nextdoc4j.version>
+        <springdoc.version>3.0.3</springdoc.version>
+        <nextdoc4j.version>1.4.0</nextdoc4j.version>
         <!-- 以上用于 openapi3 -->
 
         <!-- 以下用于 redis -->
         <!-- https://mvnrepository.com/artifact/org.redisson/redisson-spring-boot-starter -->
+        <!-- 内含的 redisson-spring-data-* 依赖，要对应 Spring Boot 版本 -->
         <redisson.version>4.6.1</redisson.version>
         <!-- 以上用于 redis -->
 
@@ -52,7 +54,8 @@
 
     <dependencyManagement>
         <dependencies>
-            <!-- Spring Boot ecosystem -->
+            <!-- 以下为外源 BOM -->
+            <!-- Spring Boot ecosystem BOM -->
             <dependency>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-dependencies</artifactId>
@@ -60,6 +63,25 @@
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
+
+            <!-- SpringDoc BOM -->
+            <dependency>
+                <groupId>org.springdoc</groupId>
+                <artifactId>springdoc-openapi-bom</artifactId>
+                <version>${springdoc.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+
+            <!-- Nextdoc4j BOM -->
+            <dependency>
+                <groupId>top.nextdoc4j</groupId>
+                <artifactId>nextdoc4j-bom</artifactId>
+                <version>${nextdoc4j.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+            <!-- 以上为外源 BOM -->
 
 
             <!-- 以下用于 base -->
@@ -155,35 +177,7 @@
 
 
             <!-- 以下用于 openapi3 -->
-            <!-- Nextdoc4j BOM -->
-            <dependency>
-                <groupId>top.nextdoc4j</groupId>
-                <artifactId>nextdoc4j-bom-springboot4</artifactId>
-                <version>${nextdoc4j.version}</version>
-                <type>pom</type>
-                <scope>import</scope>
-            </dependency>
 
-            <!-- Nextdoc4j 启动包 -->
-            <dependency>
-                <groupId>top.nextdoc4j</groupId>
-                <artifactId>nextdoc4j-springboot4-starter</artifactId>
-                <version>${nextdoc4j.version}</version>
-            </dependency>
-
-            <!-- Nextdoc4j 枚举展示插件 -->
-            <dependency>
-                <groupId>top.nextdoc4j</groupId>
-                <artifactId>nextdoc4j-plugin-enum-springboot4</artifactId>
-                <version>${nextdoc4j.version}</version>
-            </dependency>
-
-            <!-- Nextdoc4j 认证展示插件 -->
-            <dependency>
-                <groupId>top.nextdoc4j</groupId>
-                <artifactId>nextdoc4j-plugin-security-schemes-springboot4</artifactId>
-                <version>${nextdoc4j.version}</version>
-            </dependency>
             <!-- 以上用于 openapi3 -->
 
 
