@@ -161,7 +161,7 @@
 
     <!-- 仓库信息 -->
     <scm>
-        <tag>2.x</tag>
+        <tag>${project.version}</tag>
         <url>https://github.com/uncarbon-gh/helium-starters.git</url>
         <connection>scm:git:https://github.com/uncarbon-gh/helium-starters.git</connection>
         <developerConnection>scm:git:https://github.com/uncarbon-gh/helium-starters.git</developerConnection>
