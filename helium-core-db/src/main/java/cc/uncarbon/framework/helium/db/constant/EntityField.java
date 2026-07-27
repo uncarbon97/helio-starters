@@ -14,13 +14,6 @@ public final class EntityField {
      * 逻辑删除标识
      */
     public static final String DEL_FLAG_COLUMN = "del_flag";
-    public static final String DEL_FLAG_FIELD = "delFlag";
-
-    /**
-     * 乐观锁版本号
-     */
-    public static final String REVISION_COLUMN = "revision";
-    public static final String REVISION_FIELD = REVISION_COLUMN;
 
     /**
      * 租户ID

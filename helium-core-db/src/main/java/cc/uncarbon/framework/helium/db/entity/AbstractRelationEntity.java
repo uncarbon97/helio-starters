@@ -12,13 +12,13 @@ import java.time.Instant;
 /**
  * 关联表实体类
  *
- * <p>审计时刻使用 {@link Instant}（绝对时刻）
- *
  * @author Uncarbon
  */
 @Accessors(chain = true)
 @Data
 public abstract class AbstractRelationEntity implements Entity, AuditingTimeEntity, AuditingUserEntity {
+
+    // 没有逻辑删除
 
     /**
      * 创建时刻
@@ -34,17 +34,15 @@ public abstract class AbstractRelationEntity implements Entity, AuditingTimeEnti
     @TableField(value = EntityField.CREATED_BY_COLUMN, fill = FieldFill.INSERT)
     private String createdBy;
 
-    /**
-     * 数据表中无该字段
-     */
+    // 没有更新时刻和更新者
+    @TableField(exist = false)
+    private Instant updatedAt;
+    @TableField(exist = false)
+    private String updatedBy;
     @Override
     public Instant getUpdatedAt() {
         return null;
     }
-
-    /**
-     * 数据表中无该字段
-     */
     @Override
     public String getUpdatedBy() {
         return null;

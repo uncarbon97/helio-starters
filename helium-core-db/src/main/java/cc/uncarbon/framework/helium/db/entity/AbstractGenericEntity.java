@@ -11,13 +11,19 @@ import java.time.Instant;
 /**
  * 通用实体类
  *
- * <p>审计时刻使用 {@link Instant}（绝对时刻）
- *
  * @author Uncarbon
  */
 @Accessors(chain = true)
 @Data
-public abstract class AbstractGenericEntity implements Entity, AuditingTimeEntity, AuditingUserEntity {
+public abstract class AbstractGenericEntity implements Entity, LogicDelEntity, AuditingTimeEntity, AuditingUserEntity {
+
+    /**
+     * 逻辑删除标识
+     */
+    @Schema(description = "逻辑删除标识")
+    @TableLogic
+    @TableField(value = EntityField.DEL_FLAG_COLUMN)
+    private Integer delFlag;
 
     /**
      * 创建时刻
