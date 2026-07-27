@@ -19,6 +19,6 @@ public class HeliumJacksonProperties {
      * 主要调整 {@link BaseEnumFormatModule} 的行为
      */
     @NestedConfigurationProperty
-    private BaseEnumConfig baseEnum;
+    private BaseEnumConfig baseEnum = new BaseEnumConfig();
 
 }
