@@ -20,6 +20,8 @@
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
         <maven.compiler.source>${java.version}</maven.compiler.source>
         <maven.compiler.target>${java.version}</maven.compiler.target>
+        <!-- 保留方法参数名，供 Spring SpEL（如操作日志模板 #参数名）按参数名引用 -->
+        <maven.compiler.parameters>true</maven.compiler.parameters>
 
         <!-- 由于使用 BOM import 方式引入 spring-boot-dependencies，不会自动引入 <pluginManagement> 部分 -->
         <!-- 手动从 spring-boot-dependencies 复制插件版本 -->
