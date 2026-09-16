@@ -36,7 +36,7 @@ public class DiffParseFunction {
     /**
      * 单参 diff 时，旧对象在 {@link LogRecordContext} 中的变量名
      */
-    public static final String OLD_OBJECT = "_oldObj";
+    public static final String OLD_OBJECT = "old";
 
     /**
      * -- SETTER --
