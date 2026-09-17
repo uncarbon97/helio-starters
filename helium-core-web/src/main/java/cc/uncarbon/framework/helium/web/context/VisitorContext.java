@@ -1,5 +1,7 @@
 package cc.uncarbon.framework.helium.web.context;
 
+import java.util.List;
+
 /**
  * 访客上下文
  * 与 {@link cc.uncarbon.framework.helium.base.context.UserContext} 的区别是：
@@ -14,9 +16,16 @@ public interface VisitorContext {
 
 
    /**
-    * 取得 IP 地址文本
+    * 取得客户端 IP 地址文本
+    * 用户的请求可能经过多次反向代理，取最靠近真实用户的那个
     */
-   String getIp();
+   String getClientIp();
+
+   /**
+    * 取得本次请求经过的所有 IP 地址文本
+    * 用户的请求可能经过多次反向代理
+    */
+   List<String> getClientIpList();
 
    /**
     * 取得浏览器 UA

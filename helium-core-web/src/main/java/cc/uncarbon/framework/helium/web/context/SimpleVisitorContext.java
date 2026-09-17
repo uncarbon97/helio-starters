@@ -6,6 +6,8 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.Accessors;
 
+import java.util.List;
+
 /**
  * 简单访客上下文
  *
@@ -18,8 +20,11 @@ import lombok.experimental.Accessors;
 public class SimpleVisitorContext implements VisitorContext {
 
 
-    @Schema(description = "IP 地址文本")
-    protected String ip;
+    @Schema(description = "客户端 IP 地址文本；用户的请求可能经过多次反向代理，取最靠近真实用户的那个")
+    protected String clientIp;
+
+    @Schema(description = "本次请求经过的所有 IP 地址文本；用户的请求可能经过多次反向代理")
+    protected List<String> clientIpList;
 
     @Schema(description = "浏览器 UA")
     protected String userAgent;
