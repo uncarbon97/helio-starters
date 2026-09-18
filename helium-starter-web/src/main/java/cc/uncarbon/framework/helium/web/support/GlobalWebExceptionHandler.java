@@ -10,6 +10,7 @@ import cc.uncarbon.framework.helium.web.util.InvalidFieldUtil;
 import cn.dev33.satoken.exception.NotLoginException;
 import cn.dev33.satoken.exception.NotPermissionException;
 import cn.dev33.satoken.exception.NotRoleException;
+import cn.hutool.core.util.StrUtil;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.NonNull;
@@ -158,8 +159,8 @@ public class GlobalWebExceptionHandler {
      * 需在 Controller 层使用@Valid注解
      */
     @ExceptionHandler(value = {MethodArgumentNotValidException.class, BindException.class})
-    public ResponseEntity<ApiResult<InvalidFieldUtil.InvalidField>> handleBindException(BindException e,
-                                                                                        HttpServletRequest servletRequest) {
+    public ResponseEntity<ApiResult<InvalidFieldUtil.InvalidField>> handleBindException(
+            BindException e, HttpServletRequest servletRequest) {
         logExpectedException(e, servletRequest);
 
         final var codeEnum = BuiltinErrorCodeEnum.Z00406;
@@ -195,24 +196,21 @@ public class GlobalWebExceptionHandler {
 
     protected void logBusinessException(BusinessException e, HttpServletRequest servletRequest) {
         if (props.isLogBusinessException()) {
-            log.error(LOG_PREFIX + "[业务异常] {} >> URI=[{}]", e.getMessage(), servletRequest.getRequestURI());
+            log.warn(LOG_PREFIX + "[业务异常] {} >> URI=[{}]", e.getMessage(), servletRequest.getRequestURI());
         }
     }
 
     protected void logExpectedException(Exception e, HttpServletRequest servletRequest) {
         if (props.isLogExpectedException()) {
-            logUnexpectedException(e, servletRequest, false);
+            log.warn(LOG_PREFIX + "异常类[{}] >> URI=[{}], 消息=[{}]",
+                    e.getClass().getName(), servletRequest.getRequestURI(), e.getMessage());
         }
     }
 
     protected void logUnexpectedException(Exception e, HttpServletRequest servletRequest, boolean printExceptionStack) {
-        if (printExceptionStack) {
-            log.error(LOG_PREFIX + "异常类[{}] >> URI=[{}], 消息=[{}]",
-                    e.getClass().getName(), servletRequest.getRequestURI(), e.getMessage(), e);
-            return;
-        }
-        log.error(LOG_PREFIX + "异常类[{}] >> URI=[{}], 消息=[{}]",
-                e.getClass().getName(), servletRequest.getRequestURI(), e.getMessage());
+        log.error(LOG_PREFIX + "异常类[{}] >> URI=[{}], 消息=[{}]{}",
+                e.getClass().getName(), servletRequest.getRequestURI(), e.getMessage(),
+                printExceptionStack ? "  " + e : StrUtil.EMPTY);
     }
 
     protected static <T> ResponseEntity<ApiResult<T>> createResponseEntity(HttpStatus httpStatus, ApiResult<T> body) {
