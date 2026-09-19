@@ -17,6 +17,8 @@ public class HeliumWebSecurityProperties {
 
     private AntiXss antiXss;
 
+    private Cors cors = new Cors();
+
     @Data
     public static final class AntiXss {
 
@@ -29,6 +31,17 @@ public class HeliumWebSecurityProperties {
          * 不进行过滤的路由（直接放行）
          */
         private List<String> ignoredPaths;
+
+    }
+
+    @Data
+    public static final class Cors {
+
+        /**
+         * 允许跨域的来源列表（支持通配模式，如 https://*.example.com）；
+         * 出于安全考虑不再默认放行任意来源，默认仅放行本机开发前端
+         */
+        private List<String> allowedOrigins = List.of("http://localhost:*");
 
     }
 
