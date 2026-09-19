@@ -19,10 +19,11 @@ public interface PageQuery {
      */
     @Hidden
     default Integer getPageNum() {
-        if (getPageParam() == null) {
-            return null;
+        PageParam pageParam = getPageParam();
+        if (pageParam == null) {
+            pageParam = new PageParam();
         }
-        return getPageParam().getPageNum();
+        return pageParam.getPageNum();
     }
 
     /**
@@ -30,9 +31,10 @@ public interface PageQuery {
      */
     @Hidden
     default Integer getPageSize() {
-        if (getPageParam() == null) {
-            return null;
+        PageParam pageParam = getPageParam();
+        if (pageParam == null) {
+            pageParam = new PageParam();
         }
-        return getPageParam().getPageSize();
+        return pageParam.getPageSize();
     }
 }

@@ -10,7 +10,7 @@ import java.io.Serializable;
 import java.util.function.UnaryOperator;
 
 /**
- * 分页查询参数
+ * 普通分页查询参数
  *
  * @author Uncarbon
  */
@@ -21,11 +21,13 @@ import java.util.function.UnaryOperator;
 public class PageParam implements Serializable {
 
     @Schema(description = "当前页码")
-    private Integer pageNum;
+    protected Integer pageNum;
     public Integer getPageNum() {
         if (pageNum == null) {
             pageNum = 1;
         }
+
+        pageNum = Math.max(pageNum, 1);
 
         if (globalPageNumLimiter != null) {
             pageNum = globalPageNumLimiter.apply(pageNum);
@@ -34,11 +36,13 @@ public class PageParam implements Serializable {
     }
 
     @Schema(description = "当前页大小")
-    private Integer pageSize;
+    protected Integer pageSize;
     public Integer getPageSize() {
         if (pageSize == null) {
             pageSize = 10;
         }
+
+        pageSize = Math.min(pageSize, 500);
 
         if (globalPageSizeLimiter != null) {
             return globalPageSizeLimiter.apply(pageSize);
