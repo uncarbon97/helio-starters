@@ -48,7 +48,7 @@
         <!-- 以上用于 redis -->
 
         <!-- 以下用于 satoken -->
-        <sa-token.version>1.46.0</sa-token.version>
+        <sa-token.version>1.45.0</sa-token.version>
         <!-- 以上用于 satoken -->
     </properties>
 
