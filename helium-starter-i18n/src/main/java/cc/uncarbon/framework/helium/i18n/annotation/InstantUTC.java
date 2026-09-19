@@ -17,5 +17,5 @@ import java.time.Instant;
 @Documented
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ElementType.FIELD})
-public @interface InstantUtc {
+public @interface InstantUTC {
 }

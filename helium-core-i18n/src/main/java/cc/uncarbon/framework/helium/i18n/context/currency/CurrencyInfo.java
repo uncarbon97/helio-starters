@@ -1,5 +1,10 @@
 package cc.uncarbon.framework.helium.i18n.context.currency;
 
+import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
+
+import java.util.Currency;
+
 /**
  * 多币种信息
  *
@@ -11,9 +16,14 @@ package cc.uncarbon.framework.helium.i18n.context.currency;
 public interface CurrencyInfo {
 
     /**
-     * 取得币种代码，如 CNY、USD、USDT、BTC
+     * 按 ISO 4217 币种代码构造，精度与符号取自 {@link Currency}
+     *
+     * @throws IllegalArgumentException 非 ISO 4217 法币代码时抛出
      */
-    String getCurrencyCode();
+    static CurrencyInfo ofISO4217(final String currencyCode) {
+        Currency iso = Currency.getInstance(currencyCode);
+        return new SimpleCurrencyInfo(currencyCode, iso.getDefaultFractionDigits(), iso.getSymbol(), iso.getDisplayName());
+    }
 
     /**
      * 取得精度（小数位数）
@@ -22,14 +32,16 @@ public interface CurrencyInfo {
     int getScale();
 
     /**
-     * 取得货币符号，如 ¥、$、₮；可能为空
+     * 取得币种代码，如 CNY、USD、USDT、BTC
      */
-    String getSymbol();
+    @NonNull
+    String getCurrencyCode();
 
     /**
-     * 取得展示名称，如 人民币、美元、泰达币；可能为空
+     * 取得货币符号，如 ¥、$、₮；可能为空
      */
-    String getDisplayName();
+    @Nullable
+    String getSymbol();
 
     /**
      * 快速构造一个简单的 {@link CurrencyInfo} 实例
@@ -39,12 +51,8 @@ public interface CurrencyInfo {
     }
 
     /**
-     * 按 ISO 4217 币种代码构造，精度与符号取自 {@link java.util.Currency}
-     *
-     * @throws IllegalArgumentException 非 ISO 4217 法币代码时抛出
+     * 取得展示名称，如 人民币、美元、泰达币；可能为空
      */
-    static CurrencyInfo ofIso(final String currencyCode) {
-        java.util.Currency iso = java.util.Currency.getInstance(currencyCode);
-        return new SimpleCurrencyInfo(currencyCode, iso.getDefaultFractionDigits(), iso.getSymbol(), iso.getDisplayName());
-    }
+    @Nullable
+    String getDisplayName();
 }
