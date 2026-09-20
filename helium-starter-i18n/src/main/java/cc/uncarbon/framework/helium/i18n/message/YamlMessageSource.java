@@ -107,24 +107,34 @@ public class YamlMessageSource extends AbstractMessageSource {
             // from generic to specific, so specific overwrites generic
             for (String suffix : suffixes) {
                 for (String ext : YAML_EXTS) {
-                    String path = basename + suffix + ext;
-                    try {
-                        Resource resource = resourceLoader.getResource(path);
-                        if (!resource.exists()) continue;
-
-                        try (var is = resource.getInputStream()) {
-                            Map<String, Object> raw = yaml.load(new InputStreamReader(is, charset));
-                            if (raw != null) {
-                                flatten("", raw, result);
-                            }
-                        }
-                    } catch (IOException e) {
-                        logger.warn(HeliumI18nConstant.LOG_PREFIX + "Failed to load YAML message source: " + path, e);
+                    // 目录形式：basename/langTag.yml
+                    if (suffix.isEmpty()) {
+                        loadIfPresent(basename + ext, yaml, result);
+                    } else {
+                        String tag = suffix.substring(1);
+                        loadIfPresent(basename + "/" + tag + ext, yaml, result);
                     }
                 }
             }
         }
         return Collections.unmodifiableMap(result);
+    }
+
+    private void loadIfPresent(String path, Yaml yaml, Map<String, String> result) {
+        try {
+            Resource resource = resourceLoader.getResource(path);
+            if (!resource.exists()) {
+                return;
+            }
+            try (var is = resource.getInputStream()) {
+                Map<String, Object> raw = yaml.load(new InputStreamReader(is, charset));
+                if (raw != null) {
+                    flatten("", raw, result);
+                }
+            }
+        } catch (IOException e) {
+            logger.warn(HeliumI18nConstant.LOG_PREFIX + "Failed to load YAML message source: " + path, e);
+        }
     }
 
     /**

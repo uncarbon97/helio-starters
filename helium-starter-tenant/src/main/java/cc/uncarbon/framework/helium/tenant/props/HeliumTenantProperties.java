@@ -1,6 +1,7 @@
 package cc.uncarbon.framework.helium.tenant.props;
 
 import cc.uncarbon.framework.helium.base.constant.ConfigurationPropertiesPrefix;
+import cc.uncarbon.framework.helium.tenant.enums.TenantLoginModeEnum;
 import cc.uncarbon.framework.helium.tenant.enums.TenantStrategyEnum;
 import cn.hutool.core.collection.CollUtil;
 import lombok.Data;
@@ -23,6 +24,11 @@ public class HeliumTenantProperties {
     private TenantStrategyEnum strategy;
 
     /**
+     * 登录模式
+     */
+    private TenantLoginModeEnum loginMode;
+
+    /**
      * 忽略拼接租户 ID 条件的表；仅用于行级多租户
      */
     private Collection<String> ignoredTables;
@@ -32,6 +38,13 @@ public class HeliumTenantProperties {
             return TenantStrategyEnum.NONE;
         }
         return strategy;
+    }
+
+    public TenantLoginModeEnum getLoginMode() {
+        if (loginMode == null) {
+            return TenantLoginModeEnum.TENANT_FIRST;
+        }
+        return loginMode;
     }
 
     public boolean doesTenantEnabled() {

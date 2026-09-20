@@ -59,6 +59,7 @@ public class HeaderLangResolver implements LangResolver {
             return Optional.empty();
         }
 
+        // 3. 语言前缀模糊匹配：Locale.filter 可将 en 匹配到 en-US 等（LanguageRange 基础过滤）
         List<Locale> supportedLocales = props.getLang().getSupportedLanguageTags().stream()
                 .map(LocaleUtil::toLocale).toList();
         for (LanguageRange range : ranges) {
