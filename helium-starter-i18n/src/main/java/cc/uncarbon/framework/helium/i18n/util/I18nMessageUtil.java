@@ -1,6 +1,7 @@
 package cc.uncarbon.framework.helium.i18n.util;
 
 import cc.uncarbon.framework.helium.base.enums.BaseEnum;
+import cc.uncarbon.framework.helium.i18n.constant.HeliumI18nConstant;
 import cc.uncarbon.framework.helium.i18n.context.I18nContext;
 import cc.uncarbon.framework.helium.i18n.context.I18nContextHolder;
 import cc.uncarbon.framework.helium.i18n.context.lang.LangInfo;
@@ -25,6 +26,8 @@ import java.util.function.Supplier;
 @UtilityClass
 @Slf4j
 public class I18nMessageUtil {
+
+    private static final String LOG_PREFIX = HeliumI18nConstant.LOG_PREFIX;
 
     /**
      * Slf4j 风格的占位符
@@ -104,6 +107,7 @@ public class I18nMessageUtil {
             return msg;
         } catch (NoSuchMessageException nsme) {
             // 未找到对应国际化消息翻译
+            log.warn(LOG_PREFIX + "no such message >> code={}, locale={}", code, locale);
         }
         return null;
     }

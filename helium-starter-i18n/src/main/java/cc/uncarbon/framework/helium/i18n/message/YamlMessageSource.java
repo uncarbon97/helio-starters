@@ -5,8 +5,8 @@ import cc.uncarbon.framework.helium.i18n.props.HeliumI18nProperties;
 import org.jspecify.annotations.NonNull;
 import org.springframework.context.support.AbstractMessageSource;
 import org.springframework.core.io.Resource;
-import org.springframework.core.io.ResourceLoader;
 import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
+import org.springframework.core.io.support.ResourcePatternResolver;
 import org.yaml.snakeyaml.Yaml;
 
 import java.io.IOException;
@@ -23,12 +23,13 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 public class YamlMessageSource extends AbstractMessageSource {
 
+    private static final String LOG_PREFIX = HeliumI18nConstant.LOG_PREFIX;
     private static final List<String> YAML_EXTS = List.of(".yml", ".yaml");
 
     private final List<String> basenames;
     private final Charset charset;
     private final Locale fallbackLocale;
-    private final ResourceLoader resourceLoader = new PathMatchingResourcePatternResolver();
+    private final ResourcePatternResolver resourceLoader = new PathMatchingResourcePatternResolver();
 
     /**
      * locale -> (key -> value)
@@ -122,18 +123,33 @@ public class YamlMessageSource extends AbstractMessageSource {
 
     private void loadIfPresent(String path, Yaml yaml, Map<String, String> result) {
         try {
-            Resource resource = resourceLoader.getResource(path);
-            if (!resource.exists()) {
-                return;
-            }
-            try (var is = resource.getInputStream()) {
-                Map<String, Object> raw = yaml.load(new InputStreamReader(is, charset));
-                if (raw != null) {
-                    flatten("", raw, result);
+            // classpath*: 前缀属于模式语法，需用 getResources() 复数形式匹配；getResource() 会当作字面路径而找不到
+            Resource[] resources = resourceLoader.getResources(path);
+            for (Resource resource : resources) {
+                if (!resource.exists()) {
+                    continue;
                 }
+                loadOne(resource, yaml, result);
             }
         } catch (IOException e) {
-            logger.warn(HeliumI18nConstant.LOG_PREFIX + "Failed to load YAML message source: " + path, e);
+            logger.warn(LOG_PREFIX + "Failed to load YAML message source: " + path, e);
+        }
+    }
+
+    private void loadOne(Resource resource, Yaml yaml, Map<String, String> result) {
+        try {
+            try (var is = resource.getInputStream()) {
+                // 一个资源文件可能包含多个 YAML 文档（以 --- 分隔），逐个加载合并
+                yaml.loadAll(new InputStreamReader(is, charset)).forEach(doc -> {
+                    if (doc instanceof Map<?, ?> map) {
+                        @SuppressWarnings("unchecked")
+                        Map<String, Object> raw = (Map<String, Object>) map;
+                        flatten("", raw, result);
+                    }
+                });
+            }
+        } catch (IOException e) {
+            logger.warn(LOG_PREFIX + "Failed to load YAML message source: " + resource, e);
         }
     }
 
