@@ -9,6 +9,7 @@ import cc.uncarbon.framework.helium.i18n.props.HeliumI18nProperties;
 import cc.uncarbon.framework.helium.i18n.resolver.currency.*;
 import cc.uncarbon.framework.helium.i18n.resolver.lang.*;
 import cc.uncarbon.framework.helium.i18n.resolver.timezone.*;
+import cc.uncarbon.framework.helium.i18n.util.I18nMessageUtil;
 import org.jspecify.annotations.NonNull;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.AutoConfigureBefore;
@@ -47,7 +48,9 @@ public class HeliumI18nAutoConfiguration {
 
     @Bean(name = HeliumI18nConstant.MESSAGE_SOURCE_SPRING_BEAN_NAME)
     public MessageSource messageSource(HeliumI18nProperties props) {
-        return new YamlMessageSource(props, StandardCharsets.UTF_8);
+        var yamlMessageSource = new YamlMessageSource(props, StandardCharsets.UTF_8);
+        I18nMessageUtil.setMessageSource(yamlMessageSource);
+        return yamlMessageSource;
     }
 
     @Bean

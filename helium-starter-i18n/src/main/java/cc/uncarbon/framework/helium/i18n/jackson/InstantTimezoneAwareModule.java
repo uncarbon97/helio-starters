@@ -14,8 +14,12 @@ import java.time.ZoneId;
  * @author Uncarbon
  */
 public class InstantTimezoneAwareModule extends InstantNoMillisFormatModule {
-    private InstantTimezoneAwareModule() {
-        super();
+
+    /**
+     * ServiceLoader 需要公共无参构造器
+     */
+    public InstantTimezoneAwareModule() {
+        super(InstantTimezoneAwareModule.class.getSimpleName());
     }
 
     @Override

@@ -34,7 +34,11 @@ public class InstantNoMillisFormatModule extends SimpleModule {
     public DateTimeFormatter formatter = Jackson3Constant.UTC_WITH_XXX_OFFSET_FORMATTER;
 
     public InstantNoMillisFormatModule() {
-        super(InstantNoMillisFormatModule.class.getSimpleName(), Version.unknownVersion());
+        this(InstantNoMillisFormatModule.class.getSimpleName());
+    }
+
+    protected InstantNoMillisFormatModule(String name) {
+        super(name, Version.unknownVersion());
         addSerializer(Instant.class, new InstantOffsetSerializer());
         addDeserializer(Instant.class, new InstantOffsetDeserializer());
     }

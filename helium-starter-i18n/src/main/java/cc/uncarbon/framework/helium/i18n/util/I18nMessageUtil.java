@@ -6,8 +6,8 @@ import cc.uncarbon.framework.helium.i18n.context.I18nContextHolder;
 import cc.uncarbon.framework.helium.i18n.context.lang.LangInfo;
 import cn.hutool.core.text.CharSequenceUtil;
 import cn.hutool.core.text.StrPool;
-import cn.hutool.extra.spring.SpringUtil;
 import lombok.Getter;
+import lombok.Setter;
 import lombok.experimental.UtilityClass;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.MessageSource;
@@ -35,11 +35,13 @@ public class I18nMessageUtil {
      * Spring 提供的 {@link MessageSource} 实例
      */
     @Getter
-    private MessageSource messageSource = SpringUtil.getBean(MessageSource.class);
+    @Setter
+    private MessageSource messageSource;
 
     /**
      * {@link Locale} 实例对象提供者
      */
+    @Setter
     private Supplier<Locale> localeSupplier = I18nMessageUtil::contextLocale;
 
 
@@ -60,13 +62,6 @@ public class I18nMessageUtil {
      */
     public Locale determineLocale() {
         return localeSupplier.get();
-    }
-
-    /**
-     * 置 {@link Locale} 实例对象提供者
-     */
-    public synchronized void setLocaleSupplier(Supplier<Locale> localeSupplier) {
-        I18nMessageUtil.localeSupplier = localeSupplier;
     }
 
     /**
