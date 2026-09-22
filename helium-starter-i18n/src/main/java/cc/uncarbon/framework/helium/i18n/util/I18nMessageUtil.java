@@ -5,16 +5,19 @@ import cc.uncarbon.framework.helium.i18n.constant.HeliumI18nConstant;
 import cc.uncarbon.framework.helium.i18n.context.I18nContext;
 import cc.uncarbon.framework.helium.i18n.context.I18nContextHolder;
 import cc.uncarbon.framework.helium.i18n.context.lang.LangInfo;
+import cc.uncarbon.framework.helium.i18n.props.HeliumI18nProperties;
 import cn.hutool.core.text.CharSequenceUtil;
 import cn.hutool.core.text.StrPool;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.UtilityClass;
 import lombok.extern.slf4j.Slf4j;
+import org.jspecify.annotations.Nullable;
 import org.springframework.context.MessageSource;
 import org.springframework.context.NoSuchMessageException;
 
 import java.util.Locale;
+import java.util.Objects;
 import java.util.function.Supplier;
 
 /**
@@ -40,6 +43,13 @@ public class I18nMessageUtil {
     @Getter
     @Setter
     private MessageSource messageSource;
+
+    /**
+     * {@link HeliumI18nProperties}.lang.fallbackLanguageTag
+     */
+    @Getter
+    @Setter
+    private String fallbackLanguageTag;
 
     /**
      * {@link Locale} 实例对象提供者
@@ -88,13 +98,16 @@ public class I18nMessageUtil {
      * @param templateParams 模板填充参数
      * @return null or 国际化消息翻译
      */
-    public String messageOf(Locale locale, String code, Object... templateParams) {
+    public @Nullable String messageOf(Locale locale, String code, Object... templateParams) {
         if (code == null) {
             return null;
         }
+        if (locale == null) {
+            locale = determineLocale();
+        }
 
         try {
-            String msg = getMessageSource().getMessage(code, null, locale != null ? locale : determineLocale());
+            String msg = getMessageSource().getMessage(code, null, locale);
             if (CharSequenceUtil.isEmpty(msg)) {
                 return msg;
             }
@@ -106,8 +119,10 @@ public class I18nMessageUtil {
 
             return msg;
         } catch (NoSuchMessageException nsme) {
-            // 未找到对应国际化消息翻译
-            log.warn(LOG_PREFIX + "no such message >> code={}, locale={}", code, locale);
+            if (!Objects.equals(locale.toLanguageTag(), getFallbackLanguageTag())) {
+                // 需求语言不是默认语言（预设是简体中文），且未找到对应国际化消息翻译，走不了兜底，发出警告
+                log.warn(LOG_PREFIX + "no such message >> code={}, locale={}", code, locale);
+            }
         }
         return null;
     }

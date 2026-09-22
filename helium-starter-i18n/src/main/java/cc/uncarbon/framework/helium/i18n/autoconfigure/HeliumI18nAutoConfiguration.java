@@ -50,6 +50,7 @@ public class HeliumI18nAutoConfiguration {
     public MessageSource messageSource(HeliumI18nProperties props) {
         var yamlMessageSource = new YamlMessageSource(props, StandardCharsets.UTF_8);
         I18nMessageUtil.setMessageSource(yamlMessageSource);
+        I18nMessageUtil.setFallbackLanguageTag(props.getLang().getFallbackLanguageTag());
         return yamlMessageSource;
     }
 

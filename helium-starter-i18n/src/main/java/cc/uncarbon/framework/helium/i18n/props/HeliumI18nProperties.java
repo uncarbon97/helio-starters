@@ -5,6 +5,7 @@ import lombok.Data;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 /**
@@ -47,9 +48,9 @@ public class HeliumI18nProperties {
 
         /**
          * 兜底语言标签
-         * 当请求语言、语言前缀都未命中翻译时，回退到此语言；留空则回退到 ROOT
+         * 当请求语言、语言前缀都未命中翻译时，回退到此语言
          */
-        private String fallbackLanguageTag;
+        private String fallbackLanguageTag = "zh-CN";
 
         /**
          * 显式标注支持的语言
