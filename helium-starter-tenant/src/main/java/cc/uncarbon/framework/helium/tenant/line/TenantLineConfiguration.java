@@ -21,7 +21,7 @@ import java.util.Objects;
 @Slf4j
 public class TenantLineConfiguration {
 
-    private static final String LOG_PREFIX = "[Framework][行级多租户]";
+    public static final String LOG_PREFIX = "[Framework][行级多租户]";
 
     /**
      * 基于 mybatis-plus 的行级租户拦截器
@@ -29,7 +29,7 @@ public class TenantLineConfiguration {
     @Bean
     public TenantLineInnerInterceptor tenantLineInnerInterceptor(HeliumTenantProperties props) {
         Collection<String> ignoredTables = props.getIgnoredTables();
-        log.info(LOG_PREFIX + " 已应用 >> 以下数据表不参与租户隔离: {}", ignoredTables);
+        log.info(LOG_PREFIX + " 已应用 >> 显式忽略的数据表: {}；其余数据表根据实体是否实现 TenantEntity 接口自动判断", ignoredTables);
         return new TenantLineInnerInterceptor(new DefaultTenantLineHandler(ignoredTables));
     }
 
