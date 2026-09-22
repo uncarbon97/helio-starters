@@ -10,7 +10,7 @@ import lombok.experimental.UtilityClass;
 @UtilityClass
 public class HeliumI18nConstant {
 
-    public static final String LOG_PREFIX = "[i18n]";
+    public static final String LOG_PREFIX = "[Framework][i18n]";
 
     /**
      * MessageSource 实例注册在 Spring 容器内的名字
