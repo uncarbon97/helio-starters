@@ -62,35 +62,8 @@ Desktop.ini
 # Claude Code
 .claude/
 
-# Cursor
-.cursor/
-
-# GitHub Copilot
-.copilot/
-
-# Windsurf
-.windsurf/
-
-# OpenAI Codex CLI
-.codex/
-
-# Gemini
-.gemini/
-
-# Trae
-.trae/
-
-# Qoder
-.qoder/
-
-# Cline
-.cline/
-
-# OpenCode
-.opencode/
-
-# KiroCode
-.kiro/
+# 通用
+.agents/
 
 # ============================================================
 # 其他
@@ -98,8 +71,3 @@ Desktop.ini
 # 环境变量文件（可能包含密钥、Token 等敏感信息）
 .env
 .env.*
-
-# Vim / Emacs 临时文件
-*.swp
-*.swo
-*~

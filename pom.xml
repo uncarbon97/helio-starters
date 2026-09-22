@@ -25,10 +25,11 @@
 
         <!-- 由于使用 BOM import 方式引入 spring-boot-dependencies，不会自动引入 <pluginManagement> 部分 -->
         <!-- 手动从 spring-boot-dependencies 复制插件版本 -->
+        <maven-compiler-plugin.version>3.15.0</maven-compiler-plugin.version>
         <maven-deploy-plugin.version>3.1.4</maven-deploy-plugin.version>
         <maven-javadoc-plugin.version>3.12.0</maven-javadoc-plugin.version>
         <maven-source-plugin.version>3.4.0</maven-source-plugin.version>
-        <maven-surefire-plugin.version>3.5.5</maven-surefire-plugin.version>
+        <maven-surefire-plugin.version>3.5.6</maven-surefire-plugin.version>
     </properties>
 
     <modules>
@@ -109,6 +110,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
+                <version>${maven-compiler-plugin.version}</version>
                 <configuration>
                     <!-- 保留方法参数名，供 Spring SpEL（如操作日志模板 #参数名）按参数名引用 -->
                     <parameters>true</parameters>
