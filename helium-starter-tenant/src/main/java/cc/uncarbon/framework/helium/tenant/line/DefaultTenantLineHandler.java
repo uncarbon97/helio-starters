@@ -46,7 +46,7 @@ public class DefaultTenantLineHandler implements TenantLineHandler {
 
     @Override
     public boolean ignoreTable(String tableName) {
-        // 全局忽略租户
+        // 作用域内忽略租户
         if (TenantContextHolder.isIgnored()) {
             return true;
         }
