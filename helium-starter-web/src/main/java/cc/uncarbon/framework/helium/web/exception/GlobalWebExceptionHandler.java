@@ -1,4 +1,4 @@
-package cc.uncarbon.framework.helium.web.support;
+package cc.uncarbon.framework.helium.web.exception;
 
 import cc.uncarbon.framework.helium.base.errorcode.BuiltinErrorCodeEnum;
 import cc.uncarbon.framework.helium.base.errorcode.ErrorMessageFormatter;
@@ -33,6 +33,7 @@ import org.springframework.web.servlet.NoHandlerFoundException;
 import org.springframework.web.servlet.resource.NoResourceFoundException;
 
 import java.nio.charset.StandardCharsets;
+import java.util.List;
 
 /**
  * Web 全局异常处理
@@ -45,13 +46,14 @@ import java.nio.charset.StandardCharsets;
 @Slf4j
 public class GlobalWebExceptionHandler {
 
+    private static final String LOG_PREFIX = "[Framework][Web]";
     public static final String BEAN_NAME = "globalWebExceptionHandler";
     protected static final MediaType MEDIA_TYPE_APPLICATION_JSON_UTF8 =
             new MediaType("application", "json", StandardCharsets.UTF_8);
-    private static final String LOG_PREFIX = "[Web]";
 
     private final ErrorMessageFormatter errorMessageFormatter;
     private final HeliumWebProperties props;
+    private final List<GlobalExceptionHook> exceptionHooks;
 
     /**
      * 主动抛出的业务异常
@@ -195,12 +197,18 @@ public class GlobalWebExceptionHandler {
      */
 
     protected void logBusinessException(BusinessException e, HttpServletRequest servletRequest) {
+        if (triggerHooks(e, servletRequest, ExceptionCategory.BUSINESS)) {
+            return;
+        }
         if (props.isLogBusinessException()) {
             log.warn(LOG_PREFIX + "[业务异常] {} >> URI=[{}]", e.getMessage(), servletRequest.getRequestURI());
         }
     }
 
     protected void logExpectedException(Exception e, HttpServletRequest servletRequest) {
+        if (triggerHooks(e, servletRequest, ExceptionCategory.EXPECTED)) {
+            return;
+        }
         if (props.isLogExpectedException()) {
             log.warn(LOG_PREFIX + "异常类[{}] >> URI=[{}], 消息=[{}]",
                     e.getClass().getName(), servletRequest.getRequestURI(), e.getMessage());
@@ -208,9 +216,34 @@ public class GlobalWebExceptionHandler {
     }
 
     protected void logUnexpectedException(Exception e, HttpServletRequest servletRequest, boolean printExceptionStack) {
+        if (triggerHooks(e, servletRequest, ExceptionCategory.UNEXPECTED)) {
+            return;
+        }
         log.error(LOG_PREFIX + "异常类[{}] >> URI=[{}], 消息=[{}]{}",
                 e.getClass().getName(), servletRequest.getRequestURI(), e.getMessage(),
                 printExceptionStack ? "  " + e : StrUtil.EMPTY);
+    }
+
+    /**
+     * 触发全局异常处理钩子（在框架默认日志打印之前）
+     * 钩子内的异常会被捕获并单独记录，不会影响正常的错误响应
+     *
+     * @return 是否有钩子要求跳过框架默认日志打印
+     * @see GlobalExceptionHook
+     */
+    protected boolean triggerHooks(Exception e, HttpServletRequest servletRequest, ExceptionCategory category) {
+        boolean skipDefaultLog = false;
+        for (GlobalExceptionHook hook : exceptionHooks) {
+            try {
+                if (GlobalExceptionHook.Verdict.SKIP_DEFAULT_LOG == hook.onException(
+                        new ExceptionHookContext(e, servletRequest, category))) {
+                    skipDefaultLog = true;
+                }
+            } catch (Exception hookException) {
+                log.error(LOG_PREFIX + "异常处理钩子执行失败 >> 钩子=[{}]", hook.getClass().getName(), hookException);
+            }
+        }
+        return skipDefaultLog;
     }
 
     protected static <T> ResponseEntity<ApiResult<T>> createResponseEntity(HttpStatus httpStatus, ApiResult<T> body) {

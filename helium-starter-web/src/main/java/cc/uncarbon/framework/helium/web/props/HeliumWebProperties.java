@@ -2,7 +2,7 @@ package cc.uncarbon.framework.helium.web.props;
 
 import cc.uncarbon.framework.helium.base.constant.ConfigurationPropertiesPrefix;
 import cc.uncarbon.framework.helium.base.exception.BusinessException;
-import cc.uncarbon.framework.helium.web.support.GlobalWebExceptionHandler;
+import cc.uncarbon.framework.helium.web.exception.GlobalWebExceptionHandler;
 import lombok.Data;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 

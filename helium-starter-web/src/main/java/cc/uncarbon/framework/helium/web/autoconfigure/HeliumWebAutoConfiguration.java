@@ -4,7 +4,7 @@ import cc.uncarbon.framework.helium.base.errorcode.ErrorMessageFormatter;
 import cc.uncarbon.framework.helium.web.props.HeliumWebProperties;
 import cc.uncarbon.framework.helium.web.support.DefaultErrorMessageFormatter;
 import cc.uncarbon.framework.helium.web.support.EnhanceWebMvcConfigurer;
-import cc.uncarbon.framework.helium.web.support.GlobalWebExceptionHandler;
+import cc.uncarbon.framework.helium.web.exception.GlobalWebExceptionHandler;
 import cc.uncarbon.framework.helium.web.support.WebServerLaunchedListener;
 import jakarta.validation.Validator;
 import org.hibernate.validator.BaseHibernateValidatorConfiguration;
