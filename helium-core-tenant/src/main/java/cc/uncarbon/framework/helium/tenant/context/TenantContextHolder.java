@@ -24,6 +24,15 @@ public class TenantContextHolder {
     }
 
     /**
+     * 「忽略租户」标记的 ScopedValue 实例
+     * 供 {@code TenantContextTaskDecorator} 等需要跨线程恢复完整上下文快照的组件使用
+     */
+    @NonNull
+    public ScopedValue<Boolean> ignoredScoped() {
+        return IGNORED;
+    }
+
+    /**
      * 获取当前租户上下文
      */
     @Nullable

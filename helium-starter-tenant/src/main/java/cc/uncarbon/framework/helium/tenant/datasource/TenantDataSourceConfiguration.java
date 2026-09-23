@@ -2,17 +2,18 @@ package cc.uncarbon.framework.helium.tenant.datasource;
 
 import cc.uncarbon.framework.helium.base.condition.HeliumConditions;
 import cc.uncarbon.framework.helium.db.dynamicdatasource.helper.DynamicDataSourceHelper;
-import cc.uncarbon.framework.helium.db.model.DataSourceSetting;
-import cc.uncarbon.framework.helium.tenant.enums.TenantStrategyEnum;
+import cc.uncarbon.framework.helium.tenant.enums.TenantIsolationStrategyEnum;
 import cc.uncarbon.framework.helium.tenant.props.HeliumTenantProperties;
 import com.baomidou.dynamic.datasource.spring.boot.autoconfigure.DynamicDataSourceProperties;
 import lombok.extern.slf4j.Slf4j;
 import org.jspecify.annotations.NonNull;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
-import org.springframework.context.annotation.*;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Condition;
+import org.springframework.context.annotation.ConditionContext;
+import org.springframework.context.annotation.Conditional;
 import org.springframework.core.type.AnnotatedTypeMetadata;
 
-import java.util.Objects;
 import java.util.Optional;
 
 /**
@@ -26,7 +27,7 @@ import java.util.Optional;
 @Slf4j
 public class TenantDataSourceConfiguration {
 
-    private static final String LOG_PREFIX = "[Framework][数据源级多租户]";
+    public static final String LOG_PREFIX = "[Framework][数据源级多租户]";
 
 
     @Bean
@@ -60,7 +61,7 @@ public class TenantDataSourceConfiguration {
         @Override
         public boolean matches(ConditionContext context, @NonNull AnnotatedTypeMetadata metadata) {
             var props = HeliumConditions.bind(context.getEnvironment(), HeliumTenantProperties.class);
-            return props.getStrategy() == TenantStrategyEnum.DATASOURCE;
+            return props.getIsolationStrategy() == TenantIsolationStrategyEnum.DATASOURCE;
         }
     }
 }

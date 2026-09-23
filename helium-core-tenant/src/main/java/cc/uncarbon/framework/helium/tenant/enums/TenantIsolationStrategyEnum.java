@@ -5,13 +5,13 @@ import lombok.Getter;
 
 
 /**
- * 多租户策略枚举
+ * 多租户隔离策略枚举
  *
  * @author Uncarbon
  */
 @AllArgsConstructor
 @Getter
-public enum TenantStrategyEnum {
+public enum TenantIsolationStrategyEnum {
 
     /**
      * 不使用多租户
