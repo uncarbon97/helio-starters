@@ -4,6 +4,7 @@ import cc.uncarbon.framework.helium.base.constant.ConfigurationPropertiesPrefix;
 import cc.uncarbon.framework.helium.tenant.constant.HeliumTenantConstant;
 import cc.uncarbon.framework.helium.tenant.enums.TenantIsolationStrategyEnum;
 import cc.uncarbon.framework.helium.tenant.enums.TenantLoginModeEnum;
+import cc.uncarbon.framework.helium.tenant.line.TenantLineFieldReconciler;
 import lombok.Data;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
@@ -48,8 +49,8 @@ public class HeliumTenantProperties {
 
     /**
      * 默认参与隔离：未显式忽略（ignored-tables / @TenantIgnore）的表一律参与租户隔离
-     * <p>口径翻转开关，默认 false 保持兼容；开启前须确保参与表都有 tenant_id 列，
-     * 建议配合启动期强对账（缺列启动失败）使用</p>
+     * <p>默认 false 保持兼容；开启前须确保参与表都有 tenant_id 列
+     * 配合 {@link TenantLineFieldReconciler} 使用</p>
      */
     private Boolean participateByDefault;
 
