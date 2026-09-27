@@ -201,7 +201,8 @@ public class GlobalWebExceptionHandler {
             return;
         }
         if (props.isLogBusinessException()) {
-            log.warn(LOG_PREFIX + "[业务异常] {} >> URI=[{}]", e.getMessage(), servletRequest.getRequestURI());
+            log.warn(LOG_PREFIX + "[业务异常] [{}]{} >> URI=[{}]",
+                    e.getCode(), e.getMessage(), servletRequest.getRequestURI());
         }
     }
 
@@ -210,7 +211,7 @@ public class GlobalWebExceptionHandler {
             return;
         }
         if (props.isLogExpectedException()) {
-            log.warn(LOG_PREFIX + "异常类[{}] >> URI=[{}], 消息=[{}]",
+            log.warn(LOG_PREFIX + " 异常类[{}] >> URI=[{}], 消息=[{}]",
                     e.getClass().getName(), servletRequest.getRequestURI(), e.getMessage());
         }
     }
@@ -219,7 +220,7 @@ public class GlobalWebExceptionHandler {
         if (triggerHooks(e, servletRequest, ExceptionCategory.UNEXPECTED)) {
             return;
         }
-        log.error(LOG_PREFIX + "异常类[{}] >> URI=[{}], 消息=[{}]{}",
+        log.error(LOG_PREFIX + " 异常类[{}] >> URI=[{}], 消息=[{}]{}",
                 e.getClass().getName(), servletRequest.getRequestURI(), e.getMessage(),
                 printExceptionStack ? "  " + e : StrUtil.EMPTY);
     }
