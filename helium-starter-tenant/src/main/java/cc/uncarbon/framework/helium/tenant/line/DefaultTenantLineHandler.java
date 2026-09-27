@@ -49,9 +49,9 @@ public class DefaultTenantLineHandler implements TenantLineHandler {
     private final boolean strict;
 
     /**
-     * 无租户上下文时的兜底写值（非严格模式下生效）
+     * 非严格模式：上下文缺租户时的兜底租户 ID
      */
-    private final Long defaultTenantId;
+    private final Long nonStrictFallbackTenantId;
 
     /**
      * 表名是否忽略租户的计算结果缓存（表名统一小写作为键）
@@ -61,7 +61,7 @@ public class DefaultTenantLineHandler implements TenantLineHandler {
 
     public DefaultTenantLineHandler(HeliumTenantProperties props) {
         this(props.getIgnoredTables(), props.isParticipateByDefault(),
-                props.getStrict(), props.getDefaultTenantId());
+                props.isStrict(), props.getNonStrictFallbackTenantId());
     }
 
     /**
@@ -84,10 +84,9 @@ public class DefaultTenantLineHandler implements TenantLineHandler {
                 // 子线程漏传上下文等场景，响亮失败优于静默空结果
                 throw new IllegalStateException("当前线程缺少租户上下文，且已开启严格模式("
                         + ConfigurationPropertiesPrefix.TENANT + ".strict)");
-            }
-            if (defaultTenantId != null) {
-                // 兜底写值，如平台自营域
-                return new LongValue(defaultTenantId);
+            } else if (nonStrictFallbackTenantId != null) {
+                // 兜底写值
+                return new LongValue(nonStrictFallbackTenantId);
             }
             return new NullValue();
         }

@@ -1,7 +1,6 @@
 package cc.uncarbon.framework.helium.tenant.props;
 
 import cc.uncarbon.framework.helium.base.constant.ConfigurationPropertiesPrefix;
-import cc.uncarbon.framework.helium.tenant.constant.HeliumTenantConstant;
 import cc.uncarbon.framework.helium.tenant.enums.TenantIsolationStrategyEnum;
 import cc.uncarbon.framework.helium.tenant.enums.TenantLoginModeEnum;
 import cc.uncarbon.framework.helium.tenant.line.TenantLineFieldReconciler;
@@ -36,16 +35,15 @@ public class HeliumTenantProperties {
     private Collection<String> ignoredTables;
 
     /**
-     * 默认租户ID
-     * <p>语义仅用于「无租户上下文时的兜底写值」（如平台自营域），不用于登录回退</p>
-     */
-    private Long defaultTenantId;
-
-    /**
      * 严格模式：上下文缺租户且 SQL 需要拼租户时抛出业务异常，而非静默拼接 NULL
      * <p>消灭子线程漏传上下文导致的「静默空结果」问题</p>
      */
     private Boolean strict;
+
+    /**
+     * 非严格模式：上下文缺租户时的兜底租户 ID；不用于登录回退
+     */
+    private Long nonStrictFallbackTenantId;
 
     /**
      * 默认参与隔离：未显式忽略（ignored-tables / @TenantIgnore）的表一律参与租户隔离
@@ -63,11 +61,7 @@ public class HeliumTenantProperties {
         return Objects.requireNonNullElse(loginMode, TenantLoginModeEnum.TENANT_FIRST);
     }
 
-    public Long getDefaultTenantId() {
-        return Objects.requireNonNullElse(defaultTenantId, HeliumTenantConstant.FALLBACK_TENANT_ID);
-    }
-
-    public boolean getStrict() {
+    public boolean isStrict() {
         return Boolean.TRUE.equals(strict);
     }
 
