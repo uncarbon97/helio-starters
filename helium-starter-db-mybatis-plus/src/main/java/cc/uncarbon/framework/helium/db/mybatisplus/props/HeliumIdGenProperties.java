@@ -14,9 +14,9 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 public class HeliumIdGenProperties {
 
     /**
-     * 雪花 ID
+     * 雪花 ID（默认实例，避免未配置时 NPE）
      */
-    private Snowflake snowflake;
+    private Snowflake snowflake = new Snowflake();
 
     @Data
     public static final class Snowflake {
@@ -24,7 +24,7 @@ public class HeliumIdGenProperties {
         /**
          * 数据中心ID
          */
-        private Long datacenterId;
+        private Integer datacenterId;
 
         /**
          * 起始日期

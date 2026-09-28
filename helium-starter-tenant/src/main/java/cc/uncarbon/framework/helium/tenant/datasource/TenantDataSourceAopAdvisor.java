@@ -47,6 +47,7 @@ public class TenantDataSourceAopAdvisor extends AbstractPointcutAdvisor implemen
         cut.setExpression(
                 "@within(org.springframework.stereotype.Service)"
                 + " && !@annotation(cc.uncarbon.framework.helium.tenant.annotation.TenantIgnore)"
+                + " && !@within(cc.uncarbon.framework.helium.tenant.annotation.TenantIgnore)"
         );
         return new ComposablePointcut((Pointcut) cut);
     }

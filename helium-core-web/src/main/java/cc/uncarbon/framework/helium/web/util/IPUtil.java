@@ -7,11 +7,13 @@ import jakarta.servlet.http.HttpServletRequest;
 import lombok.experimental.UtilityClass;
 
 import java.util.List;
-import java.util.Objects;
 
 /**
  * IP地址工具类
  * 方法来自于互联网
+ * <p>
+ * 注意：本工具采信的代理头（X-Forwarded-For 等）均可由客户端伪造；
+ * 用于审计/风控等信任敏感场景时，需由前置代理强制覆写或清洗这些头。
  *
  * @author Uncarbon
  */
@@ -69,7 +71,8 @@ public class IPUtil {
             return List.of(source);
         }
         return CharSequenceUtil.split(source, StrPool.COMMA).stream()
-                .map(CharSequenceUtil::cleanBlank).filter(Objects::nonNull).toList();
+                // 过滤空串，避免 clientIpList 含 "" 元素
+                .filter(CharSequenceUtil::isNotBlank).map(CharSequenceUtil::cleanBlank).toList();
     }
 
 }

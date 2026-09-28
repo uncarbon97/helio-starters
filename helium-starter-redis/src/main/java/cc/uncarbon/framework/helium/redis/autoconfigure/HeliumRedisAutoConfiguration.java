@@ -21,8 +21,11 @@ import org.springframework.data.redis.serializer.StringRedisSerializer;
 import tools.jackson.databind.json.JsonMapper;
 
 import java.time.ZoneId;
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.Locale;
 import java.util.TimeZone;
+import java.util.stream.Collectors;
 
 
 /**
@@ -76,8 +79,16 @@ public class HeliumRedisAutoConfiguration {
             sb.append(":");
             sb.append(method.getName());
             for (Object obj : objects) {
-                if (obj != null) {
-                    sb.append(":").append(obj);
+                switch (obj) {
+                    case null ->
+                        // null 占位保序：避免 m() 与 m(null) 生成同键、缓存互相命中
+                            sb.append(":null");
+                    case Object[] array ->
+                        // 数组 toString 是地址（每次必变、缓存永不命中），按内容拼接
+                            sb.append(":").append(Arrays.deepToString(array));
+                    case Collection<?> collection ->
+                            sb.append(":").append(collection.stream().map(String::valueOf).collect(Collectors.joining(",")));
+                    default -> sb.append(":").append(obj);
                 }
             }
             return sb.toString();

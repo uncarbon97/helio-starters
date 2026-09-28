@@ -118,7 +118,7 @@ public interface StructuredErrorCode extends Serializable {
      * @param templateParams 填充枚举中 label 模板的参数
      */
     default void throw0(Object... templateParams) throws BusinessException {
-        throw new BusinessException(getErrorCode(), getErrorMsgFriendly(), templateParams);
+        throw new BusinessException(this, templateParams);
     }
 
 }

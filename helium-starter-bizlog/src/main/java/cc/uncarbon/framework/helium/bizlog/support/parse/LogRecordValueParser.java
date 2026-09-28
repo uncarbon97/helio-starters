@@ -48,6 +48,10 @@ public class LogRecordValueParser implements BeanFactoryAware {
      * @return 出现次数
      */
     public static int strCount(String srcText, String findText) {
+        // findText 为空串时 indexOf("", i) 恒返回 i 且步进为 0，会死循环；入参空白直接返回 0
+        if (srcText == null || srcText.isEmpty() || findText == null || findText.isEmpty()) {
+            return 0;
+        }
         int count = 0;
         int index = 0;
         while ((index = srcText.indexOf(findText, index)) != -1) {

@@ -1,7 +1,6 @@
 package cc.uncarbon.framework.helium.bizlog.service.impl;
 
 import cc.uncarbon.framework.helium.bizlog.service.IParseFunction;
-import cn.hutool.core.text.CharSequenceUtil;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 
@@ -29,10 +28,11 @@ public class ParseFunctionFactory {
      * @param parseFunctions 容器中的自定义函数集合
      */
     public ParseFunctionFactory(List<IParseFunction> parseFunctions) {
+        // 先初始化空表，避免空入参提前 return 后 getFunction/isBeforeFunction 触发 NPE
+        allFunctionMap = new HashMap<>();
         if (CollectionUtils.isEmpty(parseFunctions)) {
             return;
         }
-        allFunctionMap = new HashMap<>();
         for (IParseFunction parseFunction : parseFunctions) {
             if (StringUtils.hasText(parseFunction.functionName())) {
                 allFunctionMap.put(parseFunction.functionName(), parseFunction);

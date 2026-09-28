@@ -40,8 +40,9 @@ public class PageResult<T extends Serializable> implements Serializable {
      * @param pageParam 分页查询参数
      */
     public PageResult(PageParam pageParam) {
-        this.current = pageParam.getPageNum();
-        this.size = pageParam.getPageSize();
+        PageParam param = pageParam != null ? pageParam : new PageParam();
+        this.current = param.getPageNum();
+        this.size = param.getPageSize();
         this.total = 0L;
         this.records = Collections.emptyList();
     }

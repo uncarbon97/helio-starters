@@ -23,7 +23,8 @@ public class DefaultFunctionServiceImpl implements IFunctionService {
     public String apply(String functionName, Object value) {
         IParseFunction function = parseFunctionFactory.getFunction(functionName);
         if (function == null) {
-            return value.toString();
+            // value 可能为 null（SpEL 求值结果），String.valueOf 防 NPE
+            return String.valueOf(value);
         }
         return function.apply(value);
     }

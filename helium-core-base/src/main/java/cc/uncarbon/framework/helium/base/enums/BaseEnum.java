@@ -1,7 +1,6 @@
 package cc.uncarbon.framework.helium.base.enums;
 
 import java.io.Serializable;
-import java.util.Collections;
 import java.util.Optional;
 import java.util.function.Predicate;
 
@@ -25,24 +24,12 @@ public interface BaseEnum<T extends Serializable> extends Serializable {
     String getLabel();
 
     /**
-     * 对比是否和value相等,对比地址,值,value转为string忽略大小写对比,text忽略大小写对比
+     * 根据枚举的{@link BaseEnum#getLabel()} 来查找.
      *
-     * @param v value
-     * @return 是否相等
+     * @see #find(Class, Predicate)
      */
-    default boolean eq(Object v) {
-        if (v == null) {
-            return false;
-        }
-        if (v instanceof Object[]) {
-            v = Collections.singletonList(v);
-        }
-        return this == v
-                || getValue() == v
-                || getValue().equals(v)
-                || String.valueOf(getValue()).equalsIgnoreCase(String.valueOf(v))
-                || getLabel().equalsIgnoreCase(String.valueOf(v)
-        );
+    static <T extends Enum<?> & BaseEnum<?>> Optional<T> findByLabel(Class<T> type, String text) {
+        return find(type, e -> text != null && e.getLabel() != null && e.getLabel().equalsIgnoreCase(text));
     }
 
     /**
@@ -78,12 +65,30 @@ public interface BaseEnum<T extends Serializable> extends Serializable {
     }
 
     /**
-     * 根据枚举的{@link BaseEnum#getLabel()} 来查找.
+     * 对比是否和value相等,对比地址,值,value转为string忽略大小写对比,text忽略大小写对比
      *
-     * @see #find(Class, Predicate)
+     * @param v value
+     * @return 是否相等
      */
-    static <T extends Enum<?> & BaseEnum<?>> Optional<T> findByLabel(Class<T> type, String text) {
-        return find(type, e -> e.getLabel().equalsIgnoreCase(text));
+    default boolean eq(Object v) {
+        if (v == null) {
+            return false;
+        }
+        if (v instanceof Object[] values) {
+            // 数组入参：任一元素匹配即视为相等
+            for (Object value : values) {
+                if (eq(value)) {
+                    return true;
+                }
+            }
+            return false;
+        }
+        return this == v
+                || getValue() == v
+                || getValue().equals(v)
+                || String.valueOf(getValue()).equalsIgnoreCase(String.valueOf(v))
+                || getLabel().equalsIgnoreCase(String.valueOf(v)
+        );
     }
 
     /**

@@ -40,10 +40,11 @@ public class TenantDataSourceConfiguration {
     @ConditionalOnMissingBean
     public TenantDataSourceAopInterceptor tenantDataSourceAopInterceptor(
             DynamicDataSourceHelper dynamicDataSourceHelper,
-            TenantDataSourceSettingProvider tenantDataSourceSettingProvider
+            TenantDataSourceSettingProvider tenantDataSourceSettingProvider,
+            HeliumTenantProperties props
     ) {
         log.info(LOG_PREFIX + " 已挂载 AOP 拦截器");
-        return new TenantDataSourceAopInterceptor(dynamicDataSourceHelper, tenantDataSourceSettingProvider);
+        return new TenantDataSourceAopInterceptor(dynamicDataSourceHelper, tenantDataSourceSettingProvider, props);
     }
 
     @Bean

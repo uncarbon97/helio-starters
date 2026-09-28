@@ -1,11 +1,9 @@
 package cc.uncarbon.framework.helium.base.cache;
 
 import cn.hutool.cache.impl.TimedCache;
-import cn.hutool.core.lang.mutable.MutableObj;
 
 /**
- * 继承自 hutool TimedCache
- * 增加了容量限制，重写了 containsKey 方法判断逻辑提升效率并支持空值
+ * 继承自 hutool TimedCache，增加了容量限制
  * @param <K> key 类型
  * @param <V> value 类型
  *
@@ -17,10 +15,5 @@ public class TimedCacheEx<K, V> extends TimedCache<K, V> {
     public TimedCacheEx(long timeout, int capacity) {
         super(timeout);
         this.capacity = capacity;
-    }
-
-    @Override
-    public boolean containsKey(K key) {
-        return this.cacheMap.containsKey(MutableObj.of(key));
     }
 }

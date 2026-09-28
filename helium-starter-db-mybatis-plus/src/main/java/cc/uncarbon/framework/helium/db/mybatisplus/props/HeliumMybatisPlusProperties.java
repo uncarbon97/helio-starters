@@ -14,9 +14,9 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 public class HeliumMybatisPlusProperties {
 
     /**
-     * 乐观锁
+     * 乐观锁（默认实例，未配置时 enabled=false，避免 NPE）
      */
-    private OptimisticLock optimisticLock;
+    private OptimisticLock optimisticLock = new OptimisticLock();
 
     @Data
     public static final class OptimisticLock {

@@ -45,14 +45,16 @@ public class ArrayDiffer implements Differ {
     }
 
     /**
-     * 是否处理非基本类型的数组。
+     * 是否处理非基本类型元素数组。
      *
      * @param type 待判断类型
-     * @return 非基本类型数组返回 {@code true}
+     * @return 非基本类型元素数组返回 {@code true}
      */
     @Override
     public boolean accepts(final Class<?> type) {
-        return !type.isPrimitive() && type.isArray();
+        // 注意：int[].class.isPrimitive() 为 false，需按组件类型排除基本类型数组；
+        // 否则 Arrays.asList((Object[]) source) 对 int[]/long[] 等抛 ClassCastException
+        return type.isArray() && !type.getComponentType().isPrimitive();
     }
 
     /**

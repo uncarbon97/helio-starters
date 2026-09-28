@@ -33,6 +33,12 @@ public class InstantNoMillisFormatModule extends SimpleModule {
 
     public DateTimeFormatter formatter = Jackson3Constant.UTC_WITH_XXX_OFFSET_FORMATTER;
 
+    /**
+     * 兼容带毫秒 + 非 Z 偏移的输入（如 2026-07-18T12:34:56.123+08:00）
+     */
+    private static final DateTimeFormatter MILLIS_TOLERANT_FORMATTER =
+            DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss[.SSS]XXX");
+
     public InstantNoMillisFormatModule() {
         this(InstantNoMillisFormatModule.class.getSimpleName());
     }
@@ -76,7 +82,11 @@ public class InstantNoMillisFormatModule extends SimpleModule {
                 return OffsetDateTime.parse(str, formatter).toInstant();
             } catch (DateTimeParseException dtpe) {
                 // 兼容 2026-07-18T12:34:56Z / 带毫秒
-                return Instant.parse(str);
+                try {
+                    return OffsetDateTime.parse(str, MILLIS_TOLERANT_FORMATTER).toInstant();
+                } catch (DateTimeParseException dtpe2) {
+                    return Instant.parse(str);
+                }
             }
         }
     }

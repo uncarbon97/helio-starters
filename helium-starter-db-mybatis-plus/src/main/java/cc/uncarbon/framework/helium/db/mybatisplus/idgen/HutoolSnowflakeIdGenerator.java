@@ -22,6 +22,10 @@ public class HutoolSnowflakeIdGenerator implements IdentifierGenerator {
 
     public HutoolSnowflakeIdGenerator(HeliumIdGenProperties props) {
         var subProps = props.getSnowflake();
+        if (subProps == null) {
+            subProps = new HeliumIdGenProperties.Snowflake();
+            log.info(LOG_PREFIX + " >> 未配置 helium.db-idgen.snowflake，使用默认配置");
+        }
         long workerId;
 
         try {
@@ -31,9 +35,16 @@ public class HutoolSnowflakeIdGenerator implements IdentifierGenerator {
             workerId = NetUtil.getLocalhost().hashCode();
         }
 
-        // Hutool 的雪花生成器仅支持 0-31
-        workerId = workerId % 32;
-        Long datacenterId = subProps.getDatacenterId();
+        // Hutool 的雪花生成器仅支持 0-31；floorMod 保证非负（IP hashCode 可能为负，% 会保留符号）
+        workerId = Math.floorMod(workerId, 32);
+
+        Integer datacenterId = subProps.getDatacenterId();
+        if (datacenterId == null) {
+            datacenterId = 0;
+        }
+        // 同样钳制到 0-31，避免配置越界触发 hutool Assert 失败
+        datacenterId = Math.floorMod(datacenterId, 32);
+
         String epochDateStr = subProps.getEpochDate();
         Date epochDate = DateUtil.parseDate(epochDateStr);
 

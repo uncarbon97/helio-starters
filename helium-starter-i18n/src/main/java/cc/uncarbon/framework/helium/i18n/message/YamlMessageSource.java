@@ -39,6 +39,14 @@ public class YamlMessageSource extends AbstractMessageSource {
      * locale -> (key -> compiled MessageFormat)
      */
     private final Map<Locale, Map<String, MessageFormat>> formatCache = new ConcurrentHashMap<>();
+    /**
+     * 缺失 code 的负缓存哨兵（CHM 不能存 null 值，用哨兵标记"已知缺失"，避免每次查找重跑解析链）
+     */
+    private static final MessageFormat MISSING_SENTINEL = new MessageFormat("");
+    /**
+     * messagesCache 按 locale 的容量防线（防御性：公开 API 可能传入任意 locale）
+     */
+    private static final int MAX_LOCALE_CACHE_SIZE = 256;
 
     public YamlMessageSource(HeliumI18nProperties props, Charset charset) {
         this.basenames = Optional.ofNullable(props)
@@ -57,10 +65,17 @@ public class YamlMessageSource extends AbstractMessageSource {
     @Override
     protected MessageFormat resolveCode(@NonNull String code, @NonNull Locale locale) {
         Map<String, MessageFormat> formats = formatCache.computeIfAbsent(locale, l -> new ConcurrentHashMap<>());
-        return formats.computeIfAbsent(code, k -> {
-            String pattern = resolveCodeWithoutArguments(k, locale);
-            return pattern != null ? new MessageFormat(pattern, locale) : null;
-        });
+        MessageFormat cached = formats.get(code);
+        if (cached != null) {
+            return cached == MISSING_SENTINEL ? null : cached;
+        }
+        String pattern = resolveCodeWithoutArguments(code, locale);
+        MessageFormat created = pattern != null ? createMessageFormat(pattern, locale) : MISSING_SENTINEL;
+        MessageFormat previous = formats.putIfAbsent(code, created);
+        if (previous != null) {
+            return previous == MISSING_SENTINEL ? null : previous;
+        }
+        return created == MISSING_SENTINEL ? null : created;
     }
 
     @Override
@@ -95,9 +110,11 @@ public class YamlMessageSource extends AbstractMessageSource {
         return null;
     }
 
-    private Map<String, String> getMessagesForLocale(Locale locale) {
-        return messagesCache.computeIfAbsent(locale, this::loadForLocale);
-    }
+    /*
+    ----------------------------------------------------------------
+                        私有方法 private methods
+    ----------------------------------------------------------------
+     */
 
     private Map<String, String> loadForLocale(Locale locale) {
         Map<String, String> result = new HashMap<>();
@@ -150,6 +167,12 @@ public class YamlMessageSource extends AbstractMessageSource {
             }
         } catch (IOException e) {
             logger.warn(LOG_PREFIX + "Failed to load YAML message source: " + resource, e);
+        } catch (RuntimeException e) {
+            /*
+            snakeyaml 语法错误抛 YAMLException（RuntimeException）：
+            捕获后按空文件处理（该语言包无翻译，走 fallback），并指明坏文件，避免每次消息查找重复抛异常
+             */
+            logger.warn(LOG_PREFIX + "YAML 语法错误，已跳过该语言包 >> resource=" + resource, e);
         }
     }
 
@@ -187,5 +210,27 @@ public class YamlMessageSource extends AbstractMessageSource {
     public void clearCache() {
         messagesCache.clear();
         formatCache.clear();
+    }
+
+    /**
+     * 构造 MessageFormat；文案含非法花括号（如未转义的 JSON 示例）时转义后按字面输出原文，而非抛 IllegalArgumentException
+     */
+    protected @NonNull MessageFormat createMessageFormat(@NonNull String pattern, Locale locale) {
+        try {
+            return new MessageFormat(pattern, locale);
+        } catch (IllegalArgumentException e) {
+            logger.warn(LOG_PREFIX + "消息文案含 MessageFormat 非法花括号，已回退为纯文本输出 >> pattern=" + pattern);
+            String escaped = pattern.replace("'", "''").replace("{", "'{'").replace("}", "'}'");
+            return new MessageFormat(escaped, locale);
+        }
+    }
+
+    private Map<String, String> getMessagesForLocale(Locale locale) {
+        if (messagesCache.size() >= MAX_LOCALE_CACHE_SIZE) {
+            // 防御性容量防线：异常多的 locale（如误把用户输入当 locale 传入）时重置缓存，避免无上界增长
+            logger.warn(LOG_PREFIX + "locale 缓存达到容量上限 " + MAX_LOCALE_CACHE_SIZE + "，已重置");
+            messagesCache.clear();
+        }
+        return messagesCache.computeIfAbsent(locale, this::loadForLocale);
     }
 }

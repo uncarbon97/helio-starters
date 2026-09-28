@@ -1,8 +1,8 @@
 package cc.uncarbon.framework.helium.bizlog.service.impl;
 
-import cc.uncarbon.framework.helium.bizlog.annotation.DiffLogIgnore;
 import cc.uncarbon.framework.helium.bizlog.annotation.DiffLogAllFields;
 import cc.uncarbon.framework.helium.bizlog.annotation.DiffLogField;
+import cc.uncarbon.framework.helium.bizlog.annotation.DiffLogIgnore;
 import cc.uncarbon.framework.helium.bizlog.props.HeliumBizLogProperties;
 import cc.uncarbon.framework.helium.bizlog.service.IDiffItemsToLogContentService;
 import cc.uncarbon.framework.helium.bizlog.service.IFunctionService;
@@ -25,6 +25,7 @@ import org.springframework.util.ReflectionUtils;
 
 import java.lang.reflect.Field;
 import java.util.*;
+import java.util.regex.Pattern;
 
 /**
  * 差异节点转文案默认实现
@@ -63,7 +64,8 @@ public class DefaultDiffItemsToLogContentService implements IDiffItemsToLogConte
         Set<DiffNode> set = new HashSet<>();
         diffNode.visit((node, _) -> generateAllFieldLog(sourceObject, targetObject, stringBuilder, node, annotation, set));
         set.clear();
-        return stringBuilder.toString().replaceAll(props.getFieldSeparator().concat("$"), "");
+        // 分隔符是配置项，可能含正则元字符，须 Pattern.quote 按字面匹配
+        return stringBuilder.toString().replaceAll(Pattern.quote(props.getFieldSeparator()) + "$", "");
     }
 
     /**
@@ -293,7 +295,7 @@ public class DefaultDiffItemsToLogContentService implements IDiffItemsToLogConte
                 listAddContent.append(getFunctionValue(item, functionName)).append(props.getListItemSeparator());
             }
         }
-        return listAddContent.toString().replaceAll(props.getListItemSeparator() + "$", "");
+        return listAddContent.toString().replaceAll(Pattern.quote(props.getListItemSeparator()) + "$", "");
     }
 
     /**
@@ -304,6 +306,10 @@ public class DefaultDiffItemsToLogContentService implements IDiffItemsToLogConte
      * @return 转换后的文案
      */
     private String getFunctionValue(Object canonicalGet, String functionName) {
+        // 集合/字段值可能为 null，判空避免丢整条 diff 日志
+        if (canonicalGet == null) {
+            return "";
+        }
         if (ObjectUtils.isEmpty(functionName)) {
             return canonicalGet.toString();
         }

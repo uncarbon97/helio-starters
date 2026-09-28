@@ -8,6 +8,7 @@ import cc.uncarbon.framework.helium.i18n.context.lang.LangInfo;
 import cc.uncarbon.framework.helium.i18n.props.HeliumI18nProperties;
 import cn.hutool.core.text.CharSequenceUtil;
 import cn.hutool.core.text.StrPool;
+import cn.hutool.core.util.StrUtil;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.UtilityClass;
@@ -113,8 +114,19 @@ public class I18nMessageUtil {
             }
 
             if (CharSequenceUtil.contains(msg, SLF4J_STYLE_PLACEHOLDER)) {
-                // 使用 hutool 的模板填充
-                return CharSequenceUtil.format(msg, templateParams);
+                // 容错填充：参数个数与占位符不匹配时告警；null 参数转空串，避免字面量 "null" 直达用户
+                int placeholderCount = CharSequenceUtil.count(msg, SLF4J_STYLE_PLACEHOLDER);
+                Object[] safeParams = templateParams == null ? new Object[0] : templateParams;
+                if (safeParams.length != placeholderCount) {
+                    log.warn(LOG_PREFIX + "模板参数个数与占位符不匹配 >> code={}, placeholders={}, params={}",
+                            code, placeholderCount, safeParams.length);
+                }
+                for (int i = 0; i < safeParams.length; i++) {
+                    if (safeParams[i] == null) {
+                        safeParams[i] = StrUtil.EMPTY;
+                    }
+                }
+                return CharSequenceUtil.format(msg, safeParams);
             }
 
             return msg;

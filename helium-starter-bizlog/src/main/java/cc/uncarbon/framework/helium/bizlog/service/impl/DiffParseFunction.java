@@ -71,10 +71,16 @@ public class DiffParseFunction {
                 target = target == null ? clazz.getDeclaredConstructor().newInstance() : target;
             } catch (InstantiationException | IllegalAccessException | NoSuchMethodException |
                      InvocationTargetException e) {
-                throw new RuntimeException(e);
+                /*
+                补空对象失败（如仅 @Builder 的 DTO 没有无参构造）：
+                跳过 diff 记 warn，不上抛打断业务（joinTransaction 场景下异常会打断业务方法）
+                 */
+                log.warn("diff 单侧对象为空且无公共无参构造，跳过 diff, class={}",
+                        (source == null ? target : source).getClass().getName(), e);
+                return "";
             }
         }
-        if (!Objects.equals(AopUtils.getTargetClass(source.getClass()), AopUtils.getTargetClass(target.getClass()))) {
+        if (!Objects.equals(AopUtils.getTargetClass(source), AopUtils.getTargetClass(target))) {
             log.error("diff的两个对象类型不同, source.class={}, target.class={}", source.getClass().toString(), target.getClass().toString());
             return "";
         }

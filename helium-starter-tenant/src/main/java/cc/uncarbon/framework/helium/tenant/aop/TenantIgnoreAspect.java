@@ -21,7 +21,7 @@ public class TenantIgnoreAspect {
      * @param joinPoint 切点
      * @return 返回结果
      */
-    @Around("@annotation(tenantIgnore)")
+    @Around("@annotation(tenantIgnore) || @within(tenantIgnore)")
     public Object around(ProceedingJoinPoint joinPoint, TenantIgnore tenantIgnore) throws Throwable {
         boolean oldVal = TenantContextHolder.isIgnored();
         if (oldVal) {
@@ -31,6 +31,10 @@ public class TenantIgnoreAspect {
             try {
                 return joinPoint.proceed();
             } catch (Throwable e) {
+                // RuntimeException 原样放行，避免 BusinessException 等被二次包装成裸 RuntimeException；Error 不在此捕获
+                if (e instanceof RuntimeException runtimeException) {
+                    throw runtimeException;
+                }
                 throw new RuntimeException(e);
             }
         });

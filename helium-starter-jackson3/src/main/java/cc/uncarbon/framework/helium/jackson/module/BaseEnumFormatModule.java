@@ -37,8 +37,12 @@ public class BaseEnumFormatModule extends SimpleModule {
             gen.writePOJO(value.getValue());
             if (baseEnumConfig.showLabel()) {
                 TokenStreamContext writeContext = gen.streamWriteContext();
-                // 如果是普通对象字段，另外输出 xxxLabel 字段
-                if (!writeContext.inArray()) {
+                /*
+                仅普通对象字段附加 xxxLabel 字段；
+                根值场景（writeValueAsString(enum)、Redis 直接存枚举等）currentName 为 null，
+                在根上下文写属性名会抛 StreamWriteException
+                 */
+                if (!writeContext.inArray() && writeContext.currentName() != null) {
                     gen.writeStringProperty(writeContext.currentName() + "Label", value.getLabel());
                 }
             }

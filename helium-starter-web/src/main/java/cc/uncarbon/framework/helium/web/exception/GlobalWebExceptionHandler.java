@@ -64,7 +64,8 @@ public class GlobalWebExceptionHandler {
 
         ApiResult<Void> ret;
         if (e.getErrorCode() != null) {
-            ret = ApiResult.fail(e.getCode(), determineI18nMessage(e.getErrorCode()));
+            // 携带异常中的模板参数，避免占位符原文直达客户端
+            ret = ApiResult.fail(e.getCode(), determineI18nMessage(e.getErrorCode(), e.getTemplateParams()));
         } else {
             ret = ApiResult.fail(e.getCode(), e.getMessage());
         }
@@ -122,10 +123,9 @@ public class GlobalWebExceptionHandler {
 
     /**
      * 请求方式不对
-     * HttpRequestMethodNotSupportedException 如：POST接口用了GET请求
-     * HttpMediaTypeNotSupportedException 如：Content-type 应为 application/json 的，使用了 text/plain
+     * 如：POST接口用了GET请求
      */
-    @ExceptionHandler(value = {HttpRequestMethodNotSupportedException.class, HttpMediaTypeNotSupportedException.class})
+    @ExceptionHandler(value = {HttpRequestMethodNotSupportedException.class})
     public ResponseEntity<ApiResult<Void>> handleServletException(ServletException e,
                                                                   HttpServletRequest servletRequest) {
         logExpectedException(e, servletRequest);
@@ -133,6 +133,20 @@ public class GlobalWebExceptionHandler {
         final var codeEnum = BuiltinErrorCodeEnum.Z00405;
         ApiResult<Void> ret = ApiResult.fail(codeEnum.getErrorCode(), determineI18nMessage(codeEnum));
         return createResponseEntity(HttpStatus.METHOD_NOT_ALLOWED, ret);
+    }
+
+    /**
+     * Content-Type 不支持
+     * 如：Content-type 应为 application/json 的，使用了 text/plain
+     */
+    @ExceptionHandler(value = {HttpMediaTypeNotSupportedException.class})
+    public ResponseEntity<ApiResult<Void>> handleHttpMediaTypeNotSupportedException(HttpMediaTypeNotSupportedException e,
+                                                                                    HttpServletRequest servletRequest) {
+        logExpectedException(e, servletRequest);
+
+        final var codeEnum = BuiltinErrorCodeEnum.Z00415;
+        ApiResult<Void> ret = ApiResult.fail(codeEnum.getErrorCode(), determineI18nMessage(codeEnum));
+        return createResponseEntity(HttpStatus.UNSUPPORTED_MEDIA_TYPE, ret);
     }
 
     /**

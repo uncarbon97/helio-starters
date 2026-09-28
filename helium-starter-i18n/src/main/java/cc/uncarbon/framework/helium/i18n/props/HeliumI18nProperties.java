@@ -4,8 +4,8 @@ import cc.uncarbon.framework.helium.base.constant.ConfigurationPropertiesPrefix;
 import lombok.Data;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 
 /**
@@ -23,9 +23,9 @@ public class HeliumI18nProperties {
     private Boolean enabled;
 
     /**
-     * 多语言
+     * 多语言（默认实例，避免未配置 lang 段时 NPE）
      */
-    private Lang lang;
+    private Lang lang = new Lang();
 
     /**
      * 多时区
@@ -42,9 +42,9 @@ public class HeliumI18nProperties {
     public static class Lang {
 
         /**
-         * 指定默认语言
+         * 指定默认语言（默认与兜底语言一致）
          */
-        private String defaultLanguageTag;
+        private String defaultLanguageTag = "zh-CN";
 
         /**
          * 兜底语言标签
@@ -53,9 +53,9 @@ public class HeliumI18nProperties {
         private String fallbackLanguageTag = "zh-CN";
 
         /**
-         * 显式标注支持的语言
+         * 显式标注支持的语言（默认空列表，表示不校验）
          */
-        private List<String> supportedLanguageTags;
+        private List<String> supportedLanguageTags = new ArrayList<>();
 
         /**
          * 本地以 YAML 形式维护的语言包，主文件夹列表
@@ -63,9 +63,9 @@ public class HeliumI18nProperties {
         private List<String> yamlBasenames;
 
         /**
-         * 多语言解析器子配置属性
+         * 多语言解析器子配置属性（默认实例，避免部分配置时 NPE）
          */
-        private LangResolverConfig resolver;
+        private LangResolverConfig resolver = new LangResolverConfig();
 
     }
 

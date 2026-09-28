@@ -42,7 +42,8 @@ public class PageParam implements Serializable {
             pageSize = 10;
         }
 
-        pageSize = Math.min(pageSize, 500);
+        // 钳制到 [1, 500]，避免 0/负值在 maxLimit=-1 时触发全表查询
+        pageSize = Math.clamp(pageSize, 1, 500);
 
         if (globalPageSizeLimiter != null) {
             return globalPageSizeLimiter.apply(pageSize);

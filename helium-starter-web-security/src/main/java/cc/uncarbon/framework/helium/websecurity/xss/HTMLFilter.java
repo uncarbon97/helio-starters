@@ -167,7 +167,11 @@ public final class HTMLFilter {
     //---------------------------------------------------------------
     // my versions of some PHP library functions
     public static String chr(final int decimal) {
-        return String.valueOf((char) decimal);
+        // 超出 Unicode 码点范围的值直接丢弃，避免 (char) 强转静默截断
+        if (decimal < 0 || decimal > Character.MAX_CODE_POINT) {
+            return "";
+        }
+        return String.valueOf(Character.toChars(decimal));
     }
 
     public static String htmlSpecialChars(final String s) {
@@ -414,14 +418,27 @@ public final class HTMLFilter {
         return s;
     }
 
+    /**
+     * 解析数字实体；超 int 范围等非法值返回 null，保留原文不做替换（避免 NumberFormatException 导致请求失败）
+     */
+    private static Integer decodeEntityNumber(String match, int radix) {
+        try {
+            return Integer.valueOf(match, radix);
+        } catch (NumberFormatException e) {
+            return null;
+        }
+    }
+
     private String decodeEntities(String s) {
         StringBuilder buf = new StringBuilder();
 
         Matcher m = P_ENTITY.matcher(s);
         while (m.find()) {
             final String match = m.group(1);
-            final int decimal = Integer.decode(match);
-            m.appendReplacement(buf, Matcher.quoteReplacement(chr(decimal)));
+            final Integer decimal = decodeEntityNumber(match, 10);
+            if (decimal != null) {
+                m.appendReplacement(buf, Matcher.quoteReplacement(chr(decimal)));
+            }
         }
         m.appendTail(buf);
         s = buf.toString();
@@ -430,8 +447,10 @@ public final class HTMLFilter {
         m = P_ENTITY_UNICODE.matcher(s);
         while (m.find()) {
             final String match = m.group(1);
-            final int decimal = Integer.valueOf(match, 16);
-            m.appendReplacement(buf, Matcher.quoteReplacement(chr(decimal)));
+            final Integer decimal = decodeEntityNumber(match, 16);
+            if (decimal != null) {
+                m.appendReplacement(buf, Matcher.quoteReplacement(chr(decimal)));
+            }
         }
         m.appendTail(buf);
         s = buf.toString();
@@ -440,8 +459,10 @@ public final class HTMLFilter {
         m = P_ENCODE.matcher(s);
         while (m.find()) {
             final String match = m.group(1);
-            final int decimal = Integer.valueOf(match, 16);
-            m.appendReplacement(buf, Matcher.quoteReplacement(chr(decimal)));
+            final Integer decimal = decodeEntityNumber(match, 16);
+            if (decimal != null) {
+                m.appendReplacement(buf, Matcher.quoteReplacement(chr(decimal)));
+            }
         }
         m.appendTail(buf);
         s = buf.toString();

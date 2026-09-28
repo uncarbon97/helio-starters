@@ -60,6 +60,11 @@ public abstract class BaseRateLimitRedisStrategy {
                                          Supplier<RateLimitedException> rateLimitedExceptionSupplier) {
         int duration = annotation.duration();
         int max = annotation.max();
+        // 前置校验：duration 非法会在 Lua 层报 invalid expire time，max 非法则限流永不过期/永远触发
+        if (duration <= 0 || max <= 0) {
+            throw new IllegalArgumentException(
+                    "@UseRateLimit 配置非法：duration 与 max 必须为正数（当前 duration=" + duration + ", max=" + max + "）");
+        }
 
         String redisKey = determineRedisKey(annotation, point);
         Long current = objectRedisTemplate.execute(REDIS_SCRIPT, List.of(redisKey), max, duration);

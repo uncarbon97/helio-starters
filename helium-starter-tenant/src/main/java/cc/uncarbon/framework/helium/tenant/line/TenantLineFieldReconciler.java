@@ -58,7 +58,7 @@ public class TenantLineFieldReconciler implements ApplicationRunner {
                         || tableInfo.getEntityType().isAnnotationPresent(TenantIgnore.class)) {
                     continue;
                 }
-                if (!hasTenantIdColumn(connection, normalizedTableName)) {
+                if (!hasTenantIdColumn(connection, tableName, normalizedTableName)) {
                     missing.add(tableName);
                 }
             }
@@ -77,7 +77,7 @@ public class TenantLineFieldReconciler implements ApplicationRunner {
     /**
      * 经 JDBC 元数据判断表是否含 tenant_id 列，支持 MySQL + PGSQL
      */
-    private boolean hasTenantIdColumn(Connection connection, String tableName) throws SQLException {
+    private boolean hasTenantIdColumn(Connection connection, String originalTableName, String normalizedTableName) throws SQLException {
         DatabaseMetaData metaData = connection.getMetaData();
         String product = metaData.getDatabaseProductName();
         String catalog;
@@ -85,12 +85,39 @@ public class TenantLineFieldReconciler implements ApplicationRunner {
         if (product != null && product.toLowerCase().contains("postgres")) {
             catalog = null;
             schemaPattern = connection.getSchema();
+            if (schemaPattern == null) {
+                /*
+                部分驱动 getSchema() 返回 null；此时 getColumns 会跨全部 schema 匹配，
+                同名表在其他 schema 含 tenant_id 会导致漏报（对账假通过），限定为 current_schema()
+                 */
+                schemaPattern = queryCurrentSchema(connection);
+            }
         } else {
             catalog = connection.getCatalog();
             schemaPattern = null;
         }
+        /*
+        先按原始表名匹配（保留大小写，适配 lower_case_table_names=0 的 MySQL 混合大小写表），
+        未命中再按归一化小写表名匹配（适配 PG 等全小写存储）；两路任一命中即视为含列
+         */
+        if (existsColumn(metaData, catalog, schemaPattern, originalTableName)) {
+            return true;
+        }
+        return existsColumn(metaData, catalog, schemaPattern, normalizedTableName);
+    }
+
+    private boolean existsColumn(DatabaseMetaData metaData, String catalog, String schemaPattern, String tableName) throws SQLException {
         try (ResultSet rs = metaData.getColumns(catalog, schemaPattern, tableName, EntityField.TENANT_ID_COLUMN)) {
             return rs.next();
+        }
+    }
+
+    private String queryCurrentSchema(Connection connection) throws SQLException {
+        try (var statement = connection.createStatement();
+             ResultSet rs = statement.executeQuery("SELECT current_schema()")) {
+            return rs.next() ? rs.getString(1) : null;
+        } catch (SQLException ignore) {
+            return null;
         }
     }
 

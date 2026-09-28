@@ -1,8 +1,10 @@
 package cc.uncarbon.framework.helium.tenant.datasource;
 
+import cc.uncarbon.framework.helium.base.constant.ConfigurationPropertiesPrefix;
 import cc.uncarbon.framework.helium.db.dynamicdatasource.helper.DynamicDataSourceHelper;
 import cc.uncarbon.framework.helium.db.model.DataSourceSetting;
 import cc.uncarbon.framework.helium.tenant.context.TenantContextHolder;
+import cc.uncarbon.framework.helium.tenant.props.HeliumTenantProperties;
 import com.baomidou.dynamic.datasource.toolkit.DynamicDataSourceContextHolder;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
@@ -24,6 +26,7 @@ public class TenantDataSourceAopInterceptor implements MethodInterceptor {
 
     private final DynamicDataSourceHelper dynamicDataSourceHelper;
     private final TenantDataSourceSettingProvider tenantDataSourceSettingProvider;
+    private final HeliumTenantProperties props;
 
 
     @Override
@@ -37,12 +40,26 @@ public class TenantDataSourceAopInterceptor implements MethodInterceptor {
         boolean pushedFlag = false;
         try {
             Long tenantId = TenantContextHolder.getTenantId();
+            if (tenantId == null) {
+                if (props.isStrict()) {
+                    // 响亮失败优于静默落回 primary 共享库（子线程漏传上下文、登录前请求等场景）
+                    throw new IllegalStateException("当前线程缺少租户上下文，且已开启严格模式("
+                            + ConfigurationPropertiesPrefix.TENANT + ".strict)");
+                }
+                // 非严格模式保持兼容：在 primary 数据源上执行
+                return invocation.proceed();
+            }
+
             // 数据源别名，与租户ID相同
             String datasourceAlias = String.valueOf(tenantId);
             boolean switchedFlag = dynamicDataSourceHelper.switchToDataSource(datasourceAlias,
                     () -> getDataSourceSettingOf(tenantId));
             if (switchedFlag) {
                 pushedFlag = true;
+            } else if (props.isStrict()) {
+                // 租户未配置数据源且动态创建失败，响亮失败优于静默落回 primary 共享库
+                throw new IllegalStateException("租户 [" + tenantId + "] 数据源未注册且无法动态创建，且已开启严格模式("
+                        + ConfigurationPropertiesPrefix.TENANT + ".strict)");
             }
             return invocation.proceed();
         } finally {

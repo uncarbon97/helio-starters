@@ -11,6 +11,7 @@ import org.jspecify.annotations.NonNull;
 import java.util.List;
 import java.util.Locale;
 import java.util.Locale.LanguageRange;
+import java.util.Objects;
 import java.util.Optional;
 
 /**
@@ -33,15 +34,19 @@ public class HeaderLangResolver implements LangResolver {
 
     @Override
     public Optional<LangInfo> resolve(@NonNull HttpServletRequest servletRequest) {
-        // 1. 先取自定义请求头，如「X-i18n-Lang=en_US」
-        final String headerName = props.getLang().getResolver().getHeaderName();
-        String headerVal = CharSequenceUtil.cleanBlank(servletRequest.getHeader(headerName));
-        if (CharSequenceUtil.isNotEmpty(headerVal)) {
-            Locale headerLocale = LocaleUtil.toLocale(headerVal);
-            if (headerLocale != null) {
-                String languageTag = headerLocale.toLanguageTag();
-                if (props.getLang().getSupportedLanguageTags().contains(languageTag)) {
-                    return Optional.of(LangInfo.ofSimple(languageTag, headerLocale));
+        var langCfg = props.getLang();
+        var cfg = langCfg != null ? langCfg.getResolver() : null;
+
+        // 1. 先取自定义请求头，如「X-i18n-Lang=en_US」（配置缺失时跳过本步骤）
+        if (cfg != null && cfg.getHeaderName() != null) {
+            String headerVal = CharSequenceUtil.cleanBlank(servletRequest.getHeader(cfg.getHeaderName()));
+            if (CharSequenceUtil.isNotEmpty(headerVal)) {
+                Locale headerLocale = toLocaleSafely(headerVal);
+                if (headerLocale != null) {
+                    String languageTag = headerLocale.toLanguageTag();
+                    if (isSupported(langCfg, languageTag)) {
+                        return Optional.of(LangInfo.ofSimple(languageTag, headerLocale));
+                    }
                 }
             }
         }
@@ -60,8 +65,13 @@ public class HeaderLangResolver implements LangResolver {
         }
 
         // 3. 语言前缀模糊匹配：Locale.filter 可将 en 匹配到 en-US 等（LanguageRange 基础过滤）
-        List<Locale> supportedLocales = props.getLang().getSupportedLanguageTags().stream()
-                .map(LocaleUtil::toLocale).toList();
+        if (langCfg == null || langCfg.getSupportedLanguageTags() == null) {
+            return Optional.empty();
+        }
+        List<Locale> supportedLocales = langCfg.getSupportedLanguageTags().stream()
+                .map(this::toLocaleSafely)
+                .filter(Objects::nonNull)
+                .toList();
         for (LanguageRange range : ranges) {
             Locale matched = Locale.filter(List.of(range), supportedLocales).stream().findFirst().orElse(null);
             if (matched != null) {
@@ -69,6 +79,23 @@ public class HeaderLangResolver implements LangResolver {
             }
         }
         return Optional.empty();
+    }
+
+    /**
+     * 非法语言标签（如长度<2、格式错误）按未命中处理，而非抛 IllegalArgumentException
+     */
+    private Locale toLocaleSafely(String tag) {
+        try {
+            return LocaleUtil.toLocale(tag);
+        } catch (IllegalArgumentException e) {
+            return null;
+        }
+    }
+
+    private boolean isSupported(HeliumI18nProperties.Lang langCfg, String languageTag) {
+        List<String> tags = langCfg.getSupportedLanguageTags();
+        // 未配置支持语言集时不做校验，避免未配置用户 i18n 整体失效
+        return tags == null || tags.isEmpty() || tags.contains(languageTag);
     }
 
     @Override

@@ -57,9 +57,23 @@ public record Money(BigDecimal amount, String currencyCode, int scale) implement
     }
 
     /**
-     * 按字符串解析金额，小数位需不超过 {@code info.getScale()}
+     * 按字符串解析金额，小数位需不超过 {@code info.getScale()}；
+     * 超出精度时抛出 {@link IllegalArgumentException}（金额静默舍入属资损隐患，不吞不圆）
      */
     public static Money parse(String amount, CurrencyInfo info) {
+        BigDecimal decimal = new BigDecimal(amount);
+        int scale = info.getScale();
+        if (decimal.scale() > scale) {
+            throw new IllegalArgumentException(
+                    "金额小数位超出币种精度: " + amount + "（" + info.getCurrencyCode() + " scale=" + scale + "）");
+        }
+        return of(decimal, info);
+    }
+
+    /**
+     * 按字符串解析金额并显式舍入（HALF_EVEN）到币种精度
+     */
+    public static Money parseRounded(String amount, CurrencyInfo info) {
         return of(amount, info);
     }
 

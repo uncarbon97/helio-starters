@@ -7,7 +7,7 @@ import org.springframework.core.convert.converter.Converter;
 import org.springframework.core.convert.converter.ConverterFactory;
 
 import java.util.Map;
-import java.util.WeakHashMap;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * 枚举转换
@@ -17,13 +17,15 @@ import java.util.WeakHashMap;
 @SuppressWarnings("rawtypes")
 public class EnumConverterFactory implements ConverterFactory<String, BaseEnum> {
 
-    private final Map<Class, Converter> converterCache = new WeakHashMap<>();
+    /**
+     * 线程安全缓存（键为 Class，生命周期与 ClassLoader 一致，无内存泄漏顾虑）
+     */
+    private final Map<Class, Converter> converterCache = new ConcurrentHashMap<>();
 
     @Override
     public <T extends BaseEnum> @Nullable Converter<String, T> getConverter(@NonNull Class<T> targetType) {
-        return converterCache.computeIfAbsent(targetType,
-                k -> converterCache.put(k, new EnumConverter(k))
-        );
+        // 注意：映射函数必须返回 converter 本身；返回 put() 的旧值 null 会导致首次调用整体返回 null
+        return converterCache.computeIfAbsent(targetType, k -> new EnumConverter(k));
     }
 
     protected static class EnumConverter<T extends BaseEnum<T>> implements Converter<Object, T> {

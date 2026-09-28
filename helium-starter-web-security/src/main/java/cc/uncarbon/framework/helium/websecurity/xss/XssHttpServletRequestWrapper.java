@@ -25,14 +25,19 @@ import java.util.Map;
 public class XssHttpServletRequestWrapper extends HttpServletRequestWrapper {
 
     /**
-     * html过滤器
+     * html 过滤器（非线程安全；请求级实例，禁止共享或静态化）
      */
-    private static final HTMLFilter HTML_FILTER = new HTMLFilter();
+    private final HTMLFilter htmlFilter = new HTMLFilter();
 
     /**
      * 没被包装过的HttpServletRequest（特殊场景，需要自己过滤）
      */
     HttpServletRequest orgRequest;
+
+    /**
+     * 过滤后的 JSON body 缓存（null 表示尚未初始化）
+     */
+    private byte[] cachedJsonBody;
 
 
     public XssHttpServletRequestWrapper(HttpServletRequest request) {
@@ -53,28 +58,34 @@ public class XssHttpServletRequestWrapper extends HttpServletRequestWrapper {
     @Override
     public ServletInputStream getInputStream() throws IOException {
         // Content-Type为空，直接返回
-        if (null == super.getHeader(HttpHeaders.CONTENT_TYPE)) {
+        String contentType = super.getHeader(HttpHeaders.CONTENT_TYPE);
+        if (contentType == null) {
             return super.getInputStream();
         }
 
         // 非JSON类型，直接返回
-        if (!MediaType.APPLICATION_JSON_VALUE.equalsIgnoreCase(super.getHeader(HttpHeaders.CONTENT_TYPE))) {
+        if (!isJsonContentType(contentType)) {
             return super.getInputStream();
         }
 
-        // 为空，直接返回
-        String json = IoUtil.read(super.getInputStream(), StandardCharsets.UTF_8);
-        if (CharSequenceUtil.isBlank(json)) {
-            return super.getInputStream();
+        /*
+        JSON body 只过滤一次并缓存：
+        - 原始流只能读一次，重复 getInputStream 需返回缓存内容
+        - 原始 body 为空白时也缓存（原实现返回已耗尽的原始流，语义错误）
+         */
+        if (cachedJsonBody == null) {
+            String json = IoUtil.read(super.getInputStream(), StandardCharsets.UTF_8);
+            if (CharSequenceUtil.isNotBlank(json)) {
+                json = xssEncode(json);
+            }
+            cachedJsonBody = json.getBytes(StandardCharsets.UTF_8);
         }
 
-        // XSS过滤
-        json = xssEncode(json);
-        final ByteArrayInputStream bis = new ByteArrayInputStream(json.getBytes(StandardCharsets.UTF_8));
+        final ByteArrayInputStream bis = new ByteArrayInputStream(cachedJsonBody);
         return new ServletInputStream() {
             @Override
             public boolean isFinished() {
-                return true;
+                return bis.available() == 0;
             }
 
             @Override
@@ -92,6 +103,22 @@ public class XssHttpServletRequestWrapper extends HttpServletRequestWrapper {
                 return bis.read();
             }
         };
+    }
+
+    /**
+     * 两级 Content-Type 判断：
+     * 一级前缀快速判断，命中即短路；二级 MediaType 解析兜底，识别大小写混写、带空格等变体，防恶意绕过
+     */
+    private boolean isJsonContentType(String contentType) {
+        if (contentType.regionMatches(true, 0, MediaType.APPLICATION_JSON_VALUE, 0,
+                MediaType.APPLICATION_JSON_VALUE.length())) {
+            return true;
+        }
+        try {
+            return MediaType.APPLICATION_JSON.includes(MediaType.parseMediaType(contentType));
+        } catch (Exception e) {
+            return false;
+        }
     }
 
     @Override
@@ -141,6 +168,6 @@ public class XssHttpServletRequestWrapper extends HttpServletRequestWrapper {
     }
 
     private String xssEncode(String input) {
-        return HTML_FILTER.filter(input);
+        return htmlFilter.filter(input);
     }
 }

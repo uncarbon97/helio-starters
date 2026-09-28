@@ -103,7 +103,7 @@ public class DefaultTenantLineHandler implements TenantLineHandler {
         String normalizedTableName = normalizeTableName(tableName);
         Boolean ignore = ignoredTableCache.get(normalizedTableName);
         if (ignore == null) {
-            ignore = computeIgnoreTable(normalizedTableName);
+            ignore = computeIgnoreTable(tableName, normalizedTableName);
             ignoredTableCache.put(normalizedTableName, ignore);
         }
         return ignore;
@@ -121,13 +121,21 @@ public class DefaultTenantLineHandler implements TenantLineHandler {
         return false;
     }
 
-    private boolean computeIgnoreTable(String normalizedTableName) {
+    private boolean computeIgnoreTable(String originalTableName, String normalizedTableName) {
         // 显式配置忽略的表
         if (isConfiguredIgnored(normalizedTableName)) {
             return true;
         }
 
-        TableInfo tableInfo = TableInfoHelper.getTableInfo(normalizedTableName);
+        /*
+        MP 的 TableInfo 缓存按实体原始表名精确匹配；
+        先按原始表名查，miss 再用归一化名兜底，避免混合大小写表名（如 @TableName("SysConfig")）
+        被误判为"纯 XML 表"而错误地保持参与隔离
+         */
+        TableInfo tableInfo = TableInfoHelper.getTableInfo(originalTableName);
+        if (tableInfo == null) {
+            tableInfo = TableInfoHelper.getTableInfo(normalizedTableName);
+        }
         if (tableInfo == null) {
             // 找不到对应实体（如纯 XML Mapper 编写的 SQL），保持参与租户隔离，避免遗漏
             return false;

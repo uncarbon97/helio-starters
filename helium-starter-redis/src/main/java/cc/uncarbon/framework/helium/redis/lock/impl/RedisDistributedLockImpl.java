@@ -46,11 +46,14 @@ public class RedisDistributedLockImpl implements RedisDistributedLock {
     @Override
     public boolean tryLock(String lockName, TimeUnit unit, int waitDuration, int holdDuration) {
         RLock lock = this.getRLockByName(lockName);
+        boolean locked = false;
         try {
-            return lock.tryLock(waitDuration, holdDuration, unit);
+            locked = lock.tryLock(waitDuration, holdDuration, unit);
         } catch (InterruptedException ex) {
-            return false;
+            // 恢复中断标志，保留线程池优雅停机/取消语义
+            Thread.currentThread().interrupt();
         }
+        return locked;
     }
 
     @Override
@@ -77,7 +80,14 @@ public class RedisDistributedLockImpl implements RedisDistributedLock {
         }
 
         if (lock.isLocked() && lock.isHeldByCurrentThread()) {
-            this.unlock(lock);
+            try {
+                this.unlock(lock);
+            } catch (IllegalMonitorStateException _) {
+                /*
+                检查通过后、释放前锁恰好过期（检查与释放是多次 Redis 往返）：
+                锁已不属于本线程，释放无意义；吞掉，避免从 finally 抛出覆盖正在传播的业务异常
+                 */
+            }
         }
     }
 

@@ -32,6 +32,8 @@ public enum BuiltinErrorCodeEnum implements StructuredErrorCode {
     Z00405("Z00405", "错误的请求方式"),
     // ref HTTP_NOT_ACCEPTABLE
     Z00406("Z00406", "错误的入参格式"),
+    // ref HTTP_UNSUPPORTED_MEDIA_TYPE
+    Z00415("Z00415", "不支持的媒体类型"),
     // ref HTTP_TOO_MANY_REQUESTS
     Z00429("Z00429", "操作频率不要太快，稍微休息一下吧"),
     Z00500("Z00500", "服务器繁忙，请稍后再试"),

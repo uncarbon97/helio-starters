@@ -1,13 +1,13 @@
 package cc.uncarbon.framework.helium.bizlog.support.aop;
 
 import cc.uncarbon.framework.helium.bizlog.annotation.LogRecord;
+import cc.uncarbon.framework.helium.bizlog.context.LogRecordContext;
 import cc.uncarbon.framework.helium.bizlog.model.LogRecordModel;
 import cc.uncarbon.framework.helium.bizlog.model.LogRecordOps;
 import cc.uncarbon.framework.helium.bizlog.model.MethodExecuteResult;
-import cc.uncarbon.framework.helium.bizlog.context.LogRecordContext;
 import cc.uncarbon.framework.helium.bizlog.service.IFunctionService;
-import cc.uncarbon.framework.helium.bizlog.service.ILogRecordPerformanceMonitor;
 import cc.uncarbon.framework.helium.bizlog.service.ILogRecordDataService;
+import cc.uncarbon.framework.helium.bizlog.service.ILogRecordPerformanceMonitor;
 import cc.uncarbon.framework.helium.bizlog.service.IOperatorGetService;
 import cc.uncarbon.framework.helium.bizlog.service.impl.DiffParseFunction;
 import cc.uncarbon.framework.helium.bizlog.support.parse.LogFunctionParser;
@@ -134,7 +134,12 @@ public class LogRecordInterceptor extends LogRecordValueParser
             ret = invoker.proceed();
             methodExecuteResult.setResult(ret);
             methodExecuteResult.setSuccess(true);
-        } catch (Exception e) {
+        } catch (Throwable e) {
+            /*
+            捕获 Throwable 而非 Exception：
+            Error（如 StackOverflowError）若在此逃逸，会跳过下方 finally 的 LogRecordContext.clear()，
+            导致 putEmptySpan 压入的栈帧未弹、嵌套 @LogRecord 变量栈错位，且失败模板不渲染
+             */
             methodExecuteResult.setSuccess(false);
             methodExecuteResult.setThrowable(e);
             methodExecuteResult.setErrorMsg(e.getMessage());
