@@ -112,24 +112,7 @@ public class I18nMessageUtil {
             if (CharSequenceUtil.isEmpty(msg)) {
                 return msg;
             }
-
-            if (CharSequenceUtil.contains(msg, SLF4J_STYLE_PLACEHOLDER)) {
-                // 容错填充：参数个数与占位符不匹配时告警；null 参数转空串，避免字面量 "null" 直达用户
-                int placeholderCount = CharSequenceUtil.count(msg, SLF4J_STYLE_PLACEHOLDER);
-                Object[] safeParams = templateParams == null ? new Object[0] : templateParams;
-                if (safeParams.length != placeholderCount) {
-                    log.warn(LOG_PREFIX + "模板参数个数与占位符不匹配 >> code={}, placeholders={}, params={}",
-                            code, placeholderCount, safeParams.length);
-                }
-                for (int i = 0; i < safeParams.length; i++) {
-                    if (safeParams[i] == null) {
-                        safeParams[i] = StrUtil.EMPTY;
-                    }
-                }
-                return CharSequenceUtil.format(msg, safeParams);
-            }
-
-            return msg;
+            return fillTemplate(msg, code, templateParams);
         } catch (NoSuchMessageException nsme) {
             if (!Objects.equals(locale.toLanguageTag(), getFallbackLanguageTag())) {
                 // 需求语言不是默认语言（预设是简体中文），且未找到对应国际化消息翻译，走不了兜底，发出警告
@@ -164,7 +147,8 @@ public class I18nMessageUtil {
      */
     public String messageOf(Locale locale, String code, String defaultValue, Object... templateParams) {
         String msg = messageOf(locale, code, templateParams);
-        return msg == null ? defaultValue : msg;
+        // 兜底值同样做模板填充，避免占位符原样外显
+        return msg != null ? msg : fillTemplate(defaultValue, code, templateParams);
     }
 
     /**
@@ -216,5 +200,33 @@ public class I18nMessageUtil {
 
         // 最终兜底：返回枚举项 name
         return enumItem.name();
+    }
+
+    /*
+    ----------------------------------------------------------------
+                        私有方法 private methods
+    ----------------------------------------------------------------
+     */
+
+    /**
+     * 模板填充；msg 为 null 或不含占位符时原样返回
+     */
+    private String fillTemplate(String msg, String code, Object... templateParams) {
+        if (msg == null || !CharSequenceUtil.contains(msg, SLF4J_STYLE_PLACEHOLDER)) {
+            return msg;
+        }
+        // 容错填充：参数个数与占位符不匹配时告警；null 参数转空串，避免字面量 "null" 直达用户
+        int placeholderCount = CharSequenceUtil.count(msg, SLF4J_STYLE_PLACEHOLDER);
+        Object[] safeParams = templateParams == null ? new Object[0] : templateParams;
+        if (safeParams.length != placeholderCount) {
+            log.warn(LOG_PREFIX + "模板参数个数与占位符不匹配 >> code={}, placeholders={}, params={}",
+                    code, placeholderCount, safeParams.length);
+        }
+        for (int i = 0; i < safeParams.length; i++) {
+            if (safeParams[i] == null) {
+                safeParams[i] = StrUtil.EMPTY;
+            }
+        }
+        return CharSequenceUtil.format(msg, safeParams);
     }
 }

@@ -25,6 +25,7 @@ public enum TenantIsolationStrategyEnum {
 
     /**
      * 数据源级，即每个租户使用独立的数据源
+     * db-per-tenant
      */
     DATASOURCE,
 
