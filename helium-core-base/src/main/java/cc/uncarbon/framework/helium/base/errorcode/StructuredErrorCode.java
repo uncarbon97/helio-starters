@@ -30,7 +30,7 @@ public interface StructuredErrorCode extends Serializable {
         if (this instanceof Enum<?> e) {
             return e.name();
         }
-        throw new UnsupportedOperationException("Non-enum implementations must override getErrorCode()");
+        throw new UnsupportedOperationException("非枚举实现类必须覆写 getErrorCode()");
     }
 
     /**

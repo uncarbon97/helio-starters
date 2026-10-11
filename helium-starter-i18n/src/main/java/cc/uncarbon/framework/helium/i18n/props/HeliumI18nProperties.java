@@ -85,7 +85,7 @@ public class HeliumI18nProperties {
         /**
          * 多时区解析器子配置属性
          */
-        private TimezoneResolverConfig resolver;
+        private TimezoneResolverConfig resolver = new TimezoneResolverConfig();
 
     }
 

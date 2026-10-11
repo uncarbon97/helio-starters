@@ -10,8 +10,11 @@ import lombok.Getter;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 
+import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.io.InputStreamReader;
+import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -74,11 +77,11 @@ public class XssHttpServletRequestWrapper extends HttpServletRequestWrapper {
         - 原始 body 为空白时也缓存（原实现返回已耗尽的原始流，语义错误）
          */
         if (cachedJsonBody == null) {
-            String json = IoUtil.read(super.getInputStream(), StandardCharsets.UTF_8);
+            String json = IoUtil.read(super.getInputStream(), resolveCharset());
             if (CharSequenceUtil.isNotBlank(json)) {
                 json = xssEncode(json);
             }
-            cachedJsonBody = json.getBytes(StandardCharsets.UTF_8);
+            cachedJsonBody = json.getBytes(resolveCharset());
         }
 
         final ByteArrayInputStream bis = new ByteArrayInputStream(cachedJsonBody);
@@ -121,6 +124,26 @@ public class XssHttpServletRequestWrapper extends HttpServletRequestWrapper {
         }
     }
 
+    /**
+     * 解析 body 字符集：优先请求声明的字符集（如 GBK），缺省或非法时回退 UTF-8
+     */
+    private Charset resolveCharset() {
+        String encoding = super.getCharacterEncoding();
+        if (CharSequenceUtil.isNotBlank(encoding)) {
+            try {
+                return Charset.forName(encoding);
+            } catch (Exception ignored) {
+            }
+        }
+        return StandardCharsets.UTF_8;
+    }
+
+    @Override
+    public BufferedReader getReader() throws IOException {
+        // 同步包装 getReader：否则经 getReader 读取的 JSON body 会整段绕过 XSS 过滤
+        return new BufferedReader(new InputStreamReader(getInputStream(), resolveCharset()));
+    }
+
     @Override
     public String getParameter(String name) {
         String value = super.getParameter(xssEncode(name));
@@ -137,10 +160,12 @@ public class XssHttpServletRequestWrapper extends HttpServletRequestWrapper {
             return parameters;
         }
 
+        // 拷贝新数组再编码，避免原地改写容器共享数组导致同请求二次调用时二次编码
+        String[] encoded = new String[parameters.length];
         for (int i = 0; i < parameters.length; i++) {
-            parameters[i] = xssEncode(parameters[i]);
+            encoded[i] = xssEncode(parameters[i]);
         }
-        return parameters;
+        return encoded;
     }
 
     @Override
@@ -150,21 +175,13 @@ public class XssHttpServletRequestWrapper extends HttpServletRequestWrapper {
         for (Map.Entry<String, String[]> entry : parameters.entrySet()) {
             String key = entry.getKey();
             String[] values = entry.getValue();
+            String[] encoded = new String[values.length];
             for (int i = 0; i < values.length; i++) {
-                values[i] = xssEncode(values[i]);
+                encoded[i] = xssEncode(values[i]);
             }
-            map.put(key, values);
+            map.put(key, encoded);
         }
         return map;
-    }
-
-    @Override
-    public String getHeader(String name) {
-        String value = super.getHeader(xssEncode(name));
-        if (CharSequenceUtil.isNotBlank(value)) {
-            value = xssEncode(value);
-        }
-        return value;
     }
 
     private String xssEncode(String input) {

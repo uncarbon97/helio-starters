@@ -1,13 +1,17 @@
 package cc.uncarbon.framework.helium.db.mybatisplus.conditions.query;
 
 
+import cn.hutool.core.collection.CollUtil;
+import cn.hutool.core.text.CharSequenceUtil;
 import cn.hutool.core.util.ArrayUtil;
 import cn.hutool.core.util.ObjectUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.support.SFunction;
 import org.springframework.util.StringUtils;
 
+import java.util.Arrays;
 import java.util.Collection;
+import java.util.Objects;
 import java.util.function.Consumer;
 
 /**
@@ -22,28 +26,30 @@ public class LambdaQueryWrapperX<T> extends LambdaQueryWrapper<T> {
 
     public LambdaQueryWrapperX<T> likeIfPresent(SFunction<T, ?> column, String val) {
         if (StringUtils.hasText(val)) {
-            return (LambdaQueryWrapperX<T>) super.like(column, val);
+            return (LambdaQueryWrapperX<T>) super.like(column, CharSequenceUtil.cleanBlank(val));
         }
         return this;
     }
 
     public LambdaQueryWrapperX<T> likeRightIfPresent(SFunction<T, ?> column, String val) {
         if (StringUtils.hasText(val)) {
-            return (LambdaQueryWrapperX<T>) super.likeRight(column, val);
+            return (LambdaQueryWrapperX<T>) super.likeRight(column, CharSequenceUtil.cleanBlank(val));
         }
         return this;
     }
 
     public LambdaQueryWrapperX<T> inIfPresent(SFunction<T, ?> column, Collection<?> values) {
-        if (ObjectUtil.isAllNotEmpty(values)) {
+        if (CollUtil.isNotEmpty(values)) {
             return (LambdaQueryWrapperX<T>) super.in(column, values);
         }
         return this;
     }
 
     public LambdaQueryWrapperX<T> inIfPresent(SFunction<T, ?> column, Object... values) {
-        if (ArrayUtil.isNotEmpty(values) && ObjectUtil.isAllNotEmpty(values)) {
-            return (LambdaQueryWrapperX<T>) super.in(column, values);
+        // 先剔除 null 元素再判空，避免单个 null 导致整个 IN 条件被丢弃（查询退化为无过滤）
+        Object[] nonNullValues = Arrays.stream(values).filter(Objects::nonNull).toArray();
+        if (nonNullValues.length > 0) {
+            return (LambdaQueryWrapperX<T>) super.in(column, nonNullValues);
         }
         return this;
     }

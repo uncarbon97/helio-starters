@@ -3,6 +3,7 @@ package cc.uncarbon.framework.helium.bizlog.support.parse;
 import cc.uncarbon.framework.helium.bizlog.model.MethodExecuteResult;
 import cc.uncarbon.framework.helium.bizlog.service.impl.DiffParseFunction;
 import lombok.Setter;
+import lombok.extern.slf4j.Slf4j;
 import org.jspecify.annotations.NonNull;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.BeanFactory;
@@ -24,6 +25,7 @@ import java.util.regex.Pattern;
  * @author mzt@mzt-biz-log
  * @author Uncarbon
  */
+@Slf4j
 public class LogRecordValueParser implements BeanFactoryAware {
 
     /**
@@ -136,6 +138,7 @@ public class LogRecordValueParser implements BeanFactoryAware {
 
     /**
      * 解析 diff 函数占位符：按参数个数（1 或 2）调用单参/双参 diff。
+     * <p>SpEL 求值失败时回退为原始表达式文本，避免整条日志丢失。</p>
      *
      * @param evaluationContext   求值上下文
      * @param annotatedElementKey 方法键
@@ -144,28 +147,81 @@ public class LogRecordValueParser implements BeanFactoryAware {
      */
     private String getDiffFunctionValue(EvaluationContext evaluationContext, AnnotatedElementKey annotatedElementKey, String expression) {
         String[] params = parseDiffFunction(expression);
-        if (params.length == 1) {
-            Object targetObj = expressionEvaluator.parseExpression(params[0], annotatedElementKey, evaluationContext);
-            expression = diffParseFunction.diff(targetObj);
-        } else if (params.length == 2) {
-            Object sourceObj = expressionEvaluator.parseExpression(params[0], annotatedElementKey, evaluationContext);
-            Object targetObj = expressionEvaluator.parseExpression(params[1], annotatedElementKey, evaluationContext);
-            expression = diffParseFunction.diff(sourceObj, targetObj);
+        try {
+            if (params.length == 1) {
+                Object targetObj = expressionEvaluator.parseExpression(params[0], annotatedElementKey, evaluationContext);
+                expression = diffParseFunction.diff(targetObj);
+            } else if (params.length == 2) {
+                Object sourceObj = expressionEvaluator.parseExpression(params[0], annotatedElementKey, evaluationContext);
+                Object targetObj = expressionEvaluator.parseExpression(params[1], annotatedElementKey, evaluationContext);
+                expression = diffParseFunction.diff(sourceObj, targetObj);
+            }
+            return expression;
+        } catch (Exception e) {
+            log.warn("[LogRecordValueParser] _DIFF 表达式求值失败，回退原文: {}", expression, e);
+            return String.join(",", params);
         }
-        return expression;
     }
 
     /**
-     * 解析 diff 内层表达式参数：仅当恰好包含一个逗号时拆分为两个参数，否则视为单参。
+     * 解析 diff 内层表达式参数：按括号/引号感知的顶层逗号拆分，
+     * 支持参数自身含逗号（如 {@code _DIFF{#dao.load(1,2), #dao.load(3,4)}}）的场景
      *
      * @param expression 内层表达式
      * @return 参数数组
      */
     private String[] parseDiffFunction(String expression) {
-        if (expression.contains(COMMA) && strCount(expression, COMMA) == 1) {
-            return expression.split(COMMA);
+        List<String> params = new ArrayList<>();
+        StringBuilder current = new StringBuilder();
+        int depth = 0;
+        boolean inSingleQuote = false;
+        boolean inDoubleQuote = false;
+        for (int i = 0; i < expression.length(); i++) {
+            char c = expression.charAt(i);
+            if (inSingleQuote) {
+                current.append(c);
+                if (c == '\'') {
+                    inSingleQuote = false;
+                }
+                continue;
+            }
+            if (inDoubleQuote) {
+                current.append(c);
+                if (c == '"') {
+                    inDoubleQuote = false;
+                }
+                continue;
+            }
+            switch (c) {
+                case '\'' -> {
+                    inSingleQuote = true;
+                    current.append(c);
+                }
+                case '"' -> {
+                    inDoubleQuote = true;
+                    current.append(c);
+                }
+                case '(', '[', '{' -> {
+                    depth++;
+                    current.append(c);
+                }
+                case ')', ']', '}' -> {
+                    depth = Math.max(0, depth - 1);
+                    current.append(c);
+                }
+                case ',' -> {
+                    if (depth == 0) {
+                        params.add(current.toString());
+                        current.setLength(0);
+                    } else {
+                        current.append(c);
+                    }
+                }
+                default -> current.append(c);
+            }
         }
-        return new String[]{expression};
+        params.add(current.toString());
+        return params.toArray(new String[0]);
     }
 
     /**

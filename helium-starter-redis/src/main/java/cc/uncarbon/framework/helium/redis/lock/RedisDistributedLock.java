@@ -16,7 +16,7 @@ public interface RedisDistributedLock {
      * 获取分布式锁，等待时长无限
      *
      * @param lockName     锁名称
-     * @param holdDuration 锁持有时长，单位：秒；【注意】持有时长一定要大于业务的执行时间，锁不会自动续期
+     * @param holdDuration 锁持有时长，单位：秒；【注意】持有时长一定要大于业务的执行时间，锁不会自动续期，须大于 0（不支持 -1）
      * @return 锁对象
      */
     RLock lock(String lockName, int holdDuration);
@@ -26,7 +26,7 @@ public interface RedisDistributedLock {
      *
      * @param lockName 锁名称
      * @param unit 时间单位
-     * @param holdDuration 锁持有时长；【注意】持有时长一定要大于业务的执行时间，锁不会自动续期
+     * @param holdDuration 锁持有时长；【注意】持有时长一定要大于业务的执行时间，锁不会自动续期，须大于 0（不支持 -1）
      * @return 锁对象
      */
     RLock lock(String lockName, TimeUnit unit, int holdDuration);
@@ -36,7 +36,7 @@ public interface RedisDistributedLock {
      *
      * @param lockName     锁名称
      * @param waitDuration 最大等待时长
-     * @param holdDuration 锁持有时长，单位：秒；【注意】持有时长一定要大于业务的执行时间，锁不会自动续期
+     * @param holdDuration 锁持有时长，单位：秒；【注意】持有时长一定要大于业务的执行时间，锁不会自动续期，须大于 0（不支持 -1）
      * @return 锁对象
      */
     boolean tryLock(String lockName, int waitDuration, int holdDuration);
@@ -47,7 +47,7 @@ public interface RedisDistributedLock {
      * @param lockName     锁名称
      * @param unit         时间单位
      * @param waitDuration 最大等待时长
-     * @param holdDuration 锁持有时长；【注意】持有时长一定要大于业务的执行时间，锁不会自动续期
+     * @param holdDuration 锁持有时长；【注意】持有时长一定要大于业务的执行时间，锁不会自动续期，须大于 0（不支持 -1）
      * @return 锁对象
      */
     boolean tryLock(String lockName, TimeUnit unit, int waitDuration, int holdDuration);

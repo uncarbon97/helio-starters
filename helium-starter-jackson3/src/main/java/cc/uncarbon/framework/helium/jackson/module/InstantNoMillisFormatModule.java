@@ -1,5 +1,6 @@
 package cc.uncarbon.framework.helium.jackson.module;
 
+import cc.uncarbon.framework.helium.base.exception.ValueParseException;
 import cc.uncarbon.framework.helium.jackson.constant.Jackson3Constant;
 import cn.hutool.core.date.DatePattern;
 import org.jspecify.annotations.NonNull;
@@ -80,12 +81,17 @@ public class InstantNoMillisFormatModule extends SimpleModule {
             }
             try {
                 return OffsetDateTime.parse(str, formatter).toInstant();
-            } catch (DateTimeParseException dtpe) {
+            } catch (DateTimeParseException _) {
                 // 兼容 2026-07-18T12:34:56Z / 带毫秒
                 try {
                     return OffsetDateTime.parse(str, MILLIS_TOLERANT_FORMATTER).toInstant();
-                } catch (DateTimeParseException dtpe2) {
-                    return Instant.parse(str);
+                } catch (DateTimeParseException _) {
+                    try {
+                        return Instant.parse(str);
+                    } catch (DateTimeParseException lastEx) {
+                        // 多重解析全部失败
+                        throw new ValueParseException("时间戳格式非法");
+                    }
                 }
             }
         }

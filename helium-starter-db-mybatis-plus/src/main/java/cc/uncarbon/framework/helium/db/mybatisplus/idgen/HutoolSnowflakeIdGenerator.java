@@ -4,6 +4,7 @@ import cc.uncarbon.framework.helium.db.mybatisplus.props.HeliumIdGenProperties;
 import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.lang.Snowflake;
 import cn.hutool.core.net.NetUtil;
+import cn.hutool.core.util.IdUtil;
 import com.baomidou.mybatisplus.core.incrementer.IdentifierGenerator;
 import lombok.extern.slf4j.Slf4j;
 
@@ -42,13 +43,21 @@ public class HutoolSnowflakeIdGenerator implements IdentifierGenerator {
         if (datacenterId == null) {
             datacenterId = 0;
         }
-        // 同样钳制到 0-31，避免配置越界触发 hutool Assert 失败
-        datacenterId = Math.floorMod(datacenterId, 32);
+        // 越界直接失败：静默 floorMod 回绕会与其他节点撞 ID
+        if (datacenterId < 0 || datacenterId > 31) {
+            throw new IllegalArgumentException(
+                    LOG_PREFIX + " datacenterId 须在 [0, 31] 区间，当前: " + datacenterId);
+        }
 
         String epochDateStr = subProps.getEpochDate();
         Date epochDate = DateUtil.parseDate(epochDateStr);
+        if (epochDate.after(new Date())) {
+            // 纪元晚于当前时间会生成负数雪花 ID，落 UNSIGNED 主键直接报错
+            throw new IllegalArgumentException(
+                    LOG_PREFIX + " epochDate 不能晚于当前时间: " + epochDateStr);
+        }
 
-        log.info(LOG_PREFIX + " >> 根据本机 IP 计算的workerId=[{}], datacenterId=[{}], epochDate=[{}]",
+        log.info(LOG_PREFIX + " >> 根据本机 IP 计算的 workerId=[{}], datacenterId=[{}], epochDate=[{}]",
                 workerId, datacenterId, epochDate);
         snowflakeInstance = new Snowflake(epochDate, workerId, datacenterId, false);
     }
@@ -58,8 +67,12 @@ public class HutoolSnowflakeIdGenerator implements IdentifierGenerator {
         return snowflakeInstance.nextId();
     }
 
+    /**
+     * 兼容 String 主键实体
+     * 兼容但不推荐使用 String 作为主键，建议 Long 雪花 ID
+     */
     @Override
     public String nextUUID(Object entity) {
-        throw new UnsupportedOperationException();
+        return IdUtil.fastSimpleUUID();
     }
 }

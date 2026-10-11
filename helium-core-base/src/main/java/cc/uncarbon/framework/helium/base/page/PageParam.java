@@ -22,6 +22,23 @@ public class PageParam implements Serializable {
 
     @Schema(description = "当前页码")
     protected Integer pageNum;
+
+    @Schema(description = "当前页大小")
+    protected Integer pageSize;
+
+    /**
+     * 应用全局分页大小限制器；供子类覆写 getPageSize 后复用，避免绕过全局策略
+     */
+    protected static Integer applyGlobalPageSizeLimiter(Integer size) {
+        if (globalPageSizeLimiter != null) {
+            return globalPageSizeLimiter.apply(size);
+        }
+        return size;
+    }
+
+    /**
+     * 页码只做下限钳制（>=1），不做上限：深分页性能由使用方自行防护（如游标分页），属有意特性
+     */
     public Integer getPageNum() {
         if (pageNum == null) {
             pageNum = 1;
@@ -33,22 +50,6 @@ public class PageParam implements Serializable {
             pageNum = globalPageNumLimiter.apply(pageNum);
         }
         return pageNum;
-    }
-
-    @Schema(description = "当前页大小")
-    protected Integer pageSize;
-    public Integer getPageSize() {
-        if (pageSize == null) {
-            pageSize = 10;
-        }
-
-        // 钳制到 [1, 500]，避免 0/负值在 maxLimit=-1 时触发全表查询
-        pageSize = Math.clamp(pageSize, 1, 500);
-
-        if (globalPageSizeLimiter != null) {
-            return globalPageSizeLimiter.apply(pageSize);
-        }
-        return pageSize;
     }
 
     /**
@@ -80,5 +81,16 @@ public class PageParam implements Serializable {
      */
     public static synchronized void setGlobalPageSizeLimiter(UnaryOperator<Integer> globalPageSizeLimiter) {
         PageParam.globalPageSizeLimiter = globalPageSizeLimiter;
+    }
+
+    public Integer getPageSize() {
+        if (pageSize == null) {
+            pageSize = 10;
+        }
+
+        // 钳制到 [1, 500]，避免 0/负值在 maxLimit=-1 时触发全表查询
+        pageSize = Math.clamp(pageSize, 1, 500);
+
+        return applyGlobalPageSizeLimiter(pageSize);
     }
 }

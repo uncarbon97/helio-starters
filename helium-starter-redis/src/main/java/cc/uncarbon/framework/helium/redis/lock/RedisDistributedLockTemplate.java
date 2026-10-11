@@ -18,7 +18,7 @@ public interface RedisDistributedLockTemplate {
      *
      * @param lockName       锁名称
      * @param unit           时间单位
-     * @param holdDuration   锁持有时长；【注意】持有时长一定要大于业务的执行时间，锁不会自动续期
+     * @param holdDuration   锁持有时长；【注意】持有时长一定要大于业务的执行时间，锁不会自动续期，须大于 0（不支持 -1）
      * @param lockedRunnable 锁内代码，建议单独开个子方法，通过lambda表达式引用
      * @return 是否实际拿到锁
      */
@@ -30,7 +30,7 @@ public interface RedisDistributedLockTemplate {
      *
      * @param lockName         锁名称
      * @param unit             时间单位
-     * @param holdDuration     锁持有时长；【注意】持有时长一定要大于业务的执行时间，锁不会自动续期
+     * @param holdDuration     锁持有时长；【注意】持有时长一定要大于业务的执行时间，锁不会自动续期，须大于 0（不支持 -1）
      * @param lockedRunnable   锁内代码，建议单独开个子方法，通过lambda表达式引用
      * @param exceptionHandler （可选）锁内代码异常处理过程
      * @return 是否实际拿到锁
@@ -45,7 +45,7 @@ public interface RedisDistributedLockTemplate {
      * @param lockName       锁名称
      * @param unit           时间单位
      * @param waitDuration   最大等待时长
-     * @param holdDuration   锁持有时长；【注意】持有时长一定要大于业务的执行时间，锁不会自动续期
+     * @param holdDuration   锁持有时长；【注意】持有时长一定要大于业务的执行时间，锁不会自动续期，须大于 0（不支持 -1）
      * @param lockedRunnable 锁内代码，建议单独开个子方法，通过lambda表达式引用
      * @return 是否实际拿到锁
      */
@@ -59,7 +59,7 @@ public interface RedisDistributedLockTemplate {
      * @param lockName         锁名称
      * @param unit             时间单位
      * @param waitDuration     最大等待时长
-     * @param holdDuration     锁持有时长；【注意】持有时长一定要大于业务的执行时间，锁不会自动续期
+     * @param holdDuration     锁持有时长；【注意】持有时长一定要大于业务的执行时间，锁不会自动续期，须大于 0（不支持 -1）
      * @param lockedRunnable   锁内代码，建议单独开个子方法，通过lambda表达式引用
      * @param exceptionHandler （可选）锁内代码异常处理过程
      * @return 是否实际拿到锁

@@ -29,8 +29,14 @@ public class HeaderTimezoneResolver implements TimezoneResolver {
 
     @Override
     public Optional<TimezoneInfo> resolve(@NonNull HttpServletRequest servletRequest) {
-        final String headerName = props.getTimezone().getResolver().getHeaderName();
-        String headerVal = CharSequenceUtil.cleanBlank(servletRequest.getHeader(headerName));
+        var tzCfg = props.getTimezone();
+        var cfg = tzCfg != null ? tzCfg.getResolver() : null;
+        // 配置缺失时跳过本解析器（交给组合器兜底系统时区），而非 NPE 被吞
+        if (cfg == null || cfg.getHeaderName() == null) {
+            return Optional.empty();
+        }
+
+        String headerVal = CharSequenceUtil.cleanBlank(servletRequest.getHeader(cfg.getHeaderName()));
         if (CharSequenceUtil.isEmpty(headerVal)) {
             return Optional.empty();
         }
@@ -38,7 +44,8 @@ public class HeaderTimezoneResolver implements TimezoneResolver {
             ZoneId visitorZone = ZoneId.of(headerVal);
             return Optional.of(TimezoneInfo.ofSimple(headerVal, visitorZone));
         } catch (Exception e) {
-            log.warn(LOG_PREFIX + " resolve failed, headerVal={}", headerVal, e);
+            // 值来自用户可控请求头：单行 warn，不打印堆栈，避免被刷日志
+            log.warn(LOG_PREFIX + " resolve failed, headerVal={}", headerVal);
         }
         return Optional.empty();
     }

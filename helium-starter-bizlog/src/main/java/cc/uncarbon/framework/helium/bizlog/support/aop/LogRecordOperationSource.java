@@ -232,8 +232,8 @@ public class LogRecordOperationSource {
      */
     private void validateLogRecordOperation(AnnotatedElement ae, LogRecordOps recordOps) {
         if (!StringUtils.hasText(recordOps.getSuccessLogTemplate()) && !StringUtils.hasText(recordOps.getFailLogTemplate())) {
-            throw new IllegalStateException("Invalid annotation on '" +
-                    ae.toString() + "'. 'one of successTemplate and failLogTemplate' attribute must be set.");
+            throw new IllegalStateException("注解 '" +
+                    ae.toString() + "' 配置非法: successTemplate 与 failLogTemplate 至少需配置其一");
         }
     }
 

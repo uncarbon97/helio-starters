@@ -5,13 +5,14 @@ import java.lang.annotation.*;
 /**
  * 业务日志记录注解
  * <p>
- * 标注在方法或类上，通过 AOP 拦截自动生成业务操作日志
+ * 标注在方法上，或作为元注解组合到自定义注解，再标注在方法上，
+ * 通过 AOP 拦截自动生成业务操作日志；不支持直接标注在类上（类上标注不会生效）
  *
  * @author muzhantong@mzt-biz-log
  * @author Uncarbon
  */
 @Repeatable(LogRecords.class)
-@Target({ElementType.METHOD, ElementType.TYPE})
+@Target({ElementType.METHOD, ElementType.ANNOTATION_TYPE})
 @Retention(RetentionPolicy.RUNTIME)
 @Inherited
 @Documented

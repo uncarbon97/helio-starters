@@ -17,6 +17,9 @@ public class TenantIgnoreAspect {
 
     /**
      * 忽略租户
+     * <p>结果槽 + 异常槽模式：完整透传 {@link Throwable}（含受检异常与 Error），
+     * 不改变异常类型，避免方法签名声明 {@code throws IOException} 等受检异常被包成裸 RuntimeException
+     * 导致调用方按原类型 catch 不到。</p>
      *
      * @param joinPoint 切点
      * @return 返回结果
@@ -27,16 +30,18 @@ public class TenantIgnoreAspect {
         if (oldVal) {
             return joinPoint.proceed();
         }
-        return TenantContextHolder.callIgnored(() -> {
+        final Object[] result = new Object[1];
+        final Throwable[] error = new Throwable[1];
+        TenantContextHolder.runIgnored(() -> {
             try {
-                return joinPoint.proceed();
-            } catch (Throwable e) {
-                // RuntimeException 原样放行，避免 BusinessException 等被二次包装成裸 RuntimeException；Error 不在此捕获
-                if (e instanceof RuntimeException runtimeException) {
-                    throw runtimeException;
-                }
-                throw new RuntimeException(e);
+                result[0] = joinPoint.proceed();
+            } catch (Throwable t) {
+                error[0] = t;
             }
         });
+        if (error[0] != null) {
+            throw error[0];
+        }
+        return result[0];
     }
 }

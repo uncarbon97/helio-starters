@@ -4,6 +4,7 @@ import cc.uncarbon.framework.helium.base.errorcode.BuiltinErrorCodeEnum;
 import cc.uncarbon.framework.helium.base.errorcode.ErrorMessageFormatter;
 import cc.uncarbon.framework.helium.base.errorcode.StructuredErrorCode;
 import cc.uncarbon.framework.helium.base.exception.BusinessException;
+import cc.uncarbon.framework.helium.base.exception.ValueParseException;
 import cc.uncarbon.framework.helium.web.model.response.ApiResult;
 import cc.uncarbon.framework.helium.web.props.HeliumWebProperties;
 import cc.uncarbon.framework.helium.web.util.InvalidFieldUtil;
@@ -13,6 +14,7 @@ import cn.dev33.satoken.exception.NotRoleException;
 import cn.hutool.core.util.StrUtil;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.validation.ConstraintViolationException;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -26,9 +28,12 @@ import org.springframework.validation.BindException;
 import org.springframework.web.HttpMediaTypeNotSupportedException;
 import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
+import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.method.annotation.HandlerMethodValidationException;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
+import org.springframework.web.multipart.MaxUploadSizeExceededException;
 import org.springframework.web.servlet.NoHandlerFoundException;
 import org.springframework.web.servlet.resource.NoResourceFoundException;
 
@@ -154,20 +159,45 @@ public class GlobalWebExceptionHandler {
      * Jackson 反序列化异常
      * 通常是因为 JSON 格式错误，或枚举输入值超出范围
      * <p>
-     * IllegalArgumentException
-     * 不合法的参数异常
-     * <p>
      * MethodArgumentTypeMismatchException
      * "@PathVariable" 注解收参类型为 Long，但传的是 String
      */
     @ExceptionHandler(value = {JsonParseException.class, HttpMessageNotReadableException.class,
-            IllegalArgumentException.class, MethodArgumentTypeMismatchException.class})
+            MethodArgumentTypeMismatchException.class, ValueParseException.class})
     public ResponseEntity<ApiResult<Void>> handleJsonParseException(Exception e, HttpServletRequest servletRequest) {
         logExpectedException(e, servletRequest);
 
         final var codeEnum = BuiltinErrorCodeEnum.Z00406;
         ApiResult<Void> ret = ApiResult.fail(codeEnum.getErrorCode(), determineI18nMessage(codeEnum));
         return createResponseEntity(HttpStatus.NOT_ACCEPTABLE, ret);
+    }
+
+    /**
+     * 缺少必填请求参数、方法级参数校验失败
+     * 服务方法级 Bean 校验失败（@Validated + jakarta.validation 约束）
+     */
+    @ExceptionHandler(value = {MissingServletRequestParameterException.class,
+            HandlerMethodValidationException.class, ConstraintViolationException.class})
+    public ResponseEntity<ApiResult<Void>> handleParameterValidationException(Exception e,
+                                                                              HttpServletRequest servletRequest) {
+        logExpectedException(e, servletRequest);
+
+        final var codeEnum = BuiltinErrorCodeEnum.Z00406;
+        ApiResult<Void> ret = ApiResult.fail(codeEnum.getErrorCode(), determineI18nMessage(codeEnum));
+        return createResponseEntity(HttpStatus.NOT_ACCEPTABLE, ret);
+    }
+
+    /**
+     * 上传文件大小超限
+     */
+    @ExceptionHandler(value = {MaxUploadSizeExceededException.class})
+    public ResponseEntity<ApiResult<Void>> handleMaxUploadSizeExceededException(MaxUploadSizeExceededException e,
+                                                                                HttpServletRequest servletRequest) {
+        logExpectedException(e, servletRequest);
+
+        final var codeEnum = BuiltinErrorCodeEnum.Z00413;
+        ApiResult<Void> ret = ApiResult.fail(codeEnum.getErrorCode(), determineI18nMessage(codeEnum));
+        return createResponseEntity(HttpStatus.CONTENT_TOO_LARGE, ret);
     }
 
     /**
@@ -206,7 +236,7 @@ public class GlobalWebExceptionHandler {
 
     /*
     ----------------------------------------------------------------
-                        私有方法 private methods
+                        私有方法
     ----------------------------------------------------------------
      */
 

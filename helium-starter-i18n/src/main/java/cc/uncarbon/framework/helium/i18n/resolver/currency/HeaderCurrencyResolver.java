@@ -29,10 +29,10 @@ public class HeaderCurrencyResolver implements CurrencyResolver {
         }
         final String headerName = cfg.getResolver().getHeaderName();
         String headerVal = CharSequenceUtil.cleanBlank(servletRequest.getHeader(headerName));
-        if (CharSequenceUtil.isEmpty(headerVal) || !CurrencyResolverSupport.isSupported(props, headerVal)) {
+        if (CharSequenceUtil.isEmpty(headerVal) || !CurrencyResolverUtil.isSupported(props, headerVal)) {
             return Optional.empty();
         }
-        return Optional.of(CurrencyResolverSupport.build(props, headerVal));
+        return Optional.of(CurrencyResolverUtil.build(props, headerVal));
     }
 
     @Override

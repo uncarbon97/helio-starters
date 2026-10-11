@@ -1,6 +1,7 @@
 package cc.uncarbon.framework.helium.jackson.module;
 
 import cc.uncarbon.framework.helium.base.enums.BaseEnum;
+import cc.uncarbon.framework.helium.base.exception.ValueParseException;
 import cc.uncarbon.framework.helium.jackson.props.BaseEnumConfig;
 import cn.hutool.core.text.CharSequenceUtil;
 import tools.jackson.core.*;
@@ -9,6 +10,8 @@ import tools.jackson.databind.deser.std.StdScalarDeserializer;
 import tools.jackson.databind.module.SimpleDeserializers;
 import tools.jackson.databind.module.SimpleModule;
 import tools.jackson.databind.ser.std.StdSerializer;
+
+import java.util.Optional;
 
 /**
  * 序列化规则模块：BaseEnum及其子类，如果是普通对象字段，另外输出 Label 字段
@@ -75,17 +78,24 @@ public class BaseEnumFormatModule extends SimpleModule {
         public E deserialize(JsonParser parser, DeserializationContext context) {
             String enumSimpleName = this.enumType.getSimpleName();
             if (parser.currentToken().isNumeric()) {
-                return BaseEnum.of(this.enumType, parser.getIntValue())
-                        .orElseThrow(() -> new IllegalArgumentException(
-                                "Cannot convert numeric value to enum " + enumSimpleName));
+                int numericValue = parser.getIntValue();
+                Optional<E> op = BaseEnum.of(this.enumType, numericValue);
+                if (op.isPresent()) {
+                    return op.get();
+                }
+                throw new ValueParseException("无法将数值 %s 转换为 %s".formatted(
+                        String.valueOf(numericValue), enumSimpleName));
             }
-            if (CharSequenceUtil.isNotBlank(parser.getString())) {
-                return BaseEnum.of(this.enumType, parser.getString())
-                        .orElseThrow(() -> new IllegalArgumentException(
-                                "Cannot convert string value to enum " + enumSimpleName));
+            String strValue = parser.getString();
+            if (CharSequenceUtil.isNotBlank(strValue)) {
+                Optional<E> op = BaseEnum.of(this.enumType, strValue);
+                if (op.isPresent()) {
+                    return op.get();
+                }
+                throw new ValueParseException("无法将文本 %s 转换为 %s".formatted(
+                        strValue, enumSimpleName));
             }
-            throw new IllegalArgumentException(
-                    "Cannot convert value to enum " + enumSimpleName);
+            throw new ValueParseException("无法将值转换为 %s".formatted(enumSimpleName));
         }
     }
 }

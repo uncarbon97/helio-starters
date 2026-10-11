@@ -29,10 +29,10 @@ public class QueryParamCurrencyResolver implements CurrencyResolver {
         }
         final String paramName = cfg.getResolver().getQueryParamName();
         String paramVal = CharSequenceUtil.cleanBlank(servletRequest.getParameter(paramName));
-        if (CharSequenceUtil.isEmpty(paramVal) || !CurrencyResolverSupport.isSupported(props, paramVal)) {
+        if (CharSequenceUtil.isEmpty(paramVal) || !CurrencyResolverUtil.isSupported(props, paramVal)) {
             return Optional.empty();
         }
-        return Optional.of(CurrencyResolverSupport.build(props, paramVal));
+        return Optional.of(CurrencyResolverUtil.build(props, paramVal));
     }
 
     @Override

@@ -1,5 +1,6 @@
 package cc.uncarbon.framework.helium.bizlog.support.parse;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.aop.support.AopUtils;
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.context.expression.AnnotatedElementKey;
@@ -10,6 +11,7 @@ import org.springframework.expression.Expression;
 
 import java.lang.reflect.Method;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
@@ -20,10 +22,13 @@ import java.util.concurrent.ConcurrentHashMap;
  * @author mzt@mzt-biz-log
  * @author Uncarbon
  */
+@Slf4j
 public class LogRecordExpressionEvaluator extends CachedExpressionEvaluator {
 
-    private final Map<AnnotatedElementKey, Method> targetMethodCache = new ConcurrentHashMap<>(64);
-    private final Map<ExpressionKey, Expression> expressionCache = new ConcurrentHashMap<>(64);
+    protected final Map<AnnotatedElementKey, Method> targetMethodCache = new ConcurrentHashMap<>(64);
+    protected final Map<ExpressionKey, Expression> expressionCache = new ConcurrentHashMap<>(64);
+    protected final Set<Method> missingParameterNameWarned = ConcurrentHashMap.newKeySet();
+
 
     /**
      * 解析单个 SpEL 表达式。
@@ -51,6 +56,7 @@ public class LogRecordExpressionEvaluator extends CachedExpressionEvaluator {
     public EvaluationContext createEvaluationContext(Method method, Object[] args, Class<?> targetClass,
                                                      Object result, String errorMsg, BeanFactory beanFactory) {
         Method targetMethod = getTargetMethod(targetClass, method);
+        warnIfParameterNamesMissing(targetMethod);
         LogRecordEvaluationContext evaluationContext = new LogRecordEvaluationContext(
                 null, targetMethod, args, getParameterNameDiscoverer(), result, errorMsg);
         if (beanFactory != null) {
@@ -60,13 +66,32 @@ public class LogRecordExpressionEvaluator extends CachedExpressionEvaluator {
     }
 
     /**
+     * 参数名不可用时（编译未保留 -parameters），SpEL 中以 #参数名 引用会解析失败，warn 提示一次。
+     * <p>继承本工程 parent 的下游已默认开启 -parameters，第三方工程需自行开启。</p>
+     */
+    protected void warnIfParameterNamesMissing(Method method) {
+        if (!missingParameterNameWarned.add(method)) {
+            return;
+        }
+        String[] parameterNames = null;
+        try {
+            parameterNames = getParameterNameDiscoverer().getParameterNames(method);
+        } catch (Exception ignored) {
+        }
+        if (parameterNames == null) {
+            log.warn("[LogRecordExpressionEvaluator] 方法 {} 的参数名不可用（编译需保留 -parameters），模板中以 #参数名 引用将解析失败",
+                    method);
+        }
+    }
+
+    /**
      * 取目标类上最具体的方法（带缓存）。
      *
      * @param targetClass 目标类
      * @param method      方法
      * @return 最具体的方法
      */
-    private Method getTargetMethod(Class<?> targetClass, Method method) {
+    protected Method getTargetMethod(Class<?> targetClass, Method method) {
         AnnotatedElementKey methodKey = new AnnotatedElementKey(method, targetClass);
         return targetMethodCache.computeIfAbsent(methodKey, _ -> AopUtils.getMostSpecificMethod(method, targetClass));
     }

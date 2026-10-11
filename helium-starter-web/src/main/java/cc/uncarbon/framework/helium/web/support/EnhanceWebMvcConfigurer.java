@@ -1,6 +1,6 @@
 package cc.uncarbon.framework.helium.web.support;
 
-import cc.uncarbon.framework.helium.web.jackson.EnumConverterFactory;
+import cc.uncarbon.framework.helium.web.jackson.BaseEnumConverterFactory;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.jspecify.annotations.NonNull;
@@ -28,7 +28,7 @@ public class EnhanceWebMvcConfigurer implements WebMvcConfigurer, WebBindingInit
 
 
     /**
-     * 对于 GET 请求，将所有参数的空格 trim
+     * 将入参的空格 trim 掉
      */
     @Override
     public void initBinder(WebDataBinder webDataBinder) {
@@ -36,11 +36,11 @@ public class EnhanceWebMvcConfigurer implements WebMvcConfigurer, WebBindingInit
     }
 
     /**
-     * 对于 GET 请求，将 int 值转换成枚举
+     * 将入参转换成枚举
      */
     @Override
     public void addFormatters(FormatterRegistry registry) {
-        registry.addConverterFactory(new EnumConverterFactory());
+        registry.addConverterFactory(new BaseEnumConverterFactory());
     }
 
     /**

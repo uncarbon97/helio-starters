@@ -1,5 +1,10 @@
 本组件基于[mzt-biz-log](https://github.com/mouzt/mzt-biz-log)二次开发
 
+## 环境要求
+
+- 编译须保留方法参数名（`-parameters`）：继承 `helium-starters-parent` 的工程已默认开启；
+  自行管理编译插件的工程需显式开启，否则模板中以 `#参数名` 引用参数将解析失败（运行时会输出 warn 日志提示）
+
 ## 相对于上游项目的主要变更
 
 - 拆分为`helium-core-bizlog`与`helium-starter-bizlog`，前者主要放置注解、上下文

@@ -36,11 +36,11 @@ public class ArrayDiffer implements Differ {
      * @param identityStrategyResolver    一致性策略解析器
      */
     public ArrayDiffer(DifferDispatcher differDispatcher, ComparisonStrategyResolver comparisonStrategyResolver, IdentityStrategyResolver identityStrategyResolver) {
-        Assert.notNull(differDispatcher, "differDispatcher");
+        Assert.notNull(differDispatcher, "differDispatcher 不能为空");
         this.differDispatcher = differDispatcher;
-        Assert.notNull(comparisonStrategyResolver, "comparisonStrategyResolver");
+        Assert.notNull(comparisonStrategyResolver, "comparisonStrategyResolver 不能为空");
         this.comparisonStrategyResolver = comparisonStrategyResolver;
-        Assert.notNull(identityStrategyResolver, "identityStrategyResolver");
+        Assert.notNull(identityStrategyResolver, "identityStrategyResolver 不能为空");
         this.identityStrategyResolver = identityStrategyResolver;
     }
 

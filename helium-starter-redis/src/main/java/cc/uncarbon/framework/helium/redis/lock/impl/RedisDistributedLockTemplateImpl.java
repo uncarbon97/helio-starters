@@ -32,7 +32,7 @@ public class RedisDistributedLockTemplateImpl implements RedisDistributedLockTem
                                    @NonNull Runnable lockedRunnable,
                                    @Nullable Consumer<Exception> exceptionHandler) {
         if (!(holdDuration > 0)) {
-            throw new IllegalArgumentException("holdDuration must greater than 0");
+            throw new IllegalArgumentException("holdDuration 必须大于 0");
         }
         RLock lock = redisDistributedLock.lock(lockName, unit, holdDuration);
         if (lock == null) {
@@ -53,10 +53,10 @@ public class RedisDistributedLockTemplateImpl implements RedisDistributedLockTem
                                    int holdDuration, @NonNull Runnable lockedRunnable,
                                    @Nullable Consumer<Exception> exceptionHandler) {
         if (!(waitDuration > 0)) {
-            throw new IllegalArgumentException("waitDuration must greater than 0");
+            throw new IllegalArgumentException("waitDuration 必须大于 0");
         }
         if (!(holdDuration > 0)) {
-            throw new IllegalArgumentException("holdDuration must greater than 0");
+            throw new IllegalArgumentException("holdDuration 必须大于 0");
         }
 
         boolean lockedFlag = redisDistributedLock.tryLock(lockName, unit, waitDuration, holdDuration);

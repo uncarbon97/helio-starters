@@ -2,13 +2,14 @@ package cc.uncarbon.framework.helium.ratelimiter.autoconfigure;
 
 
 import cc.uncarbon.framework.helium.ratelimiter.aop.UseRateLimitAspect;
+import cc.uncarbon.framework.helium.ratelimiter.props.HeliumRateLimitProperties;
 import cc.uncarbon.framework.helium.ratelimiter.stratrgy.RateLimitByIPStrategy;
 import cc.uncarbon.framework.helium.ratelimiter.stratrgy.RateLimitByUserStrategy;
 import cc.uncarbon.framework.helium.ratelimiter.stratrgy.RateLimitGlobalStrategy;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Import;
 import org.springframework.data.redis.core.RedisTemplate;
 
 /**
@@ -17,6 +18,7 @@ import org.springframework.data.redis.core.RedisTemplate;
  * @author Uncarbon
  */
 @AutoConfiguration
+@EnableConfigurationProperties(value = HeliumRateLimitProperties.class)
 public class HeliumRateLimiterRedisAutoConfiguration {
 
     /**
@@ -42,8 +44,9 @@ public class HeliumRateLimiterRedisAutoConfiguration {
      */
     @Bean
     @ConditionalOnMissingBean
-    public RateLimitByUserStrategy rateLimitByUserStrategy(RedisTemplate<String, Object> objectRedisTemplate) {
-        return new RateLimitByUserStrategy(objectRedisTemplate);
+    public RateLimitByUserStrategy rateLimitByUserStrategy(RedisTemplate<String, Object> objectRedisTemplate,
+                                                           HeliumRateLimitProperties props) {
+        return new RateLimitByUserStrategy(objectRedisTemplate, props.getDegradation());
     }
 
     /**
@@ -51,8 +54,9 @@ public class HeliumRateLimiterRedisAutoConfiguration {
      */
     @Bean
     @ConditionalOnMissingBean
-    public RateLimitByIPStrategy rateLimitByIPStrategy(RedisTemplate<String, Object> objectRedisTemplate) {
-        return new RateLimitByIPStrategy(objectRedisTemplate);
+    public RateLimitByIPStrategy rateLimitByIPStrategy(RedisTemplate<String, Object> objectRedisTemplate,
+                                                       HeliumRateLimitProperties props) {
+        return new RateLimitByIPStrategy(objectRedisTemplate, props.getDegradation());
     }
 
 }

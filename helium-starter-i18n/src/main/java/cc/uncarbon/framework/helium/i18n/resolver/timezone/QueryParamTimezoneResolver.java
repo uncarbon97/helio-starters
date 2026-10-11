@@ -29,8 +29,14 @@ public class QueryParamTimezoneResolver implements TimezoneResolver {
 
     @Override
     public Optional<TimezoneInfo> resolve(@NonNull HttpServletRequest servletRequest) {
-        final String paramName = props.getTimezone().getResolver().getQueryParamName();
-        String paramVal = CharSequenceUtil.cleanBlank(servletRequest.getParameter(paramName));
+        var tzCfg = props.getTimezone();
+        var cfg = tzCfg != null ? tzCfg.getResolver() : null;
+        // 配置缺失时跳过本解析器（交给组合器兜底系统时区），而非 NPE 被吞
+        if (cfg == null || cfg.getQueryParamName() == null) {
+            return Optional.empty();
+        }
+
+        String paramVal = CharSequenceUtil.cleanBlank(servletRequest.getParameter(cfg.getQueryParamName()));
         if (CharSequenceUtil.isEmpty(paramVal)) {
             return Optional.empty();
         }
@@ -38,7 +44,8 @@ public class QueryParamTimezoneResolver implements TimezoneResolver {
             ZoneId visitorZone = ZoneId.of(paramVal);
             return Optional.of(TimezoneInfo.ofSimple(paramVal, visitorZone));
         } catch (Exception e) {
-            log.warn(LOG_PREFIX + " resolve failed, paramVal={}", paramVal, e);
+            // 值来自用户可控入参：单行 warn，不打印堆栈，避免被刷日志
+            log.warn(LOG_PREFIX + " resolve failed, paramVal={}", paramVal);
         }
         return Optional.empty();
     }

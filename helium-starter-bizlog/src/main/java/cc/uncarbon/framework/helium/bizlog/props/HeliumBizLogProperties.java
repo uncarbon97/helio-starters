@@ -6,6 +6,9 @@ import lombok.Data;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.core.Ordered;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * Helium 集成业务日志配置属性类
  *
@@ -83,6 +86,17 @@ public class HeliumBizLogProperties {
      * 需强制使用 equals 比较的全限定类名（逗号分隔）
      */
     private String useEqualsMethod;
+
+    /**
+     * diff 脱敏字段名清单（不区分大小写）：命中字段不输出旧/新值，以 ignoredDiffFieldMask 占位，
+     * 避免密码等敏感信息明文入库；默认空=不忽略，安全策略由下游按需配置
+     */
+    private List<String> ignoredDiffFields = new ArrayList<>();
+
+    /**
+     * 脱敏字段命中后输出的占位文案，默认 ***
+     */
+    private String ignoredDiffFieldMask = "***";
 
     /**
      * 设置新增模板，并校验占位符。

@@ -57,7 +57,9 @@ public class TenantLineConfiguration {
         @Override
         public boolean matches(ConditionContext context, @NonNull AnnotatedTypeMetadata metadata) {
             var props = HeliumConditions.bind(context.getEnvironment(), HeliumTenantProperties.class);
-            return props.isParticipateByDefault();
+            // 仅行级隔离策略下才做启动期对账，其他策略误配 participateByDefault=true 不应牵连启动
+            return props.isParticipateByDefault()
+                    && props.getIsolationStrategy() == TenantIsolationStrategyEnum.LINE;
         }
     }
 }

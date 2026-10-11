@@ -73,6 +73,10 @@ public class HeaderLangResolver implements LangResolver {
                 .filter(Objects::nonNull)
                 .toList();
         for (LanguageRange range : ranges) {
+            if (range.getWeight() <= 0) {
+                // q=0 为排除性 range（含 *;q=0），不参与匹配
+                continue;
+            }
             Locale matched = Locale.filter(List.of(range), supportedLocales).stream().findFirst().orElse(null);
             if (matched != null) {
                 return Optional.of(LangInfo.ofSimple(matched.toLanguageTag(), matched));
@@ -94,8 +98,17 @@ public class HeaderLangResolver implements LangResolver {
 
     private boolean isSupported(HeliumI18nProperties.Lang langCfg, String languageTag) {
         List<String> tags = langCfg.getSupportedLanguageTags();
-        // 未配置支持语言集时不做校验，避免未配置用户 i18n 整体失效
-        return tags == null || tags.isEmpty() || tags.contains(languageTag);
+        // 未配置支持语言集时不做校验；配置项与输入统一归一化（忽略 -/_ 与大小写）后比较，en_US 与 en-US 等价
+        if (tags == null || tags.isEmpty()) {
+            return true;
+        }
+        String normalizedInput = LocaleUtil.normalizeLanguageTag(languageTag);
+        for (String tag : tags) {
+            if (LocaleUtil.normalizeLanguageTag(tag).equals(normalizedInput)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     @Override

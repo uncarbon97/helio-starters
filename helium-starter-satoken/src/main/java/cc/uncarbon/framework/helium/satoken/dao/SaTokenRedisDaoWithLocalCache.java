@@ -16,7 +16,7 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class SaTokenRedisDaoWithLocalCache extends SaTokenDaoForRedisTemplate {
 
-    private static final String LOG_PREFIX = "[SaTokenRedisDaoWithLocalCache]";
+    protected static final String LOG_PREFIX = "[SaTokenRedisDaoWithLocalCache]";
 
     /**
      * 标记 key 为空值
@@ -24,6 +24,11 @@ public class SaTokenRedisDaoWithLocalCache extends SaTokenDaoForRedisTemplate {
     protected final TimedCacheEx<String, Boolean> nullValueMarker;
     protected final TimedCacheEx<String, String> stringValueCache;
     protected final TimedCacheEx<String, Object> objectValueCache;
+
+    /**
+     * 默认本地缓存时长（毫秒）
+     */
+    protected final long defaultLocalTtlMs;
 
 
     /**
@@ -34,13 +39,14 @@ public class SaTokenRedisDaoWithLocalCache extends SaTokenDaoForRedisTemplate {
      */
     public SaTokenRedisDaoWithLocalCache(long duration, int capacity) {
         if (duration < 1) {
-            throw new IllegalArgumentException("duration CANNOT less than 1");
+            throw new IllegalArgumentException("duration 不能小于 1");
         }
         if (capacity < 1) {
-            throw new IllegalArgumentException("capacity CANNOT less than 1");
+            throw new IllegalArgumentException("capacity 不能小于 1");
         }
 
         long asMilliseconds = duration * 1000;
+        this.defaultLocalTtlMs = asMilliseconds;
 
         this.nullValueMarker = new TimedCacheEx<>(asMilliseconds, capacity);
         this.stringValueCache = new TimedCacheEx<>(asMilliseconds, capacity);
@@ -113,9 +119,12 @@ public class SaTokenRedisDaoWithLocalCache extends SaTokenDaoForRedisTemplate {
         }
         // cache-aside
         if (cacheValue == null) {
-            nullValueMarker.put(key, Boolean.TRUE);
+            // double-check：并发 set() 已写入时不落空值标记，避免「刚写入即判未登录」竞态
+            if (super.get(key) == null) {
+                nullValueMarker.put(key, Boolean.TRUE);
+            }
         } else {
-            stringValueCache.put(key, cacheValue);
+            stringValueCache.put(key, cacheValue, resolveLocalTtl(key));
         }
         return cacheValue;
     }
@@ -157,9 +166,12 @@ public class SaTokenRedisDaoWithLocalCache extends SaTokenDaoForRedisTemplate {
         }
         // cache-aside
         if (cacheValue == null) {
-            nullValueMarker.put(key, Boolean.TRUE);
+            // double-check：并发 setObject() 已写入时不落空值标记，避免「刚写入即判未登录」竞态
+            if (super.getObject(key) == null) {
+                nullValueMarker.put(key, Boolean.TRUE);
+            }
         } else {
-            objectValueCache.put(key, cacheValue);
+            objectValueCache.put(key, cacheValue, resolveLocalTtl(key));
         }
         return cacheValue;
     }
@@ -188,4 +200,22 @@ public class SaTokenRedisDaoWithLocalCache extends SaTokenDaoForRedisTemplate {
         objectValueCache.remove(key);
     }
 
+    /*
+    ----------------------------------------------------------------
+                        私有方法
+    ----------------------------------------------------------------
+     */
+
+    /**
+     * 本地缓存时长取「配置时长」与「Redis 剩余存活时长」的较小值，
+     * 避免 token 已过期而本地缓存仍判有效
+     */
+    protected long resolveLocalTtl(String key) {
+        long redisRemainSeconds = super.getTimeout(key);
+        if (redisRemainSeconds < 0) {
+            // -1=永不过期等哨兵值：退回默认本地时长
+            return defaultLocalTtlMs;
+        }
+        return Math.min(defaultLocalTtlMs, redisRemainSeconds * 1000L);
+    }
 }

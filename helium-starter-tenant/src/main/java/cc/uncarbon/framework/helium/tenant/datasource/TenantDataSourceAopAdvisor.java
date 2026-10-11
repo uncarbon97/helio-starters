@@ -45,7 +45,8 @@ public class TenantDataSourceAopAdvisor extends AbstractPointcutAdvisor implemen
     private Pointcut buildPointcut() {
         AspectJExpressionPointcut cut = new AspectJExpressionPointcut();
         cut.setExpression(
-                "@within(org.springframework.stereotype.Service)"
+                "(@within(org.springframework.stereotype.Service)"
+                + " || @within(org.springframework.stereotype.Component))"
                 + " && !@annotation(cc.uncarbon.framework.helium.tenant.annotation.TenantIgnore)"
                 + " && !@within(cc.uncarbon.framework.helium.tenant.annotation.TenantIgnore)"
         );

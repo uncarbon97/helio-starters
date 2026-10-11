@@ -19,8 +19,8 @@ import java.util.Objects;
 public record Money(BigDecimal amount, String currencyCode, int scale) implements Comparable<Money> {
 
     public Money {
-        Objects.requireNonNull(amount, "amount");
-        Objects.requireNonNull(currencyCode, "currencyCode");
+        Objects.requireNonNull(amount, "amount 不能为空");
+        Objects.requireNonNull(currencyCode, "currencyCode 不能为空");
         if (currencyCode.isBlank()) {
             throw new IllegalArgumentException("currencyCode 不能为空");
         }
@@ -90,7 +90,7 @@ public record Money(BigDecimal amount, String currencyCode, int scale) implement
     }
 
     public Money multiply(BigDecimal factor) {
-        Objects.requireNonNull(factor, "factor");
+        Objects.requireNonNull(factor, "factor 不能为空");
         return new Money(amount.multiply(factor), currencyCode, scale);
     }
 
@@ -99,7 +99,7 @@ public record Money(BigDecimal amount, String currencyCode, int scale) implement
     }
 
     public Money divide(BigDecimal divisor) {
-        Objects.requireNonNull(divisor, "divisor");
+        Objects.requireNonNull(divisor, "divisor 不能为空");
         return new Money(amount.divide(divisor, scale, RoundingMode.HALF_EVEN), currencyCode, scale);
     }
 
@@ -137,7 +137,7 @@ public record Money(BigDecimal amount, String currencyCode, int scale) implement
     }
 
     private void requireSameCurrency(Money other) {
-        Objects.requireNonNull(other, "other");
+        Objects.requireNonNull(other, "other 不能为空");
         if (!currencyCode.equals(other.currencyCode)) {
             throw new IllegalArgumentException(
                     "币种不一致，无法运算: " + currencyCode + " vs " + other.currencyCode);

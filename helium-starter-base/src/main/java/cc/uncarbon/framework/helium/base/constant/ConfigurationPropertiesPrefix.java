@@ -18,6 +18,7 @@ public final class ConfigurationPropertiesPrefix {
     public static final String I18N = FRAMEWORK_NAME + ".i18n";
     public static final String JACKSON = FRAMEWORK_NAME + ".jackson";
     public static final String OPENAPI3 = FRAMEWORK_NAME + ".openapi3";
+    public static final String RATE_LIMITER = FRAMEWORK_NAME + ".rate-limiter";
     public static final String SA_TOKEN = FRAMEWORK_NAME + ".satoken";
     public static final String TENANT = FRAMEWORK_NAME + ".tenant";
     public static final String WEB = FRAMEWORK_NAME + ".web";

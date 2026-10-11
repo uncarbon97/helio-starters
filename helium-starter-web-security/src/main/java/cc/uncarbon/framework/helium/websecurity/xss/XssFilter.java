@@ -1,6 +1,7 @@
 package cc.uncarbon.framework.helium.websecurity.xss;
 
 import cn.hutool.core.collection.CollUtil;
+import cn.hutool.core.text.CharSequenceUtil;
 import jakarta.servlet.*;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
@@ -47,9 +48,18 @@ public class XssFilter implements Filter {
 			return false;
 		}
 
-		String requestUri = request.getServletPath();
+		/*
+		用 requestURI 去掉 contextPath 后匹配：
+		Boot 4 DispatcherServlet 映射 /*，getServletPath() 恒返回空串，导致排除路径永不命中
+		 */
+		String requestUri = request.getRequestURI();
+		String contextPath = request.getContextPath();
+		if (CharSequenceUtil.isNotEmpty(contextPath) && requestUri.startsWith(contextPath)) {
+			requestUri = requestUri.substring(contextPath.length());
+		}
+		String finalRequestUri = requestUri;
 		return ignoredUrls.stream().anyMatch(
-				excludedRoute -> ANT_PATH_MATCHER.match(excludedRoute, requestUri)
+				excludedRoute -> ANT_PATH_MATCHER.match(excludedRoute, finalRequestUri)
 		);
 	}
 }

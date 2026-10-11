@@ -68,7 +68,16 @@ public class QueryParamLangResolver implements LangResolver {
 
     private boolean isSupported(HeliumI18nProperties.Lang langCfg, String languageTag) {
         List<String> tags = langCfg.getSupportedLanguageTags();
-        // 未配置支持语言集时不做校验，避免未配置用户 i18n 整体失效
-        return tags == null || tags.isEmpty() || tags.contains(languageTag);
+        // 未配置支持语言集时不做校验；配置项与输入统一归一化（忽略 -/_ 与大小写）后比较，en_US 与 en-US 等价
+        if (tags == null || tags.isEmpty()) {
+            return true;
+        }
+        String normalizedInput = LocaleUtil.normalizeLanguageTag(languageTag);
+        for (String tag : tags) {
+            if (LocaleUtil.normalizeLanguageTag(tag).equals(normalizedInput)) {
+                return true;
+            }
+        }
+        return false;
     }
 }

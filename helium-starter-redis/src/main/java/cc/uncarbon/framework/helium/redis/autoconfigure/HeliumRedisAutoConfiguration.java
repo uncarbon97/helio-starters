@@ -14,6 +14,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.boot.data.redis.autoconfigure.DataRedisAutoConfiguration;
 import org.springframework.cache.interceptor.KeyGenerator;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Primary;
 import org.springframework.data.redis.connection.RedisConnectionFactory;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.serializer.GenericJacksonJsonRedisSerializer;
@@ -37,10 +38,16 @@ import java.util.stream.Collectors;
 @AutoConfiguration
 public class HeliumRedisAutoConfiguration {
 
+    public static final String REDIS_TEMPLATE_BEAN_NAME = "redisTemplate";
+
     /**
      * 首选 {@link RedisTemplate}，支持各类 K、V 类型
+     * <P>退让容错：若下游工程自定义了同名 {@code redisTemplate} Bean 时，不再注册
+     * 同时声明 @Primary，保证裸类型注入时无歧义
      */
     @Bean
+    @ConditionalOnMissingBean(name = REDIS_TEMPLATE_BEAN_NAME)
+    @Primary
     public RedisTemplate<?, ?> redisTemplate(final RedisConnectionFactory factory) {
         RedisTemplate<?, ?> redisTemplate = new RedisTemplate<>();
         redisTemplate.setConnectionFactory(factory);
@@ -69,6 +76,8 @@ public class HeliumRedisAutoConfiguration {
 
     /**
      * 缓存键名生成规则
+     * <p>已知特性：key 由各参数 toString 以冒号直接拼接，参数值本身含冒号时可能产生键碰撞
+     * （如 {@code m("a:b")} 与 {@code m("a","b")} 同键），调用方应避免以含冒号的原始值作参数</p>
      */
     @Bean
     @ConditionalOnMissingBean

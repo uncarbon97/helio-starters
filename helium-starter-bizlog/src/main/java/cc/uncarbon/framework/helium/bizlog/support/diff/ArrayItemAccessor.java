@@ -44,7 +44,7 @@ public class ArrayItemAccessor implements TypeAwareAccessor, Accessor {
      */
     public ArrayItemAccessor(final Object referenceItem,
                              final IdentityStrategy identityStrategy) {
-        Assert.notNull(identityStrategy, "identityStrategy");
+        Assert.notNull(identityStrategy, "identityStrategy 不能为空");
         this.referenceItem = referenceItem;
         this.identityStrategy = identityStrategy;
     }

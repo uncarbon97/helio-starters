@@ -66,10 +66,17 @@ public interface DynamicDataSourceHelper {
     void unregisterDataSource(String alias);
 
     /**
-     * 清空当前线程数据源
+     * 弹出当前线程栈顶的一个数据源 key（与 push 配对；嵌套切换场景需逐层 poll）
      */
     default void poll() {
         DynamicDataSourceContextHolder.poll();
+    }
+
+    /**
+     * 清空当前线程数据源栈；用于异常路径兜底，防止线程池复用后路由到残留数据源
+     */
+    default void clear() {
+        DynamicDataSourceContextHolder.clear();
     }
 
 }

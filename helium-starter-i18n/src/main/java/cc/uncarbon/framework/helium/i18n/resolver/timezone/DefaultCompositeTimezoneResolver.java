@@ -55,6 +55,10 @@ public class DefaultCompositeTimezoneResolver implements CompositeTimezoneResolv
     }
 
     private boolean isSupported(String zoneIdTag) {
+        if (props.getTimezone() == null) {
+            // 时区段整体缺配：不做校验，接受任意合法 ZoneId
+            return true;
+        }
         List<String> supported = props.getTimezone().getSupportedDisplayTimezones();
         return CollUtil.isEmpty(supported) || supported.contains(zoneIdTag);
     }

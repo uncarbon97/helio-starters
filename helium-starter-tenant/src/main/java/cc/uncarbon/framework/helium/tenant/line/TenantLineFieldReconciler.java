@@ -3,6 +3,9 @@ package cc.uncarbon.framework.helium.tenant.line;
 import cc.uncarbon.framework.helium.db.constant.EntityField;
 import cc.uncarbon.framework.helium.tenant.annotation.TenantIgnore;
 import cc.uncarbon.framework.helium.tenant.props.HeliumTenantProperties;
+import com.baomidou.dynamic.datasource.DynamicRoutingDataSource;
+import com.baomidou.mybatisplus.annotation.FieldFill;
+import com.baomidou.mybatisplus.core.metadata.TableFieldInfo;
 import com.baomidou.mybatisplus.core.metadata.TableInfo;
 import com.baomidou.mybatisplus.core.metadata.TableInfoHelper;
 import lombok.RequiredArgsConstructor;
@@ -32,23 +35,31 @@ import java.util.Set;
  *
  * @author Uncarbon
  */
-@Slf4j
 @RequiredArgsConstructor
+@Slf4j
 public class TenantLineFieldReconciler implements ApplicationRunner {
 
-    private static final String LOG_PREFIX = TenantLineConfiguration.LOG_PREFIX;
+    protected static final String LOG_PREFIX = TenantLineConfiguration.LOG_PREFIX;
 
-    private final DataSource dataSource;
-    private final HeliumTenantProperties props;
+    protected final DataSource dataSource;
+    protected final HeliumTenantProperties props;
 
-    private static String normalizedTableName(String tableName) {
+    protected static String normalizedTableName(String tableName) {
         return DefaultTenantLineHandler.normalizeTableName(tableName);
     }
+
+    /*
+    ----------------------------------------------------------------
+                        私有方法
+    ----------------------------------------------------------------
+     */
 
     @Override
     public void run(@NonNull ApplicationArguments args) throws Exception {
         Set<String> ignoredTables = resolveIgnoredTables();
         Set<String> missing = new HashSet<>();
+        // 含 tenantId 字段但未配 fill 的参与实体：自动填充不会覆盖请求体携带的租户值，存在跨租户写入风险
+        Set<String> tenantFieldWithoutFill = new HashSet<>();
 
         try (Connection connection = dataSource.getConnection()) {
             for (TableInfo tableInfo : TableInfoHelper.getTableInfos()) {
@@ -61,7 +72,15 @@ public class TenantLineFieldReconciler implements ApplicationRunner {
                 if (!hasTenantIdColumn(connection, tableName, normalizedTableName)) {
                     missing.add(tableName);
                 }
+                if (tenantFieldMissingFill(tableInfo)) {
+                    tenantFieldWithoutFill.add(tableInfo.getEntityType().getName());
+                }
             }
+        }
+
+        if (!tenantFieldWithoutFill.isEmpty()) {
+            log.warn(LOG_PREFIX + " 以下参与隔离的实体含 " + EntityField.TENANT_ID_FIELD + "字段但未配置 " +
+                    "@TableField(fill = INSERT) 自动填充，存在跨租户写入风险 >> {}", tenantFieldWithoutFill);
         }
 
         if (missing.isEmpty()) {
@@ -69,15 +88,41 @@ public class TenantLineFieldReconciler implements ApplicationRunner {
             return;
         }
 
-        throw new IllegalStateException(LOG_PREFIX + " 启动期对账失败 >> 以下实体表未显式忽略、但缺少 tenant_id 列（或表尚未创建），无法参与租户隔离: "
-                + missing
+        if (dataSource instanceof DynamicRoutingDataSource) {
+            /*
+            动态数据源场景仅对账 primary 库，其余库的表分布未知：缺列不一定真是缺陷（表可能在租户库），
+            降级为 error 提示不阻塞启动，由部署方确认
+             */
+            log.warn(LOG_PREFIX + " 启动期对账发现疑似缺列实体表（当前为动态数据源，仅对账 primary 库）: {}" +
+                    "  请确认这些表所在库均含 " + EntityField.TENANT_ID_COLUMN + "列，或将其加入忽略表 / 实体标注 @TenantIgnore",
+                    missing);
+            return;
+        }
+
+        throw new IllegalStateException(LOG_PREFIX + " 启动期对账失败 >> 以下实体表未显式忽略、但缺少 "
+                + EntityField.TENANT_ID_COLUMN + "列（或表尚未创建），无法参与租户隔离: " + missing
                 + "；请先执行 DDL 升级脚本补充列，或将其加入忽略表 / 实体标注 @TenantIgnore");
+    }
+
+    /**
+     * 实体含 tenantId 字段但未配置 INSERT/INSERT_UPDATE 填充：
+     * insertFill 的强制覆盖不生效（MP 仅对带 fill 注解的实体触发填充），请求体携带的租户值会被原样写入
+     */
+    protected boolean tenantFieldMissingFill(TableInfo tableInfo) {
+        for (TableFieldInfo fieldInfo : tableInfo.getFieldList()) {
+            if (EntityField.TENANT_ID_FIELD.equals(fieldInfo.getProperty())
+                    && fieldInfo.getFieldFill() != FieldFill.INSERT
+                    && fieldInfo.getFieldFill() != FieldFill.INSERT_UPDATE) {
+                return true;
+            }
+        }
+        return false;
     }
 
     /**
      * 经 JDBC 元数据判断表是否含 tenant_id 列，支持 MySQL + PGSQL
      */
-    private boolean hasTenantIdColumn(Connection connection, String originalTableName, String normalizedTableName) throws SQLException {
+    protected boolean hasTenantIdColumn(Connection connection, String originalTableName, String normalizedTableName) throws SQLException {
         DatabaseMetaData metaData = connection.getMetaData();
         String product = metaData.getDatabaseProductName();
         String catalog;
@@ -106,13 +151,23 @@ public class TenantLineFieldReconciler implements ApplicationRunner {
         return existsColumn(metaData, catalog, schemaPattern, normalizedTableName);
     }
 
-    private boolean existsColumn(DatabaseMetaData metaData, String catalog, String schemaPattern, String tableName) throws SQLException {
+    protected boolean existsColumn(DatabaseMetaData metaData, String catalog, String schemaPattern, String tableName) throws SQLException {
+        /*
+        JDBC 元数据匹配中表名是模式（`_` 为单字符通配符），可能匹配到同名变体表导致对账假通过；
+        结果集内再用实际表名精确比对（忽略大小写）一次
+         */
         try (ResultSet rs = metaData.getColumns(catalog, schemaPattern, tableName, EntityField.TENANT_ID_COLUMN)) {
-            return rs.next();
+            while (rs.next()) {
+                String matchedTableName = rs.getString("TABLE_NAME");
+                if (tableName.equalsIgnoreCase(matchedTableName)) {
+                    return true;
+                }
+            }
+            return false;
         }
     }
 
-    private String queryCurrentSchema(Connection connection) throws SQLException {
+    protected String queryCurrentSchema(Connection connection) {
         try (var statement = connection.createStatement();
              ResultSet rs = statement.executeQuery("SELECT current_schema()")) {
             return rs.next() ? rs.getString(1) : null;
@@ -124,7 +179,7 @@ public class TenantLineFieldReconciler implements ApplicationRunner {
     /**
      * 汇总配置口径忽略的表名（统一小写）
      */
-    private Set<String> resolveIgnoredTables() {
+    protected Set<String> resolveIgnoredTables() {
         Set<String> ret = new HashSet<>();
         if (props.getIgnoredTables() != null) {
             props.getIgnoredTables().forEach(table -> ret.add(normalizedTableName(table)));

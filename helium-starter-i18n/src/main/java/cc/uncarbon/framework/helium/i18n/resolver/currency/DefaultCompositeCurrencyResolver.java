@@ -2,8 +2,8 @@ package cc.uncarbon.framework.helium.i18n.resolver.currency;
 
 import cc.uncarbon.framework.helium.i18n.constant.HeliumI18nConstant;
 import cc.uncarbon.framework.helium.i18n.context.currency.CurrencyInfo;
-import cc.uncarbon.framework.helium.i18n.util.CurrencyUtil;
 import cc.uncarbon.framework.helium.i18n.props.HeliumI18nProperties;
+import cc.uncarbon.framework.helium.i18n.util.CurrencyUtil;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 
@@ -38,7 +38,7 @@ public class DefaultCompositeCurrencyResolver implements CompositeCurrencyResolv
                 Optional<CurrencyInfo> curInfoOp = resolver.resolve(servletRequest);
                 if (curInfoOp.isPresent()) {
                     CurrencyInfo curInfo = curInfoOp.get();
-                    if (CurrencyResolverSupport.isSupported(props, curInfo.getCurrencyCode())) {
+                    if (CurrencyResolverUtil.isSupported(props, curInfo.getCurrencyCode())) {
                         return curInfo;
                     }
                 }
@@ -53,8 +53,8 @@ public class DefaultCompositeCurrencyResolver implements CompositeCurrencyResolv
             // 未配置币种时的最终兜底
             return CurrencyInfo.ofSimple("CNY", CurrencyUtil.defaultScale("CNY"), null);
         }
-        if (CurrencyResolverSupport.isSupported(props, defaultCurrency)) {
-            return CurrencyResolverSupport.build(props, defaultCurrency);
+        if (CurrencyResolverUtil.isSupported(props, defaultCurrency)) {
+            return CurrencyResolverUtil.build(props, defaultCurrency);
         }
         // 默认币种未在 definitions 中定义：以默认精度兜底
         return CurrencyInfo.ofSimple(defaultCurrency, CurrencyUtil.defaultScale(defaultCurrency), null);

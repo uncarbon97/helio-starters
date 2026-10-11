@@ -23,9 +23,11 @@ import org.springframework.util.CollectionUtils;
 import org.springframework.util.ObjectUtils;
 import org.springframework.util.ReflectionUtils;
 
+import java.lang.reflect.Array;
 import java.lang.reflect.Field;
 import java.util.*;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 /**
  * 差异节点转文案默认实现
@@ -96,6 +98,12 @@ public class DefaultDiffItemsToLogContentService implements IDiffItemsToLogConte
         if (ObjectUtils.isEmpty(filedLogName)) {
             return;
         }
+        if (isIgnoredDiffField(node)) {
+            // 命中脱敏清单：不输出旧/新值，仅以 *** 占位记录字段已变更，避免敏感信息明文入库
+            stringBuilder.append("【").append(filedLogName).append("】").append(props.getIgnoredDiffFieldMask()).append(props.getFieldSeparator());
+            memorandum(node, set);
+            return;
+        }
         // 是否是容器类型的字段
         boolean valueIsContainer = valueIsContainer(node, sourceObject, targetObject);
         String functionName = diffLogField != null ? diffLogField.function() : "";
@@ -106,6 +114,26 @@ public class DefaultDiffItemsToLogContentService implements IDiffItemsToLogConte
             stringBuilder.append(logContent).append(props.getFieldSeparator());
         }
         memorandum(node, set);
+    }
+
+    /**
+     * 字段名是否命中脱敏清单（不区分大小写，按属性名而非显示名匹配）。
+     */
+    private boolean isIgnoredDiffField(DiffNode node) {
+        List<String> ignoredDiffFields = props.getIgnoredDiffFields();
+        if (CollectionUtils.isEmpty(ignoredDiffFields)) {
+            return false;
+        }
+        String propertyName = node.getPropertyName();
+        if (propertyName == null) {
+            return false;
+        }
+        for (String ignoredName : ignoredDiffFields) {
+            if (propertyName.equalsIgnoreCase(ignoredName)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     /**
@@ -261,8 +289,18 @@ public class DefaultDiffItemsToLogContentService implements IDiffItemsToLogConte
      */
     private Collection<Object> getListValue(DiffNode node, Object object) {
         Object fieldSourceValue = getFieldValue(node, object);
-        //noinspection unchecked
         if (fieldSourceValue != null && fieldSourceValue.getClass().isArray()) {
+            Class<?> componentType = fieldSourceValue.getClass().getComponentType();
+            if (componentType.isPrimitive()) {
+                // 基本类型数组不能强转 Object[]，按 Array.get 装箱，避免 CCE 导致整条日志丢失
+                int length = Array.getLength(fieldSourceValue);
+                List<Object> boxed = new ArrayList<>(length);
+                for (int i = 0; i < length; i++) {
+                    boxed.add(Array.get(fieldSourceValue, i));
+                }
+                return boxed;
+            }
+            //noinspection unchecked
             return new ArrayList<>(Arrays.asList((Object[]) fieldSourceValue));
         }
         return fieldSourceValue == null ? new ArrayList<>() : (Collection<Object>) fieldSourceValue;
@@ -270,6 +308,8 @@ public class DefaultDiffItemsToLogContentService implements IDiffItemsToLogConte
 
     /**
      * 集合差集：返回 {@code minuend} 中存在而 {@code subTractor} 中不存在的元素。
+     * <p>元素类未重写 {@code equals} 时回退 {@code toString} 比对，
+     * 避免未变化元素同时出现在「添加」与「删除」文案中。</p>
      *
      * @param minuend    被减集合
      * @param subTractor 减数集合
@@ -277,8 +317,33 @@ public class DefaultDiffItemsToLogContentService implements IDiffItemsToLogConte
      */
     private Collection<Object> listSubtract(Collection<Object> minuend, Collection<Object> subTractor) {
         Collection<Object> addItemList = new ArrayList<>(minuend);
+        if (usesDefaultEquals(minuend) || usesDefaultEquals(subTractor)) {
+            Set<String> subTractorStrings = subTractor.stream().map(String::valueOf).collect(Collectors.toSet());
+            addItemList.removeIf(item -> subTractorStrings.contains(String.valueOf(item)));
+            return addItemList;
+        }
         addItemList.removeAll(subTractor);
         return addItemList;
+    }
+
+    /**
+     * 集合中是否存在未重写 {@code equals} 的元素类（null 元素忽略）。
+     */
+    private boolean usesDefaultEquals(Collection<?> collection) {
+        for (Object item : collection) {
+            if (item != null && !isEqualsOverridden(item.getClass())) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private boolean isEqualsOverridden(Class<?> clazz) {
+        try {
+            return clazz.getMethod("equals", Object.class).getDeclaringClass() != Object.class;
+        } catch (NoSuchMethodException e) {
+            return false;
+        }
     }
 
     /**

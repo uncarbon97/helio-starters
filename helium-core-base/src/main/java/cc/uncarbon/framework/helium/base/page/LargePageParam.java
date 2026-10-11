@@ -37,7 +37,8 @@ public class LargePageParam extends PageParam {
         if (pageSize == null) {
             pageSize = DEFAULT_PAGE_SIZE;
         }
-        // 钳制到 [1, 10000]，避免 0/负值在 maxLimit=-1 时触发全表查询
-        return Math.clamp(pageSize, 1, MAX_PAGE_SIZE);
+        // 钳制到 [1, 10000]，避免 0/负值在 maxLimit=-1 时触发全表查询；再复用全局页大小限制器，避免绕过全局策略
+        pageSize = Math.clamp(pageSize, 1, MAX_PAGE_SIZE);
+        return applyGlobalPageSizeLimiter(pageSize);
     }
 }

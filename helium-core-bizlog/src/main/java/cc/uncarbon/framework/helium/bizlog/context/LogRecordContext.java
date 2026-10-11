@@ -2,6 +2,7 @@ package cc.uncarbon.framework.helium.bizlog.context;
 
 import cc.uncarbon.framework.helium.bizlog.annotation.LogRecord;
 import lombok.experimental.UtilityClass;
+import lombok.extern.slf4j.Slf4j;
 
 import java.util.ArrayDeque;
 import java.util.Deque;
@@ -31,6 +32,7 @@ import java.util.concurrent.Callable;
  * @author Uncarbon
  */
 @UtilityClass
+@Slf4j
 public class LogRecordContext {
 
     /**
@@ -106,6 +108,8 @@ public class LogRecordContext {
      */
     public static void putVariable(String name, Object value) {
         if (!isBound()) {
+            // 多为自调用绕过代理、或在未标注解方法内调用；warn 提示变量会丢失，避免静默
+            log.warn("[LogRecordContext] putVariable 时未绑定日志上下文（自调用或未被拦截的方法），变量 [{}] 将丢失", name);
             return;
         }
         Deque<Map<String, Object>> stack = currentState().variableMapStack;
@@ -123,6 +127,7 @@ public class LogRecordContext {
      */
     public static void putSharedVariable(String name, Object value) {
         if (!isBound()) {
+            log.warn("[LogRecordContext] putSharedVariable 时未绑定日志上下文（自调用或未被拦截的方法），变量 [{}] 将丢失", name);
             return;
         }
         currentState().sharedVariableMap.put(name, value);

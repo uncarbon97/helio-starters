@@ -124,7 +124,8 @@ public class LogRecordInterceptor extends LogRecordValueParser
             operations = logRecordOperationSource.computeLogRecordOperations(method, targetClass);
             List<String> spElTemplates = getBeforeExecuteFunctionTemplate(operations);
             functionNameAndReturnMap = processBeforeExecuteFunctionTemplate(spElTemplates, targetClass, method, args);
-        } catch (Exception e) {
+        } catch (Throwable e) {
+            // SpEL 求值可能触发 Error（如 NoClassDefFoundError），前置块失败不应阻断业务方法执行
             log.error(LOG_PREFIX + "log record parse before function exception", e);
         } finally {
             stopWatch.stop();
@@ -135,11 +136,6 @@ public class LogRecordInterceptor extends LogRecordValueParser
             methodExecuteResult.setResult(ret);
             methodExecuteResult.setSuccess(true);
         } catch (Throwable e) {
-            /*
-            捕获 Throwable 而非 Exception：
-            Error（如 StackOverflowError）若在此逃逸，会跳过下方 finally 的 LogRecordContext.clear()，
-            导致 putEmptySpan 压入的栈帧未弹、嵌套 @LogRecord 变量栈错位，且失败模板不渲染
-             */
             methodExecuteResult.setSuccess(false);
             methodExecuteResult.setThrowable(e);
             methodExecuteResult.setErrorMsg(e.getMessage());
@@ -149,9 +145,13 @@ public class LogRecordInterceptor extends LogRecordValueParser
             if (!CollectionUtils.isEmpty(operations)) {
                 recordExecute(methodExecuteResult, functionNameAndReturnMap, operations);
             }
-        } catch (Exception t) {
+        } catch (Throwable t) {
+            // 日志处理异常不应覆盖业务结果（业务失败仍按原样在方法尾部重抛）
             log.error(LOG_PREFIX + "log record parse exception", t);
-            throw t;
+            if (joinTransaction) {
+                // 保持重抛
+                throw t;
+            }
         } finally {
             LogRecordContext.clear();
             stopWatch.stop();
@@ -169,7 +169,9 @@ public class LogRecordInterceptor extends LogRecordValueParser
     }
 
     /**
-     * 收集所有操作的成功模板中需要前置执行的自定义函数 SpEL 模板（失败模板不参与前置解析）。
+     * 收集所有操作中需要前置执行的自定义函数 SpEL 模板。
+     * <p>成功与失败模板都参与前置解析：失败模板的 executeBefore 函数典型为「执行前查旧值」，
+     * 若方法执行后才求值将拿到执行后的数据；含 {@code #_ret/#_errorMsg} 的表达式由解析器自行跳过。</p>
      *
      * @param operations 当前方法解析出的日志操作集合
      * @return 前置函数 SpEL 模板列表
@@ -177,8 +179,8 @@ public class LogRecordInterceptor extends LogRecordValueParser
     private List<String> getBeforeExecuteFunctionTemplate(Collection<LogRecordOps> operations) {
         List<String> spElTemplates = new ArrayList<>();
         for (LogRecordOps operation : operations) {
-            //执行之前的函数，失败模版不解析
-            List<String> templates = getSpElTemplates(operation, operation.getSuccessLogTemplate());
+            List<String> templates = getSpElTemplates(operation,
+                    operation.getSuccessLogTemplate(), operation.getFailLogTemplate());
             if (!CollectionUtils.isEmpty(templates)) {
                 spElTemplates.addAll(templates);
             }
@@ -228,11 +230,12 @@ public class LogRecordInterceptor extends LogRecordValueParser
         boolean flag = true;
         if (!ObjectUtils.isEmpty(operation.getIsSuccess())) {
             String condition = singleProcessTemplate(methodExecuteResult, operation.getIsSuccess(), functionNameAndReturnMap);
-            if (StringUtils.endsWithIgnoreCase(condition, "true")) {
-                action = operation.getSuccessLogTemplate();
-            } else {
+            if (StringUtils.hasText(condition) && !StringUtils.endsWithIgnoreCase(condition, "true")) {
+                // 明确非 true 才按失败处理；求值结果为空（如 #result?.status 为 null）时按成功处理
                 action = operation.getFailLogTemplate();
                 flag = false;
+            } else {
+                action = operation.getSuccessLogTemplate();
             }
         } else {
             action = operation.getSuccessLogTemplate();
@@ -371,7 +374,7 @@ public class LogRecordInterceptor extends LogRecordValueParser
         if (ObjectUtils.isEmpty(operation.getOperatorId())) {
             realOperatorId = operatorGetService.getOperator().getOperatorId();
             if (ObjectUtils.isEmpty(realOperatorId)) {
-                throw new IllegalArgumentException("operator can not be empty");
+                throw new IllegalArgumentException("operator 不能为空");
             }
         } else {
             spElTemplates.add(operation.getOperatorId());

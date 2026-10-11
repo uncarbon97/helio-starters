@@ -72,6 +72,9 @@ public class DynamicDataSourceHelperImpl implements DynamicDataSourceHelper {
 
     @Override
     public DataSource registerDataSource(String alias, DataSourceProperty dataSourceProperty) {
+        if (CharSequenceUtil.isBlank(alias)) {
+            throw new IllegalArgumentException("数据源别名不能为空");
+        }
         Object lock = aliasLocks.computeIfAbsent(alias, k -> new Object());
         synchronized (lock) {
             dataSourceProperty.setPoolName(alias);
@@ -107,6 +110,9 @@ public class DynamicDataSourceHelperImpl implements DynamicDataSourceHelper {
         } catch (RuntimeException e) {
             // 库内部异常（如删除 primary 数据源）补充上下文后抛出，给出可读信息
             throw new IllegalArgumentException("注销数据源失败: " + alias + "，原因: " + e.getMessage(), e);
+        } finally {
+            // 注销后清理注册锁，避免频繁注册/注销场景下 aliasLocks 无界增长
+            aliasLocks.remove(alias);
         }
     }
 }

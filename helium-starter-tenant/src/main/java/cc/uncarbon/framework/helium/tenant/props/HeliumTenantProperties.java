@@ -4,6 +4,8 @@ import cc.uncarbon.framework.helium.base.constant.ConfigurationPropertiesPrefix;
 import cc.uncarbon.framework.helium.tenant.enums.TenantIsolationStrategyEnum;
 import cc.uncarbon.framework.helium.tenant.enums.TenantLoginModeEnum;
 import cc.uncarbon.framework.helium.tenant.line.TenantLineFieldReconciler;
+import jakarta.annotation.PostConstruct;
+import jakarta.validation.constraints.Positive;
 import lombok.Data;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
@@ -36,13 +38,14 @@ public class HeliumTenantProperties {
 
     /**
      * 严格模式：上下文缺租户且 SQL 需要拼租户时抛出业务异常，而非静默拼接 NULL
-     * <p>消灭子线程漏传上下文导致的「静默空结果」问题</p>
+     * <p>消灭缺少租户上下文导致的「静默空结果」问题；默认开启
      */
-    private Boolean strict;
+    private Boolean strict = Boolean.TRUE;
 
     /**
      * 非严格模式：上下文缺租户时的兜底租户 ID；不用于登录回退
      */
+    @Positive
     private Long nonStrictFallbackTenantId;
 
     /**
@@ -52,6 +55,23 @@ public class HeliumTenantProperties {
      */
     private Boolean participateByDefault;
 
+    /**
+     * 回落即拒绝：与 strict 解耦的独立开关；开启后，上下文缺租户或租户数据源切换失败时
+     * 直接抛异常拒绝执行，而非回落 primary 共享库（仅数据源级隔离生效）
+     */
+    private Boolean rejectOnFallback;
+
+
+    /**
+     * 启动期校验：兜底租户 ID 配成 0/负数时立即失败，避免生成 tenant_id = 0 的静默空结果
+     */
+    @PostConstruct
+    void init() {
+        if (nonStrictFallbackTenantId != null && nonStrictFallbackTenantId <= 0) {
+            throw new IllegalStateException("配置项 " + ConfigurationPropertiesPrefix.TENANT
+                    + ".non-strict-fallback-tenant-id 须为正整数，当前: " + nonStrictFallbackTenantId);
+        }
+    }
 
     public TenantIsolationStrategyEnum getIsolationStrategy() {
         return Objects.requireNonNullElse(isolationStrategy, TenantIsolationStrategyEnum.NONE);
@@ -62,11 +82,16 @@ public class HeliumTenantProperties {
     }
 
     public boolean isStrict() {
-        return Boolean.TRUE.equals(strict);
+        // 默认严格模式：仅显式配置 false 才退回旧行为
+        return !Boolean.FALSE.equals(strict);
     }
 
     public boolean isParticipateByDefault() {
         return Boolean.TRUE.equals(participateByDefault);
+    }
+
+    public boolean isRejectOnFallback() {
+        return Boolean.TRUE.equals(rejectOnFallback);
     }
 
     /**

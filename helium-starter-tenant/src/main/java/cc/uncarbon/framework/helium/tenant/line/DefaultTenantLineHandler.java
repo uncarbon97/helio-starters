@@ -1,6 +1,5 @@
 package cc.uncarbon.framework.helium.tenant.line;
 
-import cc.uncarbon.framework.helium.base.constant.ConfigurationPropertiesPrefix;
 import cc.uncarbon.framework.helium.db.constant.EntityField;
 import cc.uncarbon.framework.helium.db.entity.TenantEntity;
 import cc.uncarbon.framework.helium.tenant.annotation.TenantIgnore;
@@ -10,11 +9,14 @@ import com.baomidou.mybatisplus.core.metadata.TableInfo;
 import com.baomidou.mybatisplus.core.metadata.TableInfoHelper;
 import com.baomidou.mybatisplus.extension.plugins.handler.TenantLineHandler;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import net.sf.jsqlparser.expression.Expression;
 import net.sf.jsqlparser.expression.LongValue;
 import net.sf.jsqlparser.expression.NullValue;
+import net.sf.jsqlparser.schema.Column;
 
 import java.util.Collection;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -31,6 +33,7 @@ import java.util.concurrent.ConcurrentHashMap;
  * </ol>
  */
 @RequiredArgsConstructor
+@Slf4j
 public class DefaultTenantLineHandler implements TenantLineHandler {
 
     /**
@@ -81,9 +84,8 @@ public class DefaultTenantLineHandler implements TenantLineHandler {
         Long currentTenantId = TenantContextHolder.getTenantId();
         if (currentTenantId == null) {
             if (strict) {
-                // 子线程漏传上下文等场景，响亮失败优于静默空结果
-                throw new IllegalStateException("当前线程缺少租户上下文，且已开启严格模式("
-                        + ConfigurationPropertiesPrefix.TENANT + ".strict)");
+                // 响亮失败
+                throw new IllegalStateException("缺少租户上下文，严格模式下无法继续");
             } else if (nonStrictFallbackTenantId != null) {
                 // 兜底写值
                 return new LongValue(nonStrictFallbackTenantId);
@@ -109,19 +111,48 @@ public class DefaultTenantLineHandler implements TenantLineHandler {
         return ignore;
     }
 
-    private boolean isConfiguredIgnored(String normalizedTableName) {
+    /**
+     * 避免入参携带伪造 tenantId ，造成跨租户写入
+     * <p>上下文缺租户：严格模式拒绝；非严格模式警告
+     * <p>上下文有租户：{@code MybatisPlusAutoFillColumnHandler#overrideTenantId} 覆盖写入
+     */
+    @Override
+    public boolean ignoreInsert(List<Column> columns, String tenantIdColumn) {
+        boolean containsTenantColumn = columns.stream().map(Column::getColumnName)
+                .anyMatch(i -> i.equalsIgnoreCase(tenantIdColumn));
+        if (containsTenantColumn && !TenantContextHolder.isIgnored()) {
+            Long currentTenantId = TenantContextHolder.getTenantId();
+            if (currentTenantId == null) {
+                if (strict) {
+                    // 响亮失败
+                    throw new IllegalStateException("存在租户列，但缺少租户上下文，严格模式下拒绝写入");
+                }
+                log.warn(TenantLineConfiguration.LOG_PREFIX + " 存在租户列，但缺少租户上下文，非严格模式下存在跨租户写入风险 >> columns={}", columns);
+            }
+        }
+        return containsTenantColumn;
+    }
+
+    /*
+    ----------------------------------------------------------------
+                        私有方法
+    ----------------------------------------------------------------
+     */
+
+    protected boolean isConfiguredIgnored(String normalizedTableName) {
         if (ignoredTables == null) {
             return false;
         }
         for (String configuredTableName : ignoredTables) {
-            if (normalizedTableName.equalsIgnoreCase(configuredTableName)) {
+            // 配置项同样归一化后再比较，避免与运行时口径不一致（如配置带反引号时对账通过、运行时漏匹配）
+            if (normalizedTableName.equalsIgnoreCase(normalizeTableName(configuredTableName))) {
                 return true;
             }
         }
         return false;
     }
 
-    private boolean computeIgnoreTable(String originalTableName, String normalizedTableName) {
+    protected boolean computeIgnoreTable(String originalTableName, String normalizedTableName) {
         // 显式配置忽略的表
         if (isConfiguredIgnored(normalizedTableName)) {
             return true;
@@ -135,6 +166,16 @@ public class DefaultTenantLineHandler implements TenantLineHandler {
         TableInfo tableInfo = TableInfoHelper.getTableInfo(originalTableName);
         if (tableInfo == null) {
             tableInfo = TableInfoHelper.getTableInfo(normalizedTableName);
+        }
+        if (tableInfo == null) {
+            /*
+            大小写残余兜底：XML 手写 SQL 表名与 @TableName 大小写不一致时两次精确查找都会 miss，
+            会被误判为「纯 XML 表」而错误参与隔离；全量归一化比对一次
+             */
+            tableInfo = TableInfoHelper.getTableInfos().stream()
+                    .filter(info -> normalizedTableName.equals(normalizeTableName(info.getTableName())))
+                    .findFirst()
+                    .orElse(null);
         }
         if (tableInfo == null) {
             // 找不到对应实体（如纯 XML Mapper 编写的 SQL），保持参与租户隔离，避免遗漏

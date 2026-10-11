@@ -47,7 +47,7 @@ public class HeliumI18nAutoConfiguration {
     // -- 多语言
 
     @Bean(name = HeliumI18nConstant.MESSAGE_SOURCE_SPRING_BEAN_NAME)
-    public MessageSource messageSource(HeliumI18nProperties props) {
+    public MessageSource messageSource(@NonNull HeliumI18nProperties props) {
         var yamlMessageSource = new YamlMessageSource(props, StandardCharsets.UTF_8);
         I18nMessageUtil.setMessageSource(yamlMessageSource);
         I18nMessageUtil.setFallbackLanguageTag(props.getLang().getFallbackLanguageTag());

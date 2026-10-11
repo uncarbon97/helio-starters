@@ -139,11 +139,24 @@ public class LocaleUtil {
                 return Locale.of(language, country, variant);
             }
         }
-        throw new IllegalArgumentException("Invalid locale format: " + str);
+        throw new IllegalArgumentException("locale 格式非法: " + str);
     }
 
     public static Locale toLocale(final Locale locale) {
         return locale != null ? locale : Locale.getDefault();
+    }
+
+    /**
+     * 归一化语言标签用于比较：统一分隔符为 '-'、忽略大小写，使 {@code en_US} / {@code en-US} / {@code EN-us} 等价。
+     *
+     * @param tag 语言标签（可为 {@code null}）
+     * @return 归一化结果；{@code null} 入参返回空串
+     */
+    public static String normalizeLanguageTag(final String tag) {
+        if (tag == null) {
+            return CharSequenceUtil.EMPTY;
+        }
+        return tag.replace(CharPool.UNDERLINE, CharPool.DASHED).toLowerCase();
     }
 
     public static Locale toLocale(final String str) {
@@ -154,30 +167,30 @@ public class LocaleUtil {
             return Locale.of(CharSequenceUtil.EMPTY, CharSequenceUtil.EMPTY);
         }
         if (str.contains("#")) {
-            throw new IllegalArgumentException("Invalid locale format: " + str);
+            throw new IllegalArgumentException("locale 格式非法: " + str);
         }
         final int len = str.length();
         if (len < 2) {
-            throw new IllegalArgumentException("Invalid locale format: " + str);
+            throw new IllegalArgumentException("locale 格式非法: " + str);
         }
         final char ch0 = str.charAt(0);
         if (ch0 == CharPool.UNDERLINE || ch0 == CharPool.DASHED) {
             if (len < 3) {
-                throw new IllegalArgumentException("Invalid locale format: " + str);
+                throw new IllegalArgumentException("locale 格式非法: " + str);
             }
             final char ch1 = str.charAt(1);
             final char ch2 = str.charAt(2);
             if (!Character.isUpperCase(ch1) || !Character.isUpperCase(ch2)) {
-                throw new IllegalArgumentException("Invalid locale format: " + str);
+                throw new IllegalArgumentException("locale 格式非法: " + str);
             }
             if (len == 3) {
                 return Locale.of(CharSequenceUtil.EMPTY, str.substring(1, 3));
             }
             if (len < 5) {
-                throw new IllegalArgumentException("Invalid locale format: " + str);
+                throw new IllegalArgumentException("locale 格式非法: " + str);
             }
             if (str.charAt(3) != ch0) {
-                throw new IllegalArgumentException("Invalid locale format: " + str);
+                throw new IllegalArgumentException("locale 格式非法: " + str);
             }
             return Locale.of(CharSequenceUtil.EMPTY, str.substring(1, 3), str.substring(4));
         }
