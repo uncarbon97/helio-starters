@@ -40,7 +40,10 @@ public class MybatisPlusAutoFillColumnHandler implements MetaObjectHandler {
     public void insertFill(MetaObject metaObject) {
         overrideTenantId(metaObject);
         strictInsertFill(metaObject, EntityField.CREATED_AT_FIELD, Instant.class, Instant.now());
-        strictInsertFill(metaObject, EntityField.CREATED_BY_FIELD, String.class, UserContextHolder.getUserPin());
+        Long uid = UserContextHolder.getUserId();
+        if (uid != null) {
+            strictInsertFill(metaObject, EntityField.CREATED_BY_FIELD, Long.class, uid);
+        }
     }
 
     @Override
@@ -48,9 +51,9 @@ public class MybatisPlusAutoFillColumnHandler implements MetaObjectHandler {
         overrideTenantId(metaObject);
         // 避免严格填充策略下，实体类字段非空时不更新
         metaObject.setValue(EntityField.UPDATED_AT_FIELD, Instant.now());
-        String updatedBy = UserContextHolder.getUserPin();
-        if (updatedBy != null) {
-            metaObject.setValue(EntityField.UPDATED_BY_FIELD, updatedBy);
+        Long uid = UserContextHolder.getUserId();
+        if (uid != null) {
+            metaObject.setValue(EntityField.UPDATED_BY_FIELD, uid);
         }
     }
 

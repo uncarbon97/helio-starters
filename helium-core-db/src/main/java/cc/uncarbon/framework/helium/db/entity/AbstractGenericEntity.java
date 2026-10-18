@@ -1,7 +1,9 @@
 package cc.uncarbon.framework.helium.db.entity;
 
 import cc.uncarbon.framework.helium.db.constant.EntityField;
-import com.baomidou.mybatisplus.annotation.*;
+import com.baomidou.mybatisplus.annotation.FieldFill;
+import com.baomidou.mybatisplus.annotation.TableField;
+import com.baomidou.mybatisplus.annotation.TableLogic;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 import lombok.experimental.Accessors;
@@ -17,40 +19,25 @@ import java.time.Instant;
 @Data
 public abstract class AbstractGenericEntity implements Entity, LogicDelEntity, AuditingTimeEntity, AuditingUserEntity {
 
-    /**
-     * 逻辑删除标识
-     */
     @Schema(description = "逻辑删除标识")
     @TableLogic
     @TableField(value = EntityField.DEL_FLAG_COLUMN)
     private Integer delFlag;
 
-    /**
-     * 创建时刻
-     */
     @Schema(description = "创建时刻")
     @TableField(value = EntityField.CREATED_AT_COLUMN, fill = FieldFill.INSERT)
     private Instant createdAt;
 
-    /**
-     * 创建者
-     */
     @Schema(description = "创建者")
     @TableField(value = EntityField.CREATED_BY_COLUMN, fill = FieldFill.INSERT)
-    private String createdBy;
+    private Long createdBy;
 
-    /**
-     * 更新时刻
-     */
     @Schema(description = "更新时刻")
     @TableField(value = EntityField.UPDATED_AT_COLUMN, fill = FieldFill.UPDATE)
     private Instant updatedAt;
 
-    /**
-     * 更新者
-     */
-    @Schema(description = "更新者")
+    @Schema(description = "更新者用户ID")
     @TableField(value = EntityField.UPDATED_BY_COLUMN, fill = FieldFill.UPDATE)
-    private String updatedBy;
+    private Long updatedBy;
 
 }

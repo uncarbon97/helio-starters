@@ -8,13 +8,13 @@ package cc.uncarbon.framework.helium.db.entity;
 public interface AuditingUserEntity extends Entity {
 
     /**
-     * @return 获取创建者
+     * @return 获取创建者用户ID
      */
-    String getCreatedBy();
+    Long getCreatedBy();
 
     /**
-     * @return 获取更新者
+     * @return 获取更新者用户ID
      */
-    String getUpdatedBy();
+    Long getUpdatedBy();
 
 }

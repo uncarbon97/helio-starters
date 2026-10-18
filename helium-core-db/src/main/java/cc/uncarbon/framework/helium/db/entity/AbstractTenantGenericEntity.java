@@ -18,9 +18,6 @@ import lombok.experimental.Accessors;
 @Data
 public abstract class AbstractTenantGenericEntity extends AbstractGenericEntity implements TenantEntity {
 
-    /**
-     * 租户ID
-     */
     @Schema(description = "租户ID")
     @TableField(value = EntityField.TENANT_ID_COLUMN, fill = FieldFill.INSERT)
     private Long tenantId;

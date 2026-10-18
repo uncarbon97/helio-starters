@@ -28,23 +28,23 @@ public abstract class AbstractRelationEntity implements Entity, AuditingTimeEnti
     private Instant createdAt;
 
     /**
-     * 创建者
+     * 创建者用户ID
      */
-    @Schema(description = "创建者")
+    @Schema(description = "创建者用户ID")
     @TableField(value = EntityField.CREATED_BY_COLUMN, fill = FieldFill.INSERT)
-    private String createdBy;
+    private Long createdBy;
 
     // 没有更新时刻和更新者
     @TableField(exist = false)
     private Instant updatedAt;
     @TableField(exist = false)
-    private String updatedBy;
+    private Long updatedBy;
     @Override
     public Instant getUpdatedAt() {
         return null;
     }
     @Override
-    public String getUpdatedBy() {
+    public Long getUpdatedBy() {
         return null;
     }
 }
