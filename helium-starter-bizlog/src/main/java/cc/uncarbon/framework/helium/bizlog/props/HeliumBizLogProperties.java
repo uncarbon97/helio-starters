@@ -89,7 +89,8 @@ public class HeliumBizLogProperties {
 
     /**
      * diff 脱敏字段名清单（不区分大小写）：命中字段不输出旧/新值，以 ignoredDiffFieldMask 占位，
-     * 避免密码等敏感信息明文入库；默认空=不忽略，安全策略由下游按需配置
+     * 避免密码等敏感信息明文入库；默认空=不忽略，安全策略由下游按需配置。
+     * 按字段名递归匹配，覆盖嵌套 DTO、集合元素内部字段及 Map 键名（键名命中的值脱敏）
      */
     private List<String> ignoredDiffFields = new ArrayList<>();
 

@@ -9,6 +9,7 @@ import cc.uncarbon.framework.helium.bizlog.service.IFunctionService;
 import cc.uncarbon.framework.helium.bizlog.support.diff.DiffTextFormatter;
 import de.danielbechler.diff.node.DiffNode;
 import de.danielbechler.diff.selector.ElementSelector;
+import de.danielbechler.diff.selector.MapKeyElementSelector;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -25,6 +26,8 @@ import org.springframework.util.ReflectionUtils;
 
 import java.lang.reflect.Array;
 import java.lang.reflect.Field;
+import java.lang.reflect.Modifier;
+import java.time.temporal.Temporal;
 import java.util.*;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -47,6 +50,11 @@ public class DefaultDiffItemsToLogContentService implements IDiffItemsToLogConte
     private final HeliumBizLogProperties props;
     private IFunctionService functionService;
     private BeanFactory beanFactory;
+
+    /**
+     * 复杂值递归脱敏渲染的最大层级，防御超深嵌套
+     */
+    private static final int MAX_MASKED_VALUE_DEPTH = 8;
 
     /**
      * 将差异节点转为日志文案；无变化时返回空串。
@@ -117,19 +125,47 @@ public class DefaultDiffItemsToLogContentService implements IDiffItemsToLogConte
     }
 
     /**
+     * 是否简单值类型（无内部结构，无需按字段脱敏）。
+     *
+     * @param clazz 待判断类型
+     * @return 简单类型返回 {@code true}
+     */
+    private static boolean isSimpleValueType(Class<?> clazz) {
+        return clazz.isPrimitive()
+                || clazz.isEnum()
+                || CharSequence.class.isAssignableFrom(clazz)
+                || Number.class.isAssignableFrom(clazz)
+                || Boolean.class == clazz
+                || Character.class == clazz
+                || Date.class.isAssignableFrom(clazz)
+                || Temporal.class.isAssignableFrom(clazz)
+                || clazz == UUID.class
+                || clazz == Class.class;
+    }
+
+    /**
      * 字段名是否命中脱敏清单（不区分大小写，按属性名而非显示名匹配）。
      */
     private boolean isIgnoredDiffField(DiffNode node) {
+        return isIgnoredFieldName(node.getPropertyName()) || isIgnoredMapEntryNode(node);
+    }
+
+    /**
+     * 名称是否命中脱敏清单（不区分大小写，适用于属性名 / 字段名 / Map 键名）。
+     *
+     * @param fieldName 待检查名称，可为 null
+     * @return 命中返回 {@code true}
+     */
+    private boolean isIgnoredFieldName(String fieldName) {
+        if (fieldName == null) {
+            return false;
+        }
         List<String> ignoredDiffFields = props.getIgnoredDiffFields();
         if (CollectionUtils.isEmpty(ignoredDiffFields)) {
             return false;
         }
-        String propertyName = node.getPropertyName();
-        if (propertyName == null) {
-            return false;
-        }
         for (String ignoredName : ignoredDiffFields) {
-            if (propertyName.equalsIgnoreCase(ignoredName)) {
+            if (fieldName.equalsIgnoreCase(ignoredName)) {
                 return true;
             }
         }
@@ -364,6 +400,24 @@ public class DefaultDiffItemsToLogContentService implements IDiffItemsToLogConte
     }
 
     /**
+     * Map 值节点的键名是否命中脱敏清单（Map 值节点的属性名会回退为 Map 字段名，需按键名单独判断）。
+     *
+     * @param node 差异节点
+     * @return 是 Map 键值对节点且键名命中返回 {@code true}
+     */
+    private boolean isIgnoredMapEntryNode(DiffNode node) {
+        if (node.getParentNode() == null) {
+            return false;
+        }
+        ElementSelector selector = node.getPath().getLastElementSelector();
+        if (selector instanceof MapKeyElementSelector keySelector) {
+            Object key = keySelector.getKey();
+            return key != null && isIgnoredFieldName(String.valueOf(key));
+        }
+        return false;
+    }
+
+    /**
      * 对字段值应用转换函数；未配置函数时直接取字符串形式。
      *
      * @param canonicalGet 字段值
@@ -376,9 +430,132 @@ public class DefaultDiffItemsToLogContentService implements IDiffItemsToLogConte
             return "";
         }
         if (ObjectUtils.isEmpty(functionName)) {
-            return canonicalGet.toString();
+            // 未配置转换函数：复杂值（如集合元素 DTO）须递归脱敏后再渲染，防止敏感字段经 toString 明文外泄
+            return toDisplayString(canonicalGet);
         }
+        // 配置了转换函数：渲染逻辑由函数负责，函数侧需自行处理敏感信息
         return functionService.apply(functionName, canonicalGet.toString());
+    }
+
+    /**
+     * 值转展示文案：简单类型直接 toString；
+     * 复杂对象（集合元素 DTO、equals 整体比较的 Bean 等）按字段名递归匹配脱敏清单，
+     * 命中字段值替换为 {@code ignoredDiffFieldMask}；未命中任何字段时回退原始 toString，保持原格式不变。
+     *
+     * @param value 待渲染值
+     * @return 展示文案
+     */
+    private String toDisplayString(Object value) {
+        if (CollectionUtils.isEmpty(props.getIgnoredDiffFields()) || isSimpleValueType(value.getClass())) {
+            return value.toString();
+        }
+        StringBuilder stringBuilder = new StringBuilder();
+        boolean masked = appendMaskedValue(value, stringBuilder, Collections.newSetFromMap(new IdentityHashMap<>()), 0);
+        return masked ? stringBuilder.toString() : value.toString();
+    }
+
+    /**
+     * 递归渲染复杂值：数组 / 集合 / Map / Bean 按字段名（Map 按键名）匹配脱敏清单，
+     * 命中的值替换为掩码文案。
+     *
+     * @param value         待渲染值
+     * @param stringBuilder 文案构建器
+     * @param visiting      当前渲染路径上的对象集合，防自引用死循环
+     * @param depth         当前递归层级
+     * @return 是否发生了脱敏替换
+     */
+    private boolean appendMaskedValue(Object value, StringBuilder stringBuilder, Set<Object> visiting, int depth) {
+        if (value == null) {
+            stringBuilder.append("null");
+            return false;
+        }
+        Class<?> clazz = value.getClass();
+        if (isSimpleValueType(clazz)) {
+            stringBuilder.append(value);
+            return false;
+        }
+        if (depth >= MAX_MASKED_VALUE_DEPTH) {
+            stringBuilder.append("…");
+            return false;
+        }
+        if (!visiting.add(value)) {
+            stringBuilder.append("(循环引用)");
+            return false;
+        }
+        boolean masked = false;
+        if (clazz.isArray()) {
+            stringBuilder.append('[');
+            int length = Array.getLength(value);
+            for (int i = 0; i < length; i++) {
+                if (i > 0) {
+                    stringBuilder.append(", ");
+                }
+                masked |= appendMaskedValue(Array.get(value, i), stringBuilder, visiting, depth + 1);
+            }
+            stringBuilder.append(']');
+        } else if (value instanceof Map<?, ?> map) {
+            stringBuilder.append('{');
+            boolean first = true;
+            for (Map.Entry<?, ?> entry : map.entrySet()) {
+                if (!first) {
+                    stringBuilder.append(", ");
+                }
+                first = false;
+                stringBuilder.append(entry.getKey()).append('=');
+                if (isIgnoredFieldName(String.valueOf(entry.getKey()))) {
+                    stringBuilder.append(props.getIgnoredDiffFieldMask());
+                    masked = true;
+                } else {
+                    masked |= appendMaskedValue(entry.getValue(), stringBuilder, visiting, depth + 1);
+                }
+            }
+            stringBuilder.append('}');
+        } else if (value instanceof Collection<?> collection) {
+            stringBuilder.append('[');
+            boolean first = true;
+            for (Object item : collection) {
+                if (!first) {
+                    stringBuilder.append(", ");
+                }
+                first = false;
+                masked |= appendMaskedValue(item, stringBuilder, visiting, depth + 1);
+            }
+            stringBuilder.append(']');
+        } else {
+            // Bean：按声明字段名匹配脱敏清单
+            stringBuilder.append(clazz.getSimpleName()).append('(');
+            boolean first = true;
+            for (Class<?> current = clazz; current != null && current != Object.class; current = current.getSuperclass()) {
+                for (Field field : current.getDeclaredFields()) {
+                    if (Modifier.isStatic(field.getModifiers()) || field.isSynthetic()) {
+                        continue;
+                    }
+                    if (!first) {
+                        stringBuilder.append(", ");
+                    }
+                    first = false;
+                    stringBuilder.append(field.getName()).append('=');
+                    if (isIgnoredFieldName(field.getName())) {
+                        stringBuilder.append(props.getIgnoredDiffFieldMask());
+                        masked = true;
+                        continue;
+                    }
+                    Object fieldValue;
+                    try {
+                        ReflectionUtils.makeAccessible(field);
+                        fieldValue = field.get(value);
+                    } catch (IllegalAccessException e) {
+                        stringBuilder.append('?');
+                        continue;
+                    }
+                    masked |= appendMaskedValue(fieldValue, stringBuilder, visiting, depth + 1);
+                }
+            }
+            stringBuilder.append(')');
+        }
+        // 出栈后移除，允许同一对象出现在兄弟分支
+        visiting.remove(value);
+        return masked;
     }
 
     /**
