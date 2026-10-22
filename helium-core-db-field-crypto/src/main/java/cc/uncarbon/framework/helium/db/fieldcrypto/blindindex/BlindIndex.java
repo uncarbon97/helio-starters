@@ -90,7 +90,7 @@ public final class BlindIndex {
      * <p>同一根密钥必得同一指纹，不含密钥材料；用于节点启动时暴露多节点密钥配置不一致等静默漂移</p>
      */
     public String indexRootKeyCanaryFingerprint() {
-        byte[] indexKey = HKDF.derive(rootKeyBytes(), HKDF.utf8(FieldCryptoConstant.INDEX_KEY_SALT),
+        byte[] indexKey = HKDF.derive(rootKeyBytes(), HKDF.utf8(FieldCryptoConstant.INDEX_KEY_INFO),
                 FieldCryptoConstant.INDEX_KEY_INFO_PREFIX + FieldCryptoConstant.CANARY_KEY_ID);
         return HKDF.sha256Hex(indexKey);
     }
@@ -98,7 +98,7 @@ public final class BlindIndex {
     private SecretKeySpec deriveIndexKey(String purpose) {
         return indexKeyCache.computeIfAbsent(purpose, p -> {
             byte[] indexKey = HKDF.derive(
-                    rootKeyBytes(), HKDF.utf8(FieldCryptoConstant.INDEX_KEY_SALT),
+                    rootKeyBytes(), HKDF.utf8(FieldCryptoConstant.INDEX_KEY_INFO),
                     FieldCryptoConstant.INDEX_KEY_INFO_PREFIX + p);
             return new SecretKeySpec(indexKey, FieldCryptoConstant.MAC_ALGORITHM);
         });

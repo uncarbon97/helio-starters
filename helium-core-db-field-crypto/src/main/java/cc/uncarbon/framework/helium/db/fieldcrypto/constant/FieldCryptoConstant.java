@@ -94,15 +94,16 @@ public class FieldCryptoConstant {
      * 用途标识字符集：小写字母/数字/下划线/点/连字符
      */
     public static final Pattern PURPOSE_PATTERN = Pattern.compile("^[a-z0-9_.-]{3,128}$");
+
+    /**
+     * index-key HKDF 派生
+     */
+    public static final String INDEX_KEY_INFO = "field-index-key";
+
     /**
      * index-key HKDF 派生 info 前缀
      */
-    public static final String INDEX_KEY_INFO_PREFIX = INDEX_KEY_SALT + "/";
-
-    /**
-     * index-key HKDF 派生 salt
-     */
-    public static final String INDEX_KEY_SALT = "field-index-key";
+    public static final String INDEX_KEY_INFO_PREFIX = INDEX_KEY_INFO + "/";
 
     private FieldCryptoConstant() {
     }

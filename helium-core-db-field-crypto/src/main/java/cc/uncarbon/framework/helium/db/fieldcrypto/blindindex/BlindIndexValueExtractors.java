@@ -54,6 +54,10 @@ public final class BlindIndexValueExtractors {
             this.tailLength = tailLength;
         }
 
+        public static TailDigits of4() {
+            return new TailDigits(4);
+        }
+
         public static TailDigits of8() {
             return new TailDigits(8);
         }

@@ -29,8 +29,8 @@ public class FieldCryptoCanaryChecker implements SmartInitializingSingleton {
     public static final String PURPOSE_INDEX_ROOT_KEY = FieldCryptoConstant.INDEX_ROOT_KEY_KEBAB;
 
     private static final String SELECT_SQL = "SELECT fingerprint FROM " + TABLE_NAME + " WHERE purpose = ?";
-    private static final String INSERT_SQL = "INSERT INTO " + TABLE_NAME + " (purpose, fingerprint) VALUES (?, ?)";
-    private static final String UPDATE_SQL = "UPDATE " + TABLE_NAME + " SET fingerprint = ? WHERE purpose = ?";
+    private static final String INSERT_SQL = "INSERT INTO " + TABLE_NAME + " (purpose, fingerprint, updated_at) VALUES (?, ?, NOW())";
+    private static final String UPDATE_SQL = "UPDATE " + TABLE_NAME + " SET fingerprint = ?, updated_at = NOW() WHERE purpose = ?";
 
     private final JdbcTemplate jdbcTemplate;
     private final FieldCipher fieldCipher;
