@@ -1,7 +1,5 @@
 package cc.uncarbon.framework.helium.db.fieldcrypto.constant;
 
-import lombok.experimental.UtilityClass;
-
 import java.util.regex.Pattern;
 
 /**
@@ -12,15 +10,18 @@ import java.util.regex.Pattern;
  *
  * @author Uncarbon
  */
-@UtilityClass
 public class FieldCryptoConstant {
+    /**
+     * 数据根密钥英文表达，连字符形式
+     */
+    public static final String DATA_ROOT_KEY_KEBAB = "data-root-key";
 
     /*
     ----------------------------------------------------------------
                         通用
     ----------------------------------------------------------------
      */
-    
+
     public static final String LOG_PREFIX = "[Framework][字段加密]";
 
     /**
@@ -43,6 +44,10 @@ public class FieldCryptoConstant {
                         字段加密（AES-256-GCM）
     ----------------------------------------------------------------
      */
+    /**
+     * 盲索引根密钥英文表达，连字符形式
+     */
+    public static final String INDEX_ROOT_KEY_KEBAB = "index-root-key";
 
     /**
      * 加密变换：AES-GCM（认证加密，无填充）
@@ -89,16 +94,18 @@ public class FieldCryptoConstant {
      * 用途标识字符集：小写字母/数字/下划线/点/连字符
      */
     public static final Pattern PURPOSE_PATTERN = Pattern.compile("^[a-z0-9_.-]{3,128}$");
+    /**
+     * index-key HKDF 派生 info 前缀
+     */
+    public static final String INDEX_KEY_INFO_PREFIX = INDEX_KEY_SALT + "/";
 
     /**
      * index-key HKDF 派生 salt
      */
     public static final String INDEX_KEY_SALT = "field-index-key";
 
-    /**
-     * index-key HKDF 派生 info 前缀，最终格式 {@code field-index-key/{purpose}}
-     */
-    public static final String INDEX_KEY_INFO_PREFIX = INDEX_KEY_SALT + "/";
+    private FieldCryptoConstant() {
+    }
 
     /**
      * 盲索引截断字节数：16 字节 = 128bit

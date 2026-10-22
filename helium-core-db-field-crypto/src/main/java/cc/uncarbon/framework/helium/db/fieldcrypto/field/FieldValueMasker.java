@@ -1,7 +1,6 @@
 package cc.uncarbon.framework.helium.db.fieldcrypto.field;
 
 import cc.uncarbon.framework.helium.db.fieldcrypto.annotation.MaskedOf;
-import org.jspecify.annotations.Nullable;
 
 /**
  * 字段值脱敏器 SPI
@@ -16,5 +15,5 @@ public interface FieldValueMasker {
     /**
      * @return 脱敏后的值
      */
-    String mask(@Nullable String plainValue);
+    String mask(String plainValue);
 }

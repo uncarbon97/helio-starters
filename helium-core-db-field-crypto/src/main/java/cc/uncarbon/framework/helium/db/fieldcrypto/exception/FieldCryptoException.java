@@ -1,6 +1,5 @@
 package cc.uncarbon.framework.helium.db.fieldcrypto.exception;
 
-import lombok.Getter;
 
 /**
  * 字段加解密异常
@@ -10,7 +9,6 @@ import lombok.Getter;
  */
 public class FieldCryptoException extends RuntimeException {
 
-    @Getter
     private final Reason reason;
 
     public FieldCryptoException(Reason reason, String safeMessage) {
@@ -22,6 +20,10 @@ public class FieldCryptoException extends RuntimeException {
         // 仅保留 cause 的类型，不透传其消息（可能含密文/密钥片段）
         super(safeMessage + " (" + cause.getClass().getSimpleName() + ")", cause);
         this.reason = reason;
+    }
+
+    public Reason getReason() {
+        return reason;
     }
 
     public enum Reason {

@@ -3,7 +3,6 @@ package cc.uncarbon.framework.helium.db.fieldcrypto.field;
 import cc.uncarbon.framework.helium.db.fieldcrypto.constant.FieldCryptoConstant;
 import cc.uncarbon.framework.helium.db.fieldcrypto.exception.FieldCryptoException;
 import cc.uncarbon.framework.helium.db.fieldcrypto.hkdf.HKDF;
-import lombok.Getter;
 
 import javax.crypto.Cipher;
 import javax.crypto.SecretKey;
@@ -40,7 +39,6 @@ public final class FieldCipher {
      */
     private final byte[] dataRootKey;
     private final Map<String, SecretKey> dataKeys;
-    @Getter
     private final String activeKeyId;
 
     /**
@@ -73,20 +71,6 @@ public final class FieldCipher {
 
         this.dataKeys = tmp;
         this.activeKeyId = activeKeyId;
-    }
-
-    private static void requireValidKeyId(String keyId) {
-        if (keyId == null || !FieldCryptoConstant.KEY_ID_PATTERN.matcher(keyId).matches()) {
-            throw new FieldCryptoException(FieldCryptoException.Reason.INVALID_KEY_ID,
-                    "keyId 字符集不合法（限 [A-Za-z0-9_-]{1,16}）");
-        }
-    }
-
-    private static void requireAad(String aad) {
-        if (aad == null || aad.isBlank()) {
-            throw new FieldCryptoException(FieldCryptoException.Reason.INVALID_AAD,
-                    "字段加密 AAD 未绑定：必须传入列级 AAD（约定取值 表名.密文列名）");
-        }
     }
 
     /**
@@ -125,11 +109,41 @@ public final class FieldCipher {
         }
     }
 
+    private static void requireValidKeyId(String keyId) {
+        if (keyId == null || !FieldCryptoConstant.KEY_ID_PATTERN.matcher(keyId).matches()) {
+            throw new FieldCryptoException(FieldCryptoException.Reason.INVALID_KEY_ID,
+                    "keyId 字符集不合法（限 [A-Za-z0-9_-]{1,16}）");
+        }
+    }
+
+    private static void requireAad(String aad) {
+        if (aad == null || aad.isBlank()) {
+            throw new FieldCryptoException(FieldCryptoException.Reason.INVALID_AAD,
+                    "字段加密 AAD 未绑定：必须传入列级 AAD（约定取值 表名.密文列名）");
+        }
+    }
+
     /*
     ----------------------------------------------------------------
                         私有方法
     ----------------------------------------------------------------
      */
+
+    /**
+     * 数据加密根密钥代际指纹（canary 指纹之一）
+     *
+     * <p>同一根密钥必得同一指纹，不含密钥材料；用于节点启动时暴露根密钥配置不一致等静默漂移</p>
+     */
+    public String dataRootKeyCanaryFingerprint() {
+        byte[] canaryDataKey = HKDF.derive(
+                dataRootKey, HKDF.utf8(FieldCryptoConstant.CANARY_KEY_ID),
+                FieldCryptoConstant.DATA_KEY_INFO_PREFIX + FieldCryptoConstant.CANARY_KEY_ID);
+        return HKDF.sha256Hex(canaryDataKey);
+    }
+
+    public String getActiveKeyId() {
+        return activeKeyId;
+    }
 
     /**
      * 解密（按密文前缀路由 data-key，GCM 校验防篡改，AAD 按列绑定）
@@ -180,17 +194,5 @@ public final class FieldCipher {
             throw new FieldCryptoException(FieldCryptoException.Reason.DECRYPT_FAILED,
                     "字段解密失败（密钥不符、AAD 列绑定不符或数据被篡改）", e);
         }
-    }
-
-    /**
-     * 数据加密根密钥代际指纹（canary 指纹之一）
-     *
-     * <p>同一根密钥必得同一指纹，不含密钥材料；用于节点启动时暴露根密钥配置不一致等静默漂移</p>
-     */
-    public String dataRootKeyCanaryFingerprint() {
-        byte[] canaryDataKey = HKDF.derive(
-                dataRootKey, HKDF.utf8(FieldCryptoConstant.CANARY_KEY_ID),
-                FieldCryptoConstant.DATA_KEY_INFO_PREFIX + FieldCryptoConstant.CANARY_KEY_ID);
-        return HKDF.sha256Hex(canaryDataKey);
     }
 }

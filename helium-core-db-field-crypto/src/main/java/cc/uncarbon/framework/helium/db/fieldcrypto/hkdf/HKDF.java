@@ -1,8 +1,5 @@
 package cc.uncarbon.framework.helium.db.fieldcrypto.hkdf;
 
-import org.jspecify.annotations.NonNull;
-import org.jspecify.annotations.Nullable;
-
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
 import java.nio.charset.StandardCharsets;
@@ -38,7 +35,7 @@ public final class HKDF {
      * @param salt    盐（null 等价于 HashLen 个零字节）
      * @param purpose 用途标签（可为 null）
      */
-    public static byte[] derive(byte @NonNull [] rootKey, byte @Nullable [] salt, @Nullable String purpose) {
+    public static byte[] derive(byte[] rootKey, byte[] salt, String purpose) {
         if (rootKey.length == 0) {
             throw new IllegalStateException("根密钥不能为空");
         }
