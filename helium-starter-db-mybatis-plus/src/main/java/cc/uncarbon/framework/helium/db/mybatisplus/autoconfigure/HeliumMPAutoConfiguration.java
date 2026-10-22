@@ -1,5 +1,6 @@
 package cc.uncarbon.framework.helium.db.mybatisplus.autoconfigure;
 
+import cc.uncarbon.framework.helium.db.mybatisplus.handler.MetaObjectFiller;
 import cc.uncarbon.framework.helium.db.mybatisplus.handler.MybatisPlusAutoFillColumnHandler;
 import cc.uncarbon.framework.helium.db.mybatisplus.idgen.HutoolSnowflakeIdGenerator;
 import cc.uncarbon.framework.helium.db.mybatisplus.props.HeliumIdGenProperties;
@@ -19,21 +20,28 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.context.annotation.Bean;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
+import java.util.List;
+
 /**
  * Helium 集成 mybatis-plus 自动装配类
  *
+ *
+ *
  * @author Uncarbon
  */
-@EnableConfigurationProperties(value = {HeliumMybatisPlusProperties.class, HeliumIdGenProperties.class})
+@EnableConfigurationProperties(value = {
+        HeliumMybatisPlusProperties.class,
+        HeliumIdGenProperties.class
+})
 @EnableTransactionManagement(proxyTargetClass = true)
 @AutoConfiguration
 @Slf4j
-public class HeliumMybatisPlusAutoConfiguration {
+public class HeliumMPAutoConfiguration {
 
     /**
      * mybatis-plus 拦截器
      *
-     * @param innerInterceptorProvider 所有注入到 Spring 容器中的 InnerInterceptor，其中包括行级租户的 TenantLineInnerInterceptor；也方便注入其他自定义的 InnerInterceptor
+     * @param innerInterceptorProvider 所有注入到 Spring 容器中的 InnerInterceptor，其中包括行级租户的 TenantLineInnerInterceptor；也方便注入其他自定义 InnerInterceptor
      */
     @Bean
     @ConditionalOnMissingBean
@@ -88,8 +96,8 @@ public class HeliumMybatisPlusAutoConfiguration {
      */
     @Bean
     @ConditionalOnMissingBean
-    public MetaObjectHandler mybatisPlusAutoFillColumnHandler() {
-        return new MybatisPlusAutoFillColumnHandler();
+    public MetaObjectHandler mybatisPlusAutoFillColumnHandler(List<MetaObjectFiller> extendFillers) {
+        return new MybatisPlusAutoFillColumnHandler(extendFillers);
     }
 
 }

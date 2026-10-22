@@ -33,6 +33,12 @@
 
             <dependency>
                 <groupId>cc.uncarbon.framework</groupId>
+                <artifactId>helium-core-db-field-crypto</artifactId>
+                <version>${revision}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>cc.uncarbon.framework</groupId>
                 <artifactId>helium-core-db</artifactId>
                 <version>${revision}</version>
             </dependency>
@@ -76,6 +82,12 @@
             <dependency>
                 <groupId>cc.uncarbon.framework</groupId>
                 <artifactId>helium-starter-db-mybatis-plus</artifactId>
+                <version>${revision}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>cc.uncarbon.framework</groupId>
+                <artifactId>helium-starter-db-field-crypto</artifactId>
                 <version>${revision}</version>
             </dependency>
 

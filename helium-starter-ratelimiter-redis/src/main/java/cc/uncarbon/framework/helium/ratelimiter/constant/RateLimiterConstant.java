@@ -1,12 +1,12 @@
 package cc.uncarbon.framework.helium.ratelimiter.constant;
 
+import lombok.experimental.UtilityClass;
+
 /**
  * 限流组件常量
  */
+@UtilityClass
 public final class RateLimiterConstant {
-
-    private RateLimiterConstant() {
-    }
 
     /**
      * Redis Key前缀

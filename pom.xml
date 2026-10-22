@@ -37,6 +37,7 @@
         <module>helium-starters-dependencies</module>
         <module>helium-core-base</module>
         <module>helium-core-bizlog</module>
+        <module>helium-core-db-field-crypto</module>
         <module>helium-core-db</module>
         <module>helium-core-i18n</module>
         <module>helium-core-tenant</module>
@@ -45,6 +46,7 @@
         <module>helium-starter-bizlog</module>
         <module>helium-starter-db-dynamic-datasource</module>
         <module>helium-starter-db-mybatis-plus</module>
+        <module>helium-starter-db-field-crypto</module>
         <module>helium-starter-i18n</module>
         <module>helium-starter-jackson3</module>
         <module>helium-starter-openapi3</module>
