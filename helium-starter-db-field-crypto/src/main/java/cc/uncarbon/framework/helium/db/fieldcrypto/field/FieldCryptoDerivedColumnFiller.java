@@ -2,7 +2,7 @@ package cc.uncarbon.framework.helium.db.fieldcrypto.field;
 
 import cc.uncarbon.framework.helium.db.fieldcrypto.annotation.BlindIndexOf;
 import cc.uncarbon.framework.helium.db.fieldcrypto.annotation.MaskedOf;
-import cc.uncarbon.framework.helium.db.fieldcrypto.blindindex.BlindIndex;
+import cc.uncarbon.framework.helium.db.fieldcrypto.blindindex.BlindIndexCalculator;
 import cc.uncarbon.framework.helium.db.fieldcrypto.blindindex.BlindIndexValueExtractor;
 import cc.uncarbon.framework.helium.db.fieldcrypto.exception.FieldCryptoException;
 import cc.uncarbon.framework.helium.db.mybatisplus.handler.MetaObjectFiller;
@@ -40,10 +40,11 @@ public class FieldCryptoDerivedColumnFiller implements MetaObjectFiller {
      * 实体类 -> 派生字段填充计划（反射元数据缓存）
      */
     private static final Map<Class<?>, EntityFillPlan> FILL_PLAN_CACHE = new ConcurrentHashMap<>();
+
     /**
-     * 盲索引计算器；为 null（未启用字段加密）时视为配置错误，fail-closed
+     * 盲索引计算器；为 null（未启用字段加密）时视为配置错误
      */
-    private final BlindIndex blindIndex;
+    private final BlindIndexCalculator blindIndexCalculator;
 
     private static <T> T newInstance(Class<? extends T> type, String role) {
         try {
@@ -67,8 +68,8 @@ public class FieldCryptoDerivedColumnFiller implements MetaObjectFiller {
         if (plan.groups().isEmpty()) {
             return;
         }
-        if (blindIndex == null) {
-            // 实体声明了派生字段，但字段加密未启用 = 配置错误，fail-closed
+        if (blindIndexCalculator == null) {
+            // 实体声明了派生字段，但字段加密未启用 = 配置错误
             FieldCryptoMetrics.incrementDerivedColumnRejects();
             throw new FieldCryptoException(FieldCryptoException.Reason.NOT_CONFIGURED,
                     "实体声明了 @BlindIndexOf/@MaskedOf 派生字段，但字段加密未启用");
@@ -93,7 +94,7 @@ public class FieldCryptoDerivedColumnFiller implements MetaObjectFiller {
                     continue;
                 }
                 String normalized = source == null ? null : p.extractor().extract(source);
-                String indexValue = normalized == null ? null : blindIndex.compute(p.purpose(), normalized);
+                String indexValue = normalized == null ? null : blindIndexCalculator.compute(p.purpose(), normalized);
                 metaObject.setValue(p.targetField(), indexValue);
             }
             for (MaskedPlan p : group.maskedPlans()) {
@@ -165,7 +166,7 @@ public class FieldCryptoDerivedColumnFiller implements MetaObjectFiller {
     }
 
     /**
-     * 扫描实体类（含父类）中标注 @BlindIndexOf / @MaskedOf 的字段，按来源字段聚合生成填充计划
+     * 扫描实体类（含父类）中标注 {@link BlindIndexOf} / {@link MaskedOf} 的字段，按来源字段聚合生成填充计划
      */
     private EntityFillPlan resolveFillPlan(Class<?> entityClass) {
         Map<String, List<BlindIndexPlan>> blindBySource = new HashMap<>();

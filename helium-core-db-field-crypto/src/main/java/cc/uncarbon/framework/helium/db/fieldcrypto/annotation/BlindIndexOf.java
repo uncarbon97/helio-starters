@@ -29,5 +29,5 @@ public @interface BlindIndexOf {
     /**
      * 取值提取器，需具备 public 无参构造
      */
-    Class<? extends BlindIndexValueExtractor> extractor() default BlindIndexValueExtractors.Identity.class;
+    Class<? extends BlindIndexValueExtractor> extractor() default BlindIndexValueExtractors.Trim.class;
 }

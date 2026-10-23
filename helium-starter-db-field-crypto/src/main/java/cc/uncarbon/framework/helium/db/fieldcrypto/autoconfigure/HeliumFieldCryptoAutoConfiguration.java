@@ -1,7 +1,7 @@
 package cc.uncarbon.framework.helium.db.fieldcrypto.autoconfigure;
 
 import cc.uncarbon.framework.helium.base.condition.HeliumConditions;
-import cc.uncarbon.framework.helium.db.fieldcrypto.blindindex.BlindIndex;
+import cc.uncarbon.framework.helium.db.fieldcrypto.blindindex.BlindIndexCalculator;
 import cc.uncarbon.framework.helium.db.fieldcrypto.constant.FieldCryptoConstant;
 import cc.uncarbon.framework.helium.db.fieldcrypto.field.*;
 import cc.uncarbon.framework.helium.db.fieldcrypto.props.HeliumFieldCryptoProperties;
@@ -30,34 +30,34 @@ import org.springframework.jdbc.core.JdbcTemplate;
  *
  * @author Uncarbon
  */
+@Slf4j
 @AutoConfiguration(before = HeliumMPAutoConfiguration.class)
 @EnableConfigurationProperties(value = HeliumFieldCryptoProperties.class)
-@Slf4j
 public class HeliumFieldCryptoAutoConfiguration {
 
-    @Conditional(value = OnActiveDataKeyIdPresent.class)
-    @ConditionalOnMissingBean
     @Bean
+    @ConditionalOnMissingBean
+    @Conditional(value = OnActiveDataKeyIdPresent.class)
     public FieldKeyProvider propsFieldKeyProvider(HeliumFieldCryptoProperties props) {
         return new PropsFieldKeyProvider(props);
     }
 
+    @Bean
+    @ConditionalOnMissingBean
     @ConditionalOnBean(value = FieldKeyProvider.class)
-    @ConditionalOnMissingBean
-    @Bean
-    public BlindIndex blindIndex(FieldKeyProvider fieldKeyProvider) {
-        return new BlindIndex(fieldKeyProvider.loadIndexRootKey());
+    public BlindIndexCalculator blindIndexCalculator(FieldKeyProvider fieldKeyProvider) {
+        return new BlindIndexCalculator(fieldKeyProvider.loadIndexRootKey());
     }
 
-    @ConditionalOnBean(value = BlindIndex.class)
     @Bean
-    public MetaObjectFiller fieldCryptoDerivedColumnFiller(BlindIndex blindIndex) {
-        return new FieldCryptoDerivedColumnFiller(blindIndex);
+    @ConditionalOnBean(value = BlindIndexCalculator.class)
+    public MetaObjectFiller fieldCryptoDerivedColumnFiller(BlindIndexCalculator blindIndexCalculator) {
+        return new FieldCryptoDerivedColumnFiller(blindIndexCalculator);
     }
 
     @Bean
     @ConditionalOnMissingBean
-    @ConditionalOnBean
+    @ConditionalOnBean(value = FieldKeyProvider.class)
     public FieldCipher fieldCipher(FieldKeyProvider fieldKeyProvider, HeliumFieldCryptoProperties props) {
         new FieldCryptoStartupGuard(props).check();
 
@@ -70,25 +70,25 @@ public class HeliumFieldCryptoAutoConfiguration {
         return cipher;
     }
 
-    @ConditionalOnBean(value = FieldCipher.class)
     @Bean
+    @ConditionalOnBean(value = FieldCipher.class)
     public EncryptedFieldMetadataValidator encryptedFieldMetadataValidator(SqlSessionFactory sqlSessionFactory) {
         return new EncryptedFieldMetadataValidator(sqlSessionFactory);
     }
 
+    @Bean
     @Conditional(value = OnCanaryEnabled.class)
     @ConditionalOnBean(value = FieldCipher.class)
-    @Bean
     public FieldCryptoCanaryChecker fieldCryptoCanaryChecker(ObjectProvider<JdbcTemplate> jdbcTemplateProvider,
                                                              FieldCipher fieldCipher,
-                                                             BlindIndex blindIndex,
+                                                             BlindIndexCalculator blindIndexCalculator,
                                                              HeliumFieldCryptoProperties props) {
         JdbcTemplate jdbcTemplate = jdbcTemplateProvider.getIfAvailable();
         if (jdbcTemplate == null) {
             throw new IllegalStateException(FieldCryptoConstant.LOG_PREFIX + " canary 比对需要 JdbcTemplate");
         }
         return new FieldCryptoCanaryChecker(
-                jdbcTemplate, fieldCipher, blindIndex,
+                jdbcTemplate, fieldCipher, blindIndexCalculator,
                 props.getCanary().isEnabled(), props.getCanary().isAllowOverwrite());
     }
 

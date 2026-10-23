@@ -25,7 +25,7 @@ import java.util.concurrent.ConcurrentHashMap;
  *
  * @author Uncarbon
  */
-public final class BlindIndex {
+public final class BlindIndexCalculator {
 
     private final SecretKeySpec rootKeySpec;
 
@@ -37,7 +37,7 @@ public final class BlindIndex {
     /**
      * @param indexRootKey 索引根密钥，须为 32 字节
      */
-    public BlindIndex(byte[] indexRootKey) {
+    public BlindIndexCalculator(byte[] indexRootKey) {
         if (indexRootKey == null || indexRootKey.length != FieldCryptoConstant.ROOT_KEY_BYTES) {
             throw new FieldCryptoException(FieldCryptoException.Reason.INVALID_KEY,
                     "索引根密钥长度不合法，须为 " + FieldCryptoConstant.ROOT_KEY_BYTES + " 字节");

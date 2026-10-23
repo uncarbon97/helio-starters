@@ -10,9 +10,9 @@ public final class BlindIndexValueExtractors {
     }
 
     /**
-     * 原样使用（仅去首尾空白）
+     * 去首尾空白
      */
-    public static class Identity implements BlindIndexValueExtractor {
+    public static class Trim implements BlindIndexValueExtractor {
         @Override
         public String extract(String rawValue) {
             return rawValue == null ? null : rawValue.trim();
@@ -20,9 +20,9 @@ public final class BlindIndexValueExtractors {
     }
 
     /**
-     * 去除全部空白（含内嵌空格，方案 §3.3 手机号归一化口径：{@code 139 0000 0000} -&gt; {@code 13900000000}）
+     * 去除全部空白
      */
-    public static class CleanTrim extends Identity {
+    public static class CleanTrim extends Trim {
         @Override
         public String extract(String rawValue) {
             String trimmed = super.extract(rawValue);
@@ -31,9 +31,9 @@ public final class BlindIndexValueExtractors {
     }
 
     /**
-     * 小写归一化（适用于邮箱等大小写不敏感等值查询；方案 §3.3：trim + 小写，不做 Gmail 点号/+别名折叠）
+     * 小写归一化 + 去首尾空白
      */
-    public static class LowerTrim extends Identity {
+    public static class LowerTrim extends Trim {
         @Override
         public String extract(String rawValue) {
             String trimmed = super.extract(rawValue);
@@ -52,14 +52,6 @@ public final class BlindIndexValueExtractors {
 
         public TailDigits(int tailLength) {
             this.tailLength = tailLength;
-        }
-
-        public static TailDigits of4() {
-            return new TailDigits(4);
-        }
-
-        public static TailDigits of8() {
-            return new TailDigits(8);
         }
 
         public static TailDigits of(int tailLength) {

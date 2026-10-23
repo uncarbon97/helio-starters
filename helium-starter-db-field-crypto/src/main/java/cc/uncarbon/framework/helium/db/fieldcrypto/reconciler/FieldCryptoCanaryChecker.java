@@ -1,7 +1,7 @@
 package cc.uncarbon.framework.helium.db.fieldcrypto.reconciler;
 
 import cc.uncarbon.framework.helium.base.constant.ConfigurationPropertiesPrefix;
-import cc.uncarbon.framework.helium.db.fieldcrypto.blindindex.BlindIndex;
+import cc.uncarbon.framework.helium.db.fieldcrypto.blindindex.BlindIndexCalculator;
 import cc.uncarbon.framework.helium.db.fieldcrypto.constant.FieldCryptoConstant;
 import cc.uncarbon.framework.helium.db.fieldcrypto.field.FieldCipher;
 import lombok.extern.slf4j.Slf4j;
@@ -34,7 +34,7 @@ public class FieldCryptoCanaryChecker implements SmartInitializingSingleton {
 
     private final JdbcTemplate jdbcTemplate;
     private final FieldCipher fieldCipher;
-    private final BlindIndex blindIndex;
+    private final BlindIndexCalculator blindIndexCalculator;
     private final boolean enabled;
 
     /**
@@ -42,10 +42,10 @@ public class FieldCryptoCanaryChecker implements SmartInitializingSingleton {
      **/
     private final AtomicBoolean overwriteGranted;
 
-    public FieldCryptoCanaryChecker(JdbcTemplate jdbcTemplate, FieldCipher fieldCipher, BlindIndex blindIndex, boolean enabled, boolean allowOverwrite) {
+    public FieldCryptoCanaryChecker(JdbcTemplate jdbcTemplate, FieldCipher fieldCipher, BlindIndexCalculator blindIndexCalculator, boolean enabled, boolean allowOverwrite) {
         this.jdbcTemplate = jdbcTemplate;
         this.fieldCipher = fieldCipher;
-        this.blindIndex = blindIndex;
+        this.blindIndexCalculator = blindIndexCalculator;
         this.enabled = enabled;
         this.overwriteGranted = new AtomicBoolean(allowOverwrite);
     }
@@ -66,7 +66,7 @@ public class FieldCryptoCanaryChecker implements SmartInitializingSingleton {
         }
 
         ensureTableExists();
-        checkOne(PURPOSE_INDEX_ROOT_KEY, blindIndex.indexRootKeyCanaryFingerprint());
+        checkOne(PURPOSE_INDEX_ROOT_KEY, blindIndexCalculator.indexRootKeyCanaryFingerprint());
         checkOne(PURPOSE_DATA_ROOT_KEY, fieldCipher.dataRootKeyCanaryFingerprint());
         log.info(FieldCryptoConstant.LOG_PREFIX + " >> 根密钥双指纹 canary 比对通过");
     }
