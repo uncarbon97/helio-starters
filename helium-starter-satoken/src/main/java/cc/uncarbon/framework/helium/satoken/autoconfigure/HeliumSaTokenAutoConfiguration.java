@@ -17,17 +17,17 @@ import org.springframework.core.type.AnnotatedTypeMetadata;
  *
  * @author Uncarbon
  */
-@EnableConfigurationProperties(value = {HeliumSaTokenProperties.class})
 @AutoConfiguration
+@EnableConfigurationProperties(value = {HeliumSaTokenProperties.class})
 public class HeliumSaTokenAutoConfiguration {
 
     /**
      * 带本地缓存的 {@link SaTokenDaoForRedisTemplate}
      */
-    @Conditional(value = OnLocalCacheDaoEnabled.class)
-    @ConditionalOnMissingBean
-    @Primary
     @Bean
+    @ConditionalOnMissingBean
+    @Conditional(value = OnLocalCacheDaoEnabled.class)
+    @Primary
     public SaTokenDao saTokenLocalCacheDao(HeliumSaTokenProperties props) {
         var subProp = props.getRedisDaoWithLocalCache();
         return new SaTokenRedisDaoWithLocalCache(subProp.getDuration(), subProp.getCapacity());

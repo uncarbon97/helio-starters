@@ -40,8 +40,8 @@ import java.util.*;
  * @author mzt@mzt-biz-log
  * @author Uncarbon
  */
-@Accessors(chain = true)
 @Slf4j
+@Accessors(chain = true)
 public class LogRecordInterceptor extends LogRecordValueParser
         implements MethodInterceptor, Serializable, SmartInitializingSingleton {
 

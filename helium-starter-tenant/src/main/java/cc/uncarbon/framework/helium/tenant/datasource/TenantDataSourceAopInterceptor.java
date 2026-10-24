@@ -22,8 +22,8 @@ import java.util.concurrent.ConcurrentHashMap;
  * @author chill
  * @author Uncarbon
  */
-@RequiredArgsConstructor
 @Slf4j
+@RequiredArgsConstructor
 public class TenantDataSourceAopInterceptor implements MethodInterceptor {
 
     private final DynamicDataSourceHelper dynamicDataSourceHelper;

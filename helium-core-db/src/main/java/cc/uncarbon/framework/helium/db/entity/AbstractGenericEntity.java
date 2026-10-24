@@ -15,8 +15,8 @@ import java.time.Instant;
  *
  * @author Uncarbon
  */
-@Accessors(chain = true)
 @Data
+@Accessors(chain = true)
 public abstract class AbstractGenericEntity implements Entity, LogicDelEntity, AuditingTimeEntity, AuditingUserEntity {
 
     @Schema(description = "逻辑删除标识")

@@ -27,8 +27,8 @@ import java.util.function.Supplier;
  * @author Lion Li@RuoYi-Vue-Plus
  * @author Uncarbon
  */
-@UtilityClass
 @Slf4j
+@UtilityClass
 public class I18nMessageUtil {
 
     private static final String LOG_PREFIX = HeliumI18nConstant.LOG_PREFIX;

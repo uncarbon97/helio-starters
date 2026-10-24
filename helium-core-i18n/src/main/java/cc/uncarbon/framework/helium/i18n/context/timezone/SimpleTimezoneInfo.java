@@ -14,10 +14,10 @@ import java.time.ZoneId;
  *
  * @author Uncarbon
  */
-@Accessors(chain = true)
-@AllArgsConstructor
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Data
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@AllArgsConstructor
+@Accessors(chain = true)
 public class SimpleTimezoneInfo implements TimezoneInfo {
 
     @Schema(description = "IANA 时区ID", example = "Asia/Shanghai, America/New_York")

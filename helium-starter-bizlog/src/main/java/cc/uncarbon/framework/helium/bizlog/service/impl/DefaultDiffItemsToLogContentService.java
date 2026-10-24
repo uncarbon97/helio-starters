@@ -41,10 +41,10 @@ import java.util.stream.Collectors;
  * @author muzhantong@mzt-biz-log
  * @author Uncarbon
  */
-@Setter
-@Getter
-@RequiredArgsConstructor
 @Slf4j
+@Getter
+@Setter
+@RequiredArgsConstructor
 public class DefaultDiffItemsToLogContentService implements IDiffItemsToLogContentService, BeanFactoryAware, SmartInitializingSingleton {
 
     private final HeliumBizLogProperties props;

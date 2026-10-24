@@ -19,8 +19,8 @@ import org.springframework.core.type.AnnotatedTypeMetadata;
  *
  * @author Uncarbon
  */
-@EnableConfigurationProperties(value = {HeliumOpenApi3Properties.class})
 @AutoConfiguration
+@EnableConfigurationProperties(value = {HeliumOpenApi3Properties.class})
 public class HeliumOpenApi3AutoConfiguration {
 
     /**
@@ -32,8 +32,8 @@ public class HeliumOpenApi3AutoConfiguration {
         return new OpenAPI();
     }
 
-    @Conditional(value = OnNextdoc4jEnabled.class)
     @Bean
+    @Conditional(value = OnNextdoc4jEnabled.class)
     public BaseEnumResolver baseEnumResolver() {
         return new BaseEnumResolver();
     }

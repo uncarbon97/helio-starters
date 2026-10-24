@@ -9,8 +9,8 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
  *
  * @author Uncarbon
  */
-@ConfigurationProperties(prefix = ConfigurationPropertiesPrefix.DB_IDGEN)
 @Data
+@ConfigurationProperties(prefix = ConfigurationPropertiesPrefix.DB_IDGEN)
 public class HeliumIdGenProperties {
 
     /**

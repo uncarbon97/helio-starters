@@ -10,8 +10,8 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
  *
  * @author Uncarbon
  */
-@ConfigurationProperties(prefix = ConfigurationPropertiesPrefix.OPENAPI3)
 @Data
+@ConfigurationProperties(prefix = ConfigurationPropertiesPrefix.OPENAPI3)
 public class HeliumOpenApi3Properties {
 
 

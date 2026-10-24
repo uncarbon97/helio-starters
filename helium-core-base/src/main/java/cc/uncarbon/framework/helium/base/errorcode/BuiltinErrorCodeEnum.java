@@ -10,8 +10,8 @@ import lombok.Getter;
  * [BB] 固定为 00
  * [CCC] 具体错误代号
  */
-@AllArgsConstructor
 @Getter
+@AllArgsConstructor
 public enum BuiltinErrorCodeEnum implements StructuredErrorCode {
 
     /**

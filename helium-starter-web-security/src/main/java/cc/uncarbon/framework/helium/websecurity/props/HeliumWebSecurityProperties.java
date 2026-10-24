@@ -11,8 +11,8 @@ import java.util.List;
  *
  * @author Uncarbon
  */
-@ConfigurationProperties(prefix = ConfigurationPropertiesPrefix.WEB_SECURITY)
 @Data
+@ConfigurationProperties(prefix = ConfigurationPropertiesPrefix.WEB_SECURITY)
 public class HeliumWebSecurityProperties {
 
     private AntiXss antiXss;

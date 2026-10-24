@@ -16,10 +16,10 @@ import org.springframework.context.annotation.Import;
  *
  * @author Uncarbon
  */
-@Import(value = {TenantLineConfiguration.class, TenantDataSourceConfiguration.class})
-@EnableConfigurationProperties(value = {HeliumTenantProperties.class})
-@AutoConfiguration
 @Slf4j
+@AutoConfiguration
+@EnableConfigurationProperties(value = {HeliumTenantProperties.class})
+@Import(value = {TenantLineConfiguration.class, TenantDataSourceConfiguration.class})
 public class HeliumTenantAutoConfiguration {
 
     /**

@@ -20,8 +20,8 @@ import java.util.function.Supplier;
  * @author Charles7c@continew
  * @author Uncarbon
  */
-@RequiredArgsConstructor
 @Slf4j
+@RequiredArgsConstructor
 public class DynamicDataSourceHelperImpl implements DynamicDataSourceHelper {
 
     private static final String LOG_PREFIX = "[Framework][动态数据源]";

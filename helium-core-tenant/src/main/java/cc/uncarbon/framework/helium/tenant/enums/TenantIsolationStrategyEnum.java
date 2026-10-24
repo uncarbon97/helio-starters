@@ -9,8 +9,8 @@ import lombok.Getter;
  *
  * @author Uncarbon
  */
-@AllArgsConstructor
 @Getter
+@AllArgsConstructor
 public enum TenantIsolationStrategyEnum {
 
     /**

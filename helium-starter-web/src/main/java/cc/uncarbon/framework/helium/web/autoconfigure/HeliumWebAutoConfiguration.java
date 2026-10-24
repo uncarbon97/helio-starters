@@ -22,10 +22,10 @@ import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
  *
  * @author Uncarbon
  */
-@Import(value = {EnhanceWebMvcConfigurer.class, GlobalWebExceptionHandler.class, WebServerLaunchedListener.class})
-@EnableConfigurationProperties(value = HeliumWebProperties.class)
-@AutoConfigureBefore(value = ValidationAutoConfiguration.class)
 @AutoConfiguration
+@AutoConfigureBefore(value = ValidationAutoConfiguration.class)
+@EnableConfigurationProperties(value = HeliumWebProperties.class)
+@Import(value = {EnhanceWebMvcConfigurer.class, GlobalWebExceptionHandler.class, WebServerLaunchedListener.class})
 public class HeliumWebAutoConfiguration {
 
     @Bean

@@ -19,8 +19,8 @@ import javax.sql.DataSource;
  *
  * @author Uncarbon
  */
-@Conditional(value = TenantLineConfiguration.OnLineStrategy.class)
 @Slf4j
+@Conditional(value = TenantLineConfiguration.OnLineStrategy.class)
 public class TenantLineConfiguration {
 
     public static final String LOG_PREFIX = "[Framework][行级多租户]";

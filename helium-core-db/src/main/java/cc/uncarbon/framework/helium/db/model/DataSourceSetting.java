@@ -8,10 +8,10 @@ import lombok.experimental.Accessors;
 /**
  * 数据源属性配置
  */
-@Accessors(chain = true)
-@AllArgsConstructor
-@NoArgsConstructor
 @Data
+@NoArgsConstructor
+@AllArgsConstructor
+@Accessors(chain = true)
 public class DataSourceSetting {
 
     /**

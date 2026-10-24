@@ -31,8 +31,8 @@ import java.util.concurrent.Callable;
  * @author muzhantong@mzt-biz-log
  * @author Uncarbon
  */
-@UtilityClass
 @Slf4j
+@UtilityClass
 public class LogRecordContext {
 
     /**

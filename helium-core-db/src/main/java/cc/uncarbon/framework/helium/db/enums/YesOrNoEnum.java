@@ -8,8 +8,8 @@ import lombok.Getter;
 /**
  * 是或否枚举
  */
-@AllArgsConstructor
 @Getter
+@AllArgsConstructor
 public enum YesOrNoEnum implements BaseEnum<Integer> {
 
     NO(0, "否"),

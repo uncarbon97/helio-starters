@@ -19,10 +19,10 @@ import java.util.Map;
  * @author muzhantong@mzt-biz-log
  * @author Uncarbon
  */
-@Builder
-@AllArgsConstructor
-@NoArgsConstructor
 @Data
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
 public class LogRecordModel {
 
     /**

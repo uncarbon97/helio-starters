@@ -11,8 +11,8 @@ import org.springframework.boot.context.properties.NestedConfigurationProperty;
  *
  * @author Uncarbon
  */
-@ConfigurationProperties(prefix = ConfigurationPropertiesPrefix.JACKSON)
 @Data
+@ConfigurationProperties(prefix = ConfigurationPropertiesPrefix.JACKSON)
 public class HeliumJacksonProperties {
 
     /**

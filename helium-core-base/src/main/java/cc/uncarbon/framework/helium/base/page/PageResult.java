@@ -16,10 +16,10 @@ import java.util.List;
  *
  * @author Uncarbon
  */
-@Accessors(chain = true)
-@AllArgsConstructor
-@NoArgsConstructor
 @Data
+@NoArgsConstructor
+@AllArgsConstructor
+@Accessors(chain = true)
 public class PageResult<T extends Serializable> implements Serializable {
 
     @Schema(description = "当前页")

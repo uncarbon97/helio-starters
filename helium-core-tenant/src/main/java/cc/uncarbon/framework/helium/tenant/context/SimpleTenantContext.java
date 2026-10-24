@@ -12,10 +12,10 @@ import lombok.experimental.Accessors;
  * @author Uncarbon
  */
 @Schema(description = "简单租户上下文")
-@Accessors(chain = true)
-@AllArgsConstructor
-@NoArgsConstructor
 @Data
+@NoArgsConstructor
+@AllArgsConstructor
+@Accessors(chain = true)
 public class SimpleTenantContext implements TenantContext {
 
     /**

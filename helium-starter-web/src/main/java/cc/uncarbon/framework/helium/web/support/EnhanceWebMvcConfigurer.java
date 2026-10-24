@@ -20,8 +20,8 @@ import java.nio.charset.StandardCharsets;
  *
  * @author Uncarbon
  */
-@RequiredArgsConstructor
 @Slf4j
+@RequiredArgsConstructor
 public class EnhanceWebMvcConfigurer implements WebMvcConfigurer, WebBindingInitializer {
 
     private final JsonMapper jsonMapper;

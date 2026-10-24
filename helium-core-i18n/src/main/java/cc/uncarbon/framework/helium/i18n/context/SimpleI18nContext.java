@@ -14,10 +14,10 @@ import lombok.experimental.Accessors;
  *
  * @author Uncarbon
  */
-@Accessors(chain = true)
-@AllArgsConstructor
-@NoArgsConstructor
 @Data
+@NoArgsConstructor
+@AllArgsConstructor
+@Accessors(chain = true)
 public class SimpleI18nContext implements I18nContext {
 
 

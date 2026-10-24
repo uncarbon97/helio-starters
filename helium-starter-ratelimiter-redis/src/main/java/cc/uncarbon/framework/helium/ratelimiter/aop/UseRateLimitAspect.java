@@ -15,8 +15,8 @@ import org.springframework.beans.BeansException;
  * @author ruoyi
  * @author Uncarbon
  */
-@Aspect
 @Slf4j
+@Aspect
 public class UseRateLimitAspect {
 
     @Before("@annotation(annotation)")

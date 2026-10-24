@@ -9,8 +9,8 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
  *
  * @author Uncarbon
  */
-@ConfigurationProperties(prefix = ConfigurationPropertiesPrefix.DB_MYBATIS_PLUS)
 @Data
+@ConfigurationProperties(prefix = ConfigurationPropertiesPrefix.DB_MYBATIS_PLUS)
 public class HeliumMybatisPlusProperties {
 
     /**

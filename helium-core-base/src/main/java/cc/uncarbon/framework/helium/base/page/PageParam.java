@@ -14,10 +14,10 @@ import java.util.function.UnaryOperator;
  *
  * @author Uncarbon
  */
-@Accessors(chain = true)
-@AllArgsConstructor
-@NoArgsConstructor
 @Data
+@NoArgsConstructor
+@AllArgsConstructor
+@Accessors(chain = true)
 public class PageParam implements Serializable {
 
     @Schema(description = "当前页码")

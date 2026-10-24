@@ -13,9 +13,9 @@ import lombok.experimental.Accessors;
  *
  * @author Uncarbon
  */
-@EqualsAndHashCode(callSuper = true)
-@Accessors(chain = true)
 @Data
+@Accessors(chain = true)
+@EqualsAndHashCode(callSuper = true)
 public abstract class AbstractTenantRelationEntity extends AbstractRelationEntity implements TenantEntity {
 
     /**

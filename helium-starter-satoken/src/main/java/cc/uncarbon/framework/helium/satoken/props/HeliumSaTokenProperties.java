@@ -4,15 +4,14 @@ import cc.uncarbon.framework.helium.base.constant.ConfigurationPropertiesPrefix;
 import cc.uncarbon.framework.helium.satoken.dao.SaTokenRedisDaoWithLocalCache;
 import lombok.Data;
 import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.boot.context.properties.NestedConfigurationProperty;
 
 /**
  * Helium 集成 SA-Token 配置属性类
  *
  * @author Uncarbon
  */
-@ConfigurationProperties(prefix = ConfigurationPropertiesPrefix.SA_TOKEN)
 @Data
+@ConfigurationProperties(prefix = ConfigurationPropertiesPrefix.SA_TOKEN)
 public class HeliumSaTokenProperties {
 
     /**

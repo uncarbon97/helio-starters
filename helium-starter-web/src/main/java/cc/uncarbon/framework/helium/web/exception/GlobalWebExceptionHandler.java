@@ -45,10 +45,10 @@ import java.util.List;
  *
  * @author Uncarbon
  */
-@ConditionalOnMissingBean(name = GlobalWebExceptionHandler.BEAN_NAME)
+@Slf4j
 @RequiredArgsConstructor
 @ControllerAdvice(name = GlobalWebExceptionHandler.BEAN_NAME)
-@Slf4j
+@ConditionalOnMissingBean(name = GlobalWebExceptionHandler.BEAN_NAME)
 public class GlobalWebExceptionHandler {
 
     private static final String LOG_PREFIX = "[Framework][Web]";

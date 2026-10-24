@@ -15,8 +15,8 @@ import org.springframework.context.annotation.Bean;
  *
  * @author Uncarbon
  */
-@AutoConfigureAfter(value = {DynamicDataSourceAutoConfiguration.class})
 @AutoConfiguration
+@AutoConfigureAfter(value = {DynamicDataSourceAutoConfiguration.class})
 public class HeliumDynamicDatasourceAutoConfiguration {
 
     @Bean

@@ -29,10 +29,10 @@ import java.util.List;
  * @author muzhantong@mzt-biz-log
  * @author Uncarbon
  */
+@Slf4j
+@AutoConfiguration
 @Conditional(value = HeliumBizLogAutoConfiguration.OnBizLogEnabled.class)
 @EnableConfigurationProperties(value = HeliumBizLogProperties.class)
-@AutoConfiguration
-@Slf4j
 public class HeliumBizLogAutoConfiguration {
 
     private static final String BEAN_LOG_RECORD_INTERCEPTOR = "logRecordInterceptor";
@@ -106,8 +106,8 @@ public class HeliumBizLogAutoConfiguration {
     /**
      * AOP 切面
      */
-    @DependsOn(value = BEAN_LOG_RECORD_INTERCEPTOR)
     @Bean
+    @DependsOn(value = BEAN_LOG_RECORD_INTERCEPTOR)
     @Role(BeanDefinition.ROLE_INFRASTRUCTURE)
     public BeanFactoryLogRecordAdvisor logRecordAdvisor(LogRecordInterceptor interceptor,
                                                         HeliumBizLogProperties props) {

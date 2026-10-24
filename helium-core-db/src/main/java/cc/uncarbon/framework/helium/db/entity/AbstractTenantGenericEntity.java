@@ -13,9 +13,9 @@ import lombok.experimental.Accessors;
  *
  * @author Uncarbon
  */
-@EqualsAndHashCode(callSuper = true)
-@Accessors(chain = true)
 @Data
+@Accessors(chain = true)
+@EqualsAndHashCode(callSuper = true)
 public abstract class AbstractTenantGenericEntity extends AbstractGenericEntity implements TenantEntity {
 
     @Schema(description = "租户ID")

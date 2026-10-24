@@ -14,8 +14,8 @@ import java.time.Instant;
  *
  * @author Uncarbon
  */
-@Accessors(chain = true)
 @Data
+@Accessors(chain = true)
 public abstract class AbstractRelationEntity implements Entity, AuditingTimeEntity, AuditingUserEntity {
 
     // 没有逻辑删除

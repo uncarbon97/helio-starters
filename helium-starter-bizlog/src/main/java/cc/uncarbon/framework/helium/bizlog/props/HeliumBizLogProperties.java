@@ -15,8 +15,8 @@ import java.util.List;
  * @author muzhantong@mzt-biz-log
  * @author Uncarbon
  */
-@ConfigurationProperties(prefix = ConfigurationPropertiesPrefix.BIZLOG)
 @Data
+@ConfigurationProperties(prefix = ConfigurationPropertiesPrefix.BIZLOG)
 public class HeliumBizLogProperties {
 
     /**

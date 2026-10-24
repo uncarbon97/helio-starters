@@ -17,8 +17,8 @@ import java.util.Objects;
  *
  * @author Uncarbon
  */
-@ConfigurationProperties(prefix = ConfigurationPropertiesPrefix.TENANT)
 @Data
+@ConfigurationProperties(prefix = ConfigurationPropertiesPrefix.TENANT)
 public class HeliumTenantProperties {
 
     /**

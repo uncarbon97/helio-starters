@@ -29,13 +29,10 @@ import java.util.List;
  *
  * @author Uncarbon
  */
-@EnableConfigurationProperties(value = {
-        HeliumMybatisPlusProperties.class,
-        HeliumIdGenProperties.class
-})
-@EnableTransactionManagement(proxyTargetClass = true)
-@AutoConfiguration
 @Slf4j
+@AutoConfiguration
+@EnableConfigurationProperties(value = {HeliumMybatisPlusProperties.class, HeliumIdGenProperties.class})
+@EnableTransactionManagement(proxyTargetClass = true)
 public class HeliumMPAutoConfiguration {
 
     /**

@@ -13,10 +13,10 @@ import java.util.Collection;
  *
  * @author Uncarbon
  */
-@Accessors(chain = true)
-@AllArgsConstructor
-@NoArgsConstructor
 @Data
+@NoArgsConstructor
+@AllArgsConstructor
+@Accessors(chain = true)
 public class SimpleUserContext implements UserContext {
 
 

@@ -12,10 +12,10 @@ import lombok.experimental.Accessors;
  *
  * @author Uncarbon
  */
-@Accessors(chain = true)
-@AllArgsConstructor
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Data
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@AllArgsConstructor
+@Accessors(chain = true)
 public class SimpleCurrencyInfo implements CurrencyInfo {
 
     @Schema(description = "币种代码", example = "CNY、USD、USDT、BTC")

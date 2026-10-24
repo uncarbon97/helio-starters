@@ -32,8 +32,8 @@ import java.util.concurrent.ConcurrentHashMap;
  *      <li>{@code participateByDefault=false}（兼容默认）：实体实现 {@link TenantEntity} 才参与；纯 XML Mapper 表参与（防漏）</li>
  * </ol>
  */
-@RequiredArgsConstructor
 @Slf4j
+@RequiredArgsConstructor
 public class DefaultTenantLineHandler implements TenantLineHandler {
 
     /**

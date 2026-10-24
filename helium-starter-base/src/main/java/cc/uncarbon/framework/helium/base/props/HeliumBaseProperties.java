@@ -10,8 +10,8 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
  *
  * @author Uncarbon
  */
-@ConfigurationProperties(prefix = ConfigurationPropertiesPrefix.BASE)
 @Data
+@ConfigurationProperties(prefix = ConfigurationPropertiesPrefix.BASE)
 public class HeliumBaseProperties {
 
     /**

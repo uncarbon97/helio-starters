@@ -13,8 +13,8 @@ import java.util.Map;
  *
  * @author Uncarbon
  */
-@ConfigurationProperties(prefix = ConfigurationPropertiesPrefix.I18N)
 @Data
+@ConfigurationProperties(prefix = ConfigurationPropertiesPrefix.I18N)
 public class HeliumI18nProperties {
 
     /**

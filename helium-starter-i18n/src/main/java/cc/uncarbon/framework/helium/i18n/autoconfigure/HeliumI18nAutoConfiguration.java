@@ -31,10 +31,10 @@ import java.util.List;
  *
  * @author Uncarbon
  */
+@AutoConfiguration
+@AutoConfigureBefore(name = "cc.uncarbon.framework.helium.web.autoconfigure.HeliumWebAutoConfiguration")
 @Conditional(value = HeliumI18nAutoConfiguration.OnI18nEnabled.class)
 @EnableConfigurationProperties(value = HeliumI18nProperties.class)
-@AutoConfigureBefore(name = "cc.uncarbon.framework.helium.web.autoconfigure.HeliumWebAutoConfiguration")
-@AutoConfiguration
 public class HeliumI18nAutoConfiguration {
 
     // -- 错误消息格式化

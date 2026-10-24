@@ -16,8 +16,8 @@ import java.util.concurrent.TimeUnit;
  * @author dcy
  * @author Uncarbon
  */
-@RequiredArgsConstructor
 @Slf4j
+@RequiredArgsConstructor
 public class RedisDistributedLockImpl implements RedisDistributedLock {
 
     /**

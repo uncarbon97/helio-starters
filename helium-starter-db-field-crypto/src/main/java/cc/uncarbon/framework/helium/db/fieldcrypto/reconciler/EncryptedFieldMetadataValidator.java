@@ -32,8 +32,8 @@ import java.util.concurrent.ConcurrentHashMap;
  *
  * @author Uncarbon
  */
-@RequiredArgsConstructor
 @Slf4j
+@RequiredArgsConstructor
 public class EncryptedFieldMetadataValidator implements SmartInitializingSingleton {
 
     /**

@@ -14,10 +14,10 @@ import java.util.Locale;
  *
  * @author Uncarbon
  */
-@Accessors(chain = true)
-@AllArgsConstructor
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Data
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@AllArgsConstructor
+@Accessors(chain = true)
 public class SimpleLangInfo implements LangInfo {
 
 

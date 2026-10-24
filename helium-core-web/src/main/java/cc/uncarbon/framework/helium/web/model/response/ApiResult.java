@@ -16,10 +16,10 @@ import java.io.Serializable;
  * @param <T> 承载数据类型
  * @author Uncarbon
  */
-@Accessors(chain = true)
-@AllArgsConstructor(access = AccessLevel.PROTECTED)
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Data
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@AllArgsConstructor(access = AccessLevel.PROTECTED)
+@Accessors(chain = true)
 public class ApiResult<T> implements Serializable {
 
 

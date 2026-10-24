@@ -10,10 +10,10 @@ import lombok.experimental.Accessors;
  *
  * @author Uncarbon
  */
-@EqualsAndHashCode(callSuper = true)
-@Accessors(chain = true)
-@NoArgsConstructor
 @Data
+@NoArgsConstructor
+@Accessors(chain = true)
+@EqualsAndHashCode(callSuper = true)
 public class LargePageParam extends PageParam {
 
     /**

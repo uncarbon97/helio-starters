@@ -23,8 +23,8 @@ import java.util.Optional;
  *
  * @author Uncarbon
  */
-@Conditional(value = TenantDataSourceConfiguration.OnDatasourceStrategy.class)
 @Slf4j
+@Conditional(value = TenantDataSourceConfiguration.OnDatasourceStrategy.class)
 public class TenantDataSourceConfiguration {
 
     public static final String LOG_PREFIX = "[Framework][数据源级多租户]";

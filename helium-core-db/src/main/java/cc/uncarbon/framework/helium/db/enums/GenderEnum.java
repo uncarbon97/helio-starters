@@ -8,8 +8,8 @@ import lombok.Getter;
 /**
  * 生理性别枚举
  */
-@AllArgsConstructor
 @Getter
+@AllArgsConstructor
 public enum GenderEnum implements BaseEnum<Integer> {
 
     UNKNOWN(0, "未知"),

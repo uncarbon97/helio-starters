@@ -34,8 +34,8 @@ import java.util.stream.Collectors;
  *
  * @author Uncarbon
  */
-@AutoConfigureBefore(value = {DataRedisAutoConfiguration.class, RedissonAutoConfigurationV4.class})
 @AutoConfiguration
+@AutoConfigureBefore(value = {DataRedisAutoConfiguration.class, RedissonAutoConfigurationV4.class})
 public class HeliumRedisAutoConfiguration {
 
     public static final String REDIS_TEMPLATE_BEAN_NAME = "redisTemplate";

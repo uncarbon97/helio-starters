@@ -35,8 +35,8 @@ import java.util.Set;
  *
  * @author Uncarbon
  */
-@RequiredArgsConstructor
 @Slf4j
+@RequiredArgsConstructor
 public class TenantLineFieldReconciler implements ApplicationRunner {
 
     protected static final String LOG_PREFIX = TenantLineConfiguration.LOG_PREFIX;
@@ -79,7 +79,7 @@ public class TenantLineFieldReconciler implements ApplicationRunner {
         }
 
         if (!tenantFieldWithoutFill.isEmpty()) {
-            log.warn(LOG_PREFIX + " 以下参与隔离的实体含 " + EntityField.TENANT_ID_FIELD + "字段但未配置 " +
+            log.warn(LOG_PREFIX + " 以下参与隔离的实体含 " + EntityField.TENANT_ID_FIELD + " 字段但未配置 " +
                     "@TableField(fill = INSERT) 自动填充，存在跨租户写入风险 >> {}", tenantFieldWithoutFill);
         }
 

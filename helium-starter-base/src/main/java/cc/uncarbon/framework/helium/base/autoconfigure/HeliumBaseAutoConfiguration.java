@@ -11,8 +11,8 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
  *
  * @author Uncarbon
  */
-@EnableConfigurationProperties(value = {HeliumBaseProperties.class})
 @AutoConfiguration
+@EnableConfigurationProperties(value = {HeliumBaseProperties.class})
 public class HeliumBaseAutoConfiguration {
 
     /**

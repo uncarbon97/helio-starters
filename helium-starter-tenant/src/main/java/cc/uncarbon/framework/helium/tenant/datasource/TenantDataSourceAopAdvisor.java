@@ -19,9 +19,9 @@ import org.springframework.beans.factory.BeanFactoryAware;
  * @author chill
  * @author Uncarbon
  */
-@EqualsAndHashCode(callSuper = true)
 @Slf4j
 @Getter
+@EqualsAndHashCode(callSuper = true)
 public class TenantDataSourceAopAdvisor extends AbstractPointcutAdvisor implements BeanFactoryAware {
 
     private final Advice advice;

@@ -20,9 +20,9 @@ import java.util.TimeZone;
  * @author hanfeng
  * @author Uncarbon
  */
-@EnableConfigurationProperties(value = {HeliumJacksonProperties.class})
-@AutoConfigureBefore(value = {JacksonAutoConfiguration.class})
 @AutoConfiguration
+@AutoConfigureBefore(value = {JacksonAutoConfiguration.class})
+@EnableConfigurationProperties(value = {HeliumJacksonProperties.class})
 public class HeliumJackson3AutoConfiguration {
 
     /**

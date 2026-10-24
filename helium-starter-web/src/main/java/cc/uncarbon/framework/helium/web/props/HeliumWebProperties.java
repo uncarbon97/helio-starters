@@ -11,8 +11,8 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
  *
  * @author Uncarbon
  */
-@ConfigurationProperties(prefix = ConfigurationPropertiesPrefix.WEB)
 @Data
+@ConfigurationProperties(prefix = ConfigurationPropertiesPrefix.WEB)
 public class HeliumWebProperties {
 
     /**

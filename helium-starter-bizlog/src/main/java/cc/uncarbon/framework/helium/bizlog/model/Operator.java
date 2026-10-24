@@ -14,10 +14,10 @@ import lombok.experimental.Accessors;
  * @author muzhantong@mzt-biz-log
  * @author Uncarbon
  */
-@Accessors(chain = true)
-@AllArgsConstructor
-@NoArgsConstructor
 @Data
+@NoArgsConstructor
+@AllArgsConstructor
+@Accessors(chain = true)
 public class Operator {
 
     /**

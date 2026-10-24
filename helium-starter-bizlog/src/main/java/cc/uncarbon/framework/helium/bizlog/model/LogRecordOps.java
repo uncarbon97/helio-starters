@@ -12,8 +12,8 @@ import lombok.Data;
  * @author muzhantong@mzt-biz-log
  * @author Uncarbon
  */
-@Builder
 @Data
+@Builder
 public class LogRecordOps {
     /**
      * 成功日志模板

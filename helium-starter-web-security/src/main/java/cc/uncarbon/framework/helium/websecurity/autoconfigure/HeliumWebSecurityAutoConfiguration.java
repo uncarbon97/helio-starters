@@ -20,8 +20,8 @@ import org.springframework.core.type.AnnotatedTypeMetadata;
  *
  * @author Uncarbon
  */
-@EnableConfigurationProperties(value = HeliumWebSecurityProperties.class)
 @AutoConfiguration
+@EnableConfigurationProperties(value = HeliumWebSecurityProperties.class)
 public class HeliumWebSecurityAutoConfiguration {
 
     /**

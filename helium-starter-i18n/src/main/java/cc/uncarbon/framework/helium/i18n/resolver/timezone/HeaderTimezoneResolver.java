@@ -17,8 +17,8 @@ import java.util.Optional;
  *
  * @author Uncarbon
  */
-@RequiredArgsConstructor
 @Slf4j
+@RequiredArgsConstructor
 public class HeaderTimezoneResolver implements TimezoneResolver {
 
     private static final String LOG_PREFIX = HeliumI18nConstant.LOG_PREFIX + "[HeaderTimezoneResolver]";

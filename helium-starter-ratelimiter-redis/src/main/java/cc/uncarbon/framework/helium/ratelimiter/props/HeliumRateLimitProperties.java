@@ -10,8 +10,8 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
  *
  * @author Uncarbon
  */
-@ConfigurationProperties(prefix = ConfigurationPropertiesPrefix.RATE_LIMITER)
 @Data
+@ConfigurationProperties(prefix = ConfigurationPropertiesPrefix.RATE_LIMITER)
 public class HeliumRateLimitProperties {
 
     /**

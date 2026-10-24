@@ -9,8 +9,8 @@ import lombok.Getter;
 /**
  * 启用状态枚举
  */
-@AllArgsConstructor
 @Getter
+@AllArgsConstructor
 public enum EnabledStatusEnum implements BaseEnum<Integer> {
 
     DISABLED(0, "禁用"),

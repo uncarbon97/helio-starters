@@ -12,8 +12,8 @@ import java.util.List;
  *
  * @author Uncarbon
  */
-@ConfigurationProperties(prefix = ConfigurationPropertiesPrefix.DB_FIELD_CRYPTO)
 @Data
+@ConfigurationProperties(prefix = ConfigurationPropertiesPrefix.DB_FIELD_CRYPTO)
 public class HeliumFieldCryptoProperties {
 
     /**
