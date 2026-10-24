@@ -23,7 +23,8 @@ import java.util.Map;
  * {keyId}${base64(nonce(12B) || ciphertext || GCM-tag(16B))}     例: k1$Xk9s...==
  * }</pre>
  *
- * <p>加密使用活跃 keyId，解密按密文前缀路由 data-key，
+ * <p>加密使用活跃 keyId，解密按密文前缀路由 data-key（当前代未命中时回落上一代根密钥，
+ * 仅供数据根泄露应急轮换期兜底解密），
  * 一经正式使用，不得变更，且不同字段密文互不可挪用
  *
  * <p>注：线程安全
@@ -39,6 +40,11 @@ public final class FieldCipher {
      */
     private final byte[] dataRootKey;
     private final Map<String, SecretKey> dataKeys;
+
+    /**
+     * 上一代根密钥派生的 data-key（keyId -> key），仅供解密路由；无应急轮换时为空 Map
+     */
+    private final Map<String, SecretKey> previousDataKeys;
     private final String activeKeyId;
 
     /**
@@ -47,6 +53,17 @@ public final class FieldCipher {
      * @param activeKeyId 加密使用的活跃 keyId，必须在 keyIds 中
      */
     public FieldCipher(byte[] dataRootKey, Collection<String> keyIds, String activeKeyId) {
+        this(dataRootKey, keyIds, activeKeyId, null, null);
+    }
+
+    /**
+     * 数据根密钥泄露应急轮换构造：当前根密钥 + 上一代根密钥并存
+     *
+     * @param previousDataRootKey 上一代数据根密钥，与 previousKeyIds 成对出现（同时为空 = 无应急轮换）
+     * @param previousKeyIds      上一代 keyId 集合，按上一代根密钥派生，仅供解密路由；不得与 keyIds 交集
+     */
+    public FieldCipher(byte[] dataRootKey, Collection<String> keyIds, String activeKeyId,
+                       byte[] previousDataRootKey, Collection<String> previousKeyIds) {
         if (dataRootKey == null || dataRootKey.length != FieldCryptoConstant.ROOT_KEY_BYTES) {
             throw new FieldCryptoException(FieldCryptoException.Reason.INVALID_KEY,
                     "数据加密根密钥长度不合法，须为 " + FieldCryptoConstant.ROOT_KEY_BYTES + " 字节");
@@ -68,8 +85,8 @@ public final class FieldCipher {
                     FieldCryptoConstant.DATA_KEY_INFO_PREFIX + keyId);
             tmp.put(keyId, new SecretKeySpec(dataKeyBytes, FieldCryptoConstant.AES_ALGORITHM));
         });
-
         this.dataKeys = tmp;
+        this.previousDataKeys = derivePreviousDataKeys(previousDataRootKey, previousKeyIds);
         this.activeKeyId = activeKeyId;
     }
 
@@ -109,26 +126,6 @@ public final class FieldCipher {
         }
     }
 
-    private static void requireValidKeyId(String keyId) {
-        if (keyId == null || !FieldCryptoConstant.KEY_ID_PATTERN.matcher(keyId).matches()) {
-            throw new FieldCryptoException(FieldCryptoException.Reason.INVALID_KEY_ID,
-                    "keyId 字符集不合法（限 [A-Za-z0-9_-]{1,16}）");
-        }
-    }
-
-    private static void requireAad(String aad) {
-        if (aad == null || aad.isBlank()) {
-            throw new FieldCryptoException(FieldCryptoException.Reason.INVALID_AAD,
-                    "字段加密 AAD 未绑定：必须传入列级 AAD（约定取值 表名.密文列名）");
-        }
-    }
-
-    /*
-    ----------------------------------------------------------------
-                        私有方法
-    ----------------------------------------------------------------
-     */
-
     /**
      * 数据加密根密钥代际指纹（canary 指纹之一）
      *
@@ -143,6 +140,13 @@ public final class FieldCipher {
 
     public String getActiveKeyId() {
         return activeKeyId;
+    }
+
+    /**
+     * @return 本节点能否解密该 keyId 前缀的密文（当前代或上一代集合任一命中）
+     */
+    public boolean canDecrypt(String keyId) {
+        return dataKeys.containsKey(keyId) || previousDataKeys.containsKey(keyId);
     }
 
     /**
@@ -164,7 +168,11 @@ public final class FieldCipher {
                     "密文缺少 keyId 前缀或负载为空");
         }
         String keyId = blob.substring(0, separatorIndex);
+        // 当前代优先，未命中回落上一代（数据根应急轮换期旧前缀密文兜底解密）
         SecretKey key = dataKeys.get(keyId);
+        if (key == null) {
+            key = previousDataKeys.get(keyId);
+        }
         if (key == null) {
             // keyId 非机密信息，可安全输出，便于排查轮换配置遗漏
             throw new FieldCryptoException(FieldCryptoException.Reason.KEY_NOT_FOUND,
@@ -194,5 +202,56 @@ public final class FieldCipher {
             throw new FieldCryptoException(FieldCryptoException.Reason.DECRYPT_FAILED,
                     "字段解密失败（密钥不符、AAD 列绑定不符或数据被篡改）", e);
         }
+    }
+
+    /*
+    ----------------------------------------------------------------
+                        私有方法
+    ----------------------------------------------------------------
+     */
+
+    private static void requireValidKeyId(String keyId) {
+        if (keyId == null || !FieldCryptoConstant.KEY_ID_PATTERN.matcher(keyId).matches()) {
+            throw new FieldCryptoException(FieldCryptoException.Reason.ILLEGAL_KEY_ID,
+                    "keyId 字符集不合法（限 [A-Za-z0-9-]{1,16}）");
+        }
+    }
+
+    private static void requireAad(String aad) {
+        if (aad == null || aad.isBlank()) {
+            throw new FieldCryptoException(FieldCryptoException.Reason.INVALID_AAD,
+                    "字段加密 AAD 未绑定：必须传入列级 AAD（约定取值 表名.密文列名）");
+        }
+    }
+
+    private Map<String, SecretKey> derivePreviousDataKeys(byte[] previousDataRootKey, Collection<String> previousKeyIds) {
+        boolean hasPrevRoot = previousDataRootKey != null && previousDataRootKey.length > 0;
+        boolean hasPrevIds = previousKeyIds != null && !previousKeyIds.isEmpty();
+        if (!hasPrevRoot && !hasPrevIds) {
+            return Map.of();
+        }
+        if (hasPrevRoot != hasPrevIds) {
+            throw new FieldCryptoException(FieldCryptoException.Reason.INVALID_KEY,
+                    FieldCryptoConstant.PREVIOUS_DATA_ROOT_KEY_KEBAB + " 与 previous-data-key-ids 必须成对配置");
+        }
+        if (previousDataRootKey.length != FieldCryptoConstant.ROOT_KEY_BYTES) {
+            throw new FieldCryptoException(FieldCryptoException.Reason.INVALID_KEY,
+                    "上一代数据根密钥长度不合法，须为 " + FieldCryptoConstant.ROOT_KEY_BYTES + " 字节");
+        }
+
+        Map<String, SecretKey> prevTmp = new LinkedHashMap<>(previousKeyIds.size());
+        for (String keyId : previousKeyIds) {
+            requireValidKeyId(keyId);
+            if (dataKeys.containsKey(keyId)) {
+                // 同一 keyId 挂两代根密钥 = 派生歧义，轮换期配置事故
+                throw new FieldCryptoException(FieldCryptoException.Reason.INVALID_KEY,
+                        "keyId 同时存在于当前代与上一代集合: " + keyId);
+            }
+            byte[] dataKeyBytes = HKDF.derive(
+                    previousDataRootKey, HKDF.utf8(keyId),
+                    FieldCryptoConstant.DATA_KEY_INFO_PREFIX + keyId);
+            prevTmp.put(keyId, new SecretKeySpec(dataKeyBytes, FieldCryptoConstant.AES_ALGORITHM));
+        }
+        return prevTmp;
     }
 }

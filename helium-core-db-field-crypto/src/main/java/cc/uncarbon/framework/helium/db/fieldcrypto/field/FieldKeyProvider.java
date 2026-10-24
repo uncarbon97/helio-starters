@@ -1,6 +1,7 @@
 package cc.uncarbon.framework.helium.db.fieldcrypto.field;
 
 import java.util.Collection;
+import java.util.List;
 
 /**
  * 字段加密密钥提供方 SPI
@@ -34,4 +35,19 @@ public interface FieldKeyProvider {
      * <P>轮换代价高（需停写重建全量索引列），通常长周期使用
      */
     byte[] loadIndexRootKey();
+
+    /**
+     * @return 上一代数据根密钥原始字节（32 字节）；无应急轮换时返回 null
+     * <p>与 {@link #loadPreviousDataKeyIds()} 成对返回：仅一方非空视为配置错误
+     */
+    default byte[] loadPreviousDataRootKey() {
+        return null;
+    }
+
+    /**
+     * @return 上一代 keyId 集合（按上一代根密钥派生 data-key，仅供解密路由）；无应急轮换时返回空集合
+     */
+    default List<String> loadPreviousDataKeyIds() {
+        return List.of();
+    }
 }

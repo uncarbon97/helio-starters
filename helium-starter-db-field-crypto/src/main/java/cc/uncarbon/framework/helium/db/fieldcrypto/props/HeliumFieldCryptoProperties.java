@@ -17,7 +17,7 @@ import java.util.List;
 public class HeliumFieldCryptoProperties {
 
     /**
-     * 数据加密根密钥 dataRootKey；32字节，可通过 openssl rand -base64 32 生成
+     * 数据根密钥；32字节，可通过 openssl rand -base64 32 生成
      */
     private String dataRootKey;
 
@@ -33,6 +33,21 @@ public class HeliumFieldCryptoProperties {
      * 加密使用的活跃 keyId，必须存在于 dataKeyIds
      */
     private String activeDataKeyId;
+
+    /**
+     * 上一代数据根密钥；32字节，数据根泄露应急轮换期间临时配置
+     *
+     * <p>与 {@link #previousDataKeyIds} 成对出现
+     */
+    private String previousDataRootKey;
+
+    /**
+     * 上一代 keyId 集合（密文带旧前缀的行，用上一代根密钥兜底解密）
+     *
+     * <p>不得与 {@link #dataKeyIds} 有交集，也不得包含 {@link #activeDataKeyId}；
+     * 仅用于解密路由，加密一律走当前活跃 keyId
+     */
+    private List<String> previousDataKeyIds = new ArrayList<>();
 
     /**
      * 索引根密钥 indexRootKey；32字节，可通过 openssl rand -base64 32 生成

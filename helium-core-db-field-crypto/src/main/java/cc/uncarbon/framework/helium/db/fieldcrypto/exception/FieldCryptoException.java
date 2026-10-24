@@ -28,7 +28,7 @@ public class FieldCryptoException extends RuntimeException {
 
     public enum Reason {
         /**
-         * 未注册 FieldCipher（未配置 helium.db.field-crypto.*）
+         * 未注册 FieldCipher
          */
         NOT_CONFIGURED,
         /**
@@ -36,9 +36,9 @@ public class FieldCryptoException extends RuntimeException {
          */
         INVALID_KEY,
         /**
-         * keyId 字符集或长度不合法（限 [A-Za-z0-9_-]{1,16}，禁止含 '$'）
+         * keyId 字符集或长度不合法
          */
-        INVALID_KEY_ID,
+        ILLEGAL_KEY_ID,
         /**
          * AAD 未绑定（空/未声明）
          */

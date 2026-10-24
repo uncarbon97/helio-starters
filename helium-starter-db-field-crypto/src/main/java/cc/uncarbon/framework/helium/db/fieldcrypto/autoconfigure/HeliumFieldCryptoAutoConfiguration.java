@@ -63,10 +63,12 @@ public class HeliumFieldCryptoAutoConfiguration {
 
         FieldCipher cipher = new FieldCipher(
                 fieldKeyProvider.loadDataRootKey(), fieldKeyProvider.loadDataKeyIds(),
-                fieldKeyProvider.loadActiveDataKeyId());
+                fieldKeyProvider.loadActiveDataKeyId(),
+                fieldKeyProvider.loadPreviousDataRootKey(), fieldKeyProvider.loadPreviousDataKeyIds());
         // 供 MyBatis TypeHandler 静态获取
         FieldCipherContext.register(cipher);
-        log.info(FieldCryptoConstant.LOG_PREFIX + " >> FieldCipher 已就绪, activeKeyId={}", cipher.getActiveKeyId());
+        log.info(FieldCryptoConstant.LOG_PREFIX + " >> FieldCipher 已就绪, activeKeyId={}, previousKeyIdCount={}",
+                cipher.getActiveKeyId(), fieldKeyProvider.loadPreviousDataKeyIds().size());
         return cipher;
     }
 

@@ -37,4 +37,15 @@ public class PropsFieldKeyProvider implements FieldKeyProvider {
     public byte[] loadIndexRootKey() {
         return Base64.getDecoder().decode(props.getIndexRootKey());
     }
+
+    @Override
+    public byte[] loadPreviousDataRootKey() {
+        return props.getPreviousDataRootKey() == null || props.getPreviousDataRootKey().isBlank()
+                ? null : Base64.getDecoder().decode(props.getPreviousDataRootKey().trim());
+    }
+
+    @Override
+    public List<String> loadPreviousDataKeyIds() {
+        return new ArrayList<>(props.getPreviousDataKeyIds());
+    }
 }

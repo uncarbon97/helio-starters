@@ -11,10 +11,18 @@ import java.util.regex.Pattern;
  * @author Uncarbon
  */
 public class FieldCryptoConstant {
+    private FieldCryptoConstant() {
+    }
+
     /**
      * 数据根密钥英文表达，连字符形式
      */
     public static final String DATA_ROOT_KEY_KEBAB = "data-root-key";
+
+    /**
+     * 上一代数据根密钥英文表达，连字符形式
+     */
+    public static final String PREVIOUS_DATA_ROOT_KEY_KEBAB = "previous-data-root-key";
 
     /*
     ----------------------------------------------------------------
@@ -75,9 +83,10 @@ public class FieldCryptoConstant {
     public static final char CIPHERTEXT_SEPARATOR = '$';
 
     /**
-     * keyId 字符集：限 [A-Za-z0-9_-]{1,16}；keyId 含 '$' 会破坏密文前缀路由
+     * keyId 字符集：限 [A-Za-z0-9-]{1,16}；keyId 含 '$' 会破坏密文前缀路由，
+     * 含 '_'、'%' 会破坏按密文前缀 LIKE 匹配（SQL 通配符，轮换/残留扫描场景）
      */
-    public static final Pattern KEY_ID_PATTERN = Pattern.compile("^[A-Za-z0-9_-]{1,16}$");
+    public static final Pattern KEY_ID_PATTERN = Pattern.compile("^[A-Za-z0-9-]{1,16}$");
 
     /**
      * data-key HKDF 派生 info 前缀，最终格式 {@code field-data-key/{keyId}}
@@ -104,9 +113,6 @@ public class FieldCryptoConstant {
      * index-key HKDF 派生 info 前缀
      */
     public static final String INDEX_KEY_INFO_PREFIX = INDEX_KEY_INFO + "/";
-
-    private FieldCryptoConstant() {
-    }
 
     /**
      * 盲索引截断字节数：16 字节 = 128bit
