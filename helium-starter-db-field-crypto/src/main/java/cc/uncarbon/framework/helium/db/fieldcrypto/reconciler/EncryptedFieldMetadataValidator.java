@@ -1,9 +1,13 @@
 package cc.uncarbon.framework.helium.db.fieldcrypto.reconciler;
 
+import cc.uncarbon.framework.helium.db.fieldcrypto.annotation.BlindIndexOf;
+import cc.uncarbon.framework.helium.db.fieldcrypto.annotation.MaskedOf;
 import cc.uncarbon.framework.helium.db.fieldcrypto.annotation.TableFieldCrypto;
 import cc.uncarbon.framework.helium.db.fieldcrypto.constant.FieldCryptoConstant;
+import cc.uncarbon.framework.helium.db.fieldcrypto.interceptor.FieldCryptoDerivedColumnInnerInterceptor;
 import cc.uncarbon.framework.helium.db.fieldcrypto.typehandler.EncryptedFieldTypeHandler;
 import cn.hutool.core.text.StrPool;
+import com.baomidou.mybatisplus.annotation.FieldFill;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
@@ -28,6 +32,9 @@ import java.util.concurrent.ConcurrentHashMap;
  *   <li>columnPath 全局去重：两个不同字段声明相同 columnPath，则拒绝启动</li>
  *   <li>TypeHandler 配对：字段的 {@code @TableField(typeHandler)} 须为 {@link EncryptedFieldTypeHandler}
  *       子类，且子类 {@code columnPath()} 返回值与解析结果一致，拒配错</li>
+ *   <li>派生列（{@link BlindIndexOf}/{@link MaskedOf} 目标字段）不得声明 {@code fill}：
+ *       fill 字段在 update SET 中无条件拼接，局部更新未携带来源时派生列会以 NULL 落库；
+ *       派生回填由 {@link FieldCryptoDerivedColumnInnerInterceptor} 在 getBoundSql 之前完成</li>
  * </ol>
  *
  * @author Uncarbon
@@ -98,6 +105,8 @@ public class EncryptedFieldMetadataValidator implements SmartInitializingSinglet
         String tableName = resolveTableName(entityClass);
         for (Class<?> clazz = entityClass; clazz != null && clazz != Object.class; clazz = clazz.getSuperclass()) {
             for (Field field : clazz.getDeclaredFields()) {
+                validateDerivedFieldNoFill(field);
+
                 TableFieldCrypto annotation = field.getAnnotation(TableFieldCrypto.class);
                 if (annotation == null) {
                     continue;
@@ -118,6 +127,25 @@ public class EncryptedFieldMetadataValidator implements SmartInitializingSinglet
                 validateHandlerPairing(field, columnPath);
                 COLUMN_PATH_REGISTRY.putIfAbsent(columnPath, location);
             }
+        }
+    }
+
+    /**
+     * 派生字段不得声明 {@code fill}：fill 字段在 update SET 中是无条件拼接的，
+     * 局部更新实体未携带来源时会把派生列以 NULL 落库；
+     * 派生回填改由 {@code FieldCryptoDerivedColumnInnerInterceptor} 在 getBoundSql 之前完成
+     */
+    private static void validateDerivedFieldNoFill(Field field) {
+        boolean derived = field.getAnnotation(BlindIndexOf.class) != null
+                || field.getAnnotation(MaskedOf.class) != null;
+        if (!derived) {
+            return;
+        }
+        TableField tableField = field.getAnnotation(TableField.class);
+        if (tableField != null && tableField.fill() != FieldFill.DEFAULT) {
+            throw new IllegalStateException(String.format(
+                    FieldCryptoConstant.LOG_PREFIX + " 派生字段 %s.%s 不得声明 fill（派生回填由拦截器在 getBoundSql 前完成）",
+                    field.getDeclaringClass().getSimpleName(), field.getName()));
         }
     }
 

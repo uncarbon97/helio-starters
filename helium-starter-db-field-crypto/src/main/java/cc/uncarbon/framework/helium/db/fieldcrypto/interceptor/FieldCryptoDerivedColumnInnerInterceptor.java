@@ -1,50 +1,78 @@
-package cc.uncarbon.framework.helium.db.fieldcrypto.field;
+package cc.uncarbon.framework.helium.db.fieldcrypto.interceptor;
 
 import cc.uncarbon.framework.helium.db.fieldcrypto.annotation.BlindIndexOf;
 import cc.uncarbon.framework.helium.db.fieldcrypto.annotation.MaskedOf;
 import cc.uncarbon.framework.helium.db.fieldcrypto.blindindex.BlindIndexCalculator;
 import cc.uncarbon.framework.helium.db.fieldcrypto.blindindex.BlindIndexValueExtractor;
 import cc.uncarbon.framework.helium.db.fieldcrypto.exception.FieldCryptoException;
-import cc.uncarbon.framework.helium.db.mybatisplus.handler.MetaObjectFiller;
-import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
+import cc.uncarbon.framework.helium.db.fieldcrypto.field.FieldCryptoMetrics;
+import cc.uncarbon.framework.helium.db.fieldcrypto.field.FieldValueMasker;
+import com.baomidou.mybatisplus.core.toolkit.Constants;
+import com.baomidou.mybatisplus.extension.plugins.inner.InnerInterceptor;
 import lombok.RequiredArgsConstructor;
+import org.apache.ibatis.executor.Executor;
+import org.apache.ibatis.mapping.MappedStatement;
+import org.apache.ibatis.mapping.SqlCommandType;
 import org.apache.ibatis.reflection.MetaObject;
+import org.apache.ibatis.reflection.SystemMetaObject;
 
 import java.lang.reflect.Field;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
- * 字段加密派生字段填充器：盲索引字段、脱敏冗余字段自动填充
- *
+ * 字段加密派生字段回填拦截器：盲索引字段、脱敏冗余字段自动填充
  * <p>填充规则</p>
  * <ul>
  *   <li>insert：来源字段为 null/空白时，派生字段一并置 null，保持同生同灭</li>
- *   <li>update：来源字段未携带（null）时跳过，避免部分更新误清既有索引</li>
- *   <li>update 显式清空走业务侧专用清空方法（全部派生字段一并置 NULL），本填充器双向校验兜底</li>
+ *   <li>update：来源字段未携带（null）时跳过，避免局部更新误清既有索引</li>
+ *   <li>update 显式清空走业务侧专用清空方法（全部派生字段一并置 NULL），本拦截器双向校验兜底</li>
  * </ul>
  *
- * <p>派生字段一致性双向校验，填充完成后——
+ * <p>派生字段一致性双向校验，回填完成后——
  * <p>1. 密文来源非空而任一派生字段为空，或来源为空而任一派生字段非空（清空残留），拒写
- * <p>2. {@link UpdateWrapper} 局部更新、原生 SQL 直改派生字段不经过本填充器，禁用
+ * <p>2. {@code update(null, wrapper)} 纯 wrapper 更新、原生 SQL 直改派生字段不经过本拦截器，禁用</p>
  *
  * @author Uncarbon
  */
 @RequiredArgsConstructor
-public class FieldCryptoDerivedColumnFiller implements MetaObjectFiller {
+public class FieldCryptoDerivedColumnInnerInterceptor implements InnerInterceptor {
 
     /**
-     * 实体类 -> 派生字段填充计划（反射元数据缓存）
+     * 实体类 -> 派生字段回填计划（反射元数据缓存）
      */
     private static final Map<Class<?>, EntityFillPlan> FILL_PLAN_CACHE = new ConcurrentHashMap<>();
+
+    /**
+     * ParamMap 中实体参数名，见 {@link Constants#ENTITY}
+     */
+    private static final String ENTITY_PARAM = Constants.ENTITY;
+
+    /**
+     * ParamMap 中批量集合参数名（MyBatis ParamNameResolver 约定）
+     */
+    private static final List<String> BATCH_PARAMS = List.of("list", "collection", "array");
 
     /**
      * 盲索引计算器；为 null（未启用字段加密）时视为配置错误
      */
     private final BlindIndexCalculator blindIndexCalculator;
+
+
+    @Override
+    public void beforeUpdate(Executor executor, MappedStatement ms, Object parameter) {
+        SqlCommandType commandType = ms.getSqlCommandType();
+        if (commandType != SqlCommandType.INSERT && commandType != SqlCommandType.UPDATE) {
+            return;
+        }
+        processParameter(parameter, commandType == SqlCommandType.INSERT);
+    }
+
+    /*
+    ----------------------------------------------------------------
+                        私有方法
+    ----------------------------------------------------------------
+     */
 
     private static <T> T newInstance(Class<? extends T> type, String role) {
         try {
@@ -55,16 +83,42 @@ public class FieldCryptoDerivedColumnFiller implements MetaObjectFiller {
         }
     }
 
-    /*
-    ----------------------------------------------------------------
-                        私有方法
-    ----------------------------------------------------------------
+    /**
+     * 从 Mapper 入参中剥离实体（或批量实体集），再按计划回填
      */
+    private void processParameter(Object parameter, boolean insert) {
+        switch (parameter) {
+            case null -> {
+                return;
+            }
+            case Map<?, ?> paramMap -> {
+                Object entity = paramMap.get(ENTITY_PARAM);
+                if (entity != null) {
+                    fillIfPlanned(entity, insert);
+                    return;
+                }
+                for (String param : BATCH_PARAMS) {
+                    Object value = paramMap.get(param);
+                    if (value instanceof Collection<?> entities) {
+                        entities.forEach(e -> fillIfPlanned(e, insert));
+                        return;
+                    }
+                }
+                return;
+            }
+            case Collection<?> entities -> {
+                // 未标注 @Param 的集合参数（如 insertBatchSomeColumn 直收集合）
+                entities.forEach(e -> fillIfPlanned(e, insert));
+                return;
+            }
+            default -> {
+            }
+        }
+        fillIfPlanned(parameter, insert);
+    }
 
-    @Override
-    public void fill(MetaObject metaObject, boolean insert) {
-        EntityFillPlan plan = FILL_PLAN_CACHE.computeIfAbsent(
-                metaObject.getOriginalObject().getClass(), this::resolveFillPlan);
+    private void fillIfPlanned(Object entity, boolean insert) {
+        EntityFillPlan plan = FILL_PLAN_CACHE.computeIfAbsent(entity.getClass(), this::resolveFillPlan);
         if (plan.groups().isEmpty()) {
             return;
         }
@@ -74,7 +128,10 @@ public class FieldCryptoDerivedColumnFiller implements MetaObjectFiller {
             throw new FieldCryptoException(FieldCryptoException.Reason.NOT_CONFIGURED,
                     "实体声明了 @BlindIndexOf/@MaskedOf 派生字段，但字段加密未启用");
         }
+        fill(SystemMetaObject.forObject(entity), plan, insert);
+    }
 
+    private void fill(MetaObject metaObject, EntityFillPlan plan, boolean insert) {
         for (SourceDeriveGroup group : plan.groups()) {
             if (!metaObject.hasGetter(group.sourceField())) {
                 continue;
@@ -84,7 +141,7 @@ public class FieldCryptoDerivedColumnFiller implements MetaObjectFiller {
             boolean sourcePresent = source != null && !source.isBlank();
 
             if (sourceValue == null && !insert) {
-                // update：来源未携带，跳过填充（防部分更新误清既有索引）；校验派生字段无手工残留即可
+                // update：来源未携带，跳过回填（防局部更新误清既有索引）；校验派生字段无手工残留即可
                 validateNoResidue(metaObject, group);
                 continue;
             }
@@ -133,7 +190,7 @@ public class FieldCryptoDerivedColumnFiller implements MetaObjectFiller {
     }
 
     /**
-     * update 分支跳过填充时的残留校验（清空残留，方案 §3.3）
+     * update 分支跳过回填时的残留校验（清空残留，方案 §3.3）
      */
     private void validateNoResidue(MetaObject metaObject, SourceDeriveGroup group) {
         List<String> nullDerived = new ArrayList<>();
@@ -166,7 +223,7 @@ public class FieldCryptoDerivedColumnFiller implements MetaObjectFiller {
     }
 
     /**
-     * 扫描实体类（含父类）中标注 {@link BlindIndexOf} / {@link MaskedOf} 的字段，按来源字段聚合生成填充计划
+     * 扫描实体类（含父类）中标注 {@link BlindIndexOf} / {@link MaskedOf} 的字段，按来源字段聚合生成回填计划
      */
     private EntityFillPlan resolveFillPlan(Class<?> entityClass) {
         Map<String, List<BlindIndexPlan>> blindBySource = new HashMap<>();
@@ -183,7 +240,8 @@ public class FieldCryptoDerivedColumnFiller implements MetaObjectFiller {
                 MaskedOf masked = field.getAnnotation(MaskedOf.class);
                 if (masked != null) {
                     maskedBySource.computeIfAbsent(masked.value(), k -> new ArrayList<>())
-                            .add(new MaskedPlan(field.getName(), newInstance(masked.masker(), "脱敏器")));
+                            .add(new MaskedPlan(
+                                    field.getName(), newInstance(masked.masker(), "脱敏器")));
                 }
             }
         }
@@ -207,7 +265,7 @@ public class FieldCryptoDerivedColumnFiller implements MetaObjectFiller {
     }
 
     /**
-     * 单个实体类的派生字段填充计划
+     * 单个实体类的派生字段回填计划
      */
     private record EntityFillPlan(List<SourceDeriveGroup> groups) {
 

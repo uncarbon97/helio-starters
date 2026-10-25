@@ -3,13 +3,16 @@ package cc.uncarbon.framework.helium.db.fieldcrypto.autoconfigure;
 import cc.uncarbon.framework.helium.base.condition.HeliumConditions;
 import cc.uncarbon.framework.helium.db.fieldcrypto.blindindex.BlindIndexCalculator;
 import cc.uncarbon.framework.helium.db.fieldcrypto.constant.FieldCryptoConstant;
-import cc.uncarbon.framework.helium.db.fieldcrypto.field.*;
+import cc.uncarbon.framework.helium.db.fieldcrypto.field.FieldCipher;
+import cc.uncarbon.framework.helium.db.fieldcrypto.field.FieldCipherContext;
+import cc.uncarbon.framework.helium.db.fieldcrypto.field.FieldKeyProvider;
+import cc.uncarbon.framework.helium.db.fieldcrypto.field.PropsFieldKeyProvider;
+import cc.uncarbon.framework.helium.db.fieldcrypto.interceptor.FieldCryptoDerivedColumnInnerInterceptor;
 import cc.uncarbon.framework.helium.db.fieldcrypto.props.HeliumFieldCryptoProperties;
 import cc.uncarbon.framework.helium.db.fieldcrypto.reconciler.EncryptedFieldMetadataValidator;
 import cc.uncarbon.framework.helium.db.fieldcrypto.reconciler.FieldCryptoCanaryChecker;
 import cc.uncarbon.framework.helium.db.fieldcrypto.reconciler.FieldCryptoStartupGuard;
 import cc.uncarbon.framework.helium.db.mybatisplus.autoconfigure.HeliumMPAutoConfiguration;
-import cc.uncarbon.framework.helium.db.mybatisplus.handler.MetaObjectFiller;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.ibatis.session.SqlSessionFactory;
 import org.jspecify.annotations.NonNull;
@@ -51,8 +54,8 @@ public class HeliumFieldCryptoAutoConfiguration {
 
     @Bean
     @ConditionalOnBean(value = BlindIndexCalculator.class)
-    public MetaObjectFiller fieldCryptoDerivedColumnFiller(BlindIndexCalculator blindIndexCalculator) {
-        return new FieldCryptoDerivedColumnFiller(blindIndexCalculator);
+    public FieldCryptoDerivedColumnInnerInterceptor fieldCryptoDerivedColumnInnerInterceptor(BlindIndexCalculator blindIndexCalculator) {
+        return new FieldCryptoDerivedColumnInnerInterceptor(blindIndexCalculator);
     }
 
     @Bean
