@@ -92,14 +92,17 @@ public class FieldCryptoDerivedColumnInnerInterceptor implements InnerIntercepto
                 return;
             }
             case Map<?, ?> paramMap -> {
-                Object entity = paramMap.get(ENTITY_PARAM);
+                // MapperMethod.ParamMap#get 对缺失键直接抛 BindingException，必须先 containsKey
+                Object entity = paramMap.getOrDefault(ENTITY_PARAM, null);
                 if (entity != null) {
                     fillIfPlanned(entity, insert);
                     return;
                 }
                 for (String param : BATCH_PARAMS) {
-                    Object value = paramMap.get(param);
-                    if (value instanceof Collection<?> entities) {
+                    if (!paramMap.containsKey(param)) {
+                        continue;
+                    }
+                    if (paramMap.get(param) instanceof Collection<?> entities) {
                         entities.forEach(e -> fillIfPlanned(e, insert));
                         return;
                     }
