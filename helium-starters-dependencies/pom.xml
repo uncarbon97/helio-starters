@@ -17,7 +17,7 @@
         <revision>4.0.0-SNAPSHOT</revision>
 
         <!-- 以下用于 base -->
-        <spring-boot.version>4.1.1</spring-boot.version>
+        <spring-boot.version>4.2.0-RC1</spring-boot.version>
         <lombok.version>1.18.48</lombok.version>
         <slf4j.version>2.0.17</slf4j.version>
         <!-- 要对应 SpringDoc 版本 -->
@@ -31,24 +31,24 @@
 
         <!-- 以下用于 db -->
         <mybatis-plus.version>3.5.17</mybatis-plus.version>
-        <dynamic-datasource.version>4.5.0</dynamic-datasource.version>
-        <mysql.version>26.7.0</mysql.version>
-        <postgresql.version>42.7.13</postgresql.version>
+        <dynamic-datasource.version>4.6.0</dynamic-datasource.version>
+        <mysql.version>26.10.0</mysql.version>
+        <postgresql.version>42.7.14</postgresql.version>
         <!-- 以上用于 db -->
 
         <!-- 以下用于 openapi3 -->
-        <springdoc.version>3.1.1</springdoc.version>
-        <nextdoc4j.version>1.4.1</nextdoc4j.version>
+        <springdoc.version>3.2.0</springdoc.version>
+        <nextdoc4j.version>1.5.0</nextdoc4j.version>
         <!-- 以上用于 openapi3 -->
 
         <!-- 以下用于 redis -->
         <!-- https://mvnrepository.com/artifact/org.redisson/redisson-spring-boot-starter -->
         <!-- 内含的 redisson-spring-data-* 依赖，要对应 Spring Boot 版本 -->
-        <redisson.version>4.7.0</redisson.version>
+        <redisson.version>4.8.0</redisson.version>
         <!-- 以上用于 redis -->
 
         <!-- 以下用于 satoken -->
-        <sa-token.version>1.45.0</sa-token.version>
+        <sa-token.version>1.46.0</sa-token.version>
         <!-- 以上用于 satoken -->
     </properties>
 
@@ -174,11 +174,6 @@
                 <version>${postgresql.version}</version>
             </dependency>
             <!-- 以上用于 db -->
-
-
-            <!-- 以下用于 openapi3 -->
-
-            <!-- 以上用于 openapi3 -->
 
 
             <!-- 以下用于 redis -->
