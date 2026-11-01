@@ -15,7 +15,7 @@ import java.util.List;
 @ConfigurationProperties(prefix = ConfigurationPropertiesPrefix.WEB_SECURITY)
 public class HeliumWebSecurityProperties {
 
-    private AntiXss antiXss;
+    private AntiXss antiXss = new AntiXss();
 
     private Cors cors = new Cors();
 
@@ -25,7 +25,7 @@ public class HeliumWebSecurityProperties {
         /**
          * 是否启用
          */
-        private Boolean enabled;
+        private Boolean enabled = true;
 
         /**
          * 不进行过滤的路由（直接放行）
@@ -41,7 +41,7 @@ public class HeliumWebSecurityProperties {
          * 允许跨域的来源列表（支持通配模式，如 https://*.example.com）；
          * 出于安全考虑不再默认放行任意来源，默认仅放行本机开发前端
          */
-        private List<String> allowedOrigins = List.of("http://localhost:*");
+        private List<String> allowedOrigins = List.of("http://localhost:*", "http://127.0.0.1:*");
 
     }
 

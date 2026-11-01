@@ -60,7 +60,7 @@ public class HeliumI18nProperties {
         /**
          * 本地以 YAML 形式维护的语言包，主文件夹列表
          */
-        private List<String> yamlBasenames;
+        private List<String> yamlBasenames = new ArrayList<>();
 
         /**
          * 多语言解析器子配置属性（默认实例，避免部分配置时 NPE）

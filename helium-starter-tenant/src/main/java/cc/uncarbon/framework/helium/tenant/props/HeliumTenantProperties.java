@@ -40,7 +40,7 @@ public class HeliumTenantProperties {
      * 严格模式：上下文缺租户且 SQL 需要拼租户时抛出业务异常，而非静默拼接 NULL
      * <p>消灭缺少租户上下文导致的「静默空结果」问题；默认开启
      */
-    private Boolean strict = Boolean.TRUE;
+    private Boolean strict;
 
     /**
      * 非严格模式：上下文缺租户时的兜底租户 ID；不用于登录回退
