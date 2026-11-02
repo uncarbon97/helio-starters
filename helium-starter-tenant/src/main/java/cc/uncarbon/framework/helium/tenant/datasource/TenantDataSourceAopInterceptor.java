@@ -33,8 +33,11 @@ public class TenantDataSourceAopInterceptor implements MethodInterceptor {
     /**
      * 回落 primary 的 error 日志节流（键=维度+方法）：首条全量 error，后续降 debug，
      * 避免登录前/匿名端点高频触发时 ERROR 洪泛掩盖真实故障
+     * <p>键空间含租户 ID × 方法，有界上限见 {@link #THROTTLE_KEY_LIMIT}；超限后整体清空重新计数，宁可多打几条 error 也不泄漏内存</p>
      */
     private final Set<String> fallbackErrorLoggedOnce = ConcurrentHashMap.newKeySet();
+
+    private static final int THROTTLE_KEY_LIMIT = 4096;
 
 
     @Override
@@ -97,6 +100,9 @@ public class TenantDataSourceAopInterceptor implements MethodInterceptor {
      * 回落 primary 的日志节流：同一维度+方法首条打全量 error，其余降 debug
      */
     protected void logFallbackErrorOnce(String throttleKey, String message) {
+        if (fallbackErrorLoggedOnce.size() >= THROTTLE_KEY_LIMIT) {
+            fallbackErrorLoggedOnce.clear();
+        }
         if (fallbackErrorLoggedOnce.add(throttleKey)) {
             log.error("[Framework][数据源级多租户] {}", message);
         } else {

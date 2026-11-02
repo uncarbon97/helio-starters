@@ -12,7 +12,8 @@ import java.util.Objects;
  *
  * <p>{@code amount} 在构造时按 {@code scale} 规整（{@link RoundingMode#HALF_EVEN}）；
  * 全程 {@link BigDecimal}，不丢精度，支持加密货币高精度（如 USDT scale=6、BTC scale=8）。
- * 运算要求双方 {@code currencyCode} 一致，否则抛出 {@link IllegalArgumentException}。
+ * 运算要求双方 {@code currencyCode} 一致，否则抛出 {@link IllegalArgumentException}；
+ * {@link #compareTo} 为全序比较（先币种后金额）以满足 {@link Comparable} 契约，同币种金额比较请用 {@link #compareAmount}。
  *
  * @author Uncarbon
  */
@@ -100,6 +101,9 @@ public record Money(BigDecimal amount, String currencyCode, int scale) implement
 
     public Money divide(BigDecimal divisor) {
         Objects.requireNonNull(divisor, "divisor 不能为空");
+        if (divisor.signum() == 0) {
+            throw new IllegalArgumentException("divisor 不能为 0");
+        }
         return new Money(amount.divide(divisor, scale, RoundingMode.HALF_EVEN), currencyCode, scale);
     }
 
@@ -130,8 +134,26 @@ public record Money(BigDecimal amount, String currencyCode, int scale) implement
         return amount.signum() < 0;
     }
 
+    /**
+     * 全序比较，满足 {@link Comparable} 契约（混币集合可安全 sort / TreeSet）：
+     * 先按币种代码字典序，再按金额；金额比较忽略 scale 差异（{@code 1.0 == 1.00}）。
+     * <p>注意：与 record 自动生成的 {@code equals}（含 scale）不一致，{@code compareTo == 0} 不蕴含 {@code equals}；
+     * 需要「同币种金额比较」的业务场景请使用 {@link #compareAmount(Money)}</p>
+     */
     @Override
     public int compareTo(@NonNull Money other) {
+        Objects.requireNonNull(other, "other 不能为空");
+        int byCurrency = currencyCode.compareTo(other.currencyCode);
+        if (byCurrency != 0) {
+            return byCurrency;
+        }
+        return amount.compareTo(other.amount);
+    }
+
+    /**
+     * 同币种金额比较；币种不一致抛 {@link IllegalArgumentException}
+     */
+    public int compareAmount(@NonNull Money other) {
         requireSameCurrency(other);
         return amount.compareTo(other.amount);
     }

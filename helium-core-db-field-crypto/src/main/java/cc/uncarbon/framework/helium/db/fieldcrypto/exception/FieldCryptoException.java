@@ -64,6 +64,10 @@ public class FieldCryptoException extends RuntimeException {
          */
         DECRYPT_FAILED,
         /**
+         * 盲索引计算失败
+         */
+        BLIND_INDEX_FAILED,
+        /**
          * 派生列与密文列不一致（拒写）
          */
         DERIVED_COLUMN_MISMATCH,

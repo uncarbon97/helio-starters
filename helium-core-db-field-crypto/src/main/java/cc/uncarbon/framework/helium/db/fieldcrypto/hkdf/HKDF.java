@@ -31,17 +31,18 @@ public final class HKDF {
     }
 
     /**
-     * @param rootKey 根密钥
-     * @param salt    盐（null 等价于 HashLen 个零字节）
+     * @param rootKey 根密钥，不能为 null 或空
+     * @param salt    盐（null 或空等价于 HashLen 个零字节，RFC 5869 §2.2）
      * @param purpose 用途标签（可为 null）
      */
     public static byte[] derive(byte[] rootKey, byte[] salt, String purpose) {
-        if (rootKey.length == 0) {
-            throw new IllegalStateException("根密钥不能为空");
+        if (rootKey == null || rootKey.length == 0) {
+            throw new IllegalArgumentException("根密钥不能为空");
         }
-        byte[] finalSalt = (salt == null) ? new byte[0] : salt;
+        // SecretKeySpec 拒绝空 key，空盐按 RFC 用 HashLen 个零字节
+        byte[] finalSalt = (salt == null || salt.length == 0) ? new byte[HASH_LEN] : salt;
         byte[] finalPurpose = (purpose == null) ? new byte[0] : purpose.getBytes(StandardCharsets.UTF_8);
-        final int outLen = 32;
+        final int outLen = HASH_LEN;
 
         try {
             // Extract

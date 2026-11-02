@@ -217,7 +217,8 @@ public class I18nMessageUtil {
         }
         // 容错填充：参数个数与占位符不匹配时告警；null 参数转空串，避免字面量 "null" 直达用户
         int placeholderCount = CharSequenceUtil.count(msg, SLF4J_STYLE_PLACEHOLDER);
-        Object[] safeParams = templateParams == null ? new Object[0] : templateParams;
+        // 必须拷贝：调用方（如 BusinessException）持有同一数组引用，原地改写会让异常二次渲染时看到被替换后的值
+        Object[] safeParams = templateParams == null ? new Object[0] : templateParams.clone();
         if (safeParams.length != placeholderCount) {
             log.warn(LOG_PREFIX + "模板参数个数与占位符不匹配 >> code={}, placeholders={}, params={}",
                     code, placeholderCount, safeParams.length);

@@ -76,27 +76,45 @@ public class DynamicDataSourceHelperImpl implements DynamicDataSourceHelper {
             throw new IllegalArgumentException("数据源别名不能为空");
         }
         Object lock = aliasLocks.computeIfAbsent(alias, k -> new Object());
-        synchronized (lock) {
-            dataSourceProperty.setPoolName(alias);
-            DataSource dataSource = dataSourceCreator.createDataSource(dataSourceProperty);
-            if (dataSource != null) {
-                try {
-                    // 必须加入路由表，否则 switchToDataSource 永远找不到该数据源
-                    dynamicRoutingDataSource.addDataSource(alias, dataSource);
-                    log.info(LOG_PREFIX + " 注册了数据源: {}", alias);
-                } catch (Exception e) {
-                    // 注册失败，关闭连接池避免孤儿池泄漏
-                    if (dataSource instanceof AutoCloseable closeable) {
-                        try {
-                            closeable.close();
-                        } catch (Exception ignore) {
-                            // 关闭失败仅忽略，保留原异常
-                        }
-                    }
-                    throw (RuntimeException) e;
+        boolean registered = false;
+        try {
+            synchronized (lock) {
+                // double-check：等锁期间可能已被其他线程注册，避免重复建池
+                DataSource existing = dynamicRoutingDataSource.getDataSources().get(alias);
+                if (existing != null) {
+                    registered = true;
+                    return existing;
                 }
+                dataSourceProperty.setPoolName(alias);
+                DataSource dataSource = dataSourceCreator.createDataSource(dataSourceProperty);
+                if (dataSource != null) {
+                    try {
+                        // 必须加入路由表，否则 switchToDataSource 永远找不到该数据源
+                        dynamicRoutingDataSource.addDataSource(alias, dataSource);
+                        registered = true;
+                        log.info(LOG_PREFIX + " 注册了数据源: {}", alias);
+                    } catch (Exception e) {
+                        // 注册失败，关闭连接池避免孤儿池泄漏
+                        if (dataSource instanceof AutoCloseable closeable) {
+                            try {
+                                closeable.close();
+                            } catch (Exception ignore) {
+                                // 关闭失败仅忽略，保留原异常
+                            }
+                        }
+                        // checked 异常不能强转 RuntimeException（会 CCE 丢失根因），统一包装
+                        throw e instanceof RuntimeException re
+                                ? re
+                                : new IllegalStateException("注册数据源失败: " + alias, e);
+                    }
+                }
+                return dataSource;
             }
-            return dataSource;
+        } finally {
+            if (!registered) {
+                // 注册未成功（建池失败 / 返回 null / 加入路由表失败）时清理锁，避免 alias 由外部输入时无界增长
+                aliasLocks.remove(alias, lock);
+            }
         }
     }
 

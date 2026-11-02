@@ -6,8 +6,12 @@ import cc.uncarbon.framework.helium.db.fieldcrypto.constant.FieldCryptoConstant;
 import cc.uncarbon.framework.helium.db.fieldcrypto.field.FieldCipher;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.SmartInitializingSingleton;
+import org.springframework.dao.DataAccessException;
+import org.springframework.dao.DuplicateKeyException;
 import org.springframework.jdbc.core.JdbcTemplate;
 
+import java.sql.Timestamp;
+import java.time.Instant;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
@@ -29,8 +33,11 @@ public class FieldCryptoCanaryChecker implements SmartInitializingSingleton {
     public static final String PURPOSE_INDEX_ROOT_KEY = FieldCryptoConstant.INDEX_ROOT_KEY_KEBAB;
 
     private static final String SELECT_SQL = "SELECT fingerprint FROM " + TABLE_NAME + " WHERE purpose = ?";
-    private static final String INSERT_SQL = "INSERT INTO " + TABLE_NAME + " (purpose, fingerprint, updated_at) VALUES (?, ?, NOW())";
-    private static final String UPDATE_SQL = "UPDATE " + TABLE_NAME + " SET fingerprint = ?, updated_at = NOW() WHERE purpose = ?";
+    // updated_at 由应用侧传入，不依赖 NOW() 等方言函数
+    private static final String INSERT_SQL = "INSERT INTO " + TABLE_NAME + " (purpose, fingerprint, updated_at) VALUES (?, ?, ?)";
+    private static final String UPDATE_SQL = "UPDATE " + TABLE_NAME + " SET fingerprint = ?, updated_at = ? WHERE purpose = ?";
+    // 存在性探测：WHERE 1=0 不返回行、不依赖 LIMIT 方言
+    private static final String PROBE_SQL = "SELECT purpose FROM " + TABLE_NAME + " WHERE 1 = 0";
 
     private final JdbcTemplate jdbcTemplate;
     private final FieldCipher fieldCipher;
@@ -73,7 +80,7 @@ public class FieldCryptoCanaryChecker implements SmartInitializingSingleton {
 
     private void ensureTableExists() {
         try {
-            jdbcTemplate.execute("SELECT 1 FROM " + TABLE_NAME + " LIMIT 1");
+            jdbcTemplate.execute(PROBE_SQL);
         } catch (Exception e) {
             throw new IllegalStateException(
                     FieldCryptoConstant.LOG_PREFIX + " 元数据表 " + TABLE_NAME + " 不存在或不可达", e);
@@ -90,14 +97,16 @@ public class FieldCryptoCanaryChecker implements SmartInitializingSingleton {
 
         if (existing == null || existing.isBlank()) {
             try {
-                jdbcTemplate.update(INSERT_SQL, purpose, expectedFingerprint);
+                jdbcTemplate.update(INSERT_SQL, purpose, expectedFingerprint, Timestamp.from(Instant.now()));
                 log.info(FieldCryptoConstant.LOG_PREFIX + " >> canary 首次启动，写入 {} 对应指纹", purpose);
-            } catch (Exception race) {
-                // 多节点并发首启竞态：主键冲突 → 重新读取比对
+            } catch (DuplicateKeyException race) {
+                // 多节点并发首启竞态：主键冲突 → 重新读取比对；其他异常（连接 / 权限）原样上抛，不伪装成漂移
                 String winner = jdbcTemplate.query(SELECT_SQL, rs -> rs.next() ? rs.getString(1) : null, purpose);
                 if (winner == null || !winner.equals(expectedFingerprint)) {
                     throw drift(purpose);
                 }
+            } catch (DataAccessException e) {
+                throw new IllegalStateException(FieldCryptoConstant.LOG_PREFIX + " canary 指纹写入失败: purpose=" + purpose, e);
             }
             return;
         }
@@ -111,7 +120,7 @@ public class FieldCryptoCanaryChecker implements SmartInitializingSingleton {
             log.warn(FieldCryptoConstant.LOG_PREFIX + " >> [审计] canary 维护开关生效：覆写指纹 purpose={}（旧值不匹配）。"
                             + "本开关为单次生效，请立即确认这是一次受控轮换操作并回置 {}.canary.allow-overwrite=false",
                     purpose, ConfigurationPropertiesPrefix.DB_FIELD_CRYPTO);
-            jdbcTemplate.update(UPDATE_SQL, expectedFingerprint, purpose);
+            jdbcTemplate.update(UPDATE_SQL, expectedFingerprint, Timestamp.from(Instant.now()), purpose);
             return;
         }
 

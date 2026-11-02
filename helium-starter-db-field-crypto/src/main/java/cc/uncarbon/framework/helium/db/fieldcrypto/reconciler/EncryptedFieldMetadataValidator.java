@@ -44,9 +44,9 @@ import java.util.concurrent.ConcurrentHashMap;
 public class EncryptedFieldMetadataValidator implements SmartInitializingSingleton {
 
     /**
-     * columnPath -> 表.列
+     * columnPath -> 表.列；实例级（而非 static），避免多 Spring 上下文 / devtools 热重载间互相污染
      */
-    private static final Map<String, String> COLUMN_PATH_REGISTRY = new ConcurrentHashMap<>();
+    private final Map<String, String> columnPathRegistry = new ConcurrentHashMap<>();
 
     private final SqlSessionFactory sqlSessionFactory;
 
@@ -66,8 +66,8 @@ public class EncryptedFieldMetadataValidator implements SmartInitializingSinglet
         return tableName != null ? tableName.value() : entityClass.getSimpleName();
     }
 
-    public static Map<String, String> getColumnPathRegistrySnapshot() {
-        return Map.copyOf(COLUMN_PATH_REGISTRY);
+    public Map<String, String> getColumnPathRegistrySnapshot() {
+        return Map.copyOf(columnPathRegistry);
     }
 
     /**
@@ -80,6 +80,7 @@ public class EncryptedFieldMetadataValidator implements SmartInitializingSinglet
 
     public void validate() {
         Map<String, String> seen = new HashMap<>();
+        columnPathRegistry.clear();
         var mapperClasses = sqlSessionFactory.getConfiguration().getMapperRegistry().getMappers();
 
         for (Class<?> mapperClass : mapperClasses) {
@@ -125,7 +126,7 @@ public class EncryptedFieldMetadataValidator implements SmartInitializingSinglet
                 }
 
                 validateHandlerPairing(field, columnPath);
-                COLUMN_PATH_REGISTRY.putIfAbsent(columnPath, location);
+                columnPathRegistry.putIfAbsent(columnPath, location);
             }
         }
     }
@@ -134,10 +135,12 @@ public class EncryptedFieldMetadataValidator implements SmartInitializingSinglet
      * 派生字段不得声明 {@code fill}：fill 字段在 update SET 中是无条件拼接的，
      * 局部更新实体未携带来源时会把派生列以 NULL 落库；
      * 派生回填改由 {@code FieldCryptoDerivedColumnInnerInterceptor} 在 getBoundSql 之前完成
+     * <p>同时在启动期预实例化提取器 / 脱敏器，把「首条 SQL 才报无参构造缺失」提前到启动期</p>
      */
     private static void validateDerivedFieldNoFill(Field field) {
-        boolean derived = field.getAnnotation(BlindIndexOf.class) != null
-                || field.getAnnotation(MaskedOf.class) != null;
+        BlindIndexOf blind = field.getAnnotation(BlindIndexOf.class);
+        MaskedOf masked = field.getAnnotation(MaskedOf.class);
+        boolean derived = blind != null || masked != null;
         if (!derived) {
             return;
         }
@@ -146,6 +149,13 @@ public class EncryptedFieldMetadataValidator implements SmartInitializingSinglet
             throw new IllegalStateException(String.format(
                     FieldCryptoConstant.LOG_PREFIX + " 派生字段 %s.%s 不得声明 fill（派生回填由拦截器在 getBoundSql 前完成）",
                     field.getDeclaringClass().getSimpleName(), field.getName()));
+        }
+        try {
+            FieldCryptoDerivedColumnInnerInterceptor.preflightDerivedAnnotations(blind, masked);
+        } catch (IllegalStateException e) {
+            throw new IllegalStateException(String.format(
+                    FieldCryptoConstant.LOG_PREFIX + " 派生字段 %s.%s 声明不合法: %s",
+                    field.getDeclaringClass().getSimpleName(), field.getName(), e.getMessage()), e);
         }
     }
 

@@ -1,10 +1,10 @@
 package cc.uncarbon.framework.helium.db.fieldcrypto.field;
 
+import cc.uncarbon.framework.helium.db.fieldcrypto.constant.FieldCryptoConstant;
 import cc.uncarbon.framework.helium.db.fieldcrypto.props.HeliumFieldCryptoProperties;
 import lombok.RequiredArgsConstructor;
 
 import java.util.ArrayList;
-import java.util.Base64;
 import java.util.List;
 
 /**
@@ -20,12 +20,12 @@ public class PropsFieldKeyProvider implements FieldKeyProvider {
 
     @Override
     public byte[] loadDataRootKey() {
-        return Base64.getDecoder().decode(props.getDataRootKey());
+        return RootKeyCodec.decode(props.getDataRootKey(), FieldCryptoConstant.DATA_ROOT_KEY_KEBAB);
     }
 
     @Override
     public List<String> loadDataKeyIds() {
-        return new ArrayList<>(props.getDataKeyIds());
+        return copyOf(props.getDataKeyIds());
     }
 
     @Override
@@ -35,17 +35,23 @@ public class PropsFieldKeyProvider implements FieldKeyProvider {
 
     @Override
     public byte[] loadIndexRootKey() {
-        return Base64.getDecoder().decode(props.getIndexRootKey());
+        return RootKeyCodec.decode(props.getIndexRootKey(), FieldCryptoConstant.INDEX_ROOT_KEY_KEBAB);
     }
 
     @Override
     public byte[] loadPreviousDataRootKey() {
-        return props.getPreviousDataRootKey() == null || props.getPreviousDataRootKey().isBlank()
-                ? null : Base64.getDecoder().decode(props.getPreviousDataRootKey().trim());
+        return RootKeyCodec.decodeOptional(props.getPreviousDataRootKey(), FieldCryptoConstant.PREVIOUS_DATA_ROOT_KEY_KEBAB);
     }
 
     @Override
     public List<String> loadPreviousDataKeyIds() {
-        return new ArrayList<>(props.getPreviousDataKeyIds());
+        return copyOf(props.getPreviousDataKeyIds());
+    }
+
+    /**
+     * YAML 显式写 {@code key:} 空值会把 List 默认值覆盖为 null，这里统一兜底
+     */
+    private static List<String> copyOf(List<String> source) {
+        return source == null ? new ArrayList<>() : new ArrayList<>(source);
     }
 }

@@ -24,7 +24,7 @@ public class BusinessException extends RuntimeException {
     private final StructuredErrorCode errorCode;
 
     /**
-     * 如果异常由 {@link StructuredErrorCode} 创建，则携带原始变量填充
+     * 如果异常由 {@link StructuredErrorCode} 创建，则携带原始变量填充（防御性拷贝，外部修改不影响异常）
      */
     private final Object[] templateParams;
 
@@ -66,7 +66,14 @@ public class BusinessException extends RuntimeException {
         super(CharSequenceUtil.format(errorCode.getErrorMsgFriendly(), templateParams));
         this.code = errorCode.getErrorCode();
         this.errorCode = errorCode;
-        this.templateParams = templateParams;
+        this.templateParams = templateParams == null ? null : templateParams.clone();
+    }
+
+    /**
+     * @return 模板参数副本；调用方修改返回数组不影响本异常
+     */
+    public Object[] getTemplateParams() {
+        return templateParams == null ? null : templateParams.clone();
     }
 
     /**

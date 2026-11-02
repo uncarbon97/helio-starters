@@ -153,13 +153,15 @@ public class TenantLineFieldReconciler implements ApplicationRunner {
 
     protected boolean existsColumn(DatabaseMetaData metaData, String catalog, String schemaPattern, String tableName) throws SQLException {
         /*
-        JDBC 元数据匹配中表名是模式（`_` 为单字符通配符），可能匹配到同名变体表导致对账假通过；
-        结果集内再用实际表名精确比对（忽略大小写）一次
+        JDBC 元数据匹配中表名、列名都是模式（`_` 为单字符通配符），可能匹配到同名变体表 / 变体列（如 tenantXid）导致对账假通过；
+        结果集内再用实际表名、列名精确比对（忽略大小写）一次
          */
         try (ResultSet rs = metaData.getColumns(catalog, schemaPattern, tableName, EntityField.TENANT_ID_COLUMN)) {
             while (rs.next()) {
                 String matchedTableName = rs.getString("TABLE_NAME");
-                if (tableName.equalsIgnoreCase(matchedTableName)) {
+                String matchedColumnName = rs.getString("COLUMN_NAME");
+                if (tableName.equalsIgnoreCase(matchedTableName)
+                        && EntityField.TENANT_ID_COLUMN.equalsIgnoreCase(matchedColumnName)) {
                     return true;
                 }
             }

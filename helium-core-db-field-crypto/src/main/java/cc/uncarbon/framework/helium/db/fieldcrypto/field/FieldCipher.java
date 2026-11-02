@@ -96,6 +96,8 @@ public final class FieldCipher {
      * @param plain 明文
      * @param aad   字段唯一编码
      * @return null 或空白入参原样返回 null；其余返回带 keyId 前缀的密文
+     * <p>设计约定：空白串与 null 入库后均为 NULL，业务层不得依赖「空串 vs null」的区分；
+     * 若确需区分，应在加密前自行编码（如使用哨兵值）</p>
      */
     public String encrypt(String plain, String aad) {
         requireAad(aad);
@@ -179,13 +181,20 @@ public final class FieldCipher {
                     "密文前缀对应的密钥未配置: " + keyId);
         }
 
+        // Base64 非法属于数据格式问题，单独归类，不与「密钥不符 / 篡改」的 GCM 指标混在一起误导运维
+        byte[] payload;
         try {
-            byte[] payload = Base64.getDecoder().decode(blob.substring(separatorIndex + 1));
-            if (payload.length <= FieldCryptoConstant.GCM_NONCE_BYTES) {
-                throw new FieldCryptoException(FieldCryptoException.Reason.MALFORMED_CIPHERTEXT,
-                        "密文负载长度不合法");
-            }
+            payload = Base64.getDecoder().decode(blob.substring(separatorIndex + 1));
+        } catch (IllegalArgumentException e) {
+            FieldCryptoMetrics.incrementDecryptFailures();
+            throw new FieldCryptoException(FieldCryptoException.Reason.MALFORMED_CIPHERTEXT, "密文负载不是合法 Base64", e);
+        }
+        if (payload.length <= FieldCryptoConstant.GCM_NONCE_BYTES) {
+            FieldCryptoMetrics.incrementDecryptFailures();
+            throw new FieldCryptoException(FieldCryptoException.Reason.MALFORMED_CIPHERTEXT, "密文负载长度不合法");
+        }
 
+        try {
             Cipher cipher = Cipher.getInstance(FieldCryptoConstant.AES_GCM_TRANSFORMATION);
             cipher.init(Cipher.DECRYPT_MODE, key,
                     new GCMParameterSpec(FieldCryptoConstant.GCM_TAG_BITS, payload, 0,
@@ -194,8 +203,6 @@ public final class FieldCipher {
             byte[] decrypted = cipher.doFinal(payload, FieldCryptoConstant.GCM_NONCE_BYTES,
                     payload.length - FieldCryptoConstant.GCM_NONCE_BYTES);
             return new String(decrypted, StandardCharsets.UTF_8);
-        } catch (FieldCryptoException e) {
-            throw e;
         } catch (Exception e) {
             FieldCryptoMetrics.incrementDecryptFailures();
             FieldCryptoMetrics.incrementGcmTagVerifyFailures();

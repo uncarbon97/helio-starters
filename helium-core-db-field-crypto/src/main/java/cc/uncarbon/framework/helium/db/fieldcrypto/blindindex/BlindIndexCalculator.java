@@ -71,10 +71,15 @@ public final class BlindIndexCalculator {
             byte[] digest = mac.doFinal(normalizedValue.getBytes(StandardCharsets.UTF_8));
             String ret = Base64.getEncoder()
                     .encodeToString(Arrays.copyOf(digest, FieldCryptoConstant.BLIND_INDEX_TRUNCATED_BYTES));
-            assert ret.length() == FieldCryptoConstant.BLIND_INDEX_VALUE_LENGTH && ret.endsWith("==");
+            // 生产 JVM 默认关闭 assert，必须用显式校验兜底冻结常量的一致性
+            if (ret.length() != FieldCryptoConstant.BLIND_INDEX_VALUE_LENGTH || !ret.endsWith("==")) {
+                throw new IllegalStateException("盲索引值长度与冻结常量不一致，请检查 BLIND_INDEX_TRUNCATED_BYTES / BLIND_INDEX_VALUE_LENGTH");
+            }
             return ret;
+        } catch (FieldCryptoException e) {
+            throw e;
         } catch (Exception e) {
-            throw new FieldCryptoException(FieldCryptoException.Reason.DECRYPT_FAILED, "盲索引计算失败", e);
+            throw new FieldCryptoException(FieldCryptoException.Reason.BLIND_INDEX_FAILED, "盲索引计算失败", e);
         }
     }
 

@@ -2,7 +2,6 @@ package cc.uncarbon.framework.helium.db.mybatisplus.conditions.query;
 
 
 import cn.hutool.core.collection.CollUtil;
-import cn.hutool.core.text.CharSequenceUtil;
 import cn.hutool.core.util.ArrayUtil;
 import cn.hutool.core.util.ObjectUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
@@ -24,16 +23,54 @@ import java.util.function.Consumer;
  */
 public class LambdaQueryWrapperX<T> extends LambdaQueryWrapper<T> {
 
+    /**
+     * 模糊查询入参是否转义 LIKE 通配符（{@code \ % _}）；
+     * 默认转义，避免用户输入 {@code %} 退化为全表扫 / 信息泄漏。
+     * 转义字符为反斜杠，与 MySQL / PostgreSQL 的默认 LIKE 转义口径一致；其他方言请自行追加 ESCAPE 子句
+     */
+    private boolean escapeLikeWildcards = true;
+
+    public LambdaQueryWrapperX<T> escapeLikeWildcards(boolean escape) {
+        this.escapeLikeWildcards = escape;
+        return this;
+    }
+
+    /**
+     * 转义 LIKE 通配符：{@code \ -> \\}, {@code % -> \%}, {@code _ -> \_}
+     */
+    public static String escapeLike(String val) {
+        if (val == null || val.isEmpty()) {
+            return val;
+        }
+        StringBuilder sb = new StringBuilder(val.length() + 8);
+        for (int i = 0; i < val.length(); i++) {
+            char c = val.charAt(i);
+            if (c == '\\' || c == '%' || c == '_') {
+                sb.append('\\');
+            }
+            sb.append(c);
+        }
+        return sb.toString();
+    }
+
+    /**
+     * 模糊查询值归一化：只去首尾空白（不删词内空格，"New York" 不能变成 "NewYork"），按需转义通配符
+     */
+    private String normalizeLikeValue(String val) {
+        String trimmed = val.strip();
+        return escapeLikeWildcards ? escapeLike(trimmed) : trimmed;
+    }
+
     public LambdaQueryWrapperX<T> likeIfPresent(SFunction<T, ?> column, String val) {
         if (StringUtils.hasText(val)) {
-            return (LambdaQueryWrapperX<T>) super.like(column, CharSequenceUtil.cleanBlank(val));
+            return (LambdaQueryWrapperX<T>) super.like(column, normalizeLikeValue(val));
         }
         return this;
     }
 
     public LambdaQueryWrapperX<T> likeRightIfPresent(SFunction<T, ?> column, String val) {
         if (StringUtils.hasText(val)) {
-            return (LambdaQueryWrapperX<T>) super.likeRight(column, CharSequenceUtil.cleanBlank(val));
+            return (LambdaQueryWrapperX<T>) super.likeRight(column, normalizeLikeValue(val));
         }
         return this;
     }
@@ -46,6 +83,9 @@ public class LambdaQueryWrapperX<T> extends LambdaQueryWrapper<T> {
     }
 
     public LambdaQueryWrapperX<T> inIfPresent(SFunction<T, ?> column, Object... values) {
+        if (values == null || values.length == 0) {
+            return this;
+        }
         // 先剔除 null 元素再判空，避免单个 null 导致整个 IN 条件被丢弃（查询退化为无过滤）
         Object[] nonNullValues = Arrays.stream(values).filter(Objects::nonNull).toArray();
         if (nonNullValues.length > 0) {

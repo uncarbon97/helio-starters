@@ -66,10 +66,14 @@ public class DefaultDiffItemsToLogContentService implements IDiffItemsToLogConte
      */
     @Override
     public String toLogContent(DiffNode diffNode, final Object sourceObject, final Object targetObject) {
-        if (!diffNode.hasChanges()) {
+        if (diffNode == null || !diffNode.hasChanges()) {
             return "";
         }
-        DiffLogAllFields annotation = sourceObject.getClass().getAnnotation(DiffLogAllFields.class);
+        Object annotated = sourceObject != null ? sourceObject : targetObject;
+        if (annotated == null) {
+            return "";
+        }
+        DiffLogAllFields annotation = annotated.getClass().getAnnotation(DiffLogAllFields.class);
         StringBuilder stringBuilder = new StringBuilder();
         Set<DiffNode> set = new HashSet<>();
         diffNode.visit((node, _) -> generateAllFieldLog(sourceObject, targetObject, stringBuilder, node, annotation, set));
@@ -234,17 +238,12 @@ public class DefaultDiffItemsToLogContentService implements IDiffItemsToLogConte
      * @return 容器类型返回 {@code true}
      */
     private boolean valueIsContainer(DiffNode node, Object sourceObject, Object targetObject) {
-        if (sourceObject != null) {
-            Object sourceValue = node.canonicalGet(sourceObject);
-            if (sourceValue == null) {
-                if (targetObject != null) {
-                    return node.canonicalGet(targetObject) instanceof Collection || node.canonicalGet(targetObject).getClass().isArray();
-                }
-            } else {
-                return sourceValue instanceof Collection || sourceValue.getClass().isArray();
-            }
+        Object value = sourceObject != null ? node.canonicalGet(sourceObject) : null;
+        if (value == null && targetObject != null) {
+            value = node.canonicalGet(targetObject);
         }
-        return false;
+        // 双侧皆 null 直接判非容器，避免 NPE；Map 不走集合差集路径（会 CCE），交由节点树逐键比较
+        return value != null && (value instanceof Collection || value.getClass().isArray());
     }
 
     /**
@@ -324,8 +323,11 @@ public class DefaultDiffItemsToLogContentService implements IDiffItemsToLogConte
      * @return 集合值
      */
     private Collection<Object> getListValue(DiffNode node, Object object) {
-        Object fieldSourceValue = getFieldValue(node, object);
-        if (fieldSourceValue != null && fieldSourceValue.getClass().isArray()) {
+        Object fieldSourceValue = object == null ? null : getFieldValue(node, object);
+        if (fieldSourceValue == null) {
+            return new ArrayList<>();
+        }
+        if (fieldSourceValue.getClass().isArray()) {
             Class<?> componentType = fieldSourceValue.getClass().getComponentType();
             if (componentType.isPrimitive()) {
                 // 基本类型数组不能强转 Object[]，按 Array.get 装箱，避免 CCE 导致整条日志丢失
@@ -336,10 +338,17 @@ public class DefaultDiffItemsToLogContentService implements IDiffItemsToLogConte
                 }
                 return boxed;
             }
-            //noinspection unchecked
             return new ArrayList<>(Arrays.asList((Object[]) fieldSourceValue));
         }
-        return fieldSourceValue == null ? new ArrayList<>() : (Collection<Object>) fieldSourceValue;
+        if (fieldSourceValue instanceof Collection<?> collection) {
+            return new ArrayList<>(collection);
+        }
+        if (fieldSourceValue instanceof Map<?, ?> map) {
+            // 一侧为 Map 另一侧为集合的异构场景：按 entry 文本参与差集，不 CCE
+            return new ArrayList<>(map.entrySet());
+        }
+        // 非容器值（一侧集合、另一侧标量的异构场景）：包装为单元素集合
+        return new ArrayList<>(List.of(fieldSourceValue));
     }
 
     /**
@@ -521,6 +530,9 @@ public class DefaultDiffItemsToLogContentService implements IDiffItemsToLogConte
                 masked |= appendMaskedValue(item, stringBuilder, visiting, depth + 1);
             }
             stringBuilder.append(']');
+        } else if (isJdkInternalType(clazz)) {
+            // JDK 内部类型（java.* / javax.* / jdk.* / sun.*）：模块系统封装不允许反射其字段，直接 toString
+            stringBuilder.append(value);
         } else {
             // Bean：按声明字段名匹配脱敏清单
             stringBuilder.append(clazz.getSimpleName()).append('(');
@@ -544,7 +556,8 @@ public class DefaultDiffItemsToLogContentService implements IDiffItemsToLogConte
                     try {
                         ReflectionUtils.makeAccessible(field);
                         fieldValue = field.get(value);
-                    } catch (IllegalAccessException e) {
+                    } catch (IllegalAccessException | RuntimeException e) {
+                        // InaccessibleObjectException（模块封装）/ SecurityException 等均为 RuntimeException，降级为 '?' 而不中断整条日志
                         stringBuilder.append('?');
                         continue;
                     }
@@ -556,6 +569,12 @@ public class DefaultDiffItemsToLogContentService implements IDiffItemsToLogConte
         // 出栈后移除，允许同一对象出现在兄弟分支
         visiting.remove(value);
         return masked;
+    }
+
+    private static boolean isJdkInternalType(Class<?> clazz) {
+        String name = clazz.getName();
+        return name.startsWith("java.") || name.startsWith("javax.")
+                || name.startsWith("jdk.") || name.startsWith("sun.");
     }
 
     /**

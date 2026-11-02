@@ -19,12 +19,12 @@ public class LargePageParam extends PageParam {
     /**
      * 默认页大小
      */
-    private static final int DEFAULT_PAGE_SIZE = 10000;
+    public static final int DEFAULT_PAGE_SIZE = 10000;
 
     /**
-     * 页大小上限
+     * 页大小上限；与分页拦截器 maxLimit 共用同一口径
      */
-    private static final int MAX_PAGE_SIZE = 10000;
+    public static final int MAX_PAGE_SIZE = 10000;
 
 
     public LargePageParam(Integer pageNum, Integer pageSize) {
@@ -33,12 +33,10 @@ public class LargePageParam extends PageParam {
 
     @Override
     public Integer getPageSize() {
-        Integer pageSize = rawPageSize();
-        if (pageSize == null) {
-            pageSize = DEFAULT_PAGE_SIZE;
-        }
-        // 钳制到 [1, 10000]，避免 0/负值在 maxLimit=-1 时触发全表查询；再复用全局页大小限制器，避免绕过全局策略
-        pageSize = Math.clamp(pageSize, 1, MAX_PAGE_SIZE);
-        return applyGlobalPageSizeLimiter(pageSize);
+        Integer raw = rawPageSize();
+        int size = raw == null ? DEFAULT_PAGE_SIZE : raw;
+        // 钳制到 [1, 10000]，避免 0/负值触发全表查询；再复用全局页大小限制器，避免绕过全局策略
+        size = Math.clamp(size, 1, MAX_PAGE_SIZE);
+        return applyGlobalPageSizeLimiter(size);
     }
 }

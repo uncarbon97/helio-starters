@@ -49,6 +49,12 @@ public class YamlMessageSource extends AbstractMessageSource {
      */
     protected final Map<Locale, Map<String, String>> messagesCache = new ConcurrentHashMap<>();
 
+    /**
+     * 启动期一次性扫描得到的「实际存在语言包」标签集（小写、'-' 分隔）；
+     * 运行期未知 locale 直接归并到已知 locale，不再触发 classpath 扫描，封死 Accept-Language 轮换打 IO 的 DoS 向量
+     */
+    protected volatile Set<String> availableTags = Set.of();
+
 
     public YamlMessageSource(@NonNull HeliumI18nProperties props, Charset charset) {
         this.basenames = props.getLang().getYamlBasenames();
@@ -68,8 +74,10 @@ public class YamlMessageSource extends AbstractMessageSource {
     public void reload() {
         // 清空缓存
         messagesCache.clear();
+        availableTags = scanAvailableTags();
 
         Set<Locale> locales = new LinkedHashSet<>();
+        locales.add(Locale.ROOT);
         if (fallbackLocale != null) {
             locales.add(fallbackLocale);
         }
@@ -83,7 +91,10 @@ public class YamlMessageSource extends AbstractMessageSource {
         for (Locale locale : locales) {
             totalKeys += getMessagesForLocale(locale).size();
         }
-        log.info(LOG_PREFIX + "已加载 {} 个 locale，{} 条文案", locales.size(), totalKeys);
+        if (supportedLocales.isEmpty()) {
+            log.warn(LOG_PREFIX + "未配置 supported-language-tags，运行期仅按实际存在的语言包响应，其余 locale 回落兜底语言 >> 可用语言包: {}", availableTags);
+        }
+        log.info(LOG_PREFIX + "已加载 {} 个 locale，{} 条文案；可用语言包标签: {}", locales.size(), totalKeys, availableTags);
     }
 
     @Override
@@ -94,22 +105,28 @@ public class YamlMessageSource extends AbstractMessageSource {
 
     @Override
     protected String resolveCodeWithoutArguments(@NonNull String code, @NonNull Locale locale) {
+        // 把请求 locale 归并到实际存在语言包的 locale：未知 locale 不进缓存、不触发扫描
+        Locale effective = canonicalize(locale);
+
         // 精确匹配（loadForLocale 加载时已按 默认 → 语言 → 具体区域 顺序合并覆盖）
-        String value = getMessagesForLocale(locale).get(code);
+        String value = getMessagesForLocale(effective).get(code);
         if (value != null) {
             return value;
         }
 
         // 兜底：仅语言部分的 locale（如 zh-CN 回退到 zh）
-        if (!locale.getCountry().isEmpty()) {
-            value = getMessagesForLocale(Locale.of(locale.getLanguage())).get(code);
-            if (value != null) {
-                return value;
+        if (!effective.getCountry().isEmpty()) {
+            Locale langOnly = Locale.of(effective.getLanguage());
+            if (hasLanguagePack(langOnly)) {
+                value = getMessagesForLocale(langOnly).get(code);
+                if (value != null) {
+                    return value;
+                }
             }
         }
 
         // 兜底：配置文件指定的 fallback 语言
-        if (fallbackLocale != null && !fallbackLocale.equals(locale)) {
+        if (fallbackLocale != null && !fallbackLocale.equals(effective)) {
             value = getMessagesForLocale(fallbackLocale).get(code);
             if (value != null) {
                 return value;
@@ -117,11 +134,7 @@ public class YamlMessageSource extends AbstractMessageSource {
         }
 
         // 兜底：根 locale（默认文案）
-        if (!locale.getLanguage().isEmpty()) {
-            value = getMessagesForLocale(Locale.ROOT).get(code);
-            return value;
-        }
-        return null;
+        return getMessagesForLocale(Locale.ROOT).get(code);
     }
 
     /*
@@ -129,6 +142,62 @@ public class YamlMessageSource extends AbstractMessageSource {
                         私有方法
     ----------------------------------------------------------------
      */
+
+    /**
+     * 请求 locale -> 有语言包的 locale：精确命中 → 仅语言命中 → fallback → ROOT
+     */
+    protected Locale canonicalize(Locale locale) {
+        if (locale.getLanguage().isEmpty()) {
+            return Locale.ROOT;
+        }
+        if (hasLanguagePack(locale)) {
+            return locale;
+        }
+        Locale langOnly = Locale.of(locale.getLanguage());
+        if (hasLanguagePack(langOnly)) {
+            return langOnly;
+        }
+        return fallbackLocale != null ? fallbackLocale : Locale.ROOT;
+    }
+
+    protected boolean hasLanguagePack(Locale locale) {
+        return availableTags.contains(locale.toLanguageTag().toLowerCase());
+    }
+
+    /**
+     * 启动期一次性扫描 basename 目录下的语言包文件名，得到可用标签集；仅在此处做 classpath 扫描
+     */
+    protected Set<String> scanAvailableTags() {
+        Set<String> tags = new HashSet<>();
+        for (String basename : basenames) {
+            for (String ext : YAML_EXTS) {
+                String pattern = basename + StrPool.SLASH + "*" + ext;
+                try {
+                    for (Resource resource : resourceLoader.getResources(pattern)) {
+                        String filename = resource.getFilename();
+                        if (filename == null) {
+                            continue;
+                        }
+                        String tag = filename.substring(0, filename.length() - ext.length());
+                        Locale parsed = Locale.forLanguageTag(tag);
+                        if (!parsed.getLanguage().isEmpty()) {
+                            tags.add(parsed.toLanguageTag().toLowerCase());
+                        }
+                    }
+                } catch (IOException e) {
+                    log.warn(LOG_PREFIX + "扫描语言包目录失败: {}", pattern, e);
+                }
+            }
+        }
+        // 显式配置的支持语言即使没有独立文件也视为可用（可能只靠根文案 + fallback），保证口径与配置一致
+        for (Locale locale : supportedLocales) {
+            tags.add(locale.toLanguageTag().toLowerCase());
+        }
+        if (fallbackLocale != null) {
+            tags.add(fallbackLocale.toLanguageTag().toLowerCase());
+        }
+        return Set.copyOf(tags);
+    }
 
     protected Map<String, String> loadForLocale(Locale locale) {
         Map<String, String> result = new HashMap<>();
@@ -217,7 +286,7 @@ public class YamlMessageSource extends AbstractMessageSource {
 
     protected Map<String, String> getMessagesForLocale(Locale locale) {
         if (messagesCache.size() >= MAX_LOCALE_CACHE_SIZE) {
-            // 防御性容量防线：locale 异常多时重置缓存，避免无上界增长
+            // 经 canonicalize 归并后键空间 = 可用语言包数 + ROOT，正常不会触达；保留作为最后防线
             log.warn(LOG_PREFIX + "locale 缓存达到容量上限 " + MAX_LOCALE_CACHE_SIZE + "，已重置");
             messagesCache.clear();
         }

@@ -11,6 +11,8 @@ import lombok.extern.slf4j.Slf4j;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Locale;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * 组合多语言解析器，按 order 升序尝试各解析器，返回第一个有效结果，兜底返回默认语言
@@ -26,12 +28,23 @@ public class DefaultCompositeLangResolver implements CompositeLangResolver {
     private final HeliumI18nProperties props;
     private final List<LangResolver> resolvers;
 
+    /**
+     * 归一化后的支持语言集（'-' 分隔、小写）；空集 = 未配置、不做校验
+     */
+    private final Set<String> normalizedSupportedTags;
+
 
     public DefaultCompositeLangResolver(HeliumI18nProperties props, List<LangResolver> resolvers) {
         this.props = props;
         this.resolvers = resolvers.stream()
                 .sorted(Comparator.comparingInt(LangResolver::getOrder))
                 .toList();
+        var langCfg = props.getLang();
+        List<String> tags = langCfg != null ? langCfg.getSupportedLanguageTags() : null;
+        this.normalizedSupportedTags = tags == null ? Set.of() : tags.stream()
+                .filter(CharSequenceUtil::isNotBlank)
+                .map(LocaleUtil::normalizeLanguageTag)
+                .collect(Collectors.toUnmodifiableSet());
     }
 
     @Override
@@ -42,7 +55,7 @@ public class DefaultCompositeLangResolver implements CompositeLangResolver {
                 var langInfoOp = resolver.resolve(request);
                 if (langInfoOp.isPresent()) {
                     LangInfo langInfo = langInfoOp.get();
-                    if (isSupported(langCfg, langInfo.getLanguageTag())) {
+                    if (isSupported(langInfo.getLanguageTag())) {
                         return langInfo;
                     }
                 }
@@ -61,10 +74,21 @@ public class DefaultCompositeLangResolver implements CompositeLangResolver {
         return LangInfo.ofSimple(defaultLocale.toLanguageTag(), defaultLocale);
     }
 
-    private boolean isSupported(HeliumI18nProperties.Lang langCfg, String languageTag) {
-        List<String> tags = langCfg != null ? langCfg.getSupportedLanguageTags() : null;
+    /**
+     * 归一化后比较，使配置 {@code en_US} / 请求 {@code en-US} / {@code EN-us} 等价；
+     * 精确标签未命中时再按语言主标签（{@code en-US} -> {@code en}）回退匹配
+     */
+    private boolean isSupported(String languageTag) {
         // 未配置支持语言集时不做校验
-        return tags == null || tags.isEmpty() || tags.contains(languageTag);
+        if (normalizedSupportedTags.isEmpty()) {
+            return true;
+        }
+        String normalized = LocaleUtil.normalizeLanguageTag(languageTag);
+        if (normalizedSupportedTags.contains(normalized)) {
+            return true;
+        }
+        int dash = normalized.indexOf('-');
+        return dash > 0 && normalizedSupportedTags.contains(normalized.substring(0, dash));
     }
 
     private Locale toLocaleSafely(String tag) {

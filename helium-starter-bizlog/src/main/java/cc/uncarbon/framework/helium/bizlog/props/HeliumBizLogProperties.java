@@ -105,7 +105,7 @@ public class HeliumBizLogProperties {
      * @param template 新增模板
      */
     public void setAddTemplate(String template) {
-        validatePlaceHolder(template);
+        validatePlaceHolder(template, "add-template");
         this.addTemplate = template;
     }
 
@@ -115,7 +115,7 @@ public class HeliumBizLogProperties {
      * @param template 更新模板
      */
     public void setUpdateTemplate(String template) {
-        validatePlaceHolder(template);
+        validatePlaceHolder(template, "update-template");
         this.updateTemplate = template;
     }
 
@@ -125,8 +125,41 @@ public class HeliumBizLogProperties {
      * @param template 删除模板
      */
     public void setDeleteTemplate(String template) {
-        validatePlaceHolder(template);
+        validatePlaceHolder(template, "delete-template");
         this.deleteTemplate = template;
+    }
+
+    public void setAddTemplateForList(String template) {
+        validateListPlaceHolder(template, "add-template-for-list", DiffTextFormatter.LIST_ADD_VALUE_PLACEHOLDER);
+        this.addTemplateForList = template;
+    }
+
+    public void setDeleteTemplateForList(String template) {
+        validateListPlaceHolder(template, "delete-template-for-list", DiffTextFormatter.LIST_DEL_VALUE_PLACEHOLDER);
+        this.deleteTemplateForList = template;
+    }
+
+    public void setUpdateTemplateForList(String template) {
+        validateListPlaceHolder(template, "update-template-for-list", DiffTextFormatter.LIST_ADD_VALUE_PLACEHOLDER);
+        validateListPlaceHolder(template, "update-template-for-list", DiffTextFormatter.LIST_DEL_VALUE_PLACEHOLDER);
+        this.updateTemplateForList = template;
+    }
+
+    /**
+     * @return 逗号分隔、已 trim、去空项的 useEqualsMethod 类名列表
+     */
+    public List<String> useEqualsMethodClassNames() {
+        if (useEqualsMethod == null || useEqualsMethod.isBlank()) {
+            return List.of();
+        }
+        List<String> ret = new ArrayList<>();
+        for (String name : useEqualsMethod.split(",")) {
+            String trimmed = name.trim();
+            if (!trimmed.isEmpty()) {
+                ret.add(trimmed);
+            }
+        }
+        return ret;
     }
 
     /**
@@ -134,11 +167,25 @@ public class HeliumBizLogProperties {
      *
      * @param template 待校验模板
      */
-    private void validatePlaceHolder(String template) {
+    private void validatePlaceHolder(String template, String propertyName) {
+        if (template == null || template.isBlank()) {
+            throw new IllegalArgumentException("logRecord 模板 " + propertyName + " 不能为空");
+        }
         if (!template.contains(DiffTextFormatter.FIELD_PLACEHOLDER)
                 && !template.contains(DiffTextFormatter.SOURCE_VALUE_PLACEHOLDER)
                 && !template.contains(DiffTextFormatter.TARGET_VALUE_PLACEHOLDER)) {
-            throw new IllegalArgumentException("请检查 logRecord template, 模板需要配置 {{#fieldName}},{{#sourceValue}},{{#targetValue}} 三个变量中的任何一个");
+            throw new IllegalArgumentException("请检查 logRecord 模板 " + propertyName
+                    + "，模板需要配置 {{#fieldName}},{{#sourceValue}},{{#targetValue}} 三个变量中的任何一个");
+        }
+    }
+
+    private void validateListPlaceHolder(String template, String propertyName, String requiredPlaceholder) {
+        if (template == null || template.isBlank()) {
+            throw new IllegalArgumentException("logRecord 模板 " + propertyName + " 不能为空");
+        }
+        if (!template.contains(requiredPlaceholder)) {
+            throw new IllegalArgumentException("请检查 logRecord 模板 " + propertyName
+                    + "，模板需要包含占位符 " + requiredPlaceholder);
         }
     }
 

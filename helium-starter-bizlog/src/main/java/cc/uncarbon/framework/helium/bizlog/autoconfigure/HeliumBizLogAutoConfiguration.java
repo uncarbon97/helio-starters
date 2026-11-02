@@ -17,10 +17,8 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.*;
 import org.springframework.core.type.AnnotatedTypeMetadata;
-import org.springframework.util.StringUtils;
 
 import java.time.LocalDateTime;
-import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -74,8 +72,9 @@ public class HeliumBizLogAutoConfiguration {
         diffParseFunction.setDiffItemsToLogContentService(diffItemsToLogContentService);
         // issue#111
         diffParseFunction.addUseEqualsClass(LocalDateTime.class);
-        if (StringUtils.hasText(props.getUseEqualsMethod())) {
-            diffParseFunction.addUseEqualsClass(Arrays.asList(props.getUseEqualsMethod().split(",")));
+        List<String> useEqualsClassNames = props.useEqualsMethodClassNames();
+        if (!useEqualsClassNames.isEmpty()) {
+            diffParseFunction.addUseEqualsClass(useEqualsClassNames);
         }
         return diffParseFunction;
     }

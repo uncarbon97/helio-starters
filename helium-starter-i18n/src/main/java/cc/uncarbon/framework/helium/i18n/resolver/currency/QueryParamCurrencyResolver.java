@@ -28,6 +28,10 @@ public class QueryParamCurrencyResolver implements CurrencyResolver {
             return Optional.empty();
         }
         final String paramName = cfg.getResolver().getQueryParamName();
+        if (CharSequenceUtil.isBlank(paramName)) {
+            // 配置被显式置空：部分容器对 getParameter(null) 直接 NPE
+            return Optional.empty();
+        }
         String paramVal = CharSequenceUtil.cleanBlank(servletRequest.getParameter(paramName));
         if (CharSequenceUtil.isEmpty(paramVal) || !CurrencyResolverUtil.isSupported(props, paramVal)) {
             return Optional.empty();

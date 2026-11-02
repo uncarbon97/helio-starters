@@ -28,6 +28,10 @@ public class HeaderCurrencyResolver implements CurrencyResolver {
             return Optional.empty();
         }
         final String headerName = cfg.getResolver().getHeaderName();
+        if (CharSequenceUtil.isBlank(headerName)) {
+            // 配置被显式置空：部分容器对 getHeader(null) 直接 NPE
+            return Optional.empty();
+        }
         String headerVal = CharSequenceUtil.cleanBlank(servletRequest.getHeader(headerName));
         if (CharSequenceUtil.isEmpty(headerVal) || !CurrencyResolverUtil.isSupported(props, headerVal)) {
             return Optional.empty();

@@ -13,8 +13,6 @@ import org.springframework.expression.EvaluationContext;
 
 import java.lang.reflect.Method;
 import java.util.*;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 /**
  * 日志模板解析器
@@ -29,9 +27,76 @@ import java.util.regex.Pattern;
 public class LogRecordValueParser implements BeanFactoryAware {
 
     /**
-     * 匹配 {@code {函数名{表达式}}} 占位符的正则
+     * 占位符 {@code {函数名{表达式}}} 的一次命中：[start, end) 为整个占位符在模板中的区间
      */
-    private static final Pattern pattern = Pattern.compile("\\{\\s*(\\w*)\\s*\\{(.*?)}}");
+    record Placeholder(int start, int end, String functionName, String expression) {
+    }
+
+    /**
+     * 按花括号深度解析模板中的全部 {@code {函数名{表达式}}} 占位符；
+     * 内层表达式允许嵌套 {@code {}}（如 SpEL map 字面量 {@code {k:v}}、{@code T(X).of({1,2})}），
+     * 原正则 {@code \{\s*(\w*)\s*\{(.*?)}}} 对此会在首个 {@code }}} 处截断。
+     * 引号内的花括号不计入深度。
+     */
+    static List<Placeholder> findPlaceholders(String template) {
+        List<Placeholder> ret = new ArrayList<>();
+        int len = template.length();
+        int i = 0;
+        while (i < len) {
+            if (template.charAt(i) != '{') {
+                i++;
+                continue;
+            }
+            int start = i;
+            int j = i + 1;
+            // 可选函数名：\s*\w*\s*
+            while (j < len && Character.isWhitespace(template.charAt(j))) j++;
+            int nameStart = j;
+            while (j < len && (Character.isLetterOrDigit(template.charAt(j)) || template.charAt(j) == '_')) j++;
+            String functionName = template.substring(nameStart, j);
+            while (j < len && Character.isWhitespace(template.charAt(j))) j++;
+            if (j >= len || template.charAt(j) != '{') {
+                // 不是占位符开头（如普通文本中的单个 '{'），继续向后扫
+                i = start + 1;
+                continue;
+            }
+            int exprStart = j + 1;
+            int depth = 1;
+            boolean inSingle = false;
+            boolean inDouble = false;
+            int k = exprStart;
+            int exprEnd = -1;
+            while (k < len) {
+                char c = template.charAt(k);
+                if (inSingle) {
+                    if (c == '\'') inSingle = false;
+                } else if (inDouble) {
+                    if (c == '"') inDouble = false;
+                } else if (c == '\'') {
+                    inSingle = true;
+                } else if (c == '"') {
+                    inDouble = true;
+                } else if (c == '{') {
+                    depth++;
+                } else if (c == '}') {
+                    depth--;
+                    if (depth == 0) {
+                        exprEnd = k;
+                        break;
+                    }
+                }
+                k++;
+            }
+            // 内层闭合后必须紧跟外层 '}'
+            if (exprEnd < 0 || exprEnd + 1 >= len || template.charAt(exprEnd + 1) != '}') {
+                i = start + 1;
+                continue;
+            }
+            ret.add(new Placeholder(start, exprEnd + 2, functionName, template.substring(exprStart, exprEnd)));
+            i = exprEnd + 2;
+        }
+        return ret;
+    }
     public static final String COMMA = ",";
     private final LogRecordExpressionEvaluator expressionEvaluator = new LogRecordExpressionEvaluator();
     protected BeanFactory beanFactory;
@@ -96,13 +161,15 @@ public class LogRecordValueParser implements BeanFactoryAware {
 
         for (String expressionTemplate : templates) {
             if (expressionTemplate.contains("{")) {
-                Matcher matcher = pattern.matcher(expressionTemplate);
+                List<Placeholder> placeholders = findPlaceholders(expressionTemplate);
                 StringBuilder parsedStr = new StringBuilder();
                 AnnotatedElementKey annotatedElementKey = new AnnotatedElementKey(methodExecuteResult.getMethod(), methodExecuteResult.getTargetClass());
                 boolean sameDiff = false;
-                while (matcher.find()) {
-                    String expression = matcher.group(2);
-                    String functionName = matcher.group(1);
+                int cursor = 0;
+                for (Placeholder ph : placeholders) {
+                    parsedStr.append(expressionTemplate, cursor, ph.start());
+                    String expression = ph.expression();
+                    String functionName = ph.functionName();
                     if (DiffParseFunction.diffFunctionName.equals(functionName)) {
                         expression = getDiffFunctionValue(evaluationContext, annotatedElementKey, expression);
                         sameDiff = Objects.equals("", expression);
@@ -110,9 +177,10 @@ public class LogRecordValueParser implements BeanFactoryAware {
                         Object value = expressionEvaluator.parseExpression(expression, annotatedElementKey, evaluationContext);
                         expression = logFunctionParser.getFunctionReturnValue(beforeFunctionNameAndReturnMap, value, expression, functionName);
                     }
-                    matcher.appendReplacement(parsedStr, Matcher.quoteReplacement(expression == null ? "" : expression));
+                    parsedStr.append(expression == null ? "" : expression);
+                    cursor = ph.end();
                 }
-                matcher.appendTail(parsedStr);
+                parsedStr.append(expressionTemplate, cursor, expressionTemplate.length());
                 expressionValues.put(expressionTemplate, recordSameDiff(sameDiff, diffSameWhetherSaveLog) ? parsedStr.toString() : expressionTemplate);
             } else {
                 expressionValues.put(expressionTemplate, expressionTemplate);
@@ -239,14 +307,13 @@ public class LogRecordValueParser implements BeanFactoryAware {
 
         for (String expressionTemplate : templates) {
             if (expressionTemplate.contains("{")) {
-                Matcher matcher = pattern.matcher(expressionTemplate);
-                while (matcher.find()) {
-                    String expression = matcher.group(2);
+                for (Placeholder ph : findPlaceholders(expressionTemplate)) {
+                    String expression = ph.expression();
                     if (expression.contains("#_ret") || expression.contains("#_errorMsg")) {
                         continue;
                     }
                     AnnotatedElementKey annotatedElementKey = new AnnotatedElementKey(method, targetClass);
-                    String functionName = matcher.group(1);
+                    String functionName = ph.functionName();
                     if (logFunctionParser.beforeFunction(functionName)) {
                         Object value = expressionEvaluator.parseExpression(expression, annotatedElementKey, evaluationContext);
                         String functionReturnValue = logFunctionParser.getFunctionReturnValue(null, value, expression, functionName);

@@ -84,6 +84,37 @@ public class FieldCryptoDerivedColumnInnerInterceptor implements InnerIntercepto
     }
 
     /**
+     * 启动期预检：提取器 / 脱敏器能否按注解声明实例化（供元数据校验器调用）
+     *
+     * @throws IllegalStateException 实例化失败
+     */
+    public static void preflightDerivedAnnotations(BlindIndexOf blind, MaskedOf masked) {
+        if (blind != null) {
+            newExtractor(blind);
+        }
+        if (masked != null) {
+            newInstance(masked.masker(), "脱敏器");
+        }
+    }
+
+    /**
+     * 盲索引提取器实例化：{@code extractorArg >= 0} 时走 {@code (int)} 构造，否则走无参构造
+     */
+    static BlindIndexValueExtractor newExtractor(BlindIndexOf blind) {
+        Class<? extends BlindIndexValueExtractor> type = blind.extractor();
+        int arg = blind.extractorArg();
+        if (arg < 0) {
+            return newInstance(type, "盲索引提取器");
+        }
+        try {
+            return type.getDeclaredConstructor(int.class).newInstance(arg);
+        } catch (ReflectiveOperationException e) {
+            throw new IllegalStateException(
+                    "盲索引提取器实例化失败: " + type.getSimpleName() + "，声明了 extractorArg 时需提供 public (int) 构造", e);
+        }
+    }
+
+    /**
      * 从 Mapper 入参中剥离实体（或批量实体集），再按计划回填
      */
     private void processParameter(Object parameter, boolean insert) {
@@ -238,7 +269,7 @@ public class FieldCryptoDerivedColumnInnerInterceptor implements InnerIntercepto
                 if (blind != null) {
                     blindBySource.computeIfAbsent(blind.value(), k -> new ArrayList<>())
                             .add(new BlindIndexPlan(
-                                    field.getName(), blind.purpose(), newInstance(blind.extractor(), "盲索引提取器")));
+                                    field.getName(), blind.purpose(), newExtractor(blind)));
                 }
                 MaskedOf masked = field.getAnnotation(MaskedOf.class);
                 if (masked != null) {

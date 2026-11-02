@@ -60,11 +60,11 @@ public class MybatisPlusAutoFillColumnHandler implements MetaObjectHandler {
     public void updateFill(MetaObject metaObject) {
         overrideTenantId(metaObject);
         fillByExtends(metaObject, false);
-        // 避免严格填充策略下，实体类字段非空时不更新
-        metaObject.setValue(EntityField.UPDATED_AT_FIELD, Instant.now());
+        // 避免严格填充策略下，实体类字段非空时不更新；但必须先确认实体有该属性，否则对无审计列的实体 update 会抛 ReflectionException
+        setIfHasSetter(metaObject, EntityField.UPDATED_AT_FIELD, Instant.now());
         Long uid = UserContextHolder.getUserId();
         if (uid != null) {
-            metaObject.setValue(EntityField.UPDATED_BY_FIELD, uid);
+            setIfHasSetter(metaObject, EntityField.UPDATED_BY_FIELD, uid);
         }
     }
 
@@ -73,6 +73,12 @@ public class MybatisPlusAutoFillColumnHandler implements MetaObjectHandler {
                         私有方法
     ----------------------------------------------------------------
      */
+
+    private static void setIfHasSetter(MetaObject metaObject, String fieldName, Object value) {
+        if (metaObject.hasSetter(fieldName)) {
+            metaObject.setValue(fieldName, value);
+        }
+    }
 
     private void fillByExtends(MetaObject metaObject, boolean insert) {
         for (MetaObjectFiller filler : extendFillers) {

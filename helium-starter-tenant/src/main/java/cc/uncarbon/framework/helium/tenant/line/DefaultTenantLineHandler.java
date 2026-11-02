@@ -19,6 +19,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * 默认行级多租户处理器
@@ -61,6 +62,11 @@ public class DefaultTenantLineHandler implements TenantLineHandler {
      */
     private final Map<String, Boolean> ignoredTableCache = new ConcurrentHashMap<>();
 
+    /**
+     * 「缺上下文且无兜底」告警只打一次
+     */
+    private final AtomicBoolean missingContextWarned = new AtomicBoolean(false);
+
 
     public DefaultTenantLineHandler(HeliumTenantProperties props) {
         this(props.getIgnoredTables(), props.isParticipateByDefault(),
@@ -90,6 +96,13 @@ public class DefaultTenantLineHandler implements TenantLineHandler {
                 // 兜底写值
                 return new LongValue(nonStrictFallbackTenantId);
             }
+            // 失败关闭：拼出 tenant_id = NULL 恒假条件，宁可查不到也不跨租户；但必须让开发者知道
+            if (missingContextWarned.compareAndSet(false, true)) {
+                log.warn(TenantLineConfiguration.LOG_PREFIX + " 缺少租户上下文且未配置 non-strict-fallback-tenant-id，"
+                        + "本次及后续 SQL 将拼接恒假租户条件（结果为空/影响 0 行）；本告警仅输出一次，后续降级为 DEBUG");
+            } else {
+                log.debug(TenantLineConfiguration.LOG_PREFIX + " 缺少租户上下文，拼接恒假租户条件");
+            }
             return new NullValue();
         }
         return new LongValue(currentTenantId);
@@ -104,11 +117,16 @@ public class DefaultTenantLineHandler implements TenantLineHandler {
         // 归一化表名：去除包裹符号，统一小写
         String normalizedTableName = normalizeTableName(tableName);
         Boolean ignore = ignoredTableCache.get(normalizedTableName);
-        if (ignore == null) {
-            ignore = computeIgnoreTable(tableName, normalizedTableName);
-            ignoredTableCache.put(normalizedTableName, ignore);
+        if (ignore != null) {
+            return ignore;
         }
-        return ignore;
+        Boolean computed = computeIgnoreTable(tableName, normalizedTableName);
+        if (computed == null) {
+            // TableInfo 尚未注册（启动期早于 Mapper 初始化的 SQL）：保持参与隔离但不缓存，等注册后再定口径
+            return false;
+        }
+        ignoredTableCache.put(normalizedTableName, computed);
+        return computed;
     }
 
     /**
@@ -152,7 +170,12 @@ public class DefaultTenantLineHandler implements TenantLineHandler {
         return false;
     }
 
-    protected boolean computeIgnoreTable(String originalTableName, String normalizedTableName) {
+    /**
+     * 计算表是否忽略租户隔离
+     *
+     * @return {@code true}=忽略；{@code false}=参与；{@code null}=无法判定（TableInfo 未注册），调用方不得缓存
+     */
+    protected Boolean computeIgnoreTable(String originalTableName, String normalizedTableName) {
         // 显式配置忽略的表
         if (isConfiguredIgnored(normalizedTableName)) {
             return true;
@@ -178,8 +201,8 @@ public class DefaultTenantLineHandler implements TenantLineHandler {
                     .orElse(null);
         }
         if (tableInfo == null) {
-            // 找不到对应实体（如纯 XML Mapper 编写的 SQL），保持参与租户隔离，避免遗漏
-            return false;
+            // 找不到对应实体：可能是纯 XML Mapper 的表，也可能是 Mapper 尚未初始化；交由调用方决定是否缓存
+            return null;
         }
         // 实体类标注忽略注解
         Class<?> entityType = tableInfo.getEntityType();
