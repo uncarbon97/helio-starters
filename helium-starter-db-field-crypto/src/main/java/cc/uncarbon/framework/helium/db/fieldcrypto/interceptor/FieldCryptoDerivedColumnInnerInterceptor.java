@@ -68,21 +68,6 @@ public class FieldCryptoDerivedColumnInnerInterceptor implements InnerIntercepto
         processParameter(parameter, commandType == SqlCommandType.INSERT);
     }
 
-    /*
-    ----------------------------------------------------------------
-                        私有方法
-    ----------------------------------------------------------------
-     */
-
-    private static <T> T newInstance(Class<? extends T> type, String role) {
-        try {
-            return type.getDeclaredConstructor().newInstance();
-        } catch (ReflectiveOperationException e) {
-            throw new IllegalStateException(
-                    role + "实例化失败: " + type.getSimpleName() + "，需提供 public 无参构造", e);
-        }
-    }
-
     /**
      * 启动期预检：提取器 / 脱敏器能否按注解声明实例化（供元数据校验器调用）
      *
@@ -97,22 +82,11 @@ public class FieldCryptoDerivedColumnInnerInterceptor implements InnerIntercepto
         }
     }
 
-    /**
-     * 盲索引提取器实例化：{@code extractorArg >= 0} 时走 {@code (int)} 构造，否则走无参构造
+    /*
+    ----------------------------------------------------------------
+                        私有方法
+    ----------------------------------------------------------------
      */
-    static BlindIndexValueExtractor newExtractor(BlindIndexOf blind) {
-        Class<? extends BlindIndexValueExtractor> type = blind.extractor();
-        int arg = blind.extractorArg();
-        if (arg < 0) {
-            return newInstance(type, "盲索引提取器");
-        }
-        try {
-            return type.getDeclaredConstructor(int.class).newInstance(arg);
-        } catch (ReflectiveOperationException e) {
-            throw new IllegalStateException(
-                    "盲索引提取器实例化失败: " + type.getSimpleName() + "，声明了 extractorArg 时需提供 public (int) 构造", e);
-        }
-    }
 
     /**
      * 从 Mapper 入参中剥离实体（或批量实体集），再按计划回填
@@ -296,6 +270,22 @@ public class FieldCryptoDerivedColumnInnerInterceptor implements InnerIntercepto
             }
         }
         return new EntityFillPlan(List.copyOf(groups));
+    }
+
+    /**
+     * 盲索引提取器实例化（无参构造）
+     */
+    static BlindIndexValueExtractor newExtractor(BlindIndexOf blind) {
+        return newInstance(blind.extractor(), "盲索引提取器");
+    }
+
+    private static <T> T newInstance(Class<? extends T> type, String role) {
+        try {
+            return type.getDeclaredConstructor().newInstance();
+        } catch (ReflectiveOperationException e) {
+            throw new IllegalStateException(
+                    role + "实例化失败: " + type.getSimpleName() + "，需提供 public 无参构造", e);
+        }
     }
 
     /**

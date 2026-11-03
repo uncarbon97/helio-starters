@@ -53,14 +53,6 @@ public class LambdaQueryWrapperX<T> extends LambdaQueryWrapper<T> {
         return sb.toString();
     }
 
-    /**
-     * 模糊查询值归一化：只去首尾空白（不删词内空格，"New York" 不能变成 "NewYork"），按需转义通配符
-     */
-    private String normalizeLikeValue(String val) {
-        String trimmed = val.strip();
-        return escapeLikeWildcards ? escapeLike(trimmed) : trimmed;
-    }
-
     public LambdaQueryWrapperX<T> likeIfPresent(SFunction<T, ?> column, String val) {
         if (StringUtils.hasText(val)) {
             return (LambdaQueryWrapperX<T>) super.like(column, normalizeLikeValue(val));
@@ -221,6 +213,20 @@ public class LambdaQueryWrapperX<T> extends LambdaQueryWrapper<T> {
     public LambdaQueryWrapperX<T> not(boolean condition, Consumer<LambdaQueryWrapper<T>> consumer) {
         super.not(condition, consumer);
         return this;
+    }
+
+    /*
+    ----------------------------------------------------------------
+                        私有方法
+    ----------------------------------------------------------------
+     */
+
+    /**
+     * 模糊查询值归一化：只去首尾空白（不删词内空格，"New York" 不能变成 "NewYork"），按需转义通配符
+     */
+    private String normalizeLikeValue(String val) {
+        String trimmed = val.strip();
+        return escapeLikeWildcards ? escapeLike(trimmed) : trimmed;
     }
 
 }

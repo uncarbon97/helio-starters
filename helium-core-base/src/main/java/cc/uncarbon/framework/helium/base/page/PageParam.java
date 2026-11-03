@@ -64,30 +64,10 @@ public class PageParam implements Serializable {
     }
 
     /**
-     * 应用全局分页大小限制器；供子类覆写 getPageSize 后复用，避免绕过全局策略
-     */
-    protected static Integer applyGlobalPageSizeLimiter(Integer size) {
-        UnaryOperator<Integer> limiter = globalPageSizeLimiter;
-        return limiter != null ? limiter.apply(size) : size;
-    }
-
-    protected static Integer applyGlobalPageNumLimiter(Integer num) {
-        UnaryOperator<Integer> limiter = globalPageNumLimiter;
-        return limiter != null ? limiter.apply(num) : num;
-    }
-
-    /**
      * 取得 pageNum 原始值（未钳制）
      */
     public Integer rawPageNum() {
         return pageNum;
-    }
-
-    /**
-     * 取得 pageSize 原始值（未钳制）
-     */
-    public Integer rawPageSize() {
-        return pageSize;
     }
 
     /**
@@ -98,10 +78,39 @@ public class PageParam implements Serializable {
         return applyGlobalPageNumLimiter(num);
     }
 
+    /**
+     * 取得 pageSize 原始值（未钳制）
+     */
+    public Integer rawPageSize() {
+        return pageSize;
+    }
+
     public Integer getPageSize() {
         int size = pageSize == null ? DEFAULT_PAGE_SIZE : pageSize;
         // 钳制到 [1, MAX_PAGE_SIZE]，避免 0/负值触发全表查询
         size = Math.clamp(size, 1, MAX_PAGE_SIZE);
         return applyGlobalPageSizeLimiter(size);
+    }
+
+    /*
+    ----------------------------------------------------------------
+                        受保护静态工具方法
+    ----------------------------------------------------------------
+     */
+
+    /**
+     * 应用全局分页页码限制器；供 getPageNum 复用，也供子类覆写后复用，避免绕过全局策略
+     */
+    protected static Integer applyGlobalPageNumLimiter(Integer num) {
+        UnaryOperator<Integer> limiter = globalPageNumLimiter;
+        return limiter != null ? limiter.apply(num) : num;
+    }
+
+    /**
+     * 应用全局分页大小限制器；供 getPageSize 及子类覆写后复用，避免绕过全局策略
+     */
+    protected static Integer applyGlobalPageSizeLimiter(Integer size) {
+        UnaryOperator<Integer> limiter = globalPageSizeLimiter;
+        return limiter != null ? limiter.apply(size) : size;
     }
 }

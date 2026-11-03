@@ -68,6 +68,18 @@ public class MybatisPlusAutoFillColumnHandler implements MetaObjectHandler {
         }
     }
 
+    /**
+     * 避免入参携带伪造 tenantId ，造成跨租户写入
+     */
+    protected void overrideTenantId(MetaObject metaObject) {
+        if (existsTenantContextHolder && !TenantContextHolder.isIgnored()) {
+            Long currentTenantId = TenantContextHolder.getTenantId();
+            if (currentTenantId != null && metaObject.hasSetter(EntityField.TENANT_ID_FIELD)) {
+                setFieldValByName(EntityField.TENANT_ID_FIELD, currentTenantId, metaObject);
+            }
+        }
+    }
+
     /*
     ----------------------------------------------------------------
                         私有方法
@@ -83,18 +95,6 @@ public class MybatisPlusAutoFillColumnHandler implements MetaObjectHandler {
     private void fillByExtends(MetaObject metaObject, boolean insert) {
         for (MetaObjectFiller filler : extendFillers) {
             filler.fill(metaObject, insert);
-        }
-    }
-
-    /**
-     * 避免入参携带伪造 tenantId ，造成跨租户写入
-     */
-    protected void overrideTenantId(MetaObject metaObject) {
-        if (existsTenantContextHolder && !TenantContextHolder.isIgnored()) {
-            Long currentTenantId = TenantContextHolder.getTenantId();
-            if (currentTenantId != null && metaObject.hasSetter(EntityField.TENANT_ID_FIELD)) {
-                setFieldValByName(EntityField.TENANT_ID_FIELD, currentTenantId, metaObject);
-            }
         }
     }
 

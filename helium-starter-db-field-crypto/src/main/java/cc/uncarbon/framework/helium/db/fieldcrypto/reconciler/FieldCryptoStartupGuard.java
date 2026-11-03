@@ -11,8 +11,6 @@ import java.util.List;
 /**
  * 字段加密启动守卫，不符合启动条件则拒绝启动
  *
- * <p>密钥解码与 {@link RootKeyCodec} 共用同一入口，保证守卫口径 = 运行期口径</p>
- *
  * @author Uncarbon
  */
 @Slf4j

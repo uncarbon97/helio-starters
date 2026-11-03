@@ -129,29 +129,6 @@ public final class FieldCipher {
     }
 
     /**
-     * 数据加密根密钥代际指纹（canary 指纹之一）
-     *
-     * <p>同一根密钥必得同一指纹，不含密钥材料；用于节点启动时暴露根密钥配置不一致等静默漂移</p>
-     */
-    public String dataRootKeyCanaryFingerprint() {
-        byte[] canaryDataKey = HKDF.derive(
-                dataRootKey, HKDF.utf8(FieldCryptoConstant.CANARY_KEY_ID),
-                FieldCryptoConstant.DATA_KEY_INFO_PREFIX + FieldCryptoConstant.CANARY_KEY_ID);
-        return HKDF.sha256Hex(canaryDataKey);
-    }
-
-    public String getActiveKeyId() {
-        return activeKeyId;
-    }
-
-    /**
-     * @return 本节点能否解密该 keyId 前缀的密文（当前代或上一代集合任一命中）
-     */
-    public boolean canDecrypt(String keyId) {
-        return dataKeys.containsKey(keyId) || previousDataKeys.containsKey(keyId);
-    }
-
-    /**
      * 解密（按密文前缀路由 data-key，GCM 校验防篡改，AAD 按列绑定）
      *
      * @param blob 密文
@@ -209,6 +186,29 @@ public final class FieldCipher {
             throw new FieldCryptoException(FieldCryptoException.Reason.DECRYPT_FAILED,
                     "字段解密失败（密钥不符、AAD 列绑定不符或数据被篡改）", e);
         }
+    }
+
+    /**
+     * @return 本节点能否解密该 keyId 前缀的密文（当前代或上一代集合任一命中）
+     */
+    public boolean canDecrypt(String keyId) {
+        return dataKeys.containsKey(keyId) || previousDataKeys.containsKey(keyId);
+    }
+
+    public String getActiveKeyId() {
+        return activeKeyId;
+    }
+
+    /**
+     * 数据加密根密钥代际指纹（canary 指纹之一）
+     *
+     * <p>同一根密钥必得同一指纹，不含密钥材料；用于节点启动时暴露根密钥配置不一致等静默漂移</p>
+     */
+    public String dataRootKeyCanaryFingerprint() {
+        byte[] canaryDataKey = HKDF.derive(
+                dataRootKey, HKDF.utf8(FieldCryptoConstant.CANARY_KEY_ID),
+                FieldCryptoConstant.DATA_KEY_INFO_PREFIX + FieldCryptoConstant.CANARY_KEY_ID);
+        return HKDF.sha256Hex(canaryDataKey);
     }
 
     /*

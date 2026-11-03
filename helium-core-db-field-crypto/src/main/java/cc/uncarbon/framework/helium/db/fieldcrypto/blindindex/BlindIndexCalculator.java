@@ -45,13 +45,6 @@ public final class BlindIndexCalculator {
         this.rootKeySpec = new SecretKeySpec(indexRootKey.clone(), FieldCryptoConstant.MAC_ALGORITHM);
     }
 
-    private static void requirePurpose(String purpose) {
-        if (purpose == null || !FieldCryptoConstant.PURPOSE_PATTERN.matcher(purpose).matches()) {
-            throw new FieldCryptoException(FieldCryptoException.Reason.INVALID_PURPOSE,
-                    "盲索引用途标识不合法: " + purpose + "（约定取值 表.列.用途，如 sys_user.phone_no.full）");
-        }
-    }
-
     /**
      * 计算盲索引值
      *
@@ -83,12 +76,6 @@ public final class BlindIndexCalculator {
         }
     }
 
-    /*
-    ----------------------------------------------------------------
-                        私有方法
-    ----------------------------------------------------------------
-     */
-
     /**
      * 索引根密钥代际指纹（canary 指纹之一）
      *
@@ -98,6 +85,19 @@ public final class BlindIndexCalculator {
         byte[] indexKey = HKDF.derive(rootKeyBytes(), HKDF.utf8(FieldCryptoConstant.INDEX_KEY_INFO),
                 FieldCryptoConstant.INDEX_KEY_INFO_PREFIX + FieldCryptoConstant.CANARY_KEY_ID);
         return HKDF.sha256Hex(indexKey);
+    }
+
+    /*
+    ----------------------------------------------------------------
+                        私有方法
+    ----------------------------------------------------------------
+     */
+
+    private static void requirePurpose(String purpose) {
+        if (purpose == null || !FieldCryptoConstant.PURPOSE_PATTERN.matcher(purpose).matches()) {
+            throw new FieldCryptoException(FieldCryptoException.Reason.INVALID_PURPOSE,
+                    "盲索引用途标识不合法: " + purpose + "（约定取值 表.列.用途，如 sys_user.phone_no.full）");
+        }
     }
 
     private SecretKeySpec deriveIndexKey(String purpose) {

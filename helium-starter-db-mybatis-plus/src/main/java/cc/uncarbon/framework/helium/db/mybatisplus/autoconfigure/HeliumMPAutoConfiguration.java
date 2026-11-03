@@ -1,5 +1,6 @@
 package cc.uncarbon.framework.helium.db.mybatisplus.autoconfigure;
 
+import cc.uncarbon.framework.helium.base.condition.HeliumConditions;
 import cc.uncarbon.framework.helium.base.page.LargePageParam;
 import cc.uncarbon.framework.helium.db.mybatisplus.handler.MetaObjectFiller;
 import cc.uncarbon.framework.helium.db.mybatisplus.handler.MybatisPlusAutoFillColumnHandler;
@@ -14,11 +15,16 @@ import com.baomidou.mybatisplus.extension.plugins.inner.InnerInterceptor;
 import com.baomidou.mybatisplus.extension.plugins.inner.OptimisticLockerInnerInterceptor;
 import com.baomidou.mybatisplus.extension.plugins.inner.PaginationInnerInterceptor;
 import lombok.extern.slf4j.Slf4j;
+import org.jspecify.annotations.NonNull;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Condition;
+import org.springframework.context.annotation.ConditionContext;
+import org.springframework.context.annotation.Conditional;
+import org.springframework.core.type.AnnotatedTypeMetadata;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 import java.util.List;
@@ -66,8 +72,8 @@ public class HeliumMPAutoConfiguration {
         业务直接 new Page<>(1, 100000) 绕过 PageParam 时，由拦截器兜底钳到上限而非全表拉取
          */
         paginationInnerInterceptor.setMaxLimit((long) LargePageParam.MAX_PAGE_SIZE);
-        // 越界页（pageNum > pages）回到第一页，而不是静默返回空列表
-        paginationInnerInterceptor.setOverflow(true);
+        // 越界页（pageNum > pages）静默返回空列表
+        paginationInnerInterceptor.setOverflow(false);
         interceptor.addInnerInterceptor(paginationInnerInterceptor);
 
         /*
@@ -86,10 +92,11 @@ public class HeliumMPAutoConfiguration {
     }
 
     /**
-     * ID 生成器
+     * ID 生成器；下游工程使用数据库自增 ID 等其他主键方案时，可配置 helium.db.idgen.snowflake.enabled=false 关闭注册
      */
     @Bean
     @ConditionalOnMissingBean
+    @Conditional(value = HeliumMPAutoConfiguration.OnSnowflakeIdGenEnabled.class)
     public IdentifierGenerator identifierGenerator(HeliumIdGenProperties props) {
         return new HutoolSnowflakeIdGenerator(props);
     }
@@ -101,6 +108,15 @@ public class HeliumMPAutoConfiguration {
     @ConditionalOnMissingBean
     public MetaObjectHandler mybatisPlusAutoFillColumnHandler(List<MetaObjectFiller> extendFillers) {
         return new MybatisPlusAutoFillColumnHandler(extendFillers);
+    }
+
+    private static class OnSnowflakeIdGenEnabled implements Condition {
+        @Override
+        public boolean matches(ConditionContext context, @NonNull AnnotatedTypeMetadata metadata) {
+            var props = HeliumConditions.bind(context.getEnvironment(), HeliumIdGenProperties.class);
+            var sub = props.getSnowflake();
+            return sub != null && Boolean.TRUE.equals(sub.getEnabled());
+        }
     }
 
 }

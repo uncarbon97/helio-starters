@@ -22,22 +22,19 @@ public class HeliumIdGenProperties {
     public static final class Snowflake {
 
         /**
-         * 数据中心ID，范围 [0, 31]
+         * 是否注册雪花 ID 生成器；下游工程如使用数据库自增 ID 等其他主键方案时可设为 false，默认 true
          */
-        private Integer datacenterId;
+        private Boolean enabled = true;
 
         /**
-         * 工作节点ID，范围 [0, 31]；未配置时按本机 IP 推导（多节点同网段易碰撞，生产环境建议显式配置或通过环境变量注入）
+         * 数据中心ID（机房编号），范围 [0, 31]
          */
-        private Integer workerId;
+        private Integer datacenterId = 0;
 
         /**
          * 起始日期（yyyy-MM-dd）；一经上线不可更改，否则新旧 ID 可能重叠
-         * <p>默认值固定，未配置时也能启动；但生产环境仍建议显式写入配置以避免升级框架时误改</p>
          */
-        private String epochDate = DEFAULT_EPOCH_DATE;
-
-        public static final String DEFAULT_EPOCH_DATE = "2024-01-01";
+        private String epochDate;
 
     }
 }

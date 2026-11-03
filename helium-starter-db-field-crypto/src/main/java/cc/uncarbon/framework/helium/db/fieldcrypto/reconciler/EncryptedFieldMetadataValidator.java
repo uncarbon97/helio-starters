@@ -44,27 +44,11 @@ import java.util.concurrent.ConcurrentHashMap;
 public class EncryptedFieldMetadataValidator implements SmartInitializingSingleton {
 
     /**
-     * columnPath -> 表.列；实例级（而非 static），避免多 Spring 上下文 / devtools 热重载间互相污染
+     * columnPath -> 表.列
      */
     private final Map<String, String> columnPathRegistry = new ConcurrentHashMap<>();
 
     private final SqlSessionFactory sqlSessionFactory;
-
-    /**
-     * 密文列名：优先 {@code @TableField} 显式列名，缺省退化为字段名
-     */
-    private static String resolveColumnName(Field field) {
-        TableField tableField = field.getAnnotation(TableField.class);
-        if (tableField != null && !tableField.value().isBlank()) {
-            return tableField.value();
-        }
-        return field.getName();
-    }
-
-    private static String resolveTableName(Class<?> entityClass) {
-        TableName tableName = entityClass.getAnnotation(TableName.class);
-        return tableName != null ? tableName.value() : entityClass.getSimpleName();
-    }
 
     public Map<String, String> getColumnPathRegistrySnapshot() {
         return Map.copyOf(columnPathRegistry);
@@ -188,5 +172,21 @@ public class EncryptedFieldMetadataValidator implements SmartInitializingSinglet
                     FieldCryptoConstant.LOG_PREFIX + " 字段 %s.%s 的 TypeHandler %s 实例化失败（需 public 无参构造）",
                     field.getDeclaringClass().getSimpleName(), field.getName(), handlerClass.getSimpleName()), e);
         }
+    }
+
+    /**
+     * 密文列名：优先 {@code @TableField} 显式列名，缺省退化为字段名
+     */
+    private static String resolveColumnName(Field field) {
+        TableField tableField = field.getAnnotation(TableField.class);
+        if (tableField != null && !tableField.value().isBlank()) {
+            return tableField.value();
+        }
+        return field.getName();
+    }
+
+    private static String resolveTableName(Class<?> entityClass) {
+        TableName tableName = entityClass.getAnnotation(TableName.class);
+        return tableName != null ? tableName.value() : entityClass.getSimpleName();
     }
 }

@@ -23,63 +23,44 @@ public class HutoolSnowflakeIdGenerator implements IdentifierGenerator {
 
     public HutoolSnowflakeIdGenerator(HeliumIdGenProperties props) {
         var subProps = props.getSnowflake();
-        if (subProps == null) {
-            subProps = new HeliumIdGenProperties.Snowflake();
-            log.info(LOG_PREFIX + " >> 未配置 helium.db-idgen.snowflake，使用默认配置");
-        }
 
-        long workerId;
-        String workerIdSource;
-        if (subProps.getWorkerId() != null) {
-            workerId = subProps.getWorkerId();
-            workerIdSource = "配置";
-            if (workerId < 0 || workerId > 31) {
-                throw new IllegalArgumentException(
-                        LOG_PREFIX + " workerId 须在 [0, 31] 区间，当前: " + workerId);
-            }
-        } else {
-            try {
-                // 当前机器的局域网IP
-                workerId = NetUtil.ipv4ToLong(NetUtil.getLocalhostStr());
-            } catch (Exception e) {
-                workerId = NetUtil.getLocalhost().hashCode();
-            }
-            // Hutool 的雪花生成器仅支持 0-31；floorMod 保证非负（IP hashCode 可能为负，% 会保留符号）
-            workerId = Math.floorMod(workerId, 32);
-            workerIdSource = "本机 IP 推导";
-            log.warn(LOG_PREFIX + " >> workerId 未显式配置，按本机 IP mod 32 推导为 [{}]；"
-                    + "多节点部署同网段 IP 极易碰撞导致重复主键，生产环境请显式配置 helium.db-idgen.snowflake.worker-id", workerId);
+        long ipHash;
+        try {
+            // 当前机器的局域网IP
+            ipHash = NetUtil.ipv4ToLong(NetUtil.getLocalhostStr());
+        } catch (Exception e) {
+            ipHash = NetUtil.getLocalhost().hashCode();
         }
-
-        Integer datacenterId = subProps.getDatacenterId();
-        if (datacenterId == null) {
-            datacenterId = 0;
-        }
-        // 越界直接失败：静默 floorMod 回绕会与其他节点撞 ID
+        /*
+        datacenterId 由配置项显式指定（机房维度，需真实区分机房），未配置默认 0（单机房）
+        越界直接失败：静默 floorMod 回绕会与其他节点撞 ID
+         */
+        int datacenterId = subProps.getDatacenterId() == null ? 0 : subProps.getDatacenterId();
         if (datacenterId < 0 || datacenterId > 31) {
             throw new IllegalArgumentException(
                     LOG_PREFIX + " datacenterId 须在 [0, 31] 区间，当前: " + datacenterId);
         }
 
+        // Hutool 的雪花生成器仅支持 [0, 31]；floorMod 保证非负
+        int workerId = Math.floorMod(ipHash, 32);
+
         String epochDateStr = subProps.getEpochDate();
         if (epochDateStr == null || epochDateStr.isBlank()) {
-            epochDateStr = HeliumIdGenProperties.Snowflake.DEFAULT_EPOCH_DATE;
+            throw new IllegalArgumentException(LOG_PREFIX + " epochDate 不能为空，格式应为 yyyy-MM-dd");
         }
         Date epochDate;
         try {
-            epochDate = DateUtil.parseDate(epochDateStr);
+            epochDate = DateUtil.parseDate(subProps.getEpochDate());
         } catch (Exception e) {
-            throw new IllegalArgumentException(
-                    LOG_PREFIX + " epochDate 格式不合法（应为 yyyy-MM-dd）: " + epochDateStr, e);
+            throw new IllegalArgumentException(LOG_PREFIX + " epochDate 格式不合法，应为 yyyy-MM-dd: " + epochDateStr);
         }
         if (epochDate.after(new Date())) {
             // 纪元晚于当前时间会生成负数雪花 ID，落 UNSIGNED 主键直接报错
-            throw new IllegalArgumentException(
-                    LOG_PREFIX + " epochDate 不能晚于当前时间: " + epochDateStr);
+            throw new IllegalArgumentException(LOG_PREFIX + " epochDate 不能晚于当前时间: " + epochDateStr);
         }
 
-        log.info(LOG_PREFIX + " >> workerId=[{}]（来源: {}）, datacenterId=[{}], epochDate=[{}]",
-                workerId, workerIdSource, datacenterId, epochDateStr);
+        log.info(LOG_PREFIX + " >> workerId=[{}], datacenterId=[{}], epochDate=[{}]",
+                workerId, datacenterId, epochDateStr);
         snowflakeInstance = new Snowflake(epochDate, workerId, datacenterId, false);
     }
 

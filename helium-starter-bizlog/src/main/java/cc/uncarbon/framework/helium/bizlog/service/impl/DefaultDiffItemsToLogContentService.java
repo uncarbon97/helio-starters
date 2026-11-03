@@ -83,6 +83,71 @@ public class DefaultDiffItemsToLogContentService implements IDiffItemsToLogConte
     }
 
     /**
+     * 注入 Bean 工厂。
+     *
+     * @param beanFactory Bean 工厂
+     * @throws BeansException 异常
+     */
+    @Override
+    public void setBeanFactory(@NonNull BeanFactory beanFactory) throws BeansException {
+        this.beanFactory = beanFactory;
+    }
+
+    /**
+     * 单例就绪后从容器获取函数服务。
+     */
+    @Override
+    public void afterSingletonsInstantiated() {
+        this.functionService = beanFactory.getBean(IFunctionService.class);
+    }
+
+    /**
+     * 生成集合/数组字段的差异文案（按添加/删除项分别渲染）。
+     *
+     * @param filedLogName 字段显示名
+     * @param node         差异节点
+     * @param sourceObject 旧对象
+     * @param targetObject 新对象
+     * @param functionName 值转换函数名
+     * @return 集合差异文案
+     */
+    public String getCollectionDiffLogContent(String filedLogName, DiffNode node, Object sourceObject, Object targetObject, String functionName) {
+        //集合走单独的diff模板
+        Collection<Object> sourceList = getListValue(node, sourceObject);
+        Collection<Object> targetList = getListValue(node, targetObject);
+        Collection<Object> addItemList = listSubtract(targetList, sourceList);
+        Collection<Object> delItemList = listSubtract(sourceList, targetList);
+        String listAddContent = listToContent(functionName, addItemList);
+        String listDelContent = listToContent(functionName, delItemList);
+        return DiffTextFormatter.formatList(props, filedLogName, listAddContent, listDelContent);
+    }
+
+    /**
+     * 按节点状态（新增/变更/删除）生成普通字段的差异文案。
+     *
+     * @param filedLogName 字段显示名
+     * @param node         差异节点
+     * @param sourceObject 旧对象
+     * @param targetObject 新对象
+     * @param functionName 值转换函数名
+     * @return 字段差异文案
+     */
+    public String getDiffLogContent(String filedLogName, DiffNode node, Object sourceObject, Object targetObject, String functionName) {
+        return switch (node.getState()) {
+            case ADDED ->
+                    DiffTextFormatter.formatAdd(props, filedLogName, getFunctionValue(getFieldValue(node, targetObject), functionName));
+            case CHANGED ->
+                    DiffTextFormatter.formatUpdate(props, filedLogName, getFunctionValue(getFieldValue(node, sourceObject), functionName), getFunctionValue(getFieldValue(node, targetObject), functionName));
+            case REMOVED ->
+                    DiffTextFormatter.formatDeleted(props, filedLogName, getFunctionValue(getFieldValue(node, sourceObject), functionName));
+            default -> {
+                log.warn("diff log not support");
+                yield "";
+            }
+        };
+    }
+
+    /**
      * 针对单个差异节点生成字段级文案，并追加到结果中。
      *
      * @param sourceObject  旧对象
@@ -129,22 +194,20 @@ public class DefaultDiffItemsToLogContentService implements IDiffItemsToLogConte
     }
 
     /**
-     * 是否简单值类型（无内部结构，无需按字段脱敏）。
+     * 判断节点取值是否为容器类型（集合或数组）。
      *
-     * @param clazz 待判断类型
-     * @return 简单类型返回 {@code true}
+     * @param node         差异节点
+     * @param sourceObject 旧对象
+     * @param targetObject 新对象
+     * @return 容器类型返回 {@code true}
      */
-    private static boolean isSimpleValueType(Class<?> clazz) {
-        return clazz.isPrimitive()
-                || clazz.isEnum()
-                || CharSequence.class.isAssignableFrom(clazz)
-                || Number.class.isAssignableFrom(clazz)
-                || Boolean.class == clazz
-                || Character.class == clazz
-                || Date.class.isAssignableFrom(clazz)
-                || Temporal.class.isAssignableFrom(clazz)
-                || clazz == UUID.class
-                || clazz == Class.class;
+    private boolean valueIsContainer(DiffNode node, Object sourceObject, Object targetObject) {
+        Object value = sourceObject != null ? node.canonicalGet(sourceObject) : null;
+        if (value == null && targetObject != null) {
+            value = node.canonicalGet(targetObject);
+        }
+        // 双侧皆 null 直接判非容器，避免 NPE；Map 不走集合差集路径（会 ClassCastException），交由节点树逐键比较
+        return value != null && (value instanceof Collection || value.getClass().isArray());
     }
 
     /**
@@ -152,6 +215,24 @@ public class DefaultDiffItemsToLogContentService implements IDiffItemsToLogConte
      */
     private boolean isIgnoredDiffField(DiffNode node) {
         return isIgnoredFieldName(node.getPropertyName()) || isIgnoredMapEntryNode(node);
+    }
+
+    /**
+     * Map 值节点的键名是否命中脱敏清单（Map 值节点的属性名会回退为 Map 字段名，需按键名单独判断）。
+     *
+     * @param node 差异节点
+     * @return 是 Map 键值对节点且键名命中返回 {@code true}
+     */
+    private boolean isIgnoredMapEntryNode(DiffNode node) {
+        if (node.getParentNode() == null) {
+            return false;
+        }
+        ElementSelector selector = node.getPath().getLastElementSelector();
+        if (selector instanceof MapKeyElementSelector keySelector) {
+            Object key = keySelector.getKey();
+            return key != null && isIgnoredFieldName(String.valueOf(key));
+        }
+        return false;
     }
 
     /**
@@ -230,23 +311,6 @@ public class DefaultDiffItemsToLogContentService implements IDiffItemsToLogConte
     }
 
     /**
-     * 判断节点取值是否为容器类型（集合或数组）。
-     *
-     * @param node         差异节点
-     * @param sourceObject 旧对象
-     * @param targetObject 新对象
-     * @return 容器类型返回 {@code true}
-     */
-    private boolean valueIsContainer(DiffNode node, Object sourceObject, Object targetObject) {
-        Object value = sourceObject != null ? node.canonicalGet(sourceObject) : null;
-        if (value == null && targetObject != null) {
-            value = node.canonicalGet(targetObject);
-        }
-        // 双侧皆 null 直接判非容器，避免 NPE；Map 不走集合差集路径（会 CCE），交由节点树逐键比较
-        return value != null && (value instanceof Collection || value.getClass().isArray());
-    }
-
-    /**
      * 拼接父级字段名前缀（嵌套对象路径），以 {@code ofWord} 连接。
      *
      * @param node    差异节点
@@ -270,52 +334,6 @@ public class DefaultDiffItemsToLogContentService implements IDiffItemsToLogConte
     }
 
     /**
-     * 生成集合/数组字段的差异文案（按添加/删除项分别渲染）。
-     *
-     * @param filedLogName 字段显示名
-     * @param node         差异节点
-     * @param sourceObject 旧对象
-     * @param targetObject 新对象
-     * @param functionName 值转换函数名
-     * @return 集合差异文案
-     */
-    public String getCollectionDiffLogContent(String filedLogName, DiffNode node, Object sourceObject, Object targetObject, String functionName) {
-        //集合走单独的diff模板
-        Collection<Object> sourceList = getListValue(node, sourceObject);
-        Collection<Object> targetList = getListValue(node, targetObject);
-        Collection<Object> addItemList = listSubtract(targetList, sourceList);
-        Collection<Object> delItemList = listSubtract(sourceList, targetList);
-        String listAddContent = listToContent(functionName, addItemList);
-        String listDelContent = listToContent(functionName, delItemList);
-        return DiffTextFormatter.formatList(props, filedLogName, listAddContent, listDelContent);
-    }
-
-    /**
-     * 按节点状态（新增/变更/删除）生成普通字段的差异文案。
-     *
-     * @param filedLogName 字段显示名
-     * @param node         差异节点
-     * @param sourceObject 旧对象
-     * @param targetObject 新对象
-     * @param functionName 值转换函数名
-     * @return 字段差异文案
-     */
-    public String getDiffLogContent(String filedLogName, DiffNode node, Object sourceObject, Object targetObject, String functionName) {
-        return switch (node.getState()) {
-            case ADDED ->
-                    DiffTextFormatter.formatAdd(props, filedLogName, getFunctionValue(getFieldValue(node, targetObject), functionName));
-            case CHANGED ->
-                    DiffTextFormatter.formatUpdate(props, filedLogName, getFunctionValue(getFieldValue(node, sourceObject), functionName), getFunctionValue(getFieldValue(node, targetObject), functionName));
-            case REMOVED ->
-                    DiffTextFormatter.formatDeleted(props, filedLogName, getFunctionValue(getFieldValue(node, sourceObject), functionName));
-            default -> {
-                log.warn("diff log not support");
-                yield "";
-            }
-        };
-    }
-
-    /**
      * 取节点对应字段的集合值（数组统一转为 List）。
      *
      * @param node   差异节点
@@ -330,7 +348,7 @@ public class DefaultDiffItemsToLogContentService implements IDiffItemsToLogConte
         if (fieldSourceValue.getClass().isArray()) {
             Class<?> componentType = fieldSourceValue.getClass().getComponentType();
             if (componentType.isPrimitive()) {
-                // 基本类型数组不能强转 Object[]，按 Array.get 装箱，避免 CCE 导致整条日志丢失
+                // 基本类型数组不能强转 Object[]，按 Array.get 装箱，避免 ClassCastException 导致整条日志丢失
                 int length = Array.getLength(fieldSourceValue);
                 List<Object> boxed = new ArrayList<>(length);
                 for (int i = 0; i < length; i++) {
@@ -344,7 +362,7 @@ public class DefaultDiffItemsToLogContentService implements IDiffItemsToLogConte
             return new ArrayList<>(collection);
         }
         if (fieldSourceValue instanceof Map<?, ?> map) {
-            // 一侧为 Map 另一侧为集合的异构场景：按 entry 文本参与差集，不 CCE
+            // 一侧为 Map 另一侧为集合的异构场景：按 entry 文本参与差集，不 ClassCastException
             return new ArrayList<>(map.entrySet());
         }
         // 非容器值（一侧集合、另一侧标量的异构场景）：包装为单元素集合
@@ -409,21 +427,14 @@ public class DefaultDiffItemsToLogContentService implements IDiffItemsToLogConte
     }
 
     /**
-     * Map 值节点的键名是否命中脱敏清单（Map 值节点的属性名会回退为 Map 字段名，需按键名单独判断）。
+     * 取节点在目标对象上的字段值。
      *
      * @param node 差异节点
-     * @return 是 Map 键值对节点且键名命中返回 {@code true}
+     * @param o2   目标对象
+     * @return 字段值
      */
-    private boolean isIgnoredMapEntryNode(DiffNode node) {
-        if (node.getParentNode() == null) {
-            return false;
-        }
-        ElementSelector selector = node.getPath().getLastElementSelector();
-        if (selector instanceof MapKeyElementSelector keySelector) {
-            Object key = keySelector.getKey();
-            return key != null && isIgnoredFieldName(String.valueOf(key));
-        }
-        return false;
+    private Object getFieldValue(DiffNode node, Object o2) {
+        return node.canonicalGet(o2);
     }
 
     /**
@@ -571,39 +582,29 @@ public class DefaultDiffItemsToLogContentService implements IDiffItemsToLogConte
         return masked;
     }
 
+    /**
+     * 是否简单值类型（无内部结构，无需按字段脱敏）。
+     *
+     * @param clazz 待判断类型
+     * @return 简单类型返回 {@code true}
+     */
+    private static boolean isSimpleValueType(Class<?> clazz) {
+        return clazz.isPrimitive()
+                || clazz.isEnum()
+                || CharSequence.class.isAssignableFrom(clazz)
+                || Number.class.isAssignableFrom(clazz)
+                || Boolean.class == clazz
+                || Character.class == clazz
+                || Date.class.isAssignableFrom(clazz)
+                || Temporal.class.isAssignableFrom(clazz)
+                || clazz == UUID.class
+                || clazz == Class.class;
+    }
+
     private static boolean isJdkInternalType(Class<?> clazz) {
         String name = clazz.getName();
         return name.startsWith("java.") || name.startsWith("javax.")
                 || name.startsWith("jdk.") || name.startsWith("sun.");
     }
 
-    /**
-     * 取节点在目标对象上的字段值。
-     *
-     * @param node 差异节点
-     * @param o2   目标对象
-     * @return 字段值
-     */
-    private Object getFieldValue(DiffNode node, Object o2) {
-        return node.canonicalGet(o2);
-    }
-
-    /**
-     * 注入 Bean 工厂。
-     *
-     * @param beanFactory Bean 工厂
-     * @throws BeansException 异常
-     */
-    @Override
-    public void setBeanFactory(@NonNull BeanFactory beanFactory) throws BeansException {
-        this.beanFactory = beanFactory;
-    }
-
-    /**
-     * 单例就绪后从容器获取函数服务。
-     */
-    @Override
-    public void afterSingletonsInstantiated() {
-        this.functionService = beanFactory.getBean(IFunctionService.class);
-    }
 }

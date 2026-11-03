@@ -57,15 +57,6 @@ public class FieldCryptoCanaryChecker implements SmartInitializingSingleton {
         this.overwriteGranted = new AtomicBoolean(allowOverwrite);
     }
 
-    private static IllegalStateException drift(String purpose) {
-        return new IllegalStateException(
-                FieldCryptoConstant.LOG_PREFIX + " 根密钥 canary 指纹不匹配（purpose=" + purpose + "），"
-                        + "请排查是否存在：多节点根密钥配置不一致 / env 漏改 / 轮换窗口混写等情况；"
-                        + "目前拒绝启动以防静默写坏数据，受控轮换请打开 "
-                        + ConfigurationPropertiesPrefix.DB_FIELD_CRYPTO
-                        + ".canary.allow-overwrite 维护开关");
-    }
-
     @Override
     public void afterSingletonsInstantiated() {
         if (!enabled) {
@@ -125,5 +116,14 @@ public class FieldCryptoCanaryChecker implements SmartInitializingSingleton {
         }
 
         throw drift(purpose);
+    }
+
+    private static IllegalStateException drift(String purpose) {
+        return new IllegalStateException(
+                FieldCryptoConstant.LOG_PREFIX + " 根密钥 canary 指纹不匹配（purpose=" + purpose + "），"
+                        + "请排查是否存在：多节点根密钥配置不一致 / env 漏改 / 轮换窗口混写等情况；"
+                        + "目前拒绝启动以防静默写坏数据，受控轮换请打开 "
+                        + ConfigurationPropertiesPrefix.DB_FIELD_CRYPTO
+                        + ".canary.allow-overwrite 维护开关");
     }
 }

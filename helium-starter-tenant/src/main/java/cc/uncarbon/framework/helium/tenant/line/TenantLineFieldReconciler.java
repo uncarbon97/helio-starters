@@ -44,16 +44,6 @@ public class TenantLineFieldReconciler implements ApplicationRunner {
     protected final DataSource dataSource;
     protected final HeliumTenantProperties props;
 
-    protected static String normalizedTableName(String tableName) {
-        return DefaultTenantLineHandler.normalizeTableName(tableName);
-    }
-
-    /*
-    ----------------------------------------------------------------
-                        私有方法
-    ----------------------------------------------------------------
-     */
-
     @Override
     public void run(@NonNull ApplicationArguments args) throws Exception {
         Set<String> ignoredTables = resolveIgnoredTables();
@@ -102,6 +92,16 @@ public class TenantLineFieldReconciler implements ApplicationRunner {
         throw new IllegalStateException(LOG_PREFIX + " 启动期对账失败 >> 以下实体表未显式忽略、但缺少 "
                 + EntityField.TENANT_ID_COLUMN + "列（或表尚未创建），无法参与租户隔离: " + missing
                 + "；请先执行 DDL 升级脚本补充列，或将其加入忽略表 / 实体标注 @TenantIgnore");
+    }
+
+    /*
+    ----------------------------------------------------------------
+                        受保护方法
+    ----------------------------------------------------------------
+     */
+
+    protected static String normalizedTableName(String tableName) {
+        return DefaultTenantLineHandler.normalizeTableName(tableName);
     }
 
     /**
