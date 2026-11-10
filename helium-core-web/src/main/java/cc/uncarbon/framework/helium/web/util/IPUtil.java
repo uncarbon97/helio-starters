@@ -65,9 +65,13 @@ public class IPUtil {
      */
     public List<String> getClientIPAddressList(HttpServletRequest servletRequest) {
         String source = resolveRawClientIp(servletRequest);
+        if (CharSequenceUtil.isBlank(source)) {
+            // remoteAddr 在 mock / 部分代理场景下可为 null；List.of(null) 会 NPE
+            return List.of();
+        }
         if (!CharSequenceUtil.contains(source, StrPool.COMMA)) {
             // 不含逗号
-            return List.of(source);
+            return List.of(source.trim());
         }
         return CharSequenceUtil.split(source, StrPool.COMMA).stream()
                 // 过滤空串，避免 clientIpList 含 "" 元素
@@ -105,10 +109,26 @@ public class IPUtil {
     }
 
     /**
-     * 含冒号视为 IPv6 字面量；其余（域名等伪造值）不采信
+     * 合法 IPv4 或 IPv6 字面量；其余（域名、带端口的 "1.2.3.4:8080" 等伪造/畸形值）不采信
      */
     private boolean isValidIp(String ip) {
-        return isIPv4(ip) || CharSequenceUtil.contains(ip, StrPool.COLON);
+        if (CharSequenceUtil.isBlank(ip)) {
+            return false;
+        }
+        if (isIPv4(ip)) {
+            return true;
+        }
+        // 剥离 IPv6 中括号与 zone id（fe80::1%eth0），再交给标准解析；
+        // 仅含冒号不足以判定 IPv6，"1.2.3.4:8080" 会被误收
+        String candidate = ip;
+        if (candidate.startsWith("[") && candidate.endsWith("]")) {
+            candidate = candidate.substring(1, candidate.length() - 1);
+        }
+        int zone = candidate.indexOf('%');
+        if (zone > 0) {
+            candidate = candidate.substring(0, zone);
+        }
+        return ReUtil.isMatch(PatternPool.IPV6, candidate);
     }
 
     private boolean isIPv4(String ip) {

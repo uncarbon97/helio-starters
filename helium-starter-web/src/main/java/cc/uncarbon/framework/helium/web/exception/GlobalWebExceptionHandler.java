@@ -11,7 +11,6 @@ import cc.uncarbon.framework.helium.web.util.InvalidFieldUtil;
 import cn.dev33.satoken.exception.NotLoginException;
 import cn.dev33.satoken.exception.NotPermissionException;
 import cn.dev33.satoken.exception.NotRoleException;
-import cn.hutool.core.util.StrUtil;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.ConstraintViolationException;
@@ -264,9 +263,14 @@ public class GlobalWebExceptionHandler {
         if (triggerHooks(e, servletRequest, ExceptionCategory.UNEXPECTED)) {
             return;
         }
-        log.error(LOG_PREFIX + " 异常类[{}] >> URI=[{}], 消息=[{}]{}",
-                e.getClass().getName(), servletRequest.getRequestURI(), e.getMessage(),
-                printExceptionStack ? "  " + e : StrUtil.EMPTY);
+        if (printExceptionStack) {
+            // 把 Throwable 作为最后一个参数传给 SLF4J 才会打印完整堆栈；拼进消息只会得到 toString
+            log.error(LOG_PREFIX + " 异常类[{}] >> URI=[{}], 消息=[{}]",
+                    e.getClass().getName(), servletRequest.getRequestURI(), e.getMessage(), e);
+        } else {
+            log.error(LOG_PREFIX + " 异常类[{}] >> URI=[{}], 消息=[{}]",
+                    e.getClass().getName(), servletRequest.getRequestURI(), e.getMessage());
+        }
     }
 
     /**

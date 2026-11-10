@@ -43,7 +43,7 @@ public class RateLimitByUserStrategy extends BaseRateLimitRedisStrategy implemen
             return null;
         }
         return "%s:user:%s:%s".formatted(RateLimiterConstant.REDIS_KEY_PREFIX,
-                userDimension, determineMark(annotation, point));
+                escapeKeySegment(userDimension), determineMark(annotation, point));
     }
 
     /**

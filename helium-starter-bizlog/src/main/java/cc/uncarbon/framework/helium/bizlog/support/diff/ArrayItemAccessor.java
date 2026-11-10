@@ -8,16 +8,16 @@ import de.danielbechler.diff.selector.CollectionItemElementSelector;
 import de.danielbechler.diff.selector.ElementSelector;
 import org.springframework.util.Assert;
 
+import java.lang.reflect.Array;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
-import java.util.Iterator;
+import java.util.List;
 
 /**
  * 数组元素访问器
  * <p>
  * 将数组元素以集合元素的方式暴露给 {@code java-object-diff}，
- * 配合 {@link ArrayDiffer} 完成数组元素的 get/set/unset。
+ * 配合 {@link ArrayDiffer} 完成数组元素的只读 get；数组定长，set/unset 不支持。
  *
  * @author wulang@mzt-biz-log
  * @author Uncarbon
@@ -99,58 +99,42 @@ public class ArrayItemAccessor implements TypeAwareAccessor, Accessor {
     }
 
     /**
-     * 设置数组元素：若已存在相同元素则先移除再添加。
+     * 数组定长，无法原地增删元素；本访问器仅服务只读 diff，不支持写回
      *
-     * @param target 目标数组
-     * @param value  新值
+     * @throws UnsupportedOperationException 一律抛出
      */
     @Override
     public void set(final Object target, final Object value) {
-        final Collection<Object> targetCollection = objectAsCollection(target);
-        if (targetCollection == null) {
-            return;
-        }
-        final Object previous = get(target);
-        if (previous != null) {
-            unset(target);
-        }
-        targetCollection.add(value);
+        throw new UnsupportedOperationException("数组元素访问器仅支持只读 diff，不支持 set 写回");
     }
 
     /**
-     * 将数组对象转为集合视图。
+     * 将数组对象转为集合视图（只读快照；基本类型数组按元素装箱）。
      *
      * @param object 数组对象
      * @return 集合视图；{@code null} 返回 {@code null}，非数组抛出非法参数异常
      */
-    @SuppressWarnings("unchecked")
     private static Collection<Object> objectAsCollection(final Object object) {
         if (object == null) {
             return null;
         } else if (object.getClass().isArray()) {
-            return new ArrayList<>(Arrays.asList((Object[]) object));
+            int length = Array.getLength(object);
+            List<Object> ret = new ArrayList<>(length);
+            for (int i = 0; i < length; i++) {
+                ret.add(Array.get(object, i));
+            }
+            return ret;
         }
         throw new IllegalArgumentException(object.getClass().toString());
     }
 
     /**
-     * 从目标数组中移除与参考元素一致的元素。
+     * 数组定长，无法原地增删元素；本访问器仅服务只读 diff，不支持写回
      *
-     * @param target 目标数组
+     * @throws UnsupportedOperationException 一律抛出
      */
     @Override
     public void unset(final Object target) {
-        final Collection<?> targetCollection = objectAsCollection(target);
-        if (targetCollection == null) {
-            return;
-        }
-        final Iterator<?> iterator = targetCollection.iterator();
-        while (iterator.hasNext()) {
-            final Object item = iterator.next();
-            if (item != null && identityStrategy.equals(item, referenceItem)) {
-                iterator.remove();
-                break;
-            }
-        }
+        throw new UnsupportedOperationException("数组元素访问器仅支持只读 diff，不支持 unset 写回");
     }
 }

@@ -5,7 +5,6 @@ import cc.uncarbon.framework.helium.redis.lock.RedisDistributedLockTemplate;
 import lombok.RequiredArgsConstructor;
 import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
-import org.redisson.api.RLock;
 
 import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
@@ -34,10 +33,8 @@ public class RedisDistributedLockTemplateImpl implements RedisDistributedLockTem
         if (!(holdDuration > 0)) {
             throw new IllegalArgumentException("holdDuration 必须大于 0");
         }
-        RLock lock = redisDistributedLock.lock(lockName, unit, holdDuration);
-        if (lock == null) {
-            return false;
-        }
+        // RedisDistributedLock#lock 要么阻塞直到拿到锁，要么抛异常，不会返回 null（原 null 分支为死代码）
+        redisDistributedLock.lock(lockName, unit, holdDuration);
         runAndAutoUnlock(lockName, lockedRunnable, exceptionHandler);
         return true;
     }
@@ -76,6 +73,9 @@ public class RedisDistributedLockTemplateImpl implements RedisDistributedLockTem
             } else {
                 throw e;
             }
+        } catch (Throwable t) {
+            // Error（OOM/StackOverflow 等）同样要释放锁，避免锁在 TTL 到期前一直占用
+            throw t;
         } finally {
             redisDistributedLock.unlockSafely(lockName);
         }

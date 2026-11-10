@@ -230,7 +230,7 @@ public class LogRecordInterceptor extends LogRecordValueParser
         boolean flag = true;
         if (!ObjectUtils.isEmpty(operation.getIsSuccess())) {
             String condition = singleProcessTemplate(methodExecuteResult, operation.getIsSuccess(), functionNameAndReturnMap);
-            if (StringUtils.hasText(condition) && !StringUtils.endsWithIgnoreCase(condition, "true")) {
+            if (StringUtils.hasText(condition) && !isBooleanLiteral(condition, "true")) {
                 // 明确非 true 才按失败处理；求值结果为空（如 #result?.status 为 null）时按成功处理
                 action = operation.getFailLogTemplate();
                 flag = false;
@@ -283,9 +283,17 @@ public class LogRecordInterceptor extends LogRecordValueParser
                                    Map<String, String> functionNameAndReturnMap, LogRecordOps operation) {
         if (!ObjectUtils.isEmpty(operation.getCondition())) {
             String condition = singleProcessTemplate(methodExecuteResult, operation.getCondition(), functionNameAndReturnMap);
-            return StringUtils.endsWithIgnoreCase(condition, "false");
+            // 渲染结果整体等于 false 才跳过；endsWith 会把 "xfalse" / "not false" 一类文本误判
+            return isBooleanLiteral(condition, "false");
         }
         return false;
+    }
+
+    /**
+     * 渲染结果（去首尾空白、忽略大小写）是否恰为指定布尔字面量
+     */
+    private static boolean isBooleanLiteral(String rendered, String literal) {
+        return rendered != null && rendered.trim().equalsIgnoreCase(literal);
     }
 
     /**

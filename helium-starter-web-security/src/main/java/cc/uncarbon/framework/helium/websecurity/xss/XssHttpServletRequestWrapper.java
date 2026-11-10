@@ -1,6 +1,5 @@
 package cc.uncarbon.framework.helium.websecurity.xss;
 
-import cn.hutool.core.io.IoUtil;
 import cn.hutool.core.text.CharSequenceUtil;
 import jakarta.servlet.ReadListener;
 import jakarta.servlet.ServletInputStream;
@@ -10,10 +9,7 @@ import lombok.Getter;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 
-import java.io.BufferedReader;
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
-import java.io.InputStreamReader;
+import java.io.*;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.util.LinkedHashMap;
@@ -42,11 +38,26 @@ public class XssHttpServletRequestWrapper extends HttpServletRequestWrapper {
      */
     private byte[] cachedJsonBody;
 
+    /**
+     * JSON body 缓冲上限（字节）；{@code <= 0} 表示不限制
+     */
+    private final long maxBodyBytes;
+
 
     public XssHttpServletRequestWrapper(HttpServletRequest request) {
+        this(request, DEFAULT_MAX_BODY_BYTES);
+    }
+
+    public XssHttpServletRequestWrapper(HttpServletRequest request, long maxBodyBytes) {
         super(request);
         orgRequest = request;
+        this.maxBodyBytes = maxBodyBytes;
     }
+
+    /**
+     * 默认 JSON body 缓冲上限 2MB：XSS 过滤需整段读入内存，无上限时大 JSON 可直接打 OOM
+     */
+    public static final long DEFAULT_MAX_BODY_BYTES = 2L * 1024 * 1024;
 
     /**
      * 工具方法：获取最原始的request
@@ -77,7 +88,13 @@ public class XssHttpServletRequestWrapper extends HttpServletRequestWrapper {
         - 原始 body 为空白时也缓存（原实现返回已耗尽的原始流，语义错误）
          */
         if (cachedJsonBody == null) {
-            String json = IoUtil.read(super.getInputStream(), resolveCharset());
+            // Content-Length 已超限的请求不读任何字节直接拒绝；无 Content-Length（chunked）时边读边计数
+            long declared = super.getContentLengthLong();
+            if (maxBodyBytes > 0 && declared > maxBodyBytes) {
+                throw new RequestBodyTooLargeException(declared, maxBodyBytes);
+            }
+            byte[] raw = readBounded(super.getInputStream());
+            String json = new String(raw, resolveCharset());
             if (CharSequenceUtil.isNotBlank(json)) {
                 json = xssEncode(json);
             }
@@ -106,6 +123,24 @@ public class XssHttpServletRequestWrapper extends HttpServletRequestWrapper {
                 return bis.read();
             }
         };
+    }
+
+    /**
+     * 读取整个流，超过上限即抛 {@link RequestBodyTooLargeException}，不会把超限数据全部驻留内存
+     */
+    private byte[] readBounded(InputStream in) throws IOException {
+        ByteArrayOutputStream out = new ByteArrayOutputStream(Math.max(512, (int) Math.min(8192, Math.max(0, super.getContentLengthLong()))));
+        byte[] buf = new byte[8192];
+        long total = 0;
+        int n;
+        while ((n = in.read(buf)) != -1) {
+            total += n;
+            if (maxBodyBytes > 0 && total > maxBodyBytes) {
+                throw new RequestBodyTooLargeException(total, maxBodyBytes);
+            }
+            out.write(buf, 0, n);
+        }
+        return out.toByteArray();
     }
 
     /**

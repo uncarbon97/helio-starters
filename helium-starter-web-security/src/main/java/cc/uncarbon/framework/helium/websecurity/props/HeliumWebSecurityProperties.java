@@ -3,6 +3,7 @@ package cc.uncarbon.framework.helium.websecurity.props;
 import cc.uncarbon.framework.helium.base.constant.ConfigurationPropertiesPrefix;
 import lombok.Data;
 import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.util.unit.DataSize;
 
 import java.util.List;
 
@@ -31,6 +32,11 @@ public class HeliumWebSecurityProperties {
          * 不进行过滤的路由（直接放行）
          */
         private List<String> ignoredPaths;
+
+        /**
+         * JSON 请求体缓冲上限；XSS 过滤需整段读入内存，超过即响应 413。默认 2MB，设为 0 或负数表示不限制（不建议）
+         */
+        private DataSize maxBodySize = DataSize.ofMegabytes(2);
 
     }
 

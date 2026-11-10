@@ -54,7 +54,8 @@ public class LogRecordOperationSource {
         Collection<LogRecordOps> logRecordsOps = parseLogRecordsAnnotations(specificMethod);
         Collection<LogRecordOps> abstractLogRecordOps = parseLogRecordAnnotations(getInterfaceMethodIfPossible(method));
         Collection<LogRecordOps> abstractLogRecordsOps = parseLogRecordsAnnotations(getInterfaceMethodIfPossible(method));
-        HashSet<LogRecordOps> result = new HashSet<>(logRecordOps.size() + logRecordsOps.size()
+        // LinkedHashSet：多注解时保持声明顺序（实现类优先于接口），落库顺序可预期
+        Set<LogRecordOps> result = new LinkedHashSet<>(logRecordOps.size() + logRecordsOps.size()
                 + abstractLogRecordOps.size() + abstractLogRecordsOps.size());
         result.addAll(logRecordOps);
         result.addAll(abstractLogRecordOps);

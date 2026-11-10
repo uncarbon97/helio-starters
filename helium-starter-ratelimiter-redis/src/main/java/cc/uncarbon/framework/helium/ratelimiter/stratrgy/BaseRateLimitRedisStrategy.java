@@ -121,11 +121,22 @@ public abstract class BaseRateLimitRedisStrategy {
     protected abstract String determineRedisKey(UseRateLimit annotation, JoinPoint point);
 
     /**
+     * 转义 Redis key 分段中的分隔符，避免 {@code mark}（注解声明，开发者可控但仍属外部输入）
+     * 或 IPv6 字面量等含 {@code :} 的分段与相邻分段的键空间发生碰撞
+     */
+    protected static String escapeKeySegment(String segment) {
+        if (segment == null) {
+            return "";
+        }
+        return segment.replace("\\", "\\\\").replace(":", "\\:");
+    }
+
+    /**
      * 确定被限流方法的标识
      */
     protected String determineMark(UseRateLimit annotation, JoinPoint point) {
         if (CharSequenceUtil.isNotEmpty(annotation.mark())) {
-            return annotation.mark();
+            return escapeKeySegment(annotation.mark());
         }
         // 兜底：使用 Java 方法的全限定名；同名重载方法共享限流桶（重载通常是同一业务）
         MethodSignature signature = (MethodSignature) point.getSignature();

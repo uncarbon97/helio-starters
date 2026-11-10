@@ -39,7 +39,7 @@ public class RateLimitByIPStrategy extends BaseRateLimitRedisStrategy implements
             return null;
         }
         return "%s:ip:%s:%s".formatted(RateLimiterConstant.REDIS_KEY_PREFIX,
-                ip, determineMark(annotation, point));
+                escapeKeySegment(ip), determineMark(annotation, point));
     }
 
 }

@@ -78,6 +78,16 @@ public class BaseEnumFormatModule extends SimpleModule {
         public E deserialize(JsonParser parser, DeserializationContext context) {
             String enumSimpleName = this.enumType.getSimpleName();
             if (parser.currentToken().isNumeric()) {
+                // JsonParser#getIntValue() 对小数 / 超 int 范围值抛 InputCoercionException（非 ValueParseException），
+                // 绕开框架统一的 400 异常处理；这里先判定数值类型与范围，不能安全落入 int 则按业务校验失败处理
+                JsonParser.NumberType numberType = parser.getNumberType();
+                boolean isIntegral = numberType == JsonParser.NumberType.INT
+                        || numberType == JsonParser.NumberType.LONG
+                        || numberType == JsonParser.NumberType.BIG_INTEGER;
+                if (!isIntegral || !canFitInInt(parser)) {
+                    throw new ValueParseException("无法将数值 %s 转换为 %s（须为整数且在 int 范围内）".formatted(
+                            parser.getText(), enumSimpleName));
+                }
                 int numericValue = parser.getIntValue();
                 Optional<E> op = BaseEnum.of(this.enumType, numericValue);
                 if (op.isPresent()) {
@@ -96,6 +106,18 @@ public class BaseEnumFormatModule extends SimpleModule {
                         strValue, enumSimpleName));
             }
             throw new ValueParseException("无法将值转换为 %s".formatted(enumSimpleName));
+        }
+
+        /**
+         * 数值是否能安全落入 int 范围（不截断、不抛 InputCoercionException）
+         */
+        private static boolean canFitInInt(JsonParser parser) {
+            try {
+                long longValue = parser.getLongValue();
+                return longValue >= Integer.MIN_VALUE && longValue <= Integer.MAX_VALUE;
+            } catch (Exception e) {
+                return false;
+            }
         }
     }
 }

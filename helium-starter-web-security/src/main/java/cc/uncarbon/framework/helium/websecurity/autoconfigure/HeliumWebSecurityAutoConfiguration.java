@@ -4,6 +4,7 @@ import cc.uncarbon.framework.helium.base.condition.HeliumConditions;
 import cc.uncarbon.framework.helium.web.constant.ServletFilterOrder;
 import cc.uncarbon.framework.helium.websecurity.props.HeliumWebSecurityProperties;
 import cc.uncarbon.framework.helium.websecurity.xss.XssFilter;
+import cc.uncarbon.framework.helium.websecurity.xss.XssHttpServletRequestWrapper;
 import jakarta.servlet.DispatcherType;
 import org.jspecify.annotations.NonNull;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
@@ -32,7 +33,9 @@ public class HeliumWebSecurityAutoConfiguration {
     public FilterRegistrationBean<XssFilter> xssFilterRegistration(HeliumWebSecurityProperties props) {
         FilterRegistrationBean<XssFilter> registration = new FilterRegistrationBean<>();
         registration.setDispatcherTypes(DispatcherType.REQUEST);
-        registration.setFilter(new XssFilter(props.getAntiXss().getIgnoredPaths()));
+        var maxBodySize = props.getAntiXss().getMaxBodySize();
+        long maxBodyBytes = maxBodySize != null ? maxBodySize.toBytes() : XssHttpServletRequestWrapper.DEFAULT_MAX_BODY_BYTES;
+        registration.setFilter(new XssFilter(props.getAntiXss().getIgnoredPaths(), maxBodyBytes));
         registration.addUrlPatterns("/*");
         registration.setName("xssFilter");
         registration.setOrder(ServletFilterOrder.XSS_FILTER);
