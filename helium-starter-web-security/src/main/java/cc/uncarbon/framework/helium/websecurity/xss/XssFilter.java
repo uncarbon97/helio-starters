@@ -73,7 +73,7 @@ public class XssFilter implements Filter {
 		} catch (RequestBodyTooLargeException e) {
 			// 包装器在下游首次读 body 时才会触发；此处统一响应 413
 			if (response instanceof HttpServletResponse httpResponse && !httpResponse.isCommitted()) {
-				log.warn("[XssFilter] 请求体超过 XSS 缓冲上限，已拒绝 >> URI={}, max={}B", httpServletRequest.getRequestURI(), e.getMaxBytes());
+				log.warn("[Framework][XssFilter] 请求体超过 XSS 缓冲上限，已拒绝 >> URI={}, max={}B", httpServletRequest.getRequestURI(), e.getMaxBytes());
 				httpResponse.resetBuffer();
 				httpResponse.sendError(HttpStatus.PAYLOAD_TOO_LARGE.value(), "Request body too large");
 				return;

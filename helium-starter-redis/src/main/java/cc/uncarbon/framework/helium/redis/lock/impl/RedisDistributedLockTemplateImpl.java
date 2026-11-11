@@ -33,7 +33,7 @@ public class RedisDistributedLockTemplateImpl implements RedisDistributedLockTem
         if (!(holdDuration > 0)) {
             throw new IllegalArgumentException("holdDuration 必须大于 0");
         }
-        // RedisDistributedLock#lock 要么阻塞直到拿到锁，要么抛异常，不会返回 null（原 null 分支为死代码）
+        // 要么阻塞直到拿到锁，要么抛异常，不会返回 null
         redisDistributedLock.lock(lockName, unit, holdDuration);
         runAndAutoUnlock(lockName, lockedRunnable, exceptionHandler);
         return true;

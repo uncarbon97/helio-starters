@@ -5,6 +5,7 @@ import cc.uncarbon.framework.helium.base.exception.ValueParseException;
 import cc.uncarbon.framework.helium.jackson.props.BaseEnumConfig;
 import cn.hutool.core.text.CharSequenceUtil;
 import tools.jackson.core.*;
+import tools.jackson.core.exc.InputCoercionException;
 import tools.jackson.databind.*;
 import tools.jackson.databind.deser.std.StdScalarDeserializer;
 import tools.jackson.databind.module.SimpleDeserializers;
@@ -109,7 +110,7 @@ public class BaseEnumFormatModule extends SimpleModule {
         }
 
         /**
-         * 数值是否能安全落入 int 范围（不截断、不抛 InputCoercionException）
+         * 数值是否能安全落入 int 范围（不截断、不抛 {@link InputCoercionException}）
          */
         private static boolean canFitInInt(JsonParser parser) {
             try {

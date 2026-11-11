@@ -252,7 +252,7 @@ public final class HTMLFilter {
     private String escapeComments(final String s) {
         final Matcher m = P_COMMENTS.matcher(s);
         final StringBuilder buf = new StringBuilder();
-        // 原实现 if(m.find()) 只处理首个注释，后续 <!-- --> 原样保留，可能夹带未转义标签绕过后续过滤；改为逐个替换全部注释
+        // 若将 <!-- --> 原样保留，可能夹带未转义标签绕过后续过滤；逐个替换全部注释
         while (m.find()) {
             final String match = m.group(1); //(.*?)
             m.appendReplacement(buf, Matcher.quoteReplacement("<!--" + htmlSpecialChars(match) + "-->"));
@@ -304,7 +304,7 @@ public final class HTMLFilter {
         // (remember to reset before subsequent calls to filter method)
         StringBuilder sb = new StringBuilder(buf.toString());
         for (Map.Entry<String, Integer> entry : vTagCounts.entrySet()) {
-            // 原实现对计数归零（已有匹配闭合标签）的 tag 仍追加闭合，产出多余 </tag>；只为仍未闭合（count>0）的补齐
+            // 只为仍未闭合（count>0）的 tag 追加闭合 </tag>
             int count = entry.getValue();
             for (int i = 0; i < count; i++) {
                 sb.append("</").append(entry.getKey()).append(">");

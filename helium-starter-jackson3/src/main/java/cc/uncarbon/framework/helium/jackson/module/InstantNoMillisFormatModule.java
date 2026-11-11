@@ -32,9 +32,6 @@ public class InstantNoMillisFormatModule extends SimpleModule {
 
     public static final ZoneId OS_ZONE = ZoneId.systemDefault();
 
-    /**
-     * 序列化/反序列化使用的格式；私有 + final，避免任意代码运行期改写影响全局（原 public 可变字段）
-     */
     private final DateTimeFormatter formatter = Jackson3Constant.UTC_WITH_XXX_OFFSET_FORMATTER;
 
     /**

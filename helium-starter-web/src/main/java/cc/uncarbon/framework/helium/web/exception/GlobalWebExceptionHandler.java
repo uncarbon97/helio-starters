@@ -264,7 +264,6 @@ public class GlobalWebExceptionHandler {
             return;
         }
         if (printExceptionStack) {
-            // 把 Throwable 作为最后一个参数传给 SLF4J 才会打印完整堆栈；拼进消息只会得到 toString
             log.error(LOG_PREFIX + " 异常类[{}] >> URI=[{}], 消息=[{}]",
                     e.getClass().getName(), servletRequest.getRequestURI(), e.getMessage(), e);
         } else {
