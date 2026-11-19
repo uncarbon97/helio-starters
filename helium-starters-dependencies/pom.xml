@@ -50,6 +50,12 @@
         <!-- 以下用于 satoken -->
         <sa-token.version>1.46.0</sa-token.version>
         <!-- 以上用于 satoken -->
+
+        <!-- 以下用于 fesod -->
+        <fesod.version>2.1.0-incubating</fesod.version>
+        <!-- Apache POI 需要 commons-io -->
+        <commons-io.version>2.16.1</commons-io.version>
+        <!-- 以上用于 fesod -->
     </properties>
 
     <dependencyManagement>
@@ -214,6 +220,21 @@
                 <version>${sa-token.version}</version>
             </dependency>
             <!-- 以上用于 satoken -->
+
+
+            <!-- 以下用于 fesod -->
+            <dependency>
+                <groupId>org.apache.fesod</groupId>
+                <artifactId>fesod-sheet</artifactId>
+                <version>${fesod.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>commons-io</groupId>
+                <artifactId>commons-io</artifactId>
+                <version>${commons-io.version}</version>
+            </dependency>
+            <!-- 以上用于 fesod -->
 
 
             <!-- 以下用于 web -->

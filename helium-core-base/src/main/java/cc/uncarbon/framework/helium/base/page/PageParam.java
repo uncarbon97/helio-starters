@@ -29,9 +29,14 @@ public class PageParam implements Serializable {
     public static final int DEFAULT_PAGE_SIZE = 10;
 
     /**
-     * 普通分页页大小上限；与分页拦截器 maxLimit 共用同一口径
+     * 标准分页，页大小上限
      */
-    public static final int MAX_PAGE_SIZE = 500;
+    public static final int STANDARD_PAGE_SIZE_MAX = 500;
+
+    /**
+     * 大数据量分页，页大小上限
+     */
+    public static final int LARGE_PAGE_SIZE_MAX = 10000;
 
     @Schema(description = "当前页码")
     protected Integer pageNum;
@@ -87,8 +92,8 @@ public class PageParam implements Serializable {
 
     public Integer getPageSize() {
         int size = pageSize == null ? DEFAULT_PAGE_SIZE : pageSize;
-        // 钳制到 [1, MAX_PAGE_SIZE]，避免 0/负值触发全表查询
-        size = Math.clamp(size, 1, MAX_PAGE_SIZE);
+        // 钳制值域，避免 0/负值触发全表查询
+        size = Math.clamp(size, 1, STANDARD_PAGE_SIZE_MAX);
         return applyGlobalPageSizeLimiter(size);
     }
 

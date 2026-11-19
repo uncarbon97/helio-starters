@@ -1,7 +1,7 @@
 package cc.uncarbon.framework.helium.db.mybatisplus.autoconfigure;
 
 import cc.uncarbon.framework.helium.base.condition.HeliumConditions;
-import cc.uncarbon.framework.helium.base.page.LargePageParam;
+import cc.uncarbon.framework.helium.base.page.PageParam;
 import cc.uncarbon.framework.helium.db.mybatisplus.handler.MetaObjectFiller;
 import cc.uncarbon.framework.helium.db.mybatisplus.handler.MybatisPlusAutoFillColumnHandler;
 import cc.uncarbon.framework.helium.db.mybatisplus.idgen.HutoolSnowflakeIdGenerator;
@@ -67,11 +67,8 @@ public class HeliumMPAutoConfiguration {
         分页插件
          */
         PaginationInnerInterceptor paginationInnerInterceptor = new PaginationInnerInterceptor();
-        /*
-        单页上限与 LargePageParam.MAX_PAGE_SIZE 共用同一口径：
-        业务直接 new Page<>(1, 100000) 绕过 PageParam 时，由拦截器兜底钳到上限而非全表拉取
-         */
-        paginationInnerInterceptor.setMaxLimit((long) LargePageParam.MAX_PAGE_SIZE);
+        // 由拦截器兜底钳到上限而非全表拉取
+        paginationInnerInterceptor.setMaxLimit((long) PageParam.LARGE_PAGE_SIZE_MAX);
         // 越界页（pageNum > pages）静默返回空列表
         paginationInnerInterceptor.setOverflow(false);
         interceptor.addInnerInterceptor(paginationInnerInterceptor);
