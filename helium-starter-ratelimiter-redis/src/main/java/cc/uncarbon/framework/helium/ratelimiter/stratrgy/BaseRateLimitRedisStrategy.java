@@ -1,7 +1,7 @@
 package cc.uncarbon.framework.helium.ratelimiter.stratrgy;
 
 import cc.uncarbon.framework.helium.ratelimiter.annotation.UseRateLimit;
-import cc.uncarbon.framework.helium.ratelimiter.enums.RateLimitDegradationEnum;
+import cc.uncarbon.framework.helium.ratelimiter.enums.RateLimiterDegradationEnum;
 import cc.uncarbon.framework.helium.ratelimiter.exception.RateLimitedException;
 import cc.uncarbon.framework.helium.web.context.VisitorContext;
 import cc.uncarbon.framework.helium.web.context.VisitorContextHolder;
@@ -55,15 +55,15 @@ public abstract class BaseRateLimitRedisStrategy {
     /**
      * Redis 不可用时的降级策略；默认 fail-closed 抛语义化异常
      */
-    private final RateLimitDegradationEnum degradation;
+    private final RateLimiterDegradationEnum degradation;
 
 
     protected BaseRateLimitRedisStrategy(RedisTemplate<String, Object> objectRedisTemplate, String logPrefix) {
-        this(objectRedisTemplate, logPrefix, RateLimitDegradationEnum.FAIL_CLOSED);
+        this(objectRedisTemplate, logPrefix, RateLimiterDegradationEnum.FAIL_CLOSED);
     }
 
     protected BaseRateLimitRedisStrategy(RedisTemplate<String, Object> objectRedisTemplate, String logPrefix,
-                                         RateLimitDegradationEnum degradation) {
+                                         RateLimiterDegradationEnum degradation) {
         this.objectRedisTemplate = objectRedisTemplate;
         this.LOG_PREFIX = logPrefix;
         this.degradation = degradation;
@@ -96,7 +96,7 @@ public abstract class BaseRateLimitRedisStrategy {
         try {
             current = objectRedisTemplate.execute(REDIS_SCRIPT, List.of(redisKey), max, duration);
         } catch (DataAccessException e) {
-            if (degradation == RateLimitDegradationEnum.FAIL_OPEN) {
+            if (degradation == RateLimiterDegradationEnum.FAIL_OPEN) {
                 log.error("{} Redis 不可用，fail-open 放行 >> method={}", LOG_PREFIX,
                         point.getSignature().toShortString(), e);
                 return;

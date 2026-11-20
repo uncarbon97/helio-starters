@@ -3,7 +3,7 @@ package cc.uncarbon.framework.helium.ratelimiter.stratrgy;
 import cc.uncarbon.framework.helium.base.context.UserContextHolder;
 import cc.uncarbon.framework.helium.ratelimiter.annotation.UseRateLimit;
 import cc.uncarbon.framework.helium.ratelimiter.constant.RateLimiterConstant;
-import cc.uncarbon.framework.helium.ratelimiter.enums.RateLimitDegradationEnum;
+import cc.uncarbon.framework.helium.ratelimiter.enums.RateLimiterDegradationEnum;
 import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.JoinPoint;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -26,7 +26,7 @@ public class RateLimitByUserStrategy extends BaseRateLimitRedisStrategy implemen
     }
 
     public RateLimitByUserStrategy(RedisTemplate<String, Object> objectRedisTemplate,
-                                   RateLimitDegradationEnum degradation) {
+                                   RateLimiterDegradationEnum degradation) {
         super(objectRedisTemplate, "[Redis限流器][用户维度]", degradation);
     }
 

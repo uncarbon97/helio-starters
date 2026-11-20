@@ -11,7 +11,7 @@ import lombok.Getter;
  */
 @Getter
 @AllArgsConstructor
-public enum RateLimitDegradationEnum {
+public enum RateLimiterDegradationEnum {
 
     /**
      * fail-closed（默认）：抛出语义化异常拒绝请求，保持限流保护语义，业务方收到明确错误

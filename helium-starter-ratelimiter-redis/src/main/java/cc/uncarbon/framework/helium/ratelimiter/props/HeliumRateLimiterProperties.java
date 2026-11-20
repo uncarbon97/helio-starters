@@ -1,7 +1,7 @@
 package cc.uncarbon.framework.helium.ratelimiter.props;
 
 import cc.uncarbon.framework.helium.base.constant.ConfigurationPropertiesPrefix;
-import cc.uncarbon.framework.helium.ratelimiter.enums.RateLimitDegradationEnum;
+import cc.uncarbon.framework.helium.ratelimiter.enums.RateLimiterDegradationEnum;
 import lombok.Data;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
@@ -12,11 +12,11 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
  */
 @Data
 @ConfigurationProperties(prefix = ConfigurationPropertiesPrefix.RATE_LIMITER)
-public class HeliumRateLimitProperties {
+public class HeliumRateLimiterProperties {
 
     /**
      * Redis 不可用时的降级策略
      */
-    private RateLimitDegradationEnum degradation = RateLimitDegradationEnum.FAIL_CLOSED;
+    private RateLimiterDegradationEnum degradation = RateLimiterDegradationEnum.FAIL_CLOSED;
 
 }
