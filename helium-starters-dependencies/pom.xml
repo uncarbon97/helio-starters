@@ -30,7 +30,8 @@
         <!-- 以上用于 bizlog -->
 
         <!-- 以下用于 db -->
-        <mybatis-plus.version>3.5.18.1</mybatis-plus.version>
+        <!-- 3.5.18.1 BlockAttackInnerInterceptor 会把「id IN (...) AND 逻辑删除字段=0」误判为全表更新（baomidou/mybatis-plus#7218），回退 3.5.17 -->
+        <mybatis-plus.version>3.5.17</mybatis-plus.version>
         <dynamic-datasource.version>4.6.0</dynamic-datasource.version>
         <mysql.version>26.10.0</mysql.version>
         <postgresql.version>42.7.14</postgresql.version>
