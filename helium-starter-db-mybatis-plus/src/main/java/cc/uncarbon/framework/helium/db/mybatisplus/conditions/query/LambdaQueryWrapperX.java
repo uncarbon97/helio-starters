@@ -35,24 +35,6 @@ public class LambdaQueryWrapperX<T> extends LambdaQueryWrapper<T> {
         return this;
     }
 
-    /**
-     * 转义 LIKE 通配符：{@code \ -> \\}, {@code % -> \%}, {@code _ -> \_}
-     */
-    public static String escapeLike(String val) {
-        if (val == null || val.isEmpty()) {
-            return val;
-        }
-        StringBuilder sb = new StringBuilder(val.length() + 8);
-        for (int i = 0; i < val.length(); i++) {
-            char c = val.charAt(i);
-            if (c == '\\' || c == '%' || c == '_') {
-                sb.append('\\');
-            }
-            sb.append(c);
-        }
-        return sb.toString();
-    }
-
     public LambdaQueryWrapperX<T> likeIfPresent(SFunction<T, ?> column, String val) {
         if (StringUtils.hasText(val)) {
             return (LambdaQueryWrapperX<T>) super.like(column, normalizeLikeValue(val));
@@ -213,6 +195,24 @@ public class LambdaQueryWrapperX<T> extends LambdaQueryWrapper<T> {
     public LambdaQueryWrapperX<T> not(boolean condition, Consumer<LambdaQueryWrapper<T>> consumer) {
         super.not(condition, consumer);
         return this;
+    }
+
+    /**
+     * 转义 LIKE 通配符：{@code \ -> \\}, {@code % -> \%}, {@code _ -> \_}
+     */
+    public static String escapeLike(String val) {
+        if (val == null || val.isEmpty()) {
+            return val;
+        }
+        StringBuilder sb = new StringBuilder(val.length() + 8);
+        for (int i = 0; i < val.length(); i++) {
+            char c = val.charAt(i);
+            if (c == '\\' || c == '%' || c == '_') {
+                sb.append('\\');
+            }
+            sb.append(c);
+        }
+        return sb.toString();
     }
 
     /*
