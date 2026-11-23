@@ -17,6 +17,7 @@ import jakarta.validation.ConstraintViolationException;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.tomcat.util.http.InvalidParameterException;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.json.JsonParseException;
 import org.springframework.http.HttpStatus;
@@ -200,6 +201,28 @@ public class GlobalWebExceptionHandler {
     }
 
     /**
+     * Tomcat 11+ 表单参数解析失败
+     * 如：请求体大小超过 server.tomcat.max-http-form-post-size，或 multipart 请求超过 max-request-size
+     */
+    @ExceptionHandler(value = {InvalidParameterException.class})
+    public ResponseEntity<ApiResult<Void>> handleInvalidParameterException(InvalidParameterException e,
+                                                                           HttpServletRequest servletRequest) {
+        logExpectedException(e, servletRequest);
+
+        HttpStatus httpStatus;
+        BuiltinErrorCodeEnum codeEnum;
+        if (containsSizeLimitExceeded(e)) {
+            httpStatus = HttpStatus.CONTENT_TOO_LARGE;
+            codeEnum = BuiltinErrorCodeEnum.Z00413;
+        } else {
+            httpStatus = HttpStatus.NOT_ACCEPTABLE;
+            codeEnum = BuiltinErrorCodeEnum.Z00406;
+        }
+        ApiResult<Void> ret = ApiResult.fail(codeEnum.getErrorCode(), determineI18nMessage(codeEnum));
+        return createResponseEntity(httpStatus, ret);
+    }
+
+    /**
      * JSR303 表单参数校验失败，或入参格式转换失败
      * 需在 Controller 层使用@Valid注解
      */
@@ -292,6 +315,20 @@ public class GlobalWebExceptionHandler {
             }
         }
         return skipDefaultLog;
+    }
+
+    /**
+     * 判断异常链中是否存在 SizeLimitExceededException（请求体大小超限）
+     * Tomcat 的 InvalidParameterException 可能将底层异常作为 cause 携带，也可能仅拼入 message，两者都兜住
+     */
+    protected static boolean containsSizeLimitExceeded(Throwable e) {
+        for (Throwable t = e; t != null; t = t.getCause() == t ? null : t.getCause()) {
+            if (t.getClass().getName().endsWith("SizeLimitExceededException")
+                    || String.valueOf(t.getMessage()).contains("exceeds the configured maximum")) {
+                return true;
+            }
+        }
+        return false;
     }
 
     protected static <T> ResponseEntity<ApiResult<T>> createResponseEntity(HttpStatus httpStatus, ApiResult<T> body) {
