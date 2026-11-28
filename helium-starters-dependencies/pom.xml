@@ -34,7 +34,7 @@
         <mybatis-plus.version>3.5.17</mybatis-plus.version>
         <dynamic-datasource.version>4.6.0</dynamic-datasource.version>
         <mysql.version>26.10.0</mysql.version>
-        <postgresql.version>42.7.14</postgresql.version>
+        <postgresql.version>42.7.15</postgresql.version>
         <!-- 以上用于 db -->
 
         <!-- 以下用于 openapi3 -->
