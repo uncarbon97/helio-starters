@@ -1,0 +1,30 @@
+package cc.uncarbon.framework.helium.i18n.context.lang;
+
+import io.swagger.v3.oas.annotations.media.Schema;
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+import lombok.experimental.Accessors;
+
+import java.util.Locale;
+
+/**
+ * 简单多语言信息
+ *
+ * @author Uncarbon
+ */
+@Data
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@AllArgsConstructor
+@Accessors(chain = true)
+public class SimpleLangInfo implements LangInfo {
+
+
+    @Schema(description = "符合 IETF BCP 47 的语言标签", example = "zh-CN, zh-TW")
+    protected String languageTag;
+
+    @Schema(description = "Locale 对象实例")
+    protected Locale locale;
+
+}

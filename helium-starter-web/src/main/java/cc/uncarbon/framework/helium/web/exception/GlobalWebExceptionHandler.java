@@ -1,0 +1,347 @@
+package cc.uncarbon.framework.helium.web.exception;
+
+import cc.uncarbon.framework.helium.base.errorcode.BuiltinErrorCodeEnum;
+import cc.uncarbon.framework.helium.base.errorcode.ErrorMessageFormatter;
+import cc.uncarbon.framework.helium.base.errorcode.StructuredErrorCode;
+import cc.uncarbon.framework.helium.base.exception.BusinessException;
+import cc.uncarbon.framework.helium.base.exception.ValueParseException;
+import cc.uncarbon.framework.helium.web.model.response.ApiResult;
+import cc.uncarbon.framework.helium.web.props.HeliumWebProperties;
+import cc.uncarbon.framework.helium.web.util.InvalidFieldUtil;
+import cn.dev33.satoken.exception.NotLoginException;
+import cn.dev33.satoken.exception.NotPermissionException;
+import cn.dev33.satoken.exception.NotRoleException;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.validation.ConstraintViolationException;
+import lombok.NonNull;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.tomcat.util.http.InvalidParameterException;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.boot.json.JsonParseException;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
+import org.springframework.http.converter.HttpMessageNotReadableException;
+import org.springframework.validation.BindException;
+import org.springframework.web.HttpMediaTypeNotSupportedException;
+import org.springframework.web.HttpRequestMethodNotSupportedException;
+import org.springframework.web.bind.MethodArgumentNotValidException;
+import org.springframework.web.bind.MissingServletRequestParameterException;
+import org.springframework.web.bind.annotation.ControllerAdvice;
+import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.method.annotation.HandlerMethodValidationException;
+import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
+import org.springframework.web.multipart.MaxUploadSizeExceededException;
+import org.springframework.web.servlet.NoHandlerFoundException;
+import org.springframework.web.servlet.resource.NoResourceFoundException;
+
+import java.nio.charset.StandardCharsets;
+import java.util.List;
+
+/**
+ * Web 全局异常处理
+ *
+ * @author Uncarbon
+ */
+@Slf4j
+@RequiredArgsConstructor
+@ControllerAdvice(name = GlobalWebExceptionHandler.BEAN_NAME)
+@ConditionalOnMissingBean(name = GlobalWebExceptionHandler.BEAN_NAME)
+public class GlobalWebExceptionHandler {
+
+    private static final String LOG_PREFIX = "[Framework][Web]";
+    public static final String BEAN_NAME = "globalWebExceptionHandler";
+    protected static final MediaType MEDIA_TYPE_APPLICATION_JSON_UTF8 =
+            new MediaType("application", "json", StandardCharsets.UTF_8);
+
+    private final ErrorMessageFormatter errorMessageFormatter;
+    private final HeliumWebProperties props;
+    private final List<GlobalExceptionHook> exceptionHooks;
+
+    /**
+     * 主动抛出的业务异常
+     */
+    @ExceptionHandler(value = {BusinessException.class})
+    public ResponseEntity<ApiResult<Void>> handleBusinessException(BusinessException e, HttpServletRequest servletRequest) {
+        logBusinessException(e, servletRequest);
+
+        ApiResult<Void> ret;
+        if (e.getErrorCode() != null) {
+            // 携带异常中的模板参数，避免占位符原文直达客户端
+            ret = ApiResult.fail(e.getCode(), determineI18nMessage(e.getErrorCode(), e.getTemplateParams()));
+        } else {
+            ret = ApiResult.fail(e.getCode(), e.getMessage());
+        }
+        return createResponseEntity(HttpStatus.BAD_REQUEST, ret);
+    }
+
+    /**
+     * 用户登录异常
+     */
+    @ExceptionHandler(value = {NotLoginException.class})
+    public ResponseEntity<ApiResult<Void>> handleNotLoginException(NotLoginException e, HttpServletRequest servletRequest) {
+        logExpectedException(e, servletRequest);
+
+        final var codeEnum = BuiltinErrorCodeEnum.Z00401;
+        ApiResult<Void> ret = ApiResult.fail(codeEnum.getErrorCode(), determineI18nMessage(codeEnum));
+        return createResponseEntity(HttpStatus.UNAUTHORIZED, ret);
+    }
+
+    /**
+     * 用户角色异常
+     */
+    @ExceptionHandler(value = {NotRoleException.class})
+    public ResponseEntity<ApiResult<Void>> handleNotRoleException(NotRoleException e, HttpServletRequest servletRequest) {
+        logExpectedException(e, servletRequest);
+
+        final var codeEnum = BuiltinErrorCodeEnum.Z00402;
+        ApiResult<Void> ret = ApiResult.fail(codeEnum.getErrorCode(), determineI18nMessage(codeEnum));
+        return createResponseEntity(HttpStatus.FORBIDDEN, ret);
+    }
+
+    /**
+     * 用户权限异常
+     */
+    @ExceptionHandler(value = {NotPermissionException.class})
+    public ResponseEntity<ApiResult<Void>> handleNotPermissionException(NotPermissionException e,
+                                                                        HttpServletRequest servletRequest) {
+        logExpectedException(e, servletRequest);
+
+        final var codeEnum = BuiltinErrorCodeEnum.Z00403;
+        ApiResult<Void> ret = ApiResult.fail(codeEnum.getErrorCode(), determineI18nMessage(codeEnum));
+        return createResponseEntity(HttpStatus.FORBIDDEN, ret);
+    }
+
+    /**
+     * 404
+     */
+    @ExceptionHandler(value = {NoHandlerFoundException.class, NoResourceFoundException.class})
+    public ResponseEntity<ApiResult<Void>> handleNoHandlerFoundException(Exception e, HttpServletRequest servletRequest) {
+        logExpectedException(e, servletRequest);
+
+        final var codeEnum = BuiltinErrorCodeEnum.Z00404;
+        ApiResult<Void> ret = ApiResult.fail(codeEnum.getErrorCode(), determineI18nMessage(codeEnum));
+        return createResponseEntity(HttpStatus.NOT_FOUND, ret);
+    }
+
+    /**
+     * 请求方式不对
+     * 如：POST接口用了GET请求
+     */
+    @ExceptionHandler(value = {HttpRequestMethodNotSupportedException.class})
+    public ResponseEntity<ApiResult<Void>> handleServletException(ServletException e,
+                                                                  HttpServletRequest servletRequest) {
+        logExpectedException(e, servletRequest);
+
+        final var codeEnum = BuiltinErrorCodeEnum.Z00405;
+        ApiResult<Void> ret = ApiResult.fail(codeEnum.getErrorCode(), determineI18nMessage(codeEnum));
+        return createResponseEntity(HttpStatus.METHOD_NOT_ALLOWED, ret);
+    }
+
+    /**
+     * Content-Type 不支持
+     * 如：Content-type 应为 application/json 的，使用了 text/plain
+     */
+    @ExceptionHandler(value = {HttpMediaTypeNotSupportedException.class})
+    public ResponseEntity<ApiResult<Void>> handleHttpMediaTypeNotSupportedException(HttpMediaTypeNotSupportedException e,
+                                                                                    HttpServletRequest servletRequest) {
+        logExpectedException(e, servletRequest);
+
+        final var codeEnum = BuiltinErrorCodeEnum.Z00415;
+        ApiResult<Void> ret = ApiResult.fail(codeEnum.getErrorCode(), determineI18nMessage(codeEnum));
+        return createResponseEntity(HttpStatus.UNSUPPORTED_MEDIA_TYPE, ret);
+    }
+
+    /**
+     * JsonParseException, HttpMessageNotReadableException
+     * Jackson 反序列化异常
+     * 通常是因为 JSON 格式错误，或枚举输入值超出范围
+     * <p>
+     * MethodArgumentTypeMismatchException
+     * "@PathVariable" 注解收参类型为 Long，但传的是 String
+     */
+    @ExceptionHandler(value = {JsonParseException.class, HttpMessageNotReadableException.class,
+            MethodArgumentTypeMismatchException.class, ValueParseException.class})
+    public ResponseEntity<ApiResult<Void>> handleJsonParseException(Exception e, HttpServletRequest servletRequest) {
+        logExpectedException(e, servletRequest);
+
+        final var codeEnum = BuiltinErrorCodeEnum.Z00406;
+        ApiResult<Void> ret = ApiResult.fail(codeEnum.getErrorCode(), determineI18nMessage(codeEnum));
+        return createResponseEntity(HttpStatus.NOT_ACCEPTABLE, ret);
+    }
+
+    /**
+     * 缺少必填请求参数、方法级参数校验失败
+     * 服务方法级 Bean 校验失败（@Validated + jakarta.validation 约束）
+     */
+    @ExceptionHandler(value = {MissingServletRequestParameterException.class,
+            HandlerMethodValidationException.class, ConstraintViolationException.class})
+    public ResponseEntity<ApiResult<Void>> handleParameterValidationException(Exception e,
+                                                                              HttpServletRequest servletRequest) {
+        logExpectedException(e, servletRequest);
+
+        final var codeEnum = BuiltinErrorCodeEnum.Z00406;
+        ApiResult<Void> ret = ApiResult.fail(codeEnum.getErrorCode(), determineI18nMessage(codeEnum));
+        return createResponseEntity(HttpStatus.NOT_ACCEPTABLE, ret);
+    }
+
+    /**
+     * 上传文件大小超限
+     */
+    @ExceptionHandler(value = {MaxUploadSizeExceededException.class})
+    public ResponseEntity<ApiResult<Void>> handleMaxUploadSizeExceededException(MaxUploadSizeExceededException e,
+                                                                                HttpServletRequest servletRequest) {
+        logExpectedException(e, servletRequest);
+
+        final var codeEnum = BuiltinErrorCodeEnum.Z00413;
+        ApiResult<Void> ret = ApiResult.fail(codeEnum.getErrorCode(), determineI18nMessage(codeEnum));
+        return createResponseEntity(HttpStatus.CONTENT_TOO_LARGE, ret);
+    }
+
+    /**
+     * Tomcat 11+ 表单参数解析失败
+     * 如：请求体大小超过 server.tomcat.max-http-form-post-size，或 multipart 请求超过 max-request-size
+     */
+    @ExceptionHandler(value = {InvalidParameterException.class})
+    public ResponseEntity<ApiResult<Void>> handleInvalidParameterException(InvalidParameterException e,
+                                                                           HttpServletRequest servletRequest) {
+        logExpectedException(e, servletRequest);
+
+        HttpStatus httpStatus;
+        BuiltinErrorCodeEnum codeEnum;
+        if (containsSizeLimitExceeded(e)) {
+            httpStatus = HttpStatus.CONTENT_TOO_LARGE;
+            codeEnum = BuiltinErrorCodeEnum.Z00413;
+        } else {
+            httpStatus = HttpStatus.NOT_ACCEPTABLE;
+            codeEnum = BuiltinErrorCodeEnum.Z00406;
+        }
+        ApiResult<Void> ret = ApiResult.fail(codeEnum.getErrorCode(), determineI18nMessage(codeEnum));
+        return createResponseEntity(httpStatus, ret);
+    }
+
+    /**
+     * JSR303 表单参数校验失败，或入参格式转换失败
+     * 需在 Controller 层使用@Valid注解
+     */
+    @ExceptionHandler(value = {MethodArgumentNotValidException.class, BindException.class})
+    public ResponseEntity<ApiResult<InvalidFieldUtil.InvalidField>> handleBindException(
+            BindException e, HttpServletRequest servletRequest) {
+        logExpectedException(e, servletRequest);
+
+        final var codeEnum = BuiltinErrorCodeEnum.Z00406;
+        ApiResult<InvalidFieldUtil.InvalidField> ret = ApiResult.fail(
+                codeEnum.getErrorCode(), determineI18nMessage(codeEnum),
+                InvalidFieldUtil.getInvalidField(e.getBindingResult()));
+        return createResponseEntity(HttpStatus.NOT_ACCEPTABLE, ret);
+    }
+
+    /**
+     * 兜底未归类异常，如：
+     * ClientException(Dubbo RPC)
+     * RpcException(Dubbo RPC)
+     * SQLException
+     * RuntimeException
+     * 一类的都会落到这里来，并打印堆栈
+     */
+    @ExceptionHandler(value = {Exception.class})
+    public ResponseEntity<ApiResult<Void>> handleException(Exception e, HttpServletRequest servletRequest) {
+        // 打印堆栈，方便溯源
+        logUnexpectedException(e, servletRequest, true);
+
+        final var codeEnum = BuiltinErrorCodeEnum.Z00500;
+        ApiResult<Void> ret = ApiResult.fail(codeEnum.getErrorCode(), determineI18nMessage(codeEnum));
+        return createResponseEntity(HttpStatus.INTERNAL_SERVER_ERROR, ret);
+    }
+
+    /*
+    ----------------------------------------------------------------
+                        私有方法
+    ----------------------------------------------------------------
+     */
+
+    protected void logBusinessException(BusinessException e, HttpServletRequest servletRequest) {
+        if (triggerHooks(e, servletRequest, ExceptionCategory.BUSINESS)) {
+            return;
+        }
+        if (props.isLogBusinessException()) {
+            log.warn(LOG_PREFIX + "[业务异常] [{}]{} >> URI=[{}]",
+                    e.getCode(), e.getMessage(), servletRequest.getRequestURI());
+        }
+    }
+
+    protected void logExpectedException(Exception e, HttpServletRequest servletRequest) {
+        if (triggerHooks(e, servletRequest, ExceptionCategory.EXPECTED)) {
+            return;
+        }
+        if (props.isLogExpectedException()) {
+            log.warn(LOG_PREFIX + " 异常类[{}] >> URI=[{}], 消息=[{}]",
+                    e.getClass().getName(), servletRequest.getRequestURI(), e.getMessage());
+        }
+    }
+
+    protected void logUnexpectedException(Exception e, HttpServletRequest servletRequest, boolean printExceptionStack) {
+        if (triggerHooks(e, servletRequest, ExceptionCategory.UNEXPECTED)) {
+            return;
+        }
+        if (printExceptionStack) {
+            log.error(LOG_PREFIX + " 异常类[{}] >> URI=[{}], 消息=[{}]",
+                    e.getClass().getName(), servletRequest.getRequestURI(), e.getMessage(), e);
+        } else {
+            log.error(LOG_PREFIX + " 异常类[{}] >> URI=[{}], 消息=[{}]",
+                    e.getClass().getName(), servletRequest.getRequestURI(), e.getMessage());
+        }
+    }
+
+    /**
+     * 触发全局异常处理钩子（在框架默认日志打印之前）
+     * 钩子内的异常会被捕获并单独记录，不会影响正常的错误响应
+     *
+     * @return 是否有钩子要求跳过框架默认日志打印
+     * @see GlobalExceptionHook
+     */
+    protected boolean triggerHooks(Exception e, HttpServletRequest servletRequest, ExceptionCategory category) {
+        boolean skipDefaultLog = false;
+        for (GlobalExceptionHook hook : exceptionHooks) {
+            try {
+                if (GlobalExceptionHook.Verdict.SKIP_DEFAULT_LOG == hook.onException(
+                        new ExceptionHookContext(e, servletRequest, category))) {
+                    skipDefaultLog = true;
+                }
+            } catch (Exception hookException) {
+                log.error(LOG_PREFIX + "异常处理钩子执行失败 >> 钩子=[{}]", hook.getClass().getName(), hookException);
+            }
+        }
+        return skipDefaultLog;
+    }
+
+    /**
+     * 判断异常链中是否存在 SizeLimitExceededException（请求体大小超限）
+     * Tomcat 的 InvalidParameterException 可能将底层异常作为 cause 携带，也可能仅拼入 message，两者都兜住
+     */
+    protected static boolean containsSizeLimitExceeded(Throwable e) {
+        for (Throwable t = e; t != null; t = t.getCause() == t ? null : t.getCause()) {
+            if (t.getClass().getName().endsWith("SizeLimitExceededException")
+                    || String.valueOf(t.getMessage()).contains("exceeds the configured maximum")) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    protected static <T> ResponseEntity<ApiResult<T>> createResponseEntity(HttpStatus httpStatus, ApiResult<T> body) {
+        return ResponseEntity.status(httpStatus.value()).contentType(MEDIA_TYPE_APPLICATION_JSON_UTF8).body(body);
+    }
+
+    /**
+     * 取国际化翻译值或默认消息，取决于实际注入的 {@link ErrorMessageFormatter} 实现
+     *
+     * @param errorCode 错误码
+     * @return 消息文本
+     */
+    protected String determineI18nMessage(@NonNull StructuredErrorCode errorCode, Object... templateParams) {
+        return errorMessageFormatter.format(errorCode, templateParams);
+    }
+}

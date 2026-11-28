@@ -1,0 +1,233 @@
+package cc.uncarbon.framework.helium.i18n.util;
+
+import cc.uncarbon.framework.helium.base.enums.BaseEnum;
+import cc.uncarbon.framework.helium.i18n.constant.HeliumI18nConstant;
+import cc.uncarbon.framework.helium.i18n.context.I18nContext;
+import cc.uncarbon.framework.helium.i18n.context.I18nContextHolder;
+import cc.uncarbon.framework.helium.i18n.context.lang.LangInfo;
+import cc.uncarbon.framework.helium.i18n.props.HeliumI18nProperties;
+import cn.hutool.core.text.CharSequenceUtil;
+import cn.hutool.core.text.StrPool;
+import cn.hutool.core.util.StrUtil;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.experimental.UtilityClass;
+import lombok.extern.slf4j.Slf4j;
+import org.jspecify.annotations.Nullable;
+import org.springframework.context.MessageSource;
+import org.springframework.context.NoSuchMessageException;
+
+import java.util.Locale;
+import java.util.Objects;
+import java.util.function.Supplier;
+
+/**
+ * 国际化消息翻译工具类
+ *
+ * @author Lion Li@RuoYi-Vue-Plus
+ * @author Uncarbon
+ */
+@Slf4j
+@UtilityClass
+public class I18nMessageUtil {
+
+    private static final String LOG_PREFIX = HeliumI18nConstant.LOG_PREFIX;
+
+    /**
+     * Slf4j 风格的占位符
+     */
+    private static final String SLF4J_STYLE_PLACEHOLDER = StrPool.DELIM_START + StrPool.DELIM_END;
+
+    /**
+     * Spring 提供的 {@link MessageSource} 实例
+     */
+    @Getter
+    @Setter
+    private MessageSource messageSource;
+
+    /**
+     * {@link HeliumI18nProperties}.lang.fallbackLanguageTag
+     */
+    @Getter
+    @Setter
+    private String fallbackLanguageTag;
+
+    /**
+     * {@link Locale} 实例对象提供者
+     */
+    @Setter
+    private Supplier<Locale> localeSupplier = I18nMessageUtil::contextLocale;
+
+
+    /**
+     * 取 {@link Locale} 实例
+     * 优先从 {@link I18nContextHolder} 上下文获取，兜底取系统默认值
+     */
+    public Locale contextLocale() {
+        return I18nContextHolder.getContextOptional()
+                .map(I18nContext::getLangInfo)
+                .map(LangInfo::getLocale)
+                .orElseGet(Locale::getDefault);
+    }
+
+    /**
+     * 取 {@link Locale} 实例对象
+     * 由 localeSupplier 产生返回值
+     */
+    public Locale determineLocale() {
+        return localeSupplier.get();
+    }
+
+    /**
+     * 根据消息代码和参数，获取国际化消息翻译
+     * 支持模板填充，如: Nickname '{}' is already exist, do you like '{}'?
+     *
+     * @param code           消息代码
+     * @param templateParams 模板填充参数
+     * @return null or 国际化消息翻译
+     */
+    public String messageOf(String code, Object... templateParams) {
+        return messageOf(determineLocale(), code, templateParams);
+    }
+
+    /**
+     * 根据消息代码和参数，获取国际化消息翻译
+     * 支持模板填充，如: Nickname '{}' is already exist, do you like '{}'?
+     *
+     * @param locale         locale
+     * @param code           消息代码
+     * @param templateParams 模板填充参数
+     * @return null or 国际化消息翻译
+     */
+    public @Nullable String messageOf(Locale locale, String code, Object... templateParams) {
+        if (code == null) {
+            return null;
+        }
+        if (locale == null) {
+            locale = determineLocale();
+        }
+
+        try {
+            String msg = getMessageSource().getMessage(code, null, locale);
+            if (CharSequenceUtil.isEmpty(msg)) {
+                return msg;
+            }
+            return fillTemplate(msg, code, templateParams);
+        } catch (NoSuchMessageException nsme) {
+            if (!Objects.equals(locale.toLanguageTag(), getFallbackLanguageTag())) {
+                // 需求语言不是默认语言（预设是简体中文），且未找到对应国际化消息翻译，走不了兜底，发出警告
+                log.warn(LOG_PREFIX + "no such message >> code={}, locale={}", code, locale);
+            }
+        }
+        return null;
+    }
+
+    /**
+     * 根据消息代码和参数，获取国际化消息翻译
+     * 支持模板填充，如: Nickname '{}' is already exist, do you like '{}'?
+     *
+     * @param code           消息代码
+     * @param defaultValue   未找到对应国际化消息翻译的情况下，默认返回值
+     * @param templateParams 模板填充参数
+     * @return null or 国际化消息翻译
+     */
+    public String messageOf(String code, String defaultValue, Object... templateParams) {
+        return messageOf(determineLocale(), code, defaultValue, templateParams);
+    }
+
+    /**
+     * 根据消息代码和参数，获取国际化消息翻译
+     * 支持模板填充，如: Nickname '{}' is already exist, do you like '{}'?
+     *
+     * @param locale         locale
+     * @param code           消息代码
+     * @param defaultValue   未找到对应国际化消息翻译的情况下，默认返回值
+     * @param templateParams 模板填充参数
+     * @return null or 国际化消息翻译
+     */
+    public String messageOf(Locale locale, String code, String defaultValue, Object... templateParams) {
+        String msg = messageOf(locale, code, templateParams);
+        // 兜底值同样做模板填充，避免占位符原样外显
+        return msg != null ? msg : fillTemplate(defaultValue, code, templateParams);
+    }
+
+    /**
+     * 根据枚举项和参数，获取国际化消息翻译
+     * 支持模板填充，如: Nickname '{}' has been existing, do you like '{}'?
+     *
+     * @param enumItem       枚举项
+     * @param templateParams 模板填充参数
+     * @return null or 国际化消息翻译
+     */
+    public String messageOf(Enum<?> enumItem, Object... templateParams) {
+        return messageOf(determineLocale(), enumItem, templateParams);
+    }
+
+    /**
+     * 根据枚举项和参数，获取国际化消息翻译
+     * 支持模板填充，如: Nickname '{}' has been existing, do you like '{}'?
+     *
+     * @param locale         locale
+     * @param enumItem       枚举项
+     * @param templateParams 模板填充参数
+     * @return null or 国际化消息翻译
+     */
+    public String messageOf(Locale locale, Enum<?> enumItem, Object... templateParams) {
+        if (enumItem == null) {
+            return null;
+        }
+
+        String i18nCode;
+
+        // 尝试以较长的 枚举短名.枚举项name 为 code 尝试获取翻译值
+        i18nCode = String.format("%s.%s", enumItem.getDeclaringClass().getSimpleName(), enumItem.name());
+        String i18nMessage = messageOf(locale, i18nCode, templateParams);
+        if (CharSequenceUtil.isNotEmpty(i18nMessage)) {
+            return i18nMessage;
+        }
+
+        // 尝试以 枚举项name 为 code 尝试获取翻译值
+        i18nCode = enumItem.name();
+        i18nMessage = messageOf(locale, i18nCode, templateParams);
+        if (CharSequenceUtil.isNotEmpty(i18nMessage)) {
+            return i18nMessage;
+        }
+
+        // 以上都没找到，兜底：如果是 BaseEnum 的实现，直接返回 label 值
+        if (BaseEnum.class.isAssignableFrom(enumItem.getDeclaringClass())) {
+            return ((BaseEnum<?>) enumItem).getLabel();
+        }
+
+        // 最终兜底：返回枚举项 name
+        return enumItem.name();
+    }
+
+    /*
+    ----------------------------------------------------------------
+                        私有方法
+    ----------------------------------------------------------------
+     */
+
+    /**
+     * 模板填充；msg 为 null 或不含占位符时原样返回
+     */
+    private String fillTemplate(String msg, String code, Object... templateParams) {
+        if (msg == null || !CharSequenceUtil.contains(msg, SLF4J_STYLE_PLACEHOLDER)) {
+            return msg;
+        }
+        // 容错填充：参数个数与占位符不匹配时告警；null 参数转空串，避免字面量 "null" 直达用户
+        int placeholderCount = CharSequenceUtil.count(msg, SLF4J_STYLE_PLACEHOLDER);
+        // 必须拷贝：调用方（如 BusinessException）持有同一数组引用，原地改写会让异常二次渲染时看到被替换后的值
+        Object[] safeParams = templateParams == null ? new Object[0] : templateParams.clone();
+        if (safeParams.length != placeholderCount) {
+            log.warn(LOG_PREFIX + "模板参数个数与占位符不匹配 >> code={}, placeholders={}, params={}",
+                    code, placeholderCount, safeParams.length);
+        }
+        for (int i = 0; i < safeParams.length; i++) {
+            if (safeParams[i] == null) {
+                safeParams[i] = StrUtil.EMPTY;
+            }
+        }
+        return CharSequenceUtil.format(msg, safeParams);
+    }
+}

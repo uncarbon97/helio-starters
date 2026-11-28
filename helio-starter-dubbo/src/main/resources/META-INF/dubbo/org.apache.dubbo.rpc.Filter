@@ -1,3 +1,0 @@
-helioDubboExceptionFilter=cc.uncarbon.framework.dubbo.filter.HelioDubboExceptionFilter
-consumerContext=cc.uncarbon.framework.dubbo.filter.ConsumerContextFilter
-providerContext=cc.uncarbon.framework.dubbo.filter.ProviderContextFilter

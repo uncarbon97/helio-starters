@@ -1,0 +1,30 @@
+package cc.uncarbon.framework.helium.db.mybatisplus.props;
+
+import cc.uncarbon.framework.helium.base.constant.ConfigurationPropertiesPrefix;
+import lombok.Data;
+import org.springframework.boot.context.properties.ConfigurationProperties;
+
+/**
+ * Helium 集成 mybatis-plus 配置属性类
+ *
+ * @author Uncarbon
+ */
+@Data
+@ConfigurationProperties(prefix = ConfigurationPropertiesPrefix.DB_MYBATIS_PLUS)
+public class HeliumMybatisPlusProperties {
+
+    /**
+     * 乐观锁（默认实例，未配置时 enabled=false，避免 NPE）
+     */
+    private OptimisticLock optimisticLock = new OptimisticLock();
+
+    @Data
+    public static final class OptimisticLock {
+
+        /**
+         * 是否启用
+         */
+        private Boolean enabled = false;
+
+    }
+}

@@ -1,0 +1,68 @@
+package cc.uncarbon.framework.helium.tenant.datasource;
+
+import cc.uncarbon.framework.helium.base.condition.HeliumConditions;
+import cc.uncarbon.framework.helium.db.dynamicdatasource.helper.DynamicDataSourceHelper;
+import cc.uncarbon.framework.helium.tenant.enums.TenantIsolationStrategyEnum;
+import cc.uncarbon.framework.helium.tenant.props.HeliumTenantProperties;
+import com.baomidou.dynamic.datasource.spring.boot.autoconfigure.DynamicDataSourceProperties;
+import lombok.extern.slf4j.Slf4j;
+import org.jspecify.annotations.NonNull;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Condition;
+import org.springframework.context.annotation.ConditionContext;
+import org.springframework.context.annotation.Conditional;
+import org.springframework.core.type.AnnotatedTypeMetadata;
+
+import java.util.Optional;
+
+/**
+ * 数据源级多租户自动装配类
+ * 基于 AOP 实现
+ * <a href="https://blog.csdn.net/w57685321/article/details/106823660">参考文章</a>
+ *
+ * @author Uncarbon
+ */
+@Slf4j
+@Conditional(value = TenantDataSourceConfiguration.OnDatasourceStrategy.class)
+public class TenantDataSourceConfiguration {
+
+    public static final String LOG_PREFIX = "[Framework][数据源级多租户]";
+
+
+    @Bean
+    @ConditionalOnMissingBean
+    public TenantDataSourceSettingProvider defaultTenantDataSourceSettingProvider() {
+        return tenantId -> Optional.empty();
+    }
+
+    @Bean
+    @ConditionalOnMissingBean
+    public TenantDataSourceAopInterceptor tenantDataSourceAopInterceptor(
+            DynamicDataSourceHelper dynamicDataSourceHelper,
+            TenantDataSourceSettingProvider tenantDataSourceSettingProvider,
+            HeliumTenantProperties props
+    ) {
+        log.info(LOG_PREFIX + " 已挂载 AOP 拦截器");
+        return new TenantDataSourceAopInterceptor(dynamicDataSourceHelper, tenantDataSourceSettingProvider, props);
+    }
+
+    @Bean
+    @ConditionalOnMissingBean
+    public TenantDataSourceAopAdvisor tenantDataSourceAopAdvisor(TenantDataSourceAopInterceptor aopInterceptor,
+                                                                 DynamicDataSourceProperties properties) {
+        TenantDataSourceAopAdvisor advisor = new TenantDataSourceAopAdvisor(aopInterceptor);
+        // 数值越高，优先度越低
+        advisor.setOrder(properties.getAop().getOrder() + 1);
+        log.info(LOG_PREFIX + " 已挂载 AOP 织入点");
+        return advisor;
+    }
+
+    protected static final class OnDatasourceStrategy implements Condition {
+        @Override
+        public boolean matches(ConditionContext context, @NonNull AnnotatedTypeMetadata metadata) {
+            var props = HeliumConditions.bind(context.getEnvironment(), HeliumTenantProperties.class);
+            return props.getIsolationStrategy() == TenantIsolationStrategyEnum.DATASOURCE;
+        }
+    }
+}

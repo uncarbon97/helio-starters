@@ -1,0 +1,240 @@
+package cc.uncarbon.framework.helium.satoken.dao;
+
+import cc.uncarbon.framework.helium.base.cache.TimedCacheEx;
+import cn.dev33.satoken.dao.SaTokenDaoForRedisTemplate;
+import lombok.extern.slf4j.Slf4j;
+
+/**
+ * 带本地缓存的 {@link SaTokenDaoForRedisTemplate}
+ * 在 SA-Token 读取时，本地缓存一定时长，减少对 Redis 的 IO
+ * 在多实例部署时存在一定安全风险：用户登出时，A机器的缓存已清除，但B机器的缓存还认为有效
+ * 所以请谨慎设置本地缓存有效时长
+ *
+ * @author Uncarbon
+ * @since 2.1.0
+ */
+@Slf4j
+public class SaTokenRedisDaoWithLocalCache extends SaTokenDaoForRedisTemplate {
+
+    protected static final String LOG_PREFIX = "[SaTokenRedisDaoWithLocalCache]";
+
+    /**
+     * 标记 key 为空值
+     */
+    protected final TimedCacheEx<String, Boolean> nullValueMarker;
+    protected final TimedCacheEx<String, String> stringValueCache;
+    protected final TimedCacheEx<String, Object> objectValueCache;
+
+    /**
+     * 默认本地缓存时长（毫秒）
+     */
+    protected final long defaultLocalTtlMs;
+
+
+    /**
+     * 创建本地缓存 SaTokenDao
+     *
+     * @param duration 本地缓存有效时长，单位=秒
+     * @param capacity 本地缓存最大容量，注意：每次超过容量都会触发一次清理过程
+     */
+    public SaTokenRedisDaoWithLocalCache(long duration, int capacity) {
+        if (duration < 1) {
+            throw new IllegalArgumentException("duration 不能小于 1");
+        }
+        if (capacity < 1) {
+            throw new IllegalArgumentException("capacity 不能小于 1");
+        }
+
+        long asMilliseconds = duration * 1000;
+        this.defaultLocalTtlMs = asMilliseconds;
+
+        this.nullValueMarker = new TimedCacheEx<>(asMilliseconds, capacity);
+        this.stringValueCache = new TimedCacheEx<>(asMilliseconds, capacity);
+        this.objectValueCache = new TimedCacheEx<>(asMilliseconds, capacity);
+        // 默认开nullValueMarker的清理定时任务，避免长时间缓存空值
+        enableNullValueMarkerPruneSchedule(400);
+        // 不默认开stringValueCache、objectValueCache的清理定时任务
+
+        log.info(LOG_PREFIX + " 已启用");
+    }
+
+    /**
+     * 开 nullValueMarker 的清理定时任务
+     *
+     * @param delay 间隔时长，单位毫秒
+     */
+    public void enableNullValueMarkerPruneSchedule(long delay) {
+        this.nullValueMarker.schedulePrune(delay);
+    }
+
+    /**
+     * 关 nullValueMarker 的清理定时任务
+     */
+    public void disableNullValueMarkerPruneSchedule() {
+        this.nullValueMarker.cancelPruneSchedule();
+    }
+
+    /**
+     * 开 stringValueCache 的清理定时任务
+     *
+     * @param delay 间隔时长，单位毫秒
+     */
+    public void enableStringValueCachePruneSchedule(long delay) {
+        this.stringValueCache.schedulePrune(delay);
+    }
+
+    /**
+     * 关 stringValueCache 的清理定时任务
+     */
+    public void disableStringValueCachePruneSchedule() {
+        this.stringValueCache.cancelPruneSchedule();
+    }
+
+    /**
+     * 开 objectValueCache 的清理定时任务
+     *
+     * @param delay 间隔时长，单位毫秒
+     */
+    public void enableObjectValueCachePruneSchedule(long delay) {
+        this.objectValueCache.schedulePrune(delay);
+    }
+
+    /**
+     * 关 objectValueCache 的清理定时任务
+     */
+    public void disableObjectValueCachePruneSchedule() {
+        this.objectValueCache.cancelPruneSchedule();
+    }
+
+    @Override
+    public String get(String key) {
+        if (nullValueMarker.containsKey(key)) {
+            // 明确知道为空，直接返回
+            return null;
+        }
+        String cacheValue = stringValueCache.get(key, false);
+        if (cacheValue != null) {
+            return cacheValue;
+        }
+        // 本地缓存为空，实时查询
+        cacheValue = super.get(key);
+        if (cacheValue == null) {
+            // double-check：并发 set() 已写入时不落空值标记，避免「刚写入即判未登录」竞态；
+            // 二次读取到值时直接采用，而不是丢弃
+            cacheValue = super.get(key);
+            if (cacheValue == null) {
+                nullValueMarker.put(key, Boolean.TRUE);
+                return null;
+            }
+        }
+        putLocal(stringValueCache, key, cacheValue);
+        return cacheValue;
+    }
+
+    @Override
+    public void set(String key, String value, long timeout) {
+        super.set(key, value, timeout);
+        // cache-aside
+        nullValueMarker.remove(key);
+        stringValueCache.remove(key);
+    }
+
+    @Override
+    public void update(String key, String value) {
+        super.update(key, value);
+        // cache-aside
+        nullValueMarker.remove(key);
+        stringValueCache.remove(key);
+    }
+
+    @Override
+    public void delete(String key) {
+        super.delete(key);
+        // cache-aside
+        nullValueMarker.remove(key);
+        stringValueCache.remove(key);
+    }
+
+    @Override
+    public Object getObject(String key) {
+        if (nullValueMarker.containsKey(key)) {
+            // 明确知道为空，直接返回
+            return null;
+        }
+        Object cacheValue = objectValueCache.get(key, false);
+        if (cacheValue != null) {
+            return cacheValue;
+        }
+        // 本地缓存为空，实时查询
+        cacheValue = super.getObject(key);
+        if (cacheValue == null) {
+            // double-check：并发 setObject() 已写入时不落空值标记，避免「刚写入即判未登录」竞态
+            cacheValue = super.getObject(key);
+            if (cacheValue == null) {
+                nullValueMarker.put(key, Boolean.TRUE);
+                return null;
+            }
+        }
+        putLocal(objectValueCache, key, cacheValue);
+        return cacheValue;
+    }
+
+    @Override
+    public void setObject(String key, Object object, long timeout) {
+        super.setObject(key, object, timeout);
+        // cache-aside
+        nullValueMarker.remove(key);
+        objectValueCache.remove(key);
+    }
+
+    @Override
+    public void updateObject(String key, Object object) {
+        super.updateObject(key, object);
+        // cache-aside
+        nullValueMarker.remove(key);
+        objectValueCache.remove(key);
+    }
+
+    @Override
+    public void deleteObject(String key) {
+        super.deleteObject(key);
+        // cache-aside
+        nullValueMarker.remove(key);
+        objectValueCache.remove(key);
+    }
+
+    /*
+    ----------------------------------------------------------------
+                        私有方法
+    ----------------------------------------------------------------
+     */
+
+    /**
+     * 本地缓存时长取「配置时长」与「Redis 剩余存活时长」的较小值，
+     * 避免 token 已过期而本地缓存仍判有效
+     *
+     * @return 本地缓存毫秒数；返回 {@code <= 0} 表示不应写入本地缓存
+     */
+    protected long resolveLocalTtl(String key) {
+        long redisRemainSeconds = super.getTimeout(key);
+        if (redisRemainSeconds == NEVER_EXPIRE) {
+            // -1=永不过期：退回默认本地时长
+            return defaultLocalTtlMs;
+        }
+        if (redisRemainSeconds <= 0) {
+            // -2=key 不存在 / 0=即将过期：不缓存
+            return 0;
+        }
+        return Math.min(defaultLocalTtlMs, redisRemainSeconds * 1000L);
+    }
+
+    /**
+     * 写本地缓存；TTL 不为正数时跳过——Hutool TimedCache 的 0 表示永不过期，必须拦截
+     */
+    private <V> void putLocal(TimedCacheEx<String, V> cache, String key, V value) {
+        long ttl = resolveLocalTtl(key);
+        if (ttl > 0) {
+            cache.put(key, value, ttl);
+        }
+    }
+}

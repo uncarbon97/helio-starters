@@ -1,0 +1,40 @@
+package cc.uncarbon.framework.helium.db.mybatisplus.props;
+
+import cc.uncarbon.framework.helium.base.constant.ConfigurationPropertiesPrefix;
+import lombok.Data;
+import org.springframework.boot.context.properties.ConfigurationProperties;
+
+/**
+ * Helium ID 生成器配置属性类
+ *
+ * @author Uncarbon
+ */
+@Data
+@ConfigurationProperties(prefix = ConfigurationPropertiesPrefix.DB_IDGEN)
+public class HeliumIdGenProperties {
+
+    /**
+     * 雪花 ID（默认实例，避免未配置时 NPE）
+     */
+    private Snowflake snowflake = new Snowflake();
+
+    @Data
+    public static final class Snowflake {
+
+        /**
+         * 是否注册雪花 ID 生成器；下游工程如使用数据库自增 ID 等其他主键方案时可设为 false，默认 true
+         */
+        private Boolean enabled = true;
+
+        /**
+         * 数据中心ID（机房编号），范围 [0, 31]
+         */
+        private Integer datacenterId = 0;
+
+        /**
+         * 起始日期（yyyy-MM-dd）；一经上线不可更改，否则新旧 ID 可能重叠
+         */
+        private String epochDate;
+
+    }
+}

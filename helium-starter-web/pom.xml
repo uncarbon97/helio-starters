@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <packaging>jar</packaging>
+
+    <parent>
+        <groupId>cc.uncarbon.framework</groupId>
+        <artifactId>helium-starters-parent</artifactId>
+        <version>${revision}</version>
+        <relativePath>../pom.xml</relativePath>
+    </parent>
+
+    <artifactId>helium-starter-web</artifactId>
+    <name>${project.artifactId}</name>
+    <description>
+        Helium 增强 Web 启动包
+    </description>
+
+    <dependencies>
+        <!-- 引用基础启动包 -->
+        <dependency>
+            <groupId>cc.uncarbon.framework</groupId>
+            <artifactId>helium-starter-base</artifactId>
+        </dependency>
+
+        <!-- 引用配套核心包 -->
+        <dependency>
+            <groupId>cc.uncarbon.framework</groupId>
+            <artifactId>helium-core-web</artifactId>
+        </dependency>
+
+        <!-- 引用 Jackson3 启动包 -->
+        <dependency>
+            <groupId>cc.uncarbon.framework</groupId>
+            <artifactId>helium-starter-jackson3</artifactId>
+        </dependency>
+
+        <!-- 引用 i18n 启动包 -->
+        <dependency>
+            <groupId>cc.uncarbon.framework</groupId>
+            <artifactId>helium-starter-i18n</artifactId>
+            <!-- 只引用，非必要不参与打包 -->
+            <scope>provided</scope>
+        </dependency>
+
+        <!-- 引用 Spring Web Starter -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-web</artifactId>
+        </dependency>
+
+        <!-- 引用 Spring Validation Starter -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-validation</artifactId>
+        </dependency>
+
+        <!-- 引用 SA-Token 原生基础包 -->
+        <dependency>
+            <groupId>cn.dev33</groupId>
+            <artifactId>sa-token-core</artifactId>
+        </dependency>
+    </dependencies>
+</project>

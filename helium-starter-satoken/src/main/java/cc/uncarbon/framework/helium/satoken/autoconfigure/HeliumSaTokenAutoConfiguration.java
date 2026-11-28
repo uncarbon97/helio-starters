@@ -1,0 +1,45 @@
+package cc.uncarbon.framework.helium.satoken.autoconfigure;
+
+import cc.uncarbon.framework.helium.base.condition.HeliumConditions;
+import cc.uncarbon.framework.helium.satoken.dao.SaTokenRedisDaoWithLocalCache;
+import cc.uncarbon.framework.helium.satoken.props.HeliumSaTokenProperties;
+import cn.dev33.satoken.dao.SaTokenDao;
+import cn.dev33.satoken.dao.SaTokenDaoForRedisTemplate;
+import org.jspecify.annotations.NonNull;
+import org.springframework.boot.autoconfigure.AutoConfiguration;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.context.annotation.*;
+import org.springframework.core.type.AnnotatedTypeMetadata;
+
+/**
+ * Helium 集成 SA-Token 自动装配类
+ *
+ * @author Uncarbon
+ */
+@AutoConfiguration
+@EnableConfigurationProperties(value = {HeliumSaTokenProperties.class})
+public class HeliumSaTokenAutoConfiguration {
+
+    /**
+     * 带本地缓存的 {@link SaTokenDaoForRedisTemplate}
+     */
+    @Bean
+    @ConditionalOnMissingBean
+    @Conditional(value = OnLocalCacheDaoEnabled.class)
+    @Primary
+    public SaTokenDao saTokenLocalCacheDao(HeliumSaTokenProperties props) {
+        var subProp = props.getRedisDaoWithLocalCache();
+        return new SaTokenRedisDaoWithLocalCache(subProp.getDuration(), subProp.getCapacity());
+    }
+
+    private static class OnLocalCacheDaoEnabled implements Condition {
+        @Override
+        public boolean matches(ConditionContext context, @NonNull AnnotatedTypeMetadata metadata) {
+            var props = HeliumConditions.bind(context.getEnvironment(), HeliumSaTokenProperties.class);
+            var sub = props.getRedisDaoWithLocalCache();
+            return sub != null && Boolean.TRUE.equals(sub.getEnabled());
+        }
+    }
+
+}

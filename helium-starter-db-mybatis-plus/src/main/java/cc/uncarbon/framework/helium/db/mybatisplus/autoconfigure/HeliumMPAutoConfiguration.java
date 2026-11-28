@@ -1,0 +1,119 @@
+package cc.uncarbon.framework.helium.db.mybatisplus.autoconfigure;
+
+import cc.uncarbon.framework.helium.base.condition.HeliumConditions;
+import cc.uncarbon.framework.helium.base.page.PageParam;
+import cc.uncarbon.framework.helium.db.mybatisplus.handler.MetaObjectFiller;
+import cc.uncarbon.framework.helium.db.mybatisplus.handler.MybatisPlusAutoFillColumnHandler;
+import cc.uncarbon.framework.helium.db.mybatisplus.idgen.HutoolSnowflakeIdGenerator;
+import cc.uncarbon.framework.helium.db.mybatisplus.props.HeliumIdGenProperties;
+import cc.uncarbon.framework.helium.db.mybatisplus.props.HeliumMybatisPlusProperties;
+import com.baomidou.mybatisplus.core.handlers.MetaObjectHandler;
+import com.baomidou.mybatisplus.core.incrementer.IdentifierGenerator;
+import com.baomidou.mybatisplus.extension.plugins.MybatisPlusInterceptor;
+import com.baomidou.mybatisplus.extension.plugins.inner.BlockAttackInnerInterceptor;
+import com.baomidou.mybatisplus.extension.plugins.inner.InnerInterceptor;
+import com.baomidou.mybatisplus.extension.plugins.inner.OptimisticLockerInnerInterceptor;
+import com.baomidou.mybatisplus.extension.plugins.inner.PaginationInnerInterceptor;
+import lombok.extern.slf4j.Slf4j;
+import org.jspecify.annotations.NonNull;
+import org.springframework.beans.factory.ObjectProvider;
+import org.springframework.boot.autoconfigure.AutoConfiguration;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Condition;
+import org.springframework.context.annotation.ConditionContext;
+import org.springframework.context.annotation.Conditional;
+import org.springframework.core.type.AnnotatedTypeMetadata;
+import org.springframework.transaction.annotation.EnableTransactionManagement;
+
+import java.util.List;
+
+/**
+ * Helium 集成 mybatis-plus 自动装配类
+ *
+ *
+ *
+ * @author Uncarbon
+ */
+@Slf4j
+@AutoConfiguration
+@EnableConfigurationProperties(value = {HeliumMybatisPlusProperties.class, HeliumIdGenProperties.class})
+@EnableTransactionManagement(proxyTargetClass = true)
+public class HeliumMPAutoConfiguration {
+
+    /**
+     * mybatis-plus 拦截器
+     *
+     * @param innerInterceptorProvider 所有注入到 Spring 容器中的 InnerInterceptor，其中包括行级租户的 TenantLineInnerInterceptor；也方便注入其他自定义 InnerInterceptor
+     */
+    @Bean
+    @ConditionalOnMissingBean
+    public MybatisPlusInterceptor mybatisPlusInterceptor(HeliumMybatisPlusProperties props,
+                                                         ObjectProvider<InnerInterceptor> innerInterceptorProvider) {
+        MybatisPlusInterceptor interceptor = new MybatisPlusInterceptor();
+
+        /*
+        https://baomidou.com/plugins/
+        使用多个插件时，需要注意它们的顺序。建议的顺序是：
+        多租户、动态表名
+        分页、乐观锁
+        SQL 性能规范、防止全表更新与删除
+        总结：对 SQL 进行单次改造的插件应优先放入，不对 SQL 进行改造的插件最后放入。
+         */
+        innerInterceptorProvider.orderedStream().forEach(interceptor::addInnerInterceptor);
+
+        /*
+        分页插件
+         */
+        PaginationInnerInterceptor paginationInnerInterceptor = new PaginationInnerInterceptor();
+        // 由拦截器兜底钳到上限而非全表拉取
+        paginationInnerInterceptor.setMaxLimit((long) PageParam.LARGE_PAGE_SIZE_MAX);
+        // 越界页（pageNum > pages）静默返回空列表
+        paginationInnerInterceptor.setOverflow(false);
+        interceptor.addInnerInterceptor(paginationInnerInterceptor);
+
+        /*
+        乐观锁
+         */
+        var subProps = props.getOptimisticLock();
+        if (Boolean.TRUE.equals(subProps.getEnabled())) {
+            interceptor.addInnerInterceptor(new OptimisticLockerInnerInterceptor());
+        }
+
+        /*
+        防止全表更新与删除
+         */
+        interceptor.addInnerInterceptor(new BlockAttackInnerInterceptor());
+        return interceptor;
+    }
+
+    /**
+     * ID 生成器；下游工程使用数据库自增 ID 等其他主键方案时，可配置 helium.db.idgen.snowflake.enabled=false 关闭注册
+     */
+    @Bean
+    @ConditionalOnMissingBean
+    @Conditional(value = HeliumMPAutoConfiguration.OnSnowflakeIdGenEnabled.class)
+    public IdentifierGenerator identifierGenerator(HeliumIdGenProperties props) {
+        return new HutoolSnowflakeIdGenerator(props);
+    }
+
+    /**
+     * 字段自动填充
+     */
+    @Bean
+    @ConditionalOnMissingBean
+    public MetaObjectHandler mybatisPlusAutoFillColumnHandler(List<MetaObjectFiller> extendFillers) {
+        return new MybatisPlusAutoFillColumnHandler(extendFillers);
+    }
+
+    private static class OnSnowflakeIdGenEnabled implements Condition {
+        @Override
+        public boolean matches(ConditionContext context, @NonNull AnnotatedTypeMetadata metadata) {
+            var props = HeliumConditions.bind(context.getEnvironment(), HeliumIdGenProperties.class);
+            var sub = props.getSnowflake();
+            return sub != null && Boolean.TRUE.equals(sub.getEnabled());
+        }
+    }
+
+}
