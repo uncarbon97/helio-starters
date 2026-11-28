@@ -6,5 +6,4 @@
 
 JDK compatibility: 25
 
-[官方文档](https://helium.uncarbon.cc/)
-[主要依赖](https://helium.uncarbon.cc/#/i18n/zh-CN/helium-starters/dependencies)
+[文档站](https://helium.uncarbon.cc/)
