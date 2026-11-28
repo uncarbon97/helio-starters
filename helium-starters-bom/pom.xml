@@ -14,7 +14,7 @@
     </description>
 
     <properties>
-        <revision>4.0.0-SNAPSHOT</revision>
+        <revision>4.0.0</revision>
     </properties>
 
     <dependencyManagement>

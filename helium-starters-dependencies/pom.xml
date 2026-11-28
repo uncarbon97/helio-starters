@@ -14,7 +14,7 @@
     </description>
 
     <properties>
-        <revision>4.0.0-SNAPSHOT</revision>
+        <revision>4.0.0</revision>
 
         <!-- 以下用于 base -->
         <spring-boot.version>4.2.0</spring-boot.version>
