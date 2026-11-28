@@ -32,7 +32,7 @@ public class InstantNoMillisFormatModule extends SimpleModule {
 
     public static final ZoneId OS_ZONE = ZoneId.systemDefault();
 
-    private final DateTimeFormatter formatter = Jackson3Constant.UTC_WITH_XXX_OFFSET_FORMATTER;
+    private static final DateTimeFormatter formatter = Jackson3Constant.UTC_WITH_XXX_OFFSET_FORMATTER;
 
     /**
      * 兼容带毫秒 + 非 Z 偏移的输入（如 2026-07-18T12:34:56.123+08:00）

@@ -152,4 +152,81 @@
             </dependency>
         </dependencies>
     </dependencyManagement>
+
+    <!-- Maven Central 要求的元数据（本模块未继承 parent，需自行声明） -->
+    <url>https://github.com/uncarbon-oss/helium-starters</url>
+
+    <licenses>
+        <license>
+            <name>Apache 2</name>
+            <url>https://www.apache.org/licenses/LICENSE-2.0.txt</url>
+            <distribution>repo</distribution>
+            <comments>A business-friendly OSS license</comments>
+        </license>
+    </licenses>
+
+    <developers>
+        <developer>
+            <id>Uncarbon</id>
+            <name>Uncarbon</name>
+        </developer>
+    </developers>
+
+    <scm>
+        <tag>${project.version}</tag>
+        <url>https://github.com/uncarbon-oss/helium-starters.git</url>
+        <connection>scm:git:https://github.com/uncarbon-oss/helium-starters.git</connection>
+        <developerConnection>scm:git:https://github.com/uncarbon-oss/helium-starters.git</developerConnection>
+    </scm>
+
+    <profiles>
+        <profile>
+            <id>push-helium-starters-to-maven-central</id>
+            <activation>
+                <activeByDefault>false</activeByDefault>
+            </activation>
+            <build>
+                <plugins>
+                    <!-- Maven 编译插件 -->
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-compiler-plugin</artifactId>
+                        <version>3.16.0</version>
+                        <configuration>
+                            <source>${java.version}</source>
+                            <target>${java.version}</target>
+                        </configuration>
+                    </plugin>
+
+                    <!-- GPG 签名插件 -->
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-gpg-plugin</artifactId>
+                        <version>3.2.8</version>
+                        <executions>
+                            <execution>
+                                <id>sign-artifacts</id>
+                                <phase>verify</phase>
+                                <goals>
+                                    <goal>sign</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+
+                    <!-- 部署插件 -->
+                    <plugin>
+                        <groupId>org.sonatype.central</groupId>
+                        <artifactId>central-publishing-maven-plugin</artifactId>
+                        <version>0.12.0</version>
+                        <extensions>true</extensions>
+                        <configuration>
+                            <publishingServerId>central</publishingServerId>
+                            <autoPublish>false</autoPublish>
+                        </configuration>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
 </project>
